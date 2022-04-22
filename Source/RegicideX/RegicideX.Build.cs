@@ -15,3 +15,7 @@ public class RegicideX : ModuleRules
 		PublicDependencyModuleNames.Add("MCVGASFramework");
 	}
 }
+
+
+
+
