@@ -8,7 +8,7 @@
 #include "GameFramework/Controller.h"
 #include "GenericTeamAgentInterface.h"
 #include "Components/InputComponent.h"
-#include "../GameplayFramework/RGX_PlayerStateDefault.h" // TODO: write path to project settings
+#include "../GameplayFramework/RGX_PlayerState.h" // TODO: write path to project settings
 #include "../GAS/AttributeSets/RGX_HealthAttributeSet.h"
 
 ARGX_PlayerCharacter::ARGX_PlayerCharacter()
@@ -52,7 +52,7 @@ void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	// Set up gameplay key bindings
 	check(PlayerInputComponent);
 	//PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
+	//PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
 	//PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ARX_PlayerCharacter::JumpInput);
 	//PlayerInputComponent->BindAction("Jump", IE_Released, this, &ARX_PlayerCharacter::StopJumpInput);
@@ -68,11 +68,11 @@ void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ARGX_PlayerCharacter::LookUpAtRate);
 
-	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"), FString("CancelTarget"), FString("ERXAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::Confirm), static_cast<int32>(EMCVAbilityInputID::Cancel)));
-	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("Jump"), FString("StopJump"), FString("ERXAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::Jump), static_cast<int32>(EMCVAbilityInputID::StopJump)));
-	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("Evasion"), FString("StopEvasion"), FString("ERXAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::Evasion), static_cast<int32>(EMCVAbilityInputID::CancelEvasion)));
-	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("LightAttack"), FString("CancelLightAttack"), FString("ERXAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::LightAttack), static_cast<int32>(EMCVAbilityInputID::CancelLightAttack)));
-	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("HeavyAttack"), FString("CancelHeavyAttack"), FString("ERXAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::HeavyAttack), static_cast<int32>(EMCVAbilityInputID::CancelHeavyAttack)));
+	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"), FString("CancelTarget"), FString("EMCVAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::Confirm), static_cast<int32>(EMCVAbilityInputID::Cancel)));
+	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("Jump"), FString("StopJump"), FString("EMCVAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::Jump), static_cast<int32>(EMCVAbilityInputID::StopJump)));
+	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("Evasion"), FString("StopEvasion"), FString("EMCVAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::Evasion), static_cast<int32>(EMCVAbilityInputID::CancelEvasion)));
+	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("LightAttack"), FString("CancelLightAttack"), FString("EMCVAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::LightAttack), static_cast<int32>(EMCVAbilityInputID::CancelLightAttack)));
+	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("HeavyAttack"), FString("CancelHeavyAttack"), FString("EMCVAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::HeavyAttack), static_cast<int32>(EMCVAbilityInputID::CancelHeavyAttack)));
 }
 
 void ARGX_PlayerCharacter::PossessedBy(AController* NewController)

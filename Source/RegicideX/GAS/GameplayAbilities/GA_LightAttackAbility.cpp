@@ -3,9 +3,9 @@
 
 URGX_LightAttackAbility::URGX_LightAttackAbility()
 {
-	static ConstructorHelpers::FObjectFinder<UAnimMontage> AnimMontage(TEXT("/Game/RXGame/Player/Animations/Montages/AM_LightAttack"));
+	//static ConstructorHelpers::FObjectFinder<UAnimMontage> AnimMontage(TEXT("/Game/RXGame/Player/Animations/Montages/AM_LightAttack"));
 
-	MontageToPlay = AnimMontage.Object;
+	//MontageToPlay = AnimMontage.Object;
 }
 
 void URGX_LightAttackAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
