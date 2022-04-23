@@ -7,6 +7,27 @@
 #include "AbilitySystemInterface.h"
 #include "RGX_EnemyBase.generated.h"
 
+USTRUCT()
+struct FAttackInfo {
+	GENERATED_BODY()
+
+	UPROPERTY()
+		float BaseDamage;
+
+	UPROPERTY()
+		bool Launch;
+
+	UPROPERTY()
+		float DamageMultiplier;
+
+	UPROPERTY()
+		FVector DamageOrigin;
+
+	UPROPERTY()
+		FVector LaunchVector;
+
+};
+
 class UMCV_AbilitySystemComponent;
 
 
@@ -35,5 +56,9 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	virtual void HandleDamage(FAttackInfo info);
+
+	virtual void HandleDeath();
 
 };

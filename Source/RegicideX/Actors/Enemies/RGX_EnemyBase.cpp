@@ -40,3 +40,11 @@ UAbilitySystemComponent* ARGX_EnemyBase::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
+void ARGX_EnemyBase::HandleDamage(FAttackInfo info)
+{
+}
+
+void ARGX_EnemyBase::HandleDeath()
+{
+}
+
