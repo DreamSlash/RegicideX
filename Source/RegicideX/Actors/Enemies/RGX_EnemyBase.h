@@ -29,7 +29,7 @@ struct FAttackInfo {
 };
 
 class UMCV_AbilitySystemComponent;
-
+class URGX_HealthAttributeSet;
 
 UCLASS()
 class REGICIDEX_API ARGX_EnemyBase : public ACharacter, public IAbilitySystemInterface
@@ -39,6 +39,9 @@ class REGICIDEX_API ARGX_EnemyBase : public ACharacter, public IAbilitySystemInt
 	/** Ability System Component to be used */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UMCV_AbilitySystemComponent* AbilitySystemComponent;
+
+	UPROPERTY()
+	URGX_HealthAttributeSet* HealthAttributeSet;
 
 public:
 	// Sets default values for this character's properties
