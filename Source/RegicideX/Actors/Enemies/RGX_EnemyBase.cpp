@@ -3,7 +3,7 @@
 
 #include "RGX_EnemyBase.h"
 #include "Components/MCV_AbilitySystemComponent.h"
-#include "RegicideX/GAS/Attributes/RGX_HealthAttributeSet.h"
+#include "RegicideX/GAS/AttributeSets/RGX_HealthAttributeSet.h"
 
 // Sets default values
 ARGX_EnemyBase::ARGX_EnemyBase()
