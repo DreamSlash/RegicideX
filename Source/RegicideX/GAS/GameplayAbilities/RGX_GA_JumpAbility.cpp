@@ -1,4 +1,4 @@
-#include "GA_JumpAbility.h"
+#include "RGX_GA_JumpAbility.h"
 #include "GameFramework/Character.h"
 
 void URGX_JumpAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)

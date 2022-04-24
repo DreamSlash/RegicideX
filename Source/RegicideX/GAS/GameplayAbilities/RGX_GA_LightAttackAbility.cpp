@@ -1,4 +1,4 @@
-#include "GA_LightAttackAbility.h"
+#include "RGX_GA_LightAttackAbility.h"
 #include "GameFramework/Character.h"
 
 URGX_LightAttackAbility::URGX_LightAttackAbility()
@@ -13,7 +13,7 @@ void URGX_LightAttackAbility::ActivateAbility(const FGameplayAbilitySpecHandle H
 	ACharacter* character = Cast<ACharacter>(ActorInfo->AvatarActor);
 	if (character)
 	{
-		character->PlayAnimMontage(MontageToPlay);
+		character->PlayAnimMontage(MontageToPlay, 1.0f, StartSectionName);
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("Light Attack Ability"));
