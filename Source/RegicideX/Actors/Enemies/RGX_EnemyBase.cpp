@@ -3,6 +3,7 @@
 
 #include "RGX_EnemyBase.h"
 #include "Components/MCV_AbilitySystemComponent.h"
+#include "RegicideX/GAS/AttributeSets/RGX_HealthAttributeSet.h"
 
 // Sets default values
 ARGX_EnemyBase::ARGX_EnemyBase()
@@ -12,6 +13,7 @@ ARGX_EnemyBase::ARGX_EnemyBase()
 
 
 	AbilitySystemComponent = CreateDefaultSubobject<UMCV_AbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	HealthAttributeSet = CreateDefaultSubobject<URGX_HealthAttributeSet>(TEXT("HealthAttributeSet"));
 }
 
 // Called when the game starts or when spawned
@@ -38,5 +40,13 @@ void ARGX_EnemyBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 UAbilitySystemComponent* ARGX_EnemyBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
+}
+
+void ARGX_EnemyBase::HandleDamage(FAttackInfo info)
+{
+}
+
+void ARGX_EnemyBase::HandleDeath()
+{
 }
 

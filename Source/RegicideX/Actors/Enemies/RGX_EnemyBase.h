@@ -7,8 +7,29 @@
 #include "AbilitySystemInterface.h"
 #include "RGX_EnemyBase.generated.h"
 
-class UMCV_AbilitySystemComponent;
+USTRUCT()
+struct FAttackInfo {
+	GENERATED_BODY()
 
+	UPROPERTY()
+		float BaseDamage;
+
+	UPROPERTY()
+		bool Launch;
+
+	UPROPERTY()
+		float DamageMultiplier;
+
+	UPROPERTY()
+		FVector DamageOrigin;
+
+	UPROPERTY()
+		FVector LaunchVector;
+
+};
+
+class UMCV_AbilitySystemComponent;
+class URGX_HealthAttributeSet;
 
 UCLASS()
 class REGICIDEX_API ARGX_EnemyBase : public ACharacter, public IAbilitySystemInterface
@@ -18,6 +39,9 @@ class REGICIDEX_API ARGX_EnemyBase : public ACharacter, public IAbilitySystemInt
 	/** Ability System Component to be used */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UMCV_AbilitySystemComponent* AbilitySystemComponent;
+
+	UPROPERTY()
+	URGX_HealthAttributeSet* HealthAttributeSet;
 
 public:
 	// Sets default values for this character's properties
@@ -35,5 +59,9 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	virtual void HandleDamage(FAttackInfo info);
+
+	virtual void HandleDeath();
 
 };
