@@ -11,7 +11,6 @@ ARGX_EnemyBase::ARGX_EnemyBase()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-
 	AbilitySystemComponent = CreateDefaultSubobject<UMCV_AbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	HealthAttributeSet = CreateDefaultSubobject<URGX_HealthAttributeSet>(TEXT("HealthAttributeSet"));
 }
@@ -19,9 +18,11 @@ ARGX_EnemyBase::ARGX_EnemyBase()
 // Called when the game starts or when spawned
 void ARGX_EnemyBase::BeginPlay()
 {
+
 	Super::BeginPlay();
-	
+
 }
+
 
 // Called every frame
 void ARGX_EnemyBase::Tick(float DeltaTime)
