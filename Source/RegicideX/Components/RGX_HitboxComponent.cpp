@@ -73,6 +73,7 @@ void URGX_HitboxComponent::OnComponentOverlap(UPrimitiveComponent* OverlappedCom
 		OwnerActor = GetOwner();
 	}
 
+	/*
 	if (OwnerActor)
 	{
 		FString ActorName = OwnerActor->GetName();
@@ -82,9 +83,11 @@ void URGX_HitboxComponent::OnComponentOverlap(UPrimitiveComponent* OverlappedCom
 	{
 		UE_LOG(LogTemp, Warning, TEXT("NO ATTACHED PARENT\n"));
 	}
+	*/
 
 	const IGenericTeamAgentInterface* TeamAgentA = Cast<const IGenericTeamAgentInterface>(OwnerActor);
 
+	/*
 	if (TeamAgentA)
 	{
 		uint8 teamID = TeamAgentA->GetGenericTeamId().GetId();
@@ -94,6 +97,7 @@ void URGX_HitboxComponent::OnComponentOverlap(UPrimitiveComponent* OverlappedCom
 	{
 		UE_LOG(LogTemp, Warning, TEXT("TeamAgentA is nullptr\n"));
 	}
+	*/
 	
 	ETeamAttitude::Type Attitude = FGenericTeamId::GetAttitude(OwnerActor, OtherActor);
 	if (Attitude == TeamToApply)
