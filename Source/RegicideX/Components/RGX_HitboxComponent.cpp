@@ -44,10 +44,18 @@ void URGX_HitboxComponent::DeactivateHitbox()
 
 void URGX_HitboxComponent::ApplyEffects(AActor* OtherActor)
 {
-	if (ensureMsgf(EffectToApply.Get(), TEXT("URX_HitboxComponent::ApplyEffects No valid effect to apply")))
+	if (ensureMsgf(EffectToApply.Get(), TEXT("URGX_HitboxComponent::ApplyEffects No valid effect to apply")))
 	{
+		USceneComponent* Parent = GetAttachParent();
+		AActor* OwnerActor = Parent->GetAttachmentRootActor();
+
+		if (!OwnerActor)
+		{
+			OwnerActor = GetOwner();
+		}
+
 		// Try to get owner ASC
-		UAbilitySystemComponent* ApplierASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(GetOwner());
+		UAbilitySystemComponent* ApplierASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OwnerActor);
 		UAbilitySystemComponent* TargetASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OtherActor);
 		// If not fallback to target
 		if (!ApplierASC)

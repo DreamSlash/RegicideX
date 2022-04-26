@@ -50,6 +50,8 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FGenericTeamId CharacterTeam;
 
+	virtual void BeginPlay() override;
+
 	virtual void Tick(float DeltaTime) override;
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
@@ -84,6 +86,10 @@ protected:
 	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
 	virtual FGenericTeamId GetGenericTeamId() const override;
 	// End of FGenericTeamId interface
+
+	// Debug
+	void PrintDebugInformation();
+	// ----------------
 
 public:
 	/** Returns CameraBoom subobject **/

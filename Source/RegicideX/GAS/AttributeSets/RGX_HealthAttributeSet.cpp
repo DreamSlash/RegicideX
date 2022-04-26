@@ -17,7 +17,7 @@ void URGX_HealthAttributeSet::PreAttributeBaseChange(const FGameplayAttribute& A
 {
 	Super::PreAttributeBaseChange(Attribute, NewValue);
 
-	UE_LOG(LogTemp, Warning, TEXT("Health Pre attribute change"));
+	UE_LOG(LogTemp, Warning, TEXT("New Health: %f\n"), NewValue);
 
 	if (Attribute == GetHealthAttribute())
 	{

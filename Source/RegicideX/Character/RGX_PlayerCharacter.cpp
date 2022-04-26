@@ -58,6 +58,7 @@ void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 	//PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ARX_PlayerCharacter::JumpInput);
 	//PlayerInputComponent->BindAction("Jump", IE_Released, this, &ARX_PlayerCharacter::StopJumpInput);
+	PlayerInputComponent->BindAction("Debug", IE_Pressed, this, &ARGX_PlayerCharacter::PrintDebugInformation);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ARGX_PlayerCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ARGX_PlayerCharacter::MoveRight);
@@ -69,6 +70,7 @@ void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAxis("TurnRate", this, &ARGX_PlayerCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ARGX_PlayerCharacter::LookUpAtRate);
+
 
 	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"), FString("CancelTarget"), FString("EMCVAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::Confirm), static_cast<int32>(EMCVAbilityInputID::Cancel)));
 	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("Jump"), FString("StopJump"), FString("EMCVAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::Jump), static_cast<int32>(EMCVAbilityInputID::StopJump)));
@@ -90,6 +92,21 @@ void ARGX_PlayerCharacter::SetGenericTeamId(const FGenericTeamId& TeamID)
 FGenericTeamId ARGX_PlayerCharacter::GetGenericTeamId() const
 {
 	return CharacterTeam;
+}
+
+void ARGX_PlayerCharacter::PrintDebugInformation()
+{
+	TArray<FGameplayAttribute> attributes;
+	AbilitySystemComponent->GetAllAttributes(attributes);
+
+	for (FGameplayAttribute& attribute : attributes)
+	{
+		FString AttributeName = attribute.GetName();
+		UE_LOG(LogTemp, Warning, TEXT("Attribute Name: %s\n"), *AttributeName);
+
+		float AttributeValue = AbilitySystemComponent->GetNumericAttribute(attribute);
+		UE_LOG(LogTemp, Warning, TEXT("Attribute Value: %f\n"), AttributeValue);
+	}
 }
 
 void ARGX_PlayerCharacter::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
@@ -120,6 +137,11 @@ void ARGX_PlayerCharacter::AddGameplayTag(const FGameplayTag& TagToAdd)
 void ARGX_PlayerCharacter::RemoveGameplayTag(const FGameplayTag& TagToRemove)
 {
 	AbilitySystemComponent->RemoveLooseGameplayTag(TagToRemove);
+}
+
+void ARGX_PlayerCharacter::BeginPlay()
+{
+	Super::BeginPlay();
 }
 
 void ARGX_PlayerCharacter::Tick(float DeltaTime)

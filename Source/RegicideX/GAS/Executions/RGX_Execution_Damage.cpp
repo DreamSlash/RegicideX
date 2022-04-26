@@ -31,21 +31,21 @@ UExecution_Damage::UExecution_Damage()
 
 void UExecution_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
 {
-	UE_LOG(LogTemp, Warning, TEXT("Execute Damage"));
-
 	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
 	const FGameplayTagContainer* SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
 	const FGameplayTagContainer* TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
 
 	FAggregatorEvaluateParameters EvaluationParameters;
 	EvaluationParameters.SourceTags = SourceTags;
-	EvaluationParameters.TargetTags = TargetTags;
+	EvaluationParameters.SourceTags = TargetTags;
 
 	float DamageMitigation = 0.0f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().DamageMitigationDef, EvaluationParameters, DamageMitigation);
 
 	float AttackPower = 0.0f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().AttackPowerDef, EvaluationParameters, AttackPower);
+
+	UE_LOG(LogTemp, Warning, TEXT("Attack Damage: %f\n"), AttackPower);
 
 	float FinalDamage = 0.0f;
 	FinalDamage = AttackPower * FMath::Max(0.0f, (1.0f - DamageMitigation));
