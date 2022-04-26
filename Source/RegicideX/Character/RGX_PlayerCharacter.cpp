@@ -10,6 +10,7 @@
 #include "Components/InputComponent.h"
 #include "../GameplayFramework/RGX_PlayerState.h" // TODO: write path to project settings
 #include "../GAS/AttributeSets/RGX_HealthAttributeSet.h"
+#include "../GAS/AttributeSets/RGX_CombatAttributeSet.h"
 
 ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 {
@@ -45,6 +46,7 @@ ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 
 	AbilitySystemComponent = CreateDefaultSubobject<UMCV_AbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	HealthAttributeSet = CreateDefaultSubobject<URGX_HealthAttributeSet>(TEXT("HealthAttributeSet"));
+	CombatAttributeSet = CreateDefaultSubobject<URGX_CombatAttributeSet>(TEXT("CombatAttributeSet"));
 }
 
 void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -122,6 +124,7 @@ void ARGX_PlayerCharacter::RemoveGameplayTag(const FGameplayTag& TagToRemove)
 
 void ARGX_PlayerCharacter::Tick(float DeltaTime)
 {
+
 }
 
 UAbilitySystemComponent* ARGX_PlayerCharacter::GetAbilitySystemComponent() const
