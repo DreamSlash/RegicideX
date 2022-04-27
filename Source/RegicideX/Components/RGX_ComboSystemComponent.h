@@ -82,4 +82,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void OnDisableCombo();
+
+	UFUNCTION(BlueprintCallable)
+	void OnEndCombo();
 };
