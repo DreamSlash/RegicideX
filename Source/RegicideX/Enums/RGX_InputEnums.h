@@ -1,3 +1,5 @@
+#pragma once
+
 #include "RGX_InputEnums.generated.h"
 
 UENUM(BlueprintType)

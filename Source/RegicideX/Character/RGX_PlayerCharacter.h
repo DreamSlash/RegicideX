@@ -6,6 +6,7 @@
 #include "AbilitySystemInterface.h"
 #include "Components/MCV_AbilitySystemComponent.h"
 #include "../Interfaces/RGX_GameplayTagInterface.h"
+#include "../Enums/RGX_InputEnums.h"
 #include "GenericTeamAgentInterface.h"
 
 #include "RGX_PlayerCharacter.generated.h"
@@ -91,6 +92,12 @@ protected:
 	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
 	virtual FGenericTeamId GetGenericTeamId() const override;
 	// End of FGenericTeamId interface
+
+	// Combat input functions that redirect the managing of the input to the combat system passing 
+	// the input pressed as the argument.
+	void ManageLightAttackInput();
+
+	void ManageHeavyAttackInput();
 
 	// Debug
 	void PrintDebugInformation();
