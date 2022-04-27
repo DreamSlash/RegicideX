@@ -13,6 +13,7 @@
 class USpringArmComponent;
 class UCameraComponent;
 class URGX_AbilitySystemComponent;
+class URGX_ComboSystemComponent;
 class URGX_HealthAttributeSet;
 class URGX_CombatAttributeSet;
 
@@ -30,6 +31,10 @@ class REGICIDEX_API ARGX_PlayerCharacter : public ACharacter, public IAbilitySys
 	/** Ability System Component to be used */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UMCV_AbilitySystemComponent* AbilitySystemComponent;
+
+	/** Combo System Component to manage player combos */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combos, meta = (AllowPrivateAccess = "true"))
+	URGX_ComboSystemComponent* ComboSystemComponent;
 
 	// Attributes ---------------
 	UPROPERTY()

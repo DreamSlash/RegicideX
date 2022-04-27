@@ -9,6 +9,7 @@
 #include "GenericTeamAgentInterface.h"
 #include "Components/InputComponent.h"
 #include "../GameplayFramework/RGX_PlayerState.h" // TODO: write path to project settings
+#include "../Components/RGX_ComboSystemComponent.h"
 #include "../GAS/AttributeSets/RGX_HealthAttributeSet.h"
 #include "../GAS/AttributeSets/RGX_CombatAttributeSet.h"
 
@@ -45,6 +46,7 @@ ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 	FollowCamera->bUsePawnControlRotation = false;
 
 	AbilitySystemComponent = CreateDefaultSubobject<UMCV_AbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	ComboSystemComponent = CreateDefaultSubobject<URGX_ComboSystemComponent>(TEXT("ComboSystemComponent"));
 	HealthAttributeSet = CreateDefaultSubobject<URGX_HealthAttributeSet>(TEXT("HealthAttributeSet"));
 	CombatAttributeSet = CreateDefaultSubobject<URGX_CombatAttributeSet>(TEXT("CombatAttributeSet"));
 }
