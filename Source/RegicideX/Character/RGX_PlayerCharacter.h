@@ -56,6 +56,17 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FGenericTeamId CharacterTeam;
 
+	// TODO: Make a component to manage skills?
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TArray<FGameplayTag> PowerSkills;
+
+	UPROPERTY()
+	uint8 CurrentSkillSelected = 0;
+
+	UPROPERTY()
+	FGameplayTag CurrentSkillTag;
+	//--------------------------
+
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaTime) override;
@@ -98,6 +109,10 @@ protected:
 	void ManageLightAttackInput();
 
 	void ManageHeavyAttackInput();
+
+	void ManagePowerSkillInput();
+
+	void ChangePowerSkill();
 
 	// Debug
 	void PrintDebugInformation();
