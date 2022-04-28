@@ -47,8 +47,11 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float RotatingSpeed = 50.0f;
+	
 
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float FullBodyRotatingSpeed = 10000.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float InterpSpeed = 1.0f;
@@ -57,10 +60,15 @@ public:
 		float MoveSpeed = 100.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float MaxAttackDist = 300.0f;
+		float MaxAttackDist = 700.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float MinAttackDist = 100.0f;
+		float MinAttackDist = 500.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float HeightPos = 500.0f;
+
+	void BeginPlay() override;
 
 	// Called every frame
 	void Tick(float DeltaTime) override;
@@ -71,4 +79,13 @@ public:
 
 	void RotateRings(float DeltaTime);
 
+	void RotateMe(float DeltaTime, float Speed);
+
+	void ShootSimpleBullets();
+
+	UFUNCTION(BlueprintCallable)
+		void TestSpawn();
+
+	UFUNCTION(BlueprintImplementableEvent)
+		void SpawnSimpleBullet(FTransform Transform, AActor* MyOwner);
 };

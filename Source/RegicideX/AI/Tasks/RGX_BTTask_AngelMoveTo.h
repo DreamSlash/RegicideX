@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "RGX_BT_AngelMoveTo.generated.h"
+#include "RGX_BTTask_AngelMoveTo.generated.h"
 
 /**
  * 
@@ -19,6 +19,8 @@ class REGICIDEX_API URGX_BT_AngelMoveTo : public UBTTaskNode
 	EBTNodeResult::Type TaskResult;
 
 public:
+
+	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
 	void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 

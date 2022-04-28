@@ -1,9 +1,19 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "RGX_BT_AngelMoveTo.h"
+#include "RGX_BTTask_AngelMoveTo.h"
 #include "RegicideX/Actors/Enemies/RGX_DistanceAngel.h"
 #include "AIController.h"
+
+
+
+EBTNodeResult::Type URGX_BT_AngelMoveTo::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+{
+	bNotifyTick = true;
+
+	return EBTNodeResult::InProgress;
+}
+
 
 
 void URGX_BT_AngelMoveTo::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
@@ -16,24 +26,26 @@ void URGX_BT_AngelMoveTo::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 
 	FVector TargetLocation;
 	if (AActor* TargetActor = DistAngelPawn->TargetActor) {
-
 		TargetLocation = TargetActor->GetActorLocation();
 	}
 	else
 	{ 
-		TaskResult = EBTNodeResult::Failed;
+		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
+		return;
 	}
 
 	float Dist = FVector::Distance(DistAngelPawn->GetActorLocation(), TargetLocation);
 
-	if (Dist >= DistAngelPawn->MaxAttackDist)
+	if (Dist <= DistAngelPawn->MaxAttackDist)
 	{
-		TaskResult = EBTNodeResult::Succeeded;
+		//UE_LOG(LogTemp, Warning, TEXT("Task Succeeded, distance to target: %f"), Dist);
+		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+		return;
 	}
 
 	DistAngelPawn->MoveToTarget(DeltaSeconds, TargetLocation);
 	
-	//FinishLatentTask(OwnerComp, TaskResult);
+	FinishLatentTask(OwnerComp, EBTNodeResult::InProgress);
 
 }
 
