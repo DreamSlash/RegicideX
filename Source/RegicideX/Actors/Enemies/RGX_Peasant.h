@@ -45,6 +45,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	bool bInCombat = false;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FVector IdlePosition;
+
 	//virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 

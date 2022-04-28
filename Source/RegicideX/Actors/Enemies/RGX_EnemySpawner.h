@@ -22,15 +22,17 @@ public:
 	UPROPERTY(EditAnywhere)
 	ARGX_GroupManager* manager;
 
-protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
-public:	
+	UPROPERTY(EditAnywhere)
+	FBox SpawnBox;
 
 	UFUNCTION(BlueprintCallable)
 	void Spawn();
 
+	// Function called to spawn BP_Peasant
 	UFUNCTION(BlueprintImplementableEvent)
 	void SpawnPeasant(FTransform Transform);
+
+protected:
+	// Called when the game starts or when spawned
+	virtual void BeginPlay() override;
 };

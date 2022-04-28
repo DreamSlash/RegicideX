@@ -6,8 +6,7 @@
 #include "RGX_GroupManager.h"
 #include "RGX_Peasant.h"
 #include "Kismet/GameplayStatics.h"
-
-#include "Blueprint/AIBlueprintHelperLibrary.h"
+#include "Math/UnrealMathUtility.h"
 
 // Sets default values
 ARGX_EnemySpawner::ARGX_EnemySpawner()
@@ -24,22 +23,27 @@ void ARGX_EnemySpawner::BeginPlay()
 	FRotator Rotation(0.0f, 0.0f, 0.0f);
 	FVector Scale(0.3f);
 
-	FActorSpawnParameters SpawnInfo;
 	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &ARGX_EnemySpawner::Spawn, 4.0f, true);
 }
 
 void ARGX_EnemySpawner::Spawn()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 4.0f, FColor::Blue, TEXT("Spawning enemies ..."));
-	AActor* actor = nullptr;;
-	if (manager)
+	AActor* actor = nullptr;
+	if (manager && manager->bCanSpawn)
 	{
 		if (manager->CurrentNumberOfPeasants < manager->MaxNumberOfPeasants)
 		{
-			FVector Location(0.0f, 0.0f, 90.0f);
-			FRotator Rotation(0.0f, 0.0f, 0.0f);
-			FTransform Transform(Rotation, Location);
-			SpawnPeasant(Transform);
+			int nToSpawn = manager->MaxNumberOfPeasants - manager->CurrentNumberOfPeasants;
+			FVector SpawnerLocation = GetActorLocation();
+			for (int i = 0; i < nToSpawn; ++i)
+			{
+				FVector Location = FMath::RandPointInBox(SpawnBox) + FVector(0.0f, 0.0f, 90.0f);
+				FRotator Rotation(0.0f, 0.0f, 0.0f);
+				FTransform Transform(Rotation, Location);
+				SpawnPeasant(Transform);
+			}
+			manager->OnPeasantAdded();
 		}
 	}
 	else
