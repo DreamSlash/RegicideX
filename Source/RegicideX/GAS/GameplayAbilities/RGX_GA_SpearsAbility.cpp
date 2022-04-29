@@ -3,6 +3,7 @@
 #include "../../Actors/RGX_SpearProjectile.h"
 #include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
 #include "Components/MCV_AbilitySystemComponent.h"
+#include "GenericTeamAgentInterface.h"
 
 /*
 void URGX_SpearsAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -44,6 +45,15 @@ void URGX_SpearsAbility::CastSpearsAttack(AActor* CasterActor)
 		ARGX_SpearProjectile* SpawnedSpear = GetWorld()->SpawnActor<ARGX_SpearProjectile>(SpearProjectileClass, SpawnLocation, SpawnRotation);
 		SpawnedSpear->Angle = SpearAngle;
 		SpawnedSpear->Caster = CasterActor;
+
+		IGenericTeamAgentInterface* TeamAgent = Cast<IGenericTeamAgentInterface>(CasterActor);
+
+		if (TeamAgent != nullptr)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Not null manuela\n"));
+			SpawnedSpear->CharacterTeam = TeamAgent->GetGenericTeamId();
+		}
+
 		SpearsArray.Add(SpawnedSpear);
 	}
 }

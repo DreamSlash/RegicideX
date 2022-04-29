@@ -30,7 +30,7 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	int RemainingSeconds = 5;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(EditDefaultsOnly)
 	FGenericTeamId CharacterTeam;
 
 	UPROPERTY(EditDefaultsOnly)
