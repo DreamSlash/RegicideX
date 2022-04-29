@@ -3,6 +3,9 @@
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "GenericTeamAgentInterface.h"
 #include "GameFramework/Actor.h"
+#include "Kismet/GameplayStatics.h"
+#include "Enemies/RGX_EnemyBase.h"
+#include "Components/MCV_AbilitySystemComponent.h"
 
 ARGX_SpearProjectile::ARGX_SpearProjectile()
 {
@@ -51,6 +54,64 @@ void ARGX_SpearProjectile::Tick(float DeltaTime)
 
 	FRotator NewRotation = Caster->GetActorRotation();
 	SetActorRotation(NewRotation);
+}
+
+void ARGX_SpearProjectile::LaunchProjectile()
+{
+	bWasLaunched = true;
+	SetLifeSpan(RemainingSeconds);
+
+	TArray<AActor*> FoundEnemies;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), EnemyClass, FoundEnemies);
+	
+	float ClosestEnemyDistance = INFINITY;
+	
+	for (AActor* Enemy : FoundEnemies)
+	{
+		ARGX_EnemyBase* EnemyBase = Cast<ARGX_EnemyBase>(Enemy);
+		bool bIsDead = EnemyBase->GetAbilitySystemComponent()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.Dead")));
+		if (bIsDead == true)
+			continue;
+
+		FVector SpearLocation = GetActorLocation();
+		FVector EnemyLocation = EnemyBase->GetActorLocation();
+		float Distance = FVector::Dist(SpearLocation, EnemyLocation);
+		if (Distance > TargetMaxRange)
+			continue;
+
+		if (Distance < ClosestEnemyDistance)
+		{
+			ClosestEnemy = EnemyBase;
+			ClosestEnemyDistance = Distance;
+		}
+	}
+
+	if (ClosestEnemy == nullptr)
+	{
+		FVector Forward = GetActorForwardVector();
+		float ProjectileSpeed = ProjectileMovementComponent->GetMaxSpeed();
+		FVector WorldVelocity = Forward * ProjectileSpeed;
+
+		FTransform Transform = GetActorTransform();
+		FVector LocalVelocity = Transform.InverseTransformVectorNoScale(WorldVelocity);
+
+		ProjectileMovementComponent->SetVelocityInLocalSpace(LocalVelocity);
+	}
+	else
+	{
+		FVector SpearLocation = GetActorLocation();
+		FVector ClosestEnemyLocation = ClosestEnemy->GetActorLocation();
+		FVector Direction = ClosestEnemyLocation - SpearLocation;
+		Direction.Normalize();
+
+		float ProjectileSpeed = ProjectileMovementComponent->GetMaxSpeed();
+		FVector WorldVelocity = Direction * ProjectileSpeed;
+
+		FTransform Transform = GetActorTransform();
+		FVector LocalVelocity = Transform.InverseTransformVectorNoScale(WorldVelocity);
+	
+		ProjectileMovementComponent->SetVelocityInLocalSpace(LocalVelocity);
+	}
 }
 
 void ARGX_SpearProjectile::HandleHit_Implementation(AActor* OtherActor)

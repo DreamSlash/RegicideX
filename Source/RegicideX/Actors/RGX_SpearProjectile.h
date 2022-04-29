@@ -45,6 +45,9 @@ public:
 	UPROPERTY()
 	AActor* Caster = nullptr;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<ARGX_EnemyBase> EnemyClass;
+
 protected:
 
 	UPROPERTY(EditDefaultsOnly)
@@ -52,9 +55,6 @@ protected:
 
 	UPROPERTY()
 	bool bWasLaunched = false;
-
-	UPROPERTY()
-	float ClosestEnemyDistance = INFINITY;
 
 	UPROPERTY()
 	ARGX_EnemyBase* ClosestEnemy = nullptr;
@@ -65,6 +65,8 @@ public:
 	void BeginPlay() override;
 
 	void Tick(float DeltaTime) override;
+
+	void LaunchProjectile();
 
 	UFUNCTION(BlueprintNativeEvent)
 	void HandleHit(AActor* OtherActor);
