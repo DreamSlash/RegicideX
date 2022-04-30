@@ -42,30 +42,13 @@ public:
 		TArray<FVector> BombingPoints;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		AActor* TargetActor;
+		float RingOriginalRotatingSpeed = 50.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float OriginalRotatingSpeed = 50.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float RotatingSpeed = 50.0f;
-	
-
+		float RingRotatingSpeed = 50.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float FullBodyRotatingSpeed = 10000.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float InterpSpeed = 1.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float MoveSpeed = 100.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float MaxAttackDist = 700.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float MinAttackDist = 500.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float HeightPos = 500.0f;
@@ -77,9 +60,7 @@ public:
 
 
 	/** Movement methods */
-	void RotateToTarget(float DeltaTime);
-
-	void MoveToTarget(float DeltaTime, FVector TargetPos);
+	void MoveToTarget(float DeltaTime, FVector TargetPos) override;
 
 	void RotateRings(float DeltaTime);
 

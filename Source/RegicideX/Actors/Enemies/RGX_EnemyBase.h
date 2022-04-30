@@ -37,6 +37,19 @@ class REGICIDEX_API ARGX_EnemyBase : public ACharacter, public IAbilitySystemInt
 {
 	GENERATED_BODY()
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	AActor* TargetActor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float InterpSpeed = 1.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MoveSpeed = 100.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float AttackRadius = 700.0f;
+
 protected:
 	/** Ability System Component to be used */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -52,6 +65,12 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+public:
+	/** Movement methods */
+	virtual void RotateToTarget(float DeltaTime);
+
+	virtual void MoveToTarget(float DeltaTime, FVector TargetPos);
 
 public:	
 	// Called every frame

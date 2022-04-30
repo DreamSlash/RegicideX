@@ -5,6 +5,8 @@
 #include "Components/MCV_AbilitySystemComponent.h"
 #include "RegicideX/GAS/AttributeSets/RGX_HealthAttributeSet.h"
 
+#include "Kismet/KismetMathLibrary.h"
+
 // Sets default values
 ARGX_EnemyBase::ARGX_EnemyBase()
 {
@@ -18,17 +20,38 @@ ARGX_EnemyBase::ARGX_EnemyBase()
 // Called when the game starts or when spawned
 void ARGX_EnemyBase::BeginPlay()
 {
-
 	Super::BeginPlay();
+
 
 }
 
+void ARGX_EnemyBase::MoveToTarget(float DeltaTime, FVector TargetPos)
+{
+	if (TargetActor)
+	{
+		const FVector MyFront = this->GetActorForwardVector();
+		const FVector CurrentLocation = this->GetActorLocation();
+		const FVector NewLocation = CurrentLocation + MyFront * MoveSpeed * DeltaTime;
+		this->SetActorLocation(NewLocation);
+	}
+}
+
+void ARGX_EnemyBase::RotateToTarget(float DeltaTime)
+{
+	if (TargetActor)
+	{
+		const FVector MyLocation = this->GetActorLocation();
+		const FVector TargetLocation = TargetActor->GetActorLocation();
+		const FRotator RotOffset = UKismetMathLibrary::FindLookAtRotation(MyLocation, TargetLocation);
+		const FRotator NewRotation = FMath::Lerp(this->GetActorRotation(), RotOffset, DeltaTime * InterpSpeed);
+		this->SetActorRotation(NewRotation);
+	}
+}
 
 // Called every frame
 void ARGX_EnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 }
 
 // Called to bind functionality to input
