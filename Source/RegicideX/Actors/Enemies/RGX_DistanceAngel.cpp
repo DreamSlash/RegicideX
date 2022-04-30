@@ -5,7 +5,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Math/UnrealMathUtility.h"
 #include "Components/SphereComponent.h"
-
+#include "Components/MCV_AbilitySystemComponent.h"
 
 
 ARGX_DistanceAngel::ARGX_DistanceAngel() 
@@ -36,6 +36,7 @@ void ARGX_DistanceAngel::BeginPlay()
 {
 	Super::BeginPlay();
 	HeightPos = GetActorLocation().Z;
+	OriginalRotatingSpeed = RotatingSpeed;
 }
 
 void ARGX_DistanceAngel::RotateToTarget(float DeltaTime)
@@ -48,6 +49,7 @@ void ARGX_DistanceAngel::RotateToTarget(float DeltaTime)
 		FRotator NewRotation = FMath::Lerp(this->GetActorRotation(), RotOffset, DeltaTime * InterpSpeed);
 		this->SetActorRotation(NewRotation);
 	}
+
 }
 
 

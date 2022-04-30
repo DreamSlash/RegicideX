@@ -22,6 +22,8 @@ class REGICIDEX_API URGX_BTTask_BulletHell : public UBTTaskNode
 
 	ARGX_DistanceAngel* DistAngelPawn;
 
+	FTimerHandle TimerHandle;
+
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

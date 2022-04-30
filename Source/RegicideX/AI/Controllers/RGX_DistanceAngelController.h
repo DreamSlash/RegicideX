@@ -11,6 +11,11 @@
  */
 
 
+UENUM()
+enum class ERGX_DistAngelAttackMode 
+{
+	PREPAREFORATTACK, BULLETHELL, LASERBEAM, GUIDEDBOMBS
+};
 
 UCLASS()
 class REGICIDEX_API ARGX_DistanceAngelController : public AAIController

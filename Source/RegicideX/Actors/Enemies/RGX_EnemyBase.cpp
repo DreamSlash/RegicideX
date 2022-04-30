@@ -51,3 +51,33 @@ void ARGX_EnemyBase::HandleDeath()
 {
 }
 
+void ARGX_EnemyBase::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
+{
+	AbilitySystemComponent->GetOwnedGameplayTags(TagContainer);
+}
+
+bool ARGX_EnemyBase::HasMatchingGameplayTag(FGameplayTag TagToCheck) const
+{
+	return AbilitySystemComponent->HasMatchingGameplayTag(TagToCheck);
+}
+
+bool ARGX_EnemyBase::HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const
+{
+	return AbilitySystemComponent->HasAllMatchingGameplayTags(TagContainer);
+}
+
+bool ARGX_EnemyBase::HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const
+{
+	return AbilitySystemComponent->HasAnyMatchingGameplayTags(TagContainer);
+}
+
+void ARGX_EnemyBase::AddGameplayTag(const FGameplayTag& TagToAdd)
+{
+	AbilitySystemComponent->AddLooseGameplayTag(TagToAdd);
+}
+
+void ARGX_EnemyBase::RemoveGameplayTag(const FGameplayTag& TagToRemove)
+{
+	AbilitySystemComponent->RemoveLooseGameplayTag(TagToRemove);
+}
+

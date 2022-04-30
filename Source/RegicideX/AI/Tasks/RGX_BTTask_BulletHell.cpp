@@ -16,7 +16,6 @@ EBTNodeResult::Type URGX_BTTask_BulletHell::ExecuteTask(UBehaviorTreeComponent& 
 	DistAngelPawn = Cast<ARGX_DistanceAngel>(ControlledPawn);
 
 	bNotifyTick = true;
-	FTimerHandle TimerHandle;
 
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &URGX_BTTask_BulletHell::Shoot, 0.5f, true);
 
@@ -36,6 +35,7 @@ void URGX_BTTask_BulletHell::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 	if(TaskTime >= MaxTime)
 	{
 		TaskTime = 0.0f;
+		GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 

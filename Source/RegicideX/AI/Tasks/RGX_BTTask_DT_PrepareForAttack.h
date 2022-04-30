@@ -9,9 +9,19 @@
 /**
  * 
  */
+
+
 UCLASS()
 class REGICIDEX_API URGX_BTTask_DT_PrepareForAttack : public UBTTaskNode
 {
 	GENERATED_BODY()
 	
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float MaxTime = 5.0;
+
+	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+
+	void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
+
 };

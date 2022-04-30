@@ -23,7 +23,6 @@ public:
 
 	ARGX_DistanceAngel();
 
-
 	UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* Ring_1_Mesh;
 
@@ -44,6 +43,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		AActor* TargetActor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float OriginalRotatingSpeed = 50.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float RotatingSpeed = 50.0f;
@@ -73,6 +75,8 @@ public:
 	// Called every frame
 	void Tick(float DeltaTime) override;
 
+
+	/** Movement methods */
 	void RotateToTarget(float DeltaTime);
 
 	void MoveToTarget(float DeltaTime, FVector TargetPos);
@@ -81,6 +85,7 @@ public:
 
 	void RotateMe(float DeltaTime, float Speed);
 
+	/** Attack methods */
 	void ShootSimpleBullets();
 
 	UFUNCTION(BlueprintCallable)
@@ -88,4 +93,6 @@ public:
 
 	UFUNCTION(BlueprintImplementableEvent)
 		void SpawnSimpleBullet(FTransform Transform, AActor* MyOwner);
+
+	
 };
