@@ -2,4 +2,19 @@
 
 
 #include "RGX_DistanceAngelController.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "RegicideX\Actors\Enemies\RGX_DistanceAngel.h"
 
+ARGX_DistanceAngelController::ARGX_DistanceAngelController()
+{
+	
+}
+
+//
+//void ARGX_DistanceAngelController::SetRandomLocationAroundTarget()
+//{
+//	ARGX_DistanceAngel* DistAngel = Cast<ARGX_DistanceAngel>(GetPawn());
+//	FVector LocationAroundPlayer = DistAngel->GenerateRandomLocationAroundPoint(DistAngel->TargetActor->GetTargetLocation());
+//	UBlackboardComponent* BB = GetBlackboardComponent();
+//	BB->SetValueAsVector(TEXT("TelePortLocation"), LocationAroundPlayer);
+//}

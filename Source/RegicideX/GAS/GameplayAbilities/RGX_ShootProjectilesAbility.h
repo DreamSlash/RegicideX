@@ -24,4 +24,7 @@ public:
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<ARGX_Bullet> Projectile;
 
+	UPROPERTY(EditAnywhere)
+		TArray<FVector> OffsetSpawnLocations;
+
 };

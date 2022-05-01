@@ -21,5 +21,9 @@ UCLASS()
 class REGICIDEX_API ARGX_DistanceAngelController : public AAIController
 {
 	GENERATED_BODY()
+public:
+	ARGX_DistanceAngelController();
 
+	/*UFUNCTION()
+	void SetRandomLocationAroundTarget();*/
 };
