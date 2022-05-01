@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "AbilitySystemInterface.h"
+#include "GenericTeamAgentInterface.h"
 #include "RegicideX/Interfaces/RGX_GameplayTagInterface.h"
 #include "RGX_EnemyBase.generated.h"
 
@@ -34,7 +35,7 @@ class UMCV_AbilitySystemComponent;
 class URGX_HealthAttributeSet;
 
 UCLASS()
-class REGICIDEX_API ARGX_EnemyBase : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface
+class REGICIDEX_API ARGX_EnemyBase : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -60,12 +61,24 @@ protected:
 	URGX_HealthAttributeSet* HealthAttributeSet;
 
 public:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FGenericTeamId CharacterTeam;
+
+public:
 	// Sets default values for this character's properties
 	ARGX_EnemyBase();
 
 protected:
 	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	void BeginPlay() override;
+
+	void PossessedBy(AController* NewController) override;
+
+	// FGenericTeamId interface
+	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
+	virtual FGenericTeamId GetGenericTeamId() const override;
+	// End of FGenericTeamId interface
 
 public:
 	/** Movement methods */

@@ -25,6 +25,11 @@ void ARGX_EnemyBase::BeginPlay()
 
 }
 
+void ARGX_EnemyBase::PossessedBy(AController* NewController)
+{
+	AddGameplayTag(FGameplayTag::RequestGameplayTag("PossessedBy.AI"));
+}
+
 void ARGX_EnemyBase::MoveToTarget(float DeltaTime, FVector TargetPos)
 {
 	if (TargetActor)
@@ -72,6 +77,16 @@ void ARGX_EnemyBase::HandleDamage(FAttackInfo info)
 
 void ARGX_EnemyBase::HandleDeath()
 {
+}
+
+void ARGX_EnemyBase::SetGenericTeamId(const FGenericTeamId& TeamID)
+{
+	CharacterTeam = TeamID;
+}
+
+FGenericTeamId ARGX_EnemyBase::GetGenericTeamId() const
+{
+	return CharacterTeam;
 }
 
 void ARGX_EnemyBase::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const

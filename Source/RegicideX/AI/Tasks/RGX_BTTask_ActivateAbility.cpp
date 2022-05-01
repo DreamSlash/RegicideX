@@ -2,10 +2,10 @@
 
 
 #include "RGX_BTTask_ActivateAbility.h"
-#include "AIController.h"
 #include "AbilitySystemComponent.h"
 #include "Abilities/GameplayAbility.h"
 #include "AbilitySystemGlobals.h"
+#include "AIController.h"
 
 URGX_BTTask_ActivateAbility::URGX_BTTask_ActivateAbility()
 {
@@ -16,14 +16,14 @@ EBTNodeResult::Type URGX_BTTask_ActivateAbility::ExecuteTask(UBehaviorTreeCompon
 {
 	EBTNodeResult::Type Result = EBTNodeResult::Failed;
 
-	AAIController* AIController = OwnerComp.GetAIOwner();
+	const AAIController* AIController = OwnerComp.GetAIOwner();
 	APawn* Pawn = AIController->GetPawn();
-	UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Pawn);
-	bool bActivationSuccessful = ASC->TryActivateAbilityByClass(AbilityToActivte);
 
-	if (bActivationSuccessful)
+	UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Pawn);
+	if (ASC->TryActivateAbilityByClass(AbilityToActivte))
 	{
-		FGameplayAbilitySpec* AbilitySpec = ASC->FindAbilitySpecFromClass(AbilityToActivte);
+		const FGameplayAbilitySpec* AbilitySpec = ASC->FindAbilitySpecFromClass(AbilityToActivte);
+
 		UGameplayAbility* AbilityInstance = AbilitySpec->GetPrimaryInstance();
 		if (AbilityInstance->IsActive())
 		{
@@ -34,7 +34,6 @@ EBTNodeResult::Type URGX_BTTask_ActivateAbility::ExecuteTask(UBehaviorTreeCompon
 		{
 			Result = EBTNodeResult::Succeeded;
 		}
-
 	}
 
 	return Result;
