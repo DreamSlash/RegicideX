@@ -12,7 +12,19 @@ class REGICIDEX_API URGX_LaunchEventPayload : public UObject
 public:
 
 	UPROPERTY()
-	FVector LaunchForce;
+	float LaunchHorizontalForce;
+
+	UPROPERTY()
+	float LaunchVerticalForce;
+
+	UPROPERTY()
+	bool bOverrideHorizontal = false;
+
+	UPROPERTY()
+	bool bOverrideVertical = false;
+
+	UPROPERTY()
+	FVector ForceOrigin;
 
 public:
 	URGX_LaunchEventPayload();

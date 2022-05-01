@@ -53,6 +53,12 @@ void URGX_BarrierAbility::CastBarrierSkill(AActor* CasterActor)
 		// TODO: Send event to launch EnemyActor
 		FGameplayEventData EventData;
 		URGX_LaunchEventPayload* LaunchPayloadObject = NewObject<URGX_LaunchEventPayload>();
+		LaunchPayloadObject->LaunchHorizontalForce = 500.0f; //TODO: Do not hardcode this
+		LaunchPayloadObject->LaunchVerticalForce = 500.0f;
+		LaunchPayloadObject->bOverrideHorizontal = true;
+		LaunchPayloadObject->bOverrideVertical = true;
+		LaunchPayloadObject->ForceOrigin = SpawnLocation;
+
 		EventData.OptionalObject = LaunchPayloadObject;
 
 		Enemy->GetAbilitySystemComponent()->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Launched")), &EventData);
