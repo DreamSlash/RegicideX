@@ -89,10 +89,10 @@ void ARGX_DistanceAngel::TestSpawn()
 	UE_LOG(LogTemp, Warning, TEXT("ESPAWNEJANT L'ACTOR: %s"), *Actor->GetName());
 }
 
-//FVector ARGX_DistanceAngel::GenerateRandomLocationAroundPoint(FVector Location)
-//{
-//	return UNavigationSystemV1::GetRandomReachablePointInRadius(GetWorld(), Location, AttackRadius * 2.0);
-//}
+FVector ARGX_DistanceAngel::GenerateRandomLocationAroundPoint(FVector Location)
+{
+	return UNavigationSystemV1::GetRandomReachablePointInRadius(GetWorld(), Location, AttackRadius * 2.0);
+}
 
 
 void ARGX_DistanceAngel::Tick(float DeltaTime)

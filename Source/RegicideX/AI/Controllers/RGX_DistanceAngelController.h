@@ -24,6 +24,6 @@ class REGICIDEX_API ARGX_DistanceAngelController : public AAIController
 public:
 	ARGX_DistanceAngelController();
 
-	/*UFUNCTION()
-	void SetRandomLocationAroundTarget();*/
+	UFUNCTION()
+	void SetRandomLocationAroundTarget();
 };

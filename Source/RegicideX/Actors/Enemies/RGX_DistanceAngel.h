@@ -72,8 +72,8 @@ public:
 
 	void RotateMe(float DeltaTime, float Speed);
 
-	/*UFUNCTION()
-		FVector GenerateRandomLocationAroundPoint(FVector Location);*/
+	UFUNCTION()
+		FVector GenerateRandomLocationAroundPoint(FVector Location);
 
 	/** Attack methods */
 	void ShootSimpleBullets();

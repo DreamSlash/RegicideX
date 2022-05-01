@@ -52,6 +52,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float AttackRadius = 700.0f;
 
+
 protected:
 	/** Ability System Component to be used */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -83,6 +84,8 @@ protected:
 public:
 	/** Movement methods */
 	virtual void RotateToTarget(float DeltaTime);
+
+	virtual void RotateToTarget();
 
 	virtual void MoveToTarget(float DeltaTime, FVector TargetPos);
 

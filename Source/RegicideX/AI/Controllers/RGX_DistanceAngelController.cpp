@@ -10,11 +10,13 @@ ARGX_DistanceAngelController::ARGX_DistanceAngelController()
 	
 }
 
-//
-//void ARGX_DistanceAngelController::SetRandomLocationAroundTarget()
-//{
-//	ARGX_DistanceAngel* DistAngel = Cast<ARGX_DistanceAngel>(GetPawn());
-//	FVector LocationAroundPlayer = DistAngel->GenerateRandomLocationAroundPoint(DistAngel->TargetActor->GetTargetLocation());
-//	UBlackboardComponent* BB = GetBlackboardComponent();
-//	BB->SetValueAsVector(TEXT("TelePortLocation"), LocationAroundPlayer);
-//}
+
+void ARGX_DistanceAngelController::SetRandomLocationAroundTarget()
+{
+	ARGX_DistanceAngel* DistAngel = Cast<ARGX_DistanceAngel>(GetPawn());
+	FVector OriginalLocation = DistAngel->GetActorLocation();
+	FVector LocationAroundPlayer = DistAngel->GenerateRandomLocationAroundPoint(DistAngel->TargetActor->GetTargetLocation());
+	LocationAroundPlayer.Z = OriginalLocation.Z;
+	UBlackboardComponent* BB = GetBlackboardComponent();
+	BB->SetValueAsVector(TEXT("TeleportLocation"), LocationAroundPlayer);
+}

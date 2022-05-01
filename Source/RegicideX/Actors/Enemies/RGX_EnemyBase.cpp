@@ -53,6 +53,17 @@ void ARGX_EnemyBase::RotateToTarget(float DeltaTime)
 	}
 }
 
+void ARGX_EnemyBase::RotateToTarget()
+{
+	if (TargetActor)
+	{
+		const FVector MyLocation = this->GetActorLocation();
+		const FVector TargetLocation = TargetActor->GetActorLocation();
+		const FRotator RotOffset = UKismetMathLibrary::FindLookAtRotation(MyLocation, TargetLocation);
+		this->SetActorRotation(RotOffset);
+	}
+}
+
 // Called every frame
 void ARGX_EnemyBase::Tick(float DeltaTime)
 {
