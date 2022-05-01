@@ -6,7 +6,7 @@
 #include "Math/UnrealMathUtility.h"
 #include "Components/SphereComponent.h"
 #include "Components/MCV_AbilitySystemComponent.h"
-
+#include "NavigationSystem.h"
 
 ARGX_DistanceAngel::ARGX_DistanceAngel()
 	: ARGX_EnemyBase()
@@ -87,6 +87,11 @@ void ARGX_DistanceAngel::TestSpawn()
 	FVector Scale(1.0f);
 	ARGX_DistanceAngel* Actor = GetWorld()->SpawnActor<ARGX_DistanceAngel>(Location, Rotation);
 	UE_LOG(LogTemp, Warning, TEXT("ESPAWNEJANT L'ACTOR: %s"), *Actor->GetName());
+}
+
+FVector ARGX_DistanceAngel::GenerateRandomLocationAroundPoint(FVector Location)
+{
+	return UNavigationSystemV1::GetNavigationSystem(GetWorld())->GetRandomReachablePointInRadius(GetWorld(), Location, AttackRadius * 2.0);
 }
 
 

@@ -4,24 +4,24 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/MCV_GameplayAbility.h"
-#include "RGX_ShootProjectilesAbility.generated.h"
+#include "RGX_TeleportAbility.generated.h"
 
 /**
  * 
  */
-class ARGX_Bullet;
+
 
 UCLASS()
-class REGICIDEX_API URGX_ShootProjectilesAbility : public UMCV_GameplayAbility
+class REGICIDEX_API URGX_TeleportAbility : public UMCV_GameplayAbility
 {
 	GENERATED_BODY()
 
-	URGX_ShootProjectilesAbility();
+		URGX_TeleportAbility();
 
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
 public:
 	UPROPERTY(EditAnywhere)
-		TSubclassOf<ARGX_Bullet> Projectile;
+		FVector LocationToTeleport;
 
 };

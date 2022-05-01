@@ -3,3 +3,7 @@
 
 #include "RGX_ShootProjectilesAbility.h"
 
+void URGX_ShootProjectilesAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
+{
+
+}

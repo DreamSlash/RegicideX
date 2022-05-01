@@ -10,6 +10,7 @@ URGX_LightAttackAbility::URGX_LightAttackAbility()
 
 void URGX_LightAttackAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
+
 	ACharacter* character = Cast<ACharacter>(ActorInfo->AvatarActor);
 	if (character)
 	{
@@ -18,4 +19,5 @@ void URGX_LightAttackAbility::ActivateAbility(const FGameplayAbilitySpecHandle H
 
 	UE_LOG(LogTemp, Warning, TEXT("Light Attack Ability"));
 	EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
+
 }

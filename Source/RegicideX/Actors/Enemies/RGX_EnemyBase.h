@@ -10,6 +10,7 @@
 
 USTRUCT()
 struct FAttackInfo {
+
 	GENERATED_BODY()
 
 	UPROPERTY()

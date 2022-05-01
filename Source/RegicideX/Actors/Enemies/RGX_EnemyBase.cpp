@@ -31,7 +31,7 @@ void ARGX_EnemyBase::MoveToTarget(float DeltaTime, FVector TargetPos)
 	{
 		const FVector MyFront = this->GetActorForwardVector();
 		const FVector CurrentLocation = this->GetActorLocation();
-		const FVector NewLocation = CurrentLocation + MyFront * MoveSpeed * DeltaTime;
+		FVector NewLocation = CurrentLocation + MyFront * MoveSpeed * DeltaTime;
 		this->SetActorLocation(NewLocation);
 	}
 }
