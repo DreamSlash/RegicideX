@@ -6,6 +6,7 @@
 #include "AbilitySystemInterface.h"
 #include "Components/MCV_AbilitySystemComponent.h"
 #include "../Interfaces/RGX_GameplayTagInterface.h"
+#include "../Enums/RGX_InputEnums.h"
 #include "GenericTeamAgentInterface.h"
 
 #include "RGX_PlayerCharacter.generated.h"
@@ -13,8 +14,10 @@
 class USpringArmComponent;
 class UCameraComponent;
 class URGX_AbilitySystemComponent;
+class URGX_ComboSystemComponent;
 class URGX_HealthAttributeSet;
 class URGX_MovementAttributeSet;
+class URGX_CombatAttributeSet;
 
 UCLASS(config = Game)
 class REGICIDEX_API ARGX_PlayerCharacter : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface, public IGenericTeamAgentInterface
@@ -31,12 +34,19 @@ class REGICIDEX_API ARGX_PlayerCharacter : public ACharacter, public IAbilitySys
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UMCV_AbilitySystemComponent* AbilitySystemComponent;
 
+	/** Combo System Component to manage player combos */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combos, meta = (AllowPrivateAccess = "true"))
+	URGX_ComboSystemComponent* ComboSystemComponent;
+
 	// Attributes ---------------
 	UPROPERTY()
 	URGX_HealthAttributeSet* HealthAttributeSet;
 
 	UPROPERTY()
 	URGX_MovementAttributeSet* MovementAttributeSet;
+
+	UPROPERTY()
+	URGX_CombatAttributeSet* CombatAttributeSet;
 	// --------------------------
 public:
 	ARGX_PlayerCharacter();
@@ -49,6 +59,19 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FGenericTeamId CharacterTeam;
+
+	// TODO: Make a component to manage skills?
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TArray<FGameplayTag> PowerSkills;
+
+	UPROPERTY()
+	uint8 CurrentSkillSelected = 0;
+
+	UPROPERTY()
+	FGameplayTag CurrentSkillTag;
+	//--------------------------
+
+	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaTime) override;
 
@@ -84,6 +107,20 @@ protected:
 	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
 	virtual FGenericTeamId GetGenericTeamId() const override;
 	// End of FGenericTeamId interface
+
+	// Combat input functions that redirect the managing of the input to the combat system passing 
+	// the input pressed as the argument.
+	void ManageLightAttackInput();
+
+	void ManageHeavyAttackInput();
+
+	void ManagePowerSkillInput();
+
+	void ChangePowerSkill();
+
+	// Debug
+	void PrintDebugInformation();
+	// ----------------
 
 public:
 	/** Returns CameraBoom subobject **/

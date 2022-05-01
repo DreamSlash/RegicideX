@@ -79,6 +79,16 @@ void ARGX_EnemyBase::HandleDeath()
 {
 }
 
+void ARGX_EnemyBase::SetGenericTeamId(const FGenericTeamId& TeamID)
+{
+	CharacterTeam = TeamID;
+}
+
+FGenericTeamId ARGX_EnemyBase::GetGenericTeamId() const
+{
+	return CharacterTeam;
+}
+
 void ARGX_EnemyBase::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
 {
 	AbilitySystemComponent->GetOwnedGameplayTags(TagContainer);

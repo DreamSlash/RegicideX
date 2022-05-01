@@ -68,6 +68,8 @@ void UMCV_AbilitySystemComponent::K2_RemoveLooseGameplayTags(const FGameplayTagC
 
 void UMCV_AbilitySystemComponent::GrantDefaultAbilitiesAndAttributes()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Grant Default Abilities and Attributes\n"));
+
 	// Reset/Remove abilities if we had already added them
 	{
 		for (UAttributeSet* AttribSetInstance : AddedAttributes)
@@ -103,6 +105,8 @@ void UMCV_AbilitySystemComponent::GrantDefaultAbilitiesAndAttributes()
 		{
 			for (const FmcvAttributeApplication& Attributes : DefaultAttributes)
 			{
+				UE_LOG(LogTemp, Warning, TEXT("Default Attribute\n"));
+
 				if (Attributes.AttributeSetType)
 				{
 					UAttributeSet* NewAttribSet = NewObject<UAttributeSet>(GetOwner(), Attributes.AttributeSetType);
