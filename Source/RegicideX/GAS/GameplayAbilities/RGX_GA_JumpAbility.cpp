@@ -9,6 +9,8 @@ void URGX_JumpAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 		character->Jump();
 	}
 
+
+
 	UE_LOG(LogTemp, Warning, TEXT("Jump Ability"));
 	EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
 }
