@@ -18,6 +18,19 @@ class URGX_ComboSystemComponent;
 class URGX_HealthAttributeSet;
 class URGX_CombatAttributeSet;
 
+USTRUCT()
+struct FRGX_LeanInfo
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY()
+	float LeanAmount;
+
+	UPROPERTY(EditAnywhere)
+	float InterSpeed;
+};
+
 UCLASS(config = Game)
 class REGICIDEX_API ARGX_PlayerCharacter : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface, public IGenericTeamAgentInterface
 {
@@ -79,6 +92,21 @@ public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+	UFUNCTION(BlueprintNativeEvent)
+	void OnJump();
+
+protected:
+	/** Animation variables */
+	UPROPERTY(BlueprintReadOnly)
+	float LeanAmount;
+
+	UPROPERTY()
+	float YawChange;
+
+	UPROPERTY()
+	float PitchChange;
+	// -----------------------
+
 protected:
 	/** Called for forwards/backwards input */
 	void MoveForward(float Value);
@@ -97,6 +125,9 @@ protected:
 	 * @param Rate	This is a normalized rate, i.e. 1.0 means 100% of desired turn rate
 	 */
 	void LookUpAtRate(float Rate);
+
+	//** Animation Functions */
+	FRGX_LeanInfo CalculateLeanAmount();
 
 protected:
 	// --- APawn interface ---

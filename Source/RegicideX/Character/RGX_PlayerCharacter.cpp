@@ -309,6 +309,11 @@ void ARGX_PlayerCharacter::BeginPlay()
 
 void ARGX_PlayerCharacter::Tick(float DeltaTime)
 {
+	// Leaning
+	FRGX_LeanInfo LeanInfo = CalculateLeanAmount();
+	LeanAmount = UKismetMathLibrary::FInterpTo(LeanAmount, LeanInfo.LeanAmount, DeltaTime, LeanInfo.InterSpeed);
+	// ------------------
+
 	// Combo system
 	FGameplayTag NextAttack = ComboSystemComponent->GetNextAttack();
 	if (NextAttack != FGameplayTag::RequestGameplayTag("Combo.None"))
@@ -366,10 +371,38 @@ void ARGX_PlayerCharacter::MoveRight(float Value)
 
 void ARGX_PlayerCharacter::TurnAtRate(float Rate)
 {
-	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+	YawChange = Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds();
+	AddControllerYawInput(YawChange);
 }
 
 void ARGX_PlayerCharacter::LookUpAtRate(float Rate)
 {
-	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+	PitchChange = Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds();
+	AddControllerPitchInput(PitchChange);
+}
+
+FRGX_LeanInfo ARGX_PlayerCharacter::CalculateLeanAmount()
+{
+	FRGX_LeanInfo LeanInfo;
+
+	const float YawChangeClamped = UKismetMathLibrary::FClamp(YawChange, -1.0f, 1.0f);
+	const bool bInsuficientVelocity = GetCharacterMovement()->IsFalling() || GetVelocity().Size() < 5.0f;
+
+	if (bInsuficientVelocity == true)
+	{
+		LeanInfo.LeanAmount = 0.0f;
+		LeanInfo.InterSpeed = 10.0f;
+	}
+	else
+	{
+		LeanInfo.LeanAmount = YawChangeClamped;
+		LeanInfo.InterSpeed = 1.0f;
+	}
+
+	return LeanInfo;
+}
+
+void ARGX_PlayerCharacter::OnJump_Implementation()
+{
+
 }

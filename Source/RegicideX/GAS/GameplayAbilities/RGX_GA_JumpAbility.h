@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/MCV_GameplayAbility.h"
+#include "../../Character/RGX_PlayerAnimInstance.h"
 #include "RGX_GA_JumpAbility.generated.h"
 
 UCLASS()
@@ -12,6 +13,7 @@ class REGICIDEX_API URGX_JumpAbility : public UMCV_GameplayAbility
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
 protected:
+
 	UPROPERTY(EditAnywhere)
 	class UParticleSystem* JumpFeedbackVFX;
 };
