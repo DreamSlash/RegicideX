@@ -5,11 +5,11 @@
 #include "CoreMinimal.h"
 #include "Abilities/MCV_GameplayAbility.h"
 #include "RGX_ShootProjectilesAbility.generated.h"
-
 /**
  * 
  */
 class ARGX_Bullet;
+class ARGX_DistanceAngel;
 
 UCLASS()
 class REGICIDEX_API URGX_ShootProjectilesAbility : public UMCV_GameplayAbility
@@ -22,9 +22,8 @@ class REGICIDEX_API URGX_ShootProjectilesAbility : public UMCV_GameplayAbility
 
 public:
 	UPROPERTY(EditAnywhere)
-		TSubclassOf<ARGX_Bullet> Projectile;
+		TSubclassOf<ARGX_Bullet> ProjectileClass;
 
-	UPROPERTY(EditAnywhere)
-		TArray<FVector> OffsetSpawnLocations;
-
+	UFUNCTION()
+		void Shoot(ARGX_DistanceAngel* DistAngel);
 };

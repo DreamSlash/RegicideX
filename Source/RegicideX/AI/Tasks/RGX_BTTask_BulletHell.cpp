@@ -17,8 +17,6 @@ EBTNodeResult::Type URGX_BTTask_BulletHell::ExecuteTask(UBehaviorTreeComponent& 
 
 	bNotifyTick = true;
 
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &URGX_BTTask_BulletHell::Shoot, 0.5f, true);
-
 	return EBTNodeResult::InProgress;
 }
 

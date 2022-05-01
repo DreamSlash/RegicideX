@@ -53,6 +53,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float HeightPos = 500.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		int SimpleBombsCount = 5;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float SimpleBombsOffset = 50.f;
+
 	void BeginPlay() override;
 
 	// Called every frame

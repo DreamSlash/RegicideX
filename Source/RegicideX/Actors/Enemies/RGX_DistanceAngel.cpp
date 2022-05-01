@@ -72,7 +72,7 @@ void ARGX_DistanceAngel::ShootSimpleBullets()
 		float RotPitchOffset = FMath::RandRange(-45.0f, 45.0f);
 		BulletRotation.Pitch += RotPitchOffset;
 
-		FVector BulletPosition = this->GetActorLocation() + MyFront*FVector(300.0,100.0, Position.Z);
+		FVector BulletPosition = this->GetActorLocation() + FVector(0.0, 0.0, Position.Z);
 		FVector BulletScale(0.1);
 		FTransform BulletTransform(BulletRotation, BulletPosition, BulletScale);
 		SpawnSimpleBullet(BulletTransform, this);
