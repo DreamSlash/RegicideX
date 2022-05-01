@@ -10,6 +10,7 @@
 #include "Components/InputComponent.h"
 #include "../GameplayFramework/RGX_PlayerState.h" // TODO: write path to project settings
 #include "../GAS/AttributeSets/RGX_HealthAttributeSet.h"
+#include "../GAS/AttributeSets/RGX_MovementAttributeSet.h"
 
 ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 {
@@ -45,6 +46,7 @@ ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 
 	AbilitySystemComponent = CreateDefaultSubobject<UMCV_AbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	HealthAttributeSet = CreateDefaultSubobject<URGX_HealthAttributeSet>(TEXT("HealthAttributeSet"));
+	MovementAttributeSet = CreateDefaultSubobject<URGX_MovementAttributeSet>(TEXT("MovementAttributeSet"));
 }
 
 void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -78,6 +80,8 @@ void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 void ARGX_PlayerCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
+
+	AddGameplayTag(FGameplayTag::RequestGameplayTag("PossessedBy.Player"));
 }
 
 void ARGX_PlayerCharacter::SetGenericTeamId(const FGenericTeamId& TeamID)

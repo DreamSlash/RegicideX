@@ -64,7 +64,9 @@ public:
 
 protected:
 	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	void BeginPlay() override;
+
+	void PossessedBy(AController* NewController) override;
 
 public:
 	/** Movement methods */

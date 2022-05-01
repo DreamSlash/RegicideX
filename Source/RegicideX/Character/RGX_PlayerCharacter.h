@@ -14,6 +14,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class URGX_AbilitySystemComponent;
 class URGX_HealthAttributeSet;
+class URGX_MovementAttributeSet;
 
 UCLASS(config = Game)
 class REGICIDEX_API ARGX_PlayerCharacter : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface, public IGenericTeamAgentInterface
@@ -33,6 +34,9 @@ class REGICIDEX_API ARGX_PlayerCharacter : public ACharacter, public IAbilitySys
 	// Attributes ---------------
 	UPROPERTY()
 	URGX_HealthAttributeSet* HealthAttributeSet;
+
+	UPROPERTY()
+	URGX_MovementAttributeSet* MovementAttributeSet;
 	// --------------------------
 public:
 	ARGX_PlayerCharacter();
