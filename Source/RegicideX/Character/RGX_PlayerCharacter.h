@@ -111,6 +111,10 @@ protected:
 	void ManageHeavyAttackInput();
 
 	void ManagePowerSkillInput();
+	// ----------------------------------
+
+	UFUNCTION(BlueprintCallable)
+	void PerformAttackAutoAssist();
 
 	void ChangePowerSkill();
 
