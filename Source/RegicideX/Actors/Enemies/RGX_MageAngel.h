@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Actors/Enemies/RGX_EnemyBase.h"
+#include "RGX_EnemyBase.h"
 #include "RGX_MageAngel.generated.h"
 
 /**
