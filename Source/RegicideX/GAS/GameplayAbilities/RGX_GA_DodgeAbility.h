@@ -2,12 +2,12 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/MCV_GameplayAbility.h"
-#include "RGX_GA_DashAbility.generated.h"
+#include "RGX_GA_DodgeAbility.generated.h"
 
 class ACharacter;
 
 UCLASS()
-class REGICIDEX_API URGX_DashAbility : public UMCV_GameplayAbility
+class REGICIDEX_API URGX_DodgeAbility : public UMCV_GameplayAbility
 {
 	GENERATED_BODY()
 
@@ -18,16 +18,16 @@ class REGICIDEX_API URGX_DashAbility : public UMCV_GameplayAbility
 protected:
 
 	UPROPERTY(EditDefaultsOnly)
-	float DashForce;
+	float DodgeForce;
 
 	UPROPERTY(EditDefaultsOnly)
-	float DashDuration;
+	float DodgeDuration;
 
 protected:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
-	float GetDashDuration();
+	float GetDodgeDuration();
 
 	UFUNCTION(BlueprintCallable)
-	void PerformDash();
+	void PerformDodge();
 };

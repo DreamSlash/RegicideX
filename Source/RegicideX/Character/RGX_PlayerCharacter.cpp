@@ -199,6 +199,28 @@ void ARGX_PlayerCharacter::PerformAttackAutoAssist()
 	SetActorLocation(FinalLocation);
 }
 
+bool ARGX_PlayerCharacter::IsBeingAttacked()
+{
+	FVector PlayerLocation = GetActorLocation();
+
+	TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjectTypes;
+	TraceObjectTypes.Add(DodgeableObjectType);
+
+	UClass* SeekClass = ARGX_EnemyBase::StaticClass();
+
+	TArray<AActor*> IgnoreActors;
+	TArray<AActor*> OutActors;
+
+	FHitResult HitResult;
+
+	bool bIsBeingAttacked = 
+		UKismetSystemLibrary::SphereTraceSingleForObjects(
+			GetWorld(), PlayerLocation, PlayerLocation, 200.0f, TraceObjectTypes, 
+			false, IgnoreActors, EDrawDebugTrace::ForOneFrame, HitResult, true);
+
+	return bIsBeingAttacked;
+}
+
 void ARGX_PlayerCharacter::ChangePowerSkill()
 {
 	if (PowerSkills.Num() < 2)
@@ -302,6 +324,8 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 		ComboSystemComponent->CleanNextAttack();
 	}
 	// --------------------
+
+	UKismetSystemLibrary::DrawDebugCircle(GetWorld(), GetActorLocation(), 200.0f, 24, FLinearColor::Green, 0.0f, 0.0f, FVector(0.0f, 1.0f, 0.0f), FVector(1.0f, 0.0f, 0.0f));
 }
 
 UAbilitySystemComponent* ARGX_PlayerCharacter::GetAbilitySystemComponent() const

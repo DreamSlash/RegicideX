@@ -67,6 +67,12 @@ public:
 	FGameplayTag CurrentSkillTag;
 	//--------------------------
 
+	UPROPERTY(EditDefaultsOnly)
+	TEnumAsByte<EObjectTypeQuery> DodgeableObjectType;
+
+	UPROPERTY(EditDefaultsOnly)
+	float DefaultGravity = 3.0f;
+
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaTime) override;
@@ -137,4 +143,8 @@ public:
 	/** RX_GameplayTagInterface methods */
 	virtual void AddGameplayTag(const FGameplayTag& TagToAdd) override;
 	virtual void RemoveGameplayTag(const FGameplayTag& TagToRemove) override;
+
+	/** Utility methods */
+	UFUNCTION(BlueprintCallable)
+	bool IsBeingAttacked();
 };
