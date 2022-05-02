@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "EngineUtils.h"
 #include "RGX_Peasant.h"
+#include "EngineUtils.h"
 #include "RGX_GroupManager.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -20,11 +20,23 @@ void ARGX_Peasant::Idle()
 	TextStatusString = "Idle";
 }
 
+void ARGX_Peasant::Move()
+{
+	TextStatusString = "Moving to target";
+}
+
 void ARGX_Peasant::Attack()
 {
 	RotateToTarget();
 	TextStatusString = "Attacking";
-	PlayAnimMontage(PunchMontage);
+	float time = 0.0f;
+	if(PunchMontage)
+		time = PlayAnimMontage(PunchMontage);
+	if (time == 0.0f)
+	{
+		UE_LOG(LogTemp, Error, TEXT("Could not play animation montage punch"));
+	}
+	TextStatusString = "Attacking Cooldown";
 }
 
 float ARGX_Peasant::GetDistanceToTarget()

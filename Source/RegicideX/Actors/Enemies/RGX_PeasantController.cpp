@@ -50,10 +50,6 @@ void ARGX_PeasantController::Tick(float DeltaTime)
 
 	if (Peasant)
 	{
-		// Debug log ...
-		if (BTComponent->IsRunning())
-			UE_LOG(LogTemp, Display, TEXT("BTComponent is running ...\n"));
-
 		// Update values for the BB of the BT.
 		if(Peasant->TargetActor)
 			BBComponent->SetValueAsObject("TargetActor", Peasant->TargetActor);

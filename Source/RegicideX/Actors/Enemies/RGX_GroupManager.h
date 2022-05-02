@@ -16,14 +16,21 @@ class REGICIDEX_API ARGX_GroupManager : public AActor
 {
 	GENERATED_BODY()
 
+	// Player character
 	UPROPERTY()
 	APawn* TargetActor;
 
+	// Array containing all peasants in the manager
 	UPROPERTY()
 	TArray<ARGX_Peasant*> PeasantArray;
 
+	// In combat
 	UPROPERTY()
 	TArray<ARGX_Peasant*> PeasantsInCombat;
+
+	// Map of peasant for each position
+	UPROPERTY()
+	TMap<ARGX_Peasant*, FVector> PeasantToPosition;
 
 	UPROPERTY()
 	TArray<FVector> PositionsAroundTarget;
@@ -31,8 +38,6 @@ class REGICIDEX_API ARGX_GroupManager : public AActor
 	UPROPERTY()
 	FVector LastPlayerLocation;
 
-	UPROPERTY()
-	TMap<ARGX_Peasant*, FVector> PeasantToPosition;
 	
 public:	
 	// Sets default values for this actor's properties
@@ -45,12 +50,14 @@ protected:
 public:	
 	UPROPERTY(EditDefaultsOnly)
 	unsigned int MaxAttackers;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY()
 	unsigned int CurrentAttackers;
 	UPROPERTY(EditDefaultsOnly)
 	unsigned int MaxNumberOfPeasants;
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY()
 	unsigned int CurrentNumberOfPeasants;
+	UPROPERTY(EditDefaultsOnly)
+	float OffsetPlayer;
 
 	UPROPERTY(EditDefaultsOnly)
 	UEnvQuery* PositionQuery;
@@ -58,7 +65,7 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	FEnvQueryRequest PositionQueryRequest;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY()
 	bool bCanSpawn = false;
 
 	void PositionEQSFinished(TSharedPtr<FEnvQueryResult> Result);
@@ -71,6 +78,8 @@ public:
 	void RemovePeasant(ARGX_Peasant* PeasantToRemove);
 
 	void RecalcPositions();
+
+	void Invalidate();
 
 	void OnPeasantAdded();
 

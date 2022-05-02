@@ -1,8 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "BehaviorTree/BehaviorTree.h"
 #include "RGX_EnemySpawner.h"
+#include "BehaviorTree/BehaviorTree.h"
 #include "RGX_GroupManager.h"
 #include "RGX_Peasant.h"
 #include "Kismet/GameplayStatics.h"
