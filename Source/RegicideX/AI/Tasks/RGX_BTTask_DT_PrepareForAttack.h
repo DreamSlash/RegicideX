@@ -9,13 +9,19 @@
 /**
  * 
  */
-
+class ARGX_DistanceAngel;
 
 UCLASS()
 class REGICIDEX_API URGX_BTTask_DT_PrepareForAttack : public UBTTaskNode
 {
 	GENERATED_BODY()
-	
+
+	float TaskTime = 0.0;
+
+	float RingsRotationSpeedMultiplier = 2.0;
+
+	ARGX_DistanceAngel* DistAngelPawn;
+
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float MaxTime = 5.0;

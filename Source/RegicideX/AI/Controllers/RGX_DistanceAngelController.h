@@ -11,10 +11,14 @@
  */
 
 
-UENUM()
-enum class ERGX_DistAngelAttackMode 
+UENUM(BlueprintType)
+enum class ERGX_DistAngelAttackMode : uint8
 {
-	PREPAREFORATTACK, BULLETHELL, LASERBEAM, GUIDEDBOMBS
+	PREPAREFORATTACK, 
+	BULLETHELL, 
+	LASERBEAM, 
+	GUIDEDBOMBS
+
 };
 
 UCLASS()

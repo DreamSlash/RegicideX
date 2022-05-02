@@ -8,9 +8,9 @@
 #include "AIController.h"
 
 
-
 EBTNodeResult::Type URGX_BTTask_BulletHell::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+
 	AAIController* AIController = OwnerComp.GetAIOwner();
 
 	APawn* ControlledPawn = AIController->GetPawn();
@@ -35,7 +35,6 @@ void URGX_BTTask_BulletHell::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 	if(TaskTime >= MaxTime)
 	{
 		TaskTime = 0.0f;
-		GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 
