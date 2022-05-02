@@ -88,6 +88,7 @@ void URGX_ComboSystemComponent::OnCombo()
 	else
 	{
 		CurrentAttack = FGameplayTag::RequestGameplayTag("Combo.None");
+		OnEndCombo();
 	}
 }
 

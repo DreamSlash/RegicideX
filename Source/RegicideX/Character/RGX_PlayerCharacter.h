@@ -107,6 +107,9 @@ protected:
 	float PitchChange;
 	// -----------------------
 
+	UPROPERTY()
+	bool bTimeScale = false;
+
 protected:
 	/** Called for forwards/backwards input */
 	void MoveForward(float Value);
@@ -157,6 +160,8 @@ protected:
 
 	// Debug
 	void PrintDebugInformation();
+
+	void ChangeTimeScale();
 	// ----------------
 
 public:

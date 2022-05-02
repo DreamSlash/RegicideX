@@ -15,7 +15,7 @@
 #include "../Actors/Enemies/RGX_EnemyBase.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
-
+#include "Kismet/GameplayStatics.h"
 
 ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 {
@@ -67,6 +67,7 @@ void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAction("HeavyAttack", IE_Pressed, this, &ARGX_PlayerCharacter::ManageHeavyAttackInput);
 	PlayerInputComponent->BindAction("SwitchPowerSkill", IE_Pressed, this, &ARGX_PlayerCharacter::ChangePowerSkill);
 	//PlayerInputComponent->BindAction("PowerSkill", IE_Pressed, this, &ARGX_PlayerCharacter::ManagePowerSkillInput);
+	PlayerInputComponent->BindAction("TimeScale", IE_Pressed, this, &ARGX_PlayerCharacter::ChangeTimeScale);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ARGX_PlayerCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ARGX_PlayerCharacter::MoveRight);
@@ -263,6 +264,20 @@ void ARGX_PlayerCharacter::PrintDebugInformation()
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Has Power Spears tag: FALSE\n"));
+	}
+}
+
+void ARGX_PlayerCharacter::ChangeTimeScale()
+{
+	if (bTimeScale == false)
+	{
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.3f);
+		bTimeScale = true;
+	}
+	else
+	{
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
+		bTimeScale = false;
 	}
 }
 
