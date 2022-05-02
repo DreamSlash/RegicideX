@@ -20,14 +20,15 @@ public:
 	// Sets default values for this actor's properties
 	ARGX_SlowWall();
 
+protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UBoxComponent* WallCollider;
+	UBoxComponent* WallCollider = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float LifeTimeOnceIsRisen = 3.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UCurveFloat* WallCurve;
+	UCurveFloat* WallCurve = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UGameplayEffect> WallEffect;
