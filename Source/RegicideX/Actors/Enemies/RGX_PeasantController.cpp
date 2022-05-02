@@ -30,7 +30,7 @@ void ARGX_PeasantController::OnPossess(APawn* pawn)
 		if (BBComponent->InitializeBlackboard(*Peasant->BTree->BlackboardAsset))
 		{
 			TargetActorID = BBComponent->GetKeyID("TargetActor");
-			PositionID = BBComponent->GetKeyID("pos");
+			DistanceToPlayerID = BBComponent->GetKeyID("DistanceToPlayer");
 			OnAirID = BBComponent->GetKeyID("bOnAir");
 			WasHitID = BBComponent->GetKeyID("bWasHit");
 			InCombatID = BBComponent->GetKeyID("bInCombat");
@@ -58,7 +58,7 @@ void ARGX_PeasantController::Tick(float DeltaTime)
 		if(Peasant->TargetActor)
 			BBComponent->SetValueAsObject("TargetActor", Peasant->TargetActor);
 
-		BBComponent->SetValueAsVector("pos", FVector(0.0f));
+		BBComponent->SetValueAsFloat("DistanceToPlayer", Peasant->GetDistanceToTarget());
 		BBComponent->SetValueAsBool("bWasHit", Peasant->bWasHit);
 		BBComponent->SetValueAsBool("bOnAir", Peasant->bOnAir);
 		BBComponent->SetValueAsBool("bInCombat", Peasant->bInCombat);

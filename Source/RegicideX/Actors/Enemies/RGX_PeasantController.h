@@ -31,7 +31,7 @@ public:
 
 	// Blackboard key ids
 	uint8 TargetActorID;
-	uint8 PositionID;
+	uint8 DistanceToPlayerID;
 	uint8 WasHitID;
 	uint8 OnAirID;
 	uint8 InCombatID;

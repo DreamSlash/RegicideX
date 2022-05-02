@@ -65,7 +65,10 @@ void ARGX_GroupManager::PositionEQSFinished(TSharedPtr<FEnvQueryResult> Result)
 	if (Result->IsSuccsessful())
 	{
 		Result->GetAllAsLocations(PositionsAroundTarget);
-		//OnPeasantAdded();
+		for (FVector Value : PositionsAroundTarget)
+		{
+			Value.Z = 0.0f;
+		}
 	}
 }
 
@@ -106,8 +109,8 @@ void ARGX_GroupManager::RecalcPeasants()
 
 		for (auto& pair : PeasantToPosition)
 		{
-			ARGX_Peasant* Peasant = pair.Key;
-			float Distance = FVector::Distance(Peasant->GetActorLocation(), TargetActor->GetActorLocation());
+			ARGX_Peasant* PeasantKey = pair.Key;
+			float Distance = FVector::Distance(PeasantKey->GetActorLocation(), TargetActor->GetActorLocation());
 			AuxDistanceToPlayer.Add(Distance);
 		}
 
@@ -135,10 +138,13 @@ void ARGX_GroupManager::RecalcPeasants()
 
 		for (ARGX_Peasant* Peasant : AuxPeasantsNearPlayer)
 		{
-			PositionsAroundTarget.Add(*PeasantToPosition.Find(Peasant));
-			Peasant->bInCombat = true;
-			PeasantToPosition.Remove(Peasant);
+			if (!PeasantToPosition.Contains(Peasant))
+				continue;
+			FVector Position = *PeasantToPosition.Find(Peasant);
+			PositionsAroundTarget.Add(Position);
 			PeasantsInCombat.Add(Peasant);
+			Peasant->bInCombat = true;
+				PeasantToPosition.Remove(Peasant);
 			CurrentAttackers++;
 		}
 	}

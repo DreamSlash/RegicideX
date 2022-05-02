@@ -27,6 +27,13 @@ void ARGX_Peasant::Attack()
 	PlayAnimMontage(PunchMontage);
 }
 
+float ARGX_Peasant::GetDistanceToTarget()
+{
+	if (!TargetActor)
+		return 0.0f;
+	return FVector::Distance(TargetActor->GetActorLocation(), GetActorLocation());
+}
+
 void ARGX_Peasant::BeginPlay()
 {
 	Super::BeginPlay();

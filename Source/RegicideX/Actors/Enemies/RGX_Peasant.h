@@ -54,6 +54,8 @@ public:
 	void Idle();
 	void Attack();
 
+	float GetDistanceToTarget();
+
 protected:
 
 	// Animation Montages ...
