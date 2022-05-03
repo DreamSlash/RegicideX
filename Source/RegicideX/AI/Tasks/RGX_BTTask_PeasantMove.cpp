@@ -8,7 +8,6 @@
 EBTNodeResult::Type URGX_BTTask_PeasantMove::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	AAIController* const PeasantController = OwnerComp.GetAIOwner();
-
 	ARGX_Peasant* const self = Cast<ARGX_Peasant>(PeasantController->GetPawn());
 	if (self)
 	{

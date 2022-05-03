@@ -30,12 +30,7 @@ void ARGX_Peasant::Attack()
 	RotateToTarget();
 	TextStatusString = "Attacking";
 	float time = 0.0f;
-	if(PunchMontage)
-		time = PlayAnimMontage(PunchMontage);
-	if (time == 0.0f)
-	{
-		UE_LOG(LogTemp, Error, TEXT("Could not play animation montage punch"));
-	}
+	PlayAnimMontage(PunchMontage);
 	TextStatusString = "Attacking Cooldown";
 }
 

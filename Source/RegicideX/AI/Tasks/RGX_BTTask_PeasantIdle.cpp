@@ -7,10 +7,10 @@
 EBTNodeResult::Type URGX_BTTask_PeasantIdle::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
     AAIController* const PeasantController = OwnerComp.GetAIOwner();
+    ARGX_Peasant* const Peasant = Cast<ARGX_Peasant>(PeasantController->GetPawn());
     
-    if (PeasantController->GetPawn())
+    if (Peasant)
     {
-        ARGX_Peasant* const Peasant = Cast<ARGX_Peasant>(PeasantController->GetPawn());
         Peasant->Idle();
     }
     return EBTNodeResult::Succeeded;
