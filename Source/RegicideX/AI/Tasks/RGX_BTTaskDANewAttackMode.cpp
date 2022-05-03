@@ -17,7 +17,8 @@ EBTNodeResult::Type URGX_BTTaskDANewAttackMode::ExecuteTask(UBehaviorTreeCompone
 
 	if(RandomNum == AMode)
 	{
-		RandomNum = RandomNum + 1 > MaxAttacksNum ? RandomNum + 1 : MinAttacksNum;
+		int NewNum = RandomNum - 1;
+		RandomNum = NewNum < MinAttacksNum ? RandomNum + 1 : NewNum;
 	}
 
 	BB->SetValueAsEnum(TEXT("AttackMode"), RandomNum);

@@ -59,6 +59,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float SimpleBombsOffset = 50.f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float ActorMidHeight = 50.0f;
+
 	void BeginPlay() override;
 
 	// Called every frame
@@ -72,6 +75,12 @@ public:
 
 	void RotateMe(float DeltaTime, float Speed);
 
+	UFUNCTION(BlueprintCallable)
+	void TPToFloor();
+
+	UFUNCTION(BlueprintCallable)
+	void TPToOriginalHeight();
+
 	UFUNCTION()
 		FVector GenerateRandomLocationAroundPoint(FVector Location);
 
@@ -80,6 +89,9 @@ public:
 
 	UFUNCTION(BlueprintCallable) 
 		void TestSpawn();
+
+	UFUNCTION(BlueprintCallable)
+		float GetDistanceToTarget();
 
 	UFUNCTION(BlueprintImplementableEvent)
 		void SpawnSimpleBullet(FTransform Transform, AActor* MyOwner);

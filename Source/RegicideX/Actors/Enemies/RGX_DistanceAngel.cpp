@@ -7,6 +7,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/MCV_AbilitySystemComponent.h"
 #include "NavigationSystem.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 ARGX_DistanceAngel::ARGX_DistanceAngel()
 	: ARGX_EnemyBase()
@@ -57,6 +58,45 @@ void ARGX_DistanceAngel::RotateMe(float DeltaTime, float Speed)
 	SetActorRotation(NewRotation);
 }
 
+void ARGX_DistanceAngel::TPToFloor()
+{
+	const FVector DownVector = -GetActorUpVector();
+
+	FHitResult Result;
+
+	FVector NewLocation = GetActorLocation();
+
+	if(GetWorld()->LineTraceSingleByChannel(Result, GetActorLocation() + DownVector*(HeightPos/2.0f), GetActorLocation() + DownVector * HeightPos * 2.0f, ECollisionChannel::ECC_WorldStatic))
+	{
+		FVector ImpactPoint = Result.ImpactPoint;
+		NewLocation.Z = ImpactPoint.Z + ActorMidHeight;
+
+		/*if (Result.Actor != nullptr) {
+			AActor* actor = Cast<AActor>(Result.Actor);
+			UE_LOG(LogTemp, Warning, TEXT("OtherActor: %s"), *actor->GetName());
+		}
+		
+		UKismetSystemLibrary::DrawDebugLine(
+			GetWorld(),
+			GetActorLocation(),
+			ImpactPoint,
+			FColor(255, 0, 0),
+			22.0f,
+			5.0f
+			);*/
+	}
+
+	SetActorLocation(NewLocation);
+
+}
+
+void ARGX_DistanceAngel::TPToOriginalHeight()
+{
+	FVector NewLocation = GetActorLocation();
+	NewLocation.Z = HeightPos;
+	SetActorLocation(NewLocation);
+}
+
 void ARGX_DistanceAngel::ShootSimpleBullets()
 {
 	FVector MyFront = this->GetActorForwardVector();
@@ -94,6 +134,11 @@ FVector ARGX_DistanceAngel::GenerateRandomLocationAroundPoint(FVector Location)
 	return UNavigationSystemV1::GetRandomReachablePointInRadius(GetWorld(), Location, AttackRadius * 2.0);
 }
 
+
+float ARGX_DistanceAngel::GetDistanceToTarget()
+{
+	return FVector::Distance(this->GetActorLocation(), TargetActor->GetActorLocation());
+}
 
 void ARGX_DistanceAngel::Tick(float DeltaTime)
 {

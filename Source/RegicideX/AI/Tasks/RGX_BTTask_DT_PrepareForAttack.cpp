@@ -32,5 +32,6 @@ void URGX_BTTask_DT_PrepareForAttack::TickTask(UBehaviorTreeComponent& OwnerComp
 	}
 
 	DistAngelPawn->RingRotatingSpeed += TaskTime * RingsRotationSpeedMultiplier;
+	DistAngelPawn->RotateToTarget(DeltaSeconds);
 	FinishLatentTask(OwnerComp, EBTNodeResult::InProgress);
 }
