@@ -7,14 +7,12 @@
 #include "RGX_BTTask_PeasantAttack.generated.h"
 
 
-struct FBTPeasantMeleeAttack
+struct FBTPeasantMeleeAttackMemory
 {
 	float TimeStartedAttack = 0.f;
 	float TimeToAttackFor = 0.f;
 
 	bool bIsAttacking = false;
-	bool bFinishedAttacking = false;
-	bool bHasStartedAttacking = false;
 };
 
 UCLASS()

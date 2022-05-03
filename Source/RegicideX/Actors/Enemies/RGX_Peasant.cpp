@@ -29,7 +29,6 @@ void ARGX_Peasant::Attack()
 {
 	RotateToTarget();
 	TextStatusString = "Attacking";
-	float time = 0.0f;
 	PlayAnimMontage(PunchMontage);
 	TextStatusString = "Attacking Cooldown";
 }

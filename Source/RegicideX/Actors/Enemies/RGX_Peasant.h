@@ -57,12 +57,12 @@ public:
 
 	float GetDistanceToTarget();
 
-protected:
-
-	// Animation Montages ...
 	UPROPERTY(EditDefaultsOnly)
 	UAnimMontage* PunchMontage;
 
+protected:
+
+	// Animation Montages ...
 	UPROPERTY(EditDefaultsOnly);
 	UAnimMontage* DeathMontage;
 
@@ -70,7 +70,6 @@ protected:
 	UAnimMontage* ReceiveDamageMontage;
 
 	virtual void BeginPlay() override;
-	//virtual void EndPlay(Const EEndPlayReason::Type EndPlayReason) override;
 
 private:
 
