@@ -247,6 +247,7 @@ void ARGX_PlayerCharacter::PrintDebugInformation()
 	TArray<FGameplayAttribute> attributes;
 	AbilitySystemComponent->GetAllAttributes(attributes);
 
+	/*
 	for (FGameplayAttribute& attribute : attributes)
 	{
 		FString AttributeName = attribute.GetName();
@@ -265,6 +266,9 @@ void ARGX_PlayerCharacter::PrintDebugInformation()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Has Power Spears tag: FALSE\n"));
 	}
+	*/
+
+	ComboSystemComponent->DrawDebugInfo();
 }
 
 void ARGX_PlayerCharacter::ChangeTimeScale()
@@ -339,10 +343,12 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 
 		// Fire next attack
 		FGameplayEventData EventData;
-		AbilitySystemComponent->HandleGameplayEvent(NextAttack, &EventData);
+		int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(NextAttack, &EventData);
+
+		UE_LOG(LogTemp, Warning, TEXT("Triggered Abilities: %d\n"), TriggeredAbilities);
 
 		// Clear next attack status
-		ComboSystemComponent->CleanNextAttack();
+		ComboSystemComponent->CleanStatus(TriggeredAbilities);
 	}
 	// --------------------
 

@@ -32,9 +32,14 @@ FGameplayTag URGX_ComboSystemComponent::GetNextAttack()
 	return NextAttack;
 }
 
-void URGX_ComboSystemComponent::CleanNextAttack()
+void URGX_ComboSystemComponent::CleanStatus(int32 ActivatedAbilities)
 {
 	NextAttack = FGameplayTag::RequestGameplayTag("Combo.None");
+
+	if (ActivatedAbilities == 0)
+	{
+		OnEndCombo();
+	}
 }
 
 bool URGX_ComboSystemComponent::IsAttacking()
@@ -77,6 +82,7 @@ FGameplayTag URGX_ComboSystemComponent::FindNextAttack(ERGXPlayerInputID PlayerI
 void URGX_ComboSystemComponent::OnCombo()
 {
 	bComboFlag = false;
+	bEnableComboFlag = false;
 
 	if (NextComboInput != ERGXPlayerInputID::None)
 	{
@@ -87,6 +93,7 @@ void URGX_ComboSystemComponent::OnCombo()
 	}
 	else
 	{
+		UE_LOG(LogTemp, Warning, TEXT("No Combo\n"));
 		CurrentAttack = FGameplayTag::RequestGameplayTag("Combo.None");
 		OnEndCombo();
 	}
@@ -112,4 +119,29 @@ void URGX_ComboSystemComponent::OnEndCombo()
 	bComboFlag = false;
 	bEnableComboFlag = false;
 	NextComboInput = ERGXPlayerInputID::None;
+}
+
+void URGX_ComboSystemComponent::DrawDebugInfo()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Current Attack: %s\n"), *CurrentAttack.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("Next Attack: %s\n"), *NextAttack.ToString());
+	UE_LOG(LogTemp, Warning, TEXT("Next Combo Input: %d\n"), (int32)NextComboInput);
+
+	if (bEnableComboFlag)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Enable Combo Flag: TRUE\n"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Enable Combo Flag: FALSE\n"));
+	}
+
+	if (bComboFlag)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Combo Flag: TRUE\n"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Combo Flag: FALSE\n"));
+	}
 }
