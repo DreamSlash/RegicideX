@@ -16,7 +16,7 @@ class REGICIDEX_API ARGX_LaserBeamWeapon : public AActor
 {
 	GENERATED_BODY()
 
-	bool FollowTarget;
+		bool FollowTarget = true;
 
 
 public:	
@@ -30,6 +30,9 @@ public:
 		AActor* TargetActor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		AActor* OwnerActor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UStaticMeshComponent* EndPointMesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -39,7 +42,7 @@ public:
 		USplineComponent* PathSplineComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		USplineMeshComponent* PathSplineMesh;
+		TArray<USplineMeshComponent*> PathSplineMeshes;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float RaySpeed = 700.0f;
@@ -70,6 +73,9 @@ public:
 
 	UFUNCTION()
 		void SetSourcePoint(FVector SP);
+
+	UFUNCTION()
+		void SetOwnerActor(AActor* OA);
 
 };
 

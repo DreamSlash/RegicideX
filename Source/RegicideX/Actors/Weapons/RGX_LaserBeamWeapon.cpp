@@ -25,8 +25,8 @@ ARGX_LaserBeamWeapon::ARGX_LaserBeamWeapon()
 void ARGX_LaserBeamWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	TargetActor = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-
+	//TargetActor = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	
 }
 
 
@@ -43,10 +43,32 @@ void ARGX_LaserBeamWeapon::ComputeNewEndpoint(float DeltaTime)
 
 	const FVector MyForward = EndPointMesh->GetForwardVector();
 
-	const FVector NewLocation = MyLocation + MyForward * RaySpeed * DeltaTime;
+	FVector NewLocation = MyLocation + MyForward * RaySpeed * DeltaTime; NewLocation.Z = 100;
+
+	FHitResult Result;
+
+	FVector RaySrc = GetOwner()->GetActorLocation() + GetOwner()->GetActorForwardVector() * 200.0;
+	FVector RayEndPoint = NewLocation + MyForward;
+
+	UKismetSystemLibrary::DrawDebugLine(
+		GetWorld(),
+		RaySrc,
+		RayEndPoint,
+		FColor(255, 0, 0),
+		DeltaTime,
+		5.0f
+	);
+	UKismetSystemLibrary::DrawDebugPoint(GetWorld(), RaySrc, 22, FColor(255, 0, 255), DeltaTime);
+
+	if(GetWorld()->LineTraceSingleByChannel(Result, RaySrc, NewLocation, ECollisionChannel::ECC_WorldStatic))
+	{
+		FVector ImpactPoint = Result.ImpactPoint;
+		NewLocation = ImpactPoint;
+	}
 
 	EndPointMesh->SetWorldLocation(NewLocation);
 }
+
 
 void ARGX_LaserBeamWeapon::MoveRay(float DeltaTime)
 {
@@ -61,23 +83,29 @@ void ARGX_LaserBeamWeapon::MoveRay(float DeltaTime)
 
 	PathSplineComponent->SetSplinePointType(1, ESplinePointType::CurveClamped);
 
-	if(PathSplineMesh == nullptr)
+	if(!PathSplineMeshes.IsValidIndex(0))
 	{
 		SpawnSplineMesh();
-		PathSplineMesh->SetStartScale(FVector2D(0.1f));
-		PathSplineMesh->SetEndScale(FVector2D(0.1f));
+		PathSplineMeshes[0]->SetStartScale(FVector2D(2.f));
+		PathSplineMeshes[0]->SetEndScale(FVector2D(2.f));
+		//PathSplineMeshes[0]->SetMaterial(0, Material);
 	}
 
 	FVector StartTangent = PathSplineComponent->GetTangentAtSplinePoint(0, ESplineCoordinateSpace::World);
 	FVector EndTangent = PathSplineComponent->GetTangentAtSplinePoint(1, ESplineCoordinateSpace::World);
 
-	PathSplineMesh->SetStartAndEnd(SourcePoint, StartTangent, EndPoint, EndTangent);
+	PathSplineMeshes[0]->SetStartAndEnd(SourcePoint, StartTangent, EndPoint, EndTangent);
 }
 
 void ARGX_LaserBeamWeapon::SetSourcePoint(FVector SP)
 {
 	SourcePoint = SP;
 	EndPointMesh->SetWorldLocation(SP);
+}
+
+void ARGX_LaserBeamWeapon::SetOwnerActor(AActor* OA)
+{
+	OwnerActor = OA;
 }
 
 
