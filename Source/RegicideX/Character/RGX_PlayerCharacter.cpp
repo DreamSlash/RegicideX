@@ -9,7 +9,10 @@
 #include "GenericTeamAgentInterface.h"
 #include "Components/InputComponent.h"
 #include "../GameplayFramework/RGX_PlayerState.h" // TODO: write path to project settings
+#include "../Components/RGX_ComboSystemComponent.h"
 #include "../GAS/AttributeSets/RGX_HealthAttributeSet.h"
+#include "../GAS/AttributeSets/RGX_MovementAttributeSet.h"
+#include "../GAS/AttributeSets/RGX_CombatAttributeSet.h"
 
 ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 {
@@ -44,18 +47,23 @@ ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 	FollowCamera->bUsePawnControlRotation = false;
 
 	AbilitySystemComponent = CreateDefaultSubobject<UMCV_AbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	ComboSystemComponent = CreateDefaultSubobject<URGX_ComboSystemComponent>(TEXT("ComboSystemComponent"));
 	HealthAttributeSet = CreateDefaultSubobject<URGX_HealthAttributeSet>(TEXT("HealthAttributeSet"));
+	MovementAttributeSet = CreateDefaultSubobject<URGX_MovementAttributeSet>(TEXT("MovementAttributeSet"));
+	CombatAttributeSet = CreateDefaultSubobject<URGX_CombatAttributeSet>(TEXT("CombatAttributeSet"));
 }
 
 void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	// Set up gameplay key bindings
 	check(PlayerInputComponent);
-	//PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ACharacter::Jump);
-	//PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 
-	//PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ARX_PlayerCharacter::JumpInput);
-	//PlayerInputComponent->BindAction("Jump", IE_Released, this, &ARX_PlayerCharacter::StopJumpInput);
+	PlayerInputComponent->BindAction("Debug", IE_Pressed, this, &ARGX_PlayerCharacter::PrintDebugInformation);
+
+	PlayerInputComponent->BindAction("LightAttack", IE_Pressed, this, &ARGX_PlayerCharacter::ManageLightAttackInput);
+	PlayerInputComponent->BindAction("HeavyAttack", IE_Pressed, this, &ARGX_PlayerCharacter::ManageHeavyAttackInput);
+	PlayerInputComponent->BindAction("SwitchPowerSkill", IE_Pressed, this, &ARGX_PlayerCharacter::ChangePowerSkill);
+	//PlayerInputComponent->BindAction("PowerSkill", IE_Pressed, this, &ARGX_PlayerCharacter::ManagePowerSkillInput);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ARGX_PlayerCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ARGX_PlayerCharacter::MoveRight);
@@ -68,16 +76,20 @@ void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ARGX_PlayerCharacter::LookUpAtRate);
 
+
 	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"), FString("CancelTarget"), FString("EMCVAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::Confirm), static_cast<int32>(EMCVAbilityInputID::Cancel)));
-	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("Jump"), FString("StopJump"), FString("EMCVAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::Jump), static_cast<int32>(EMCVAbilityInputID::StopJump)));
-	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("Evasion"), FString("StopEvasion"), FString("EMCVAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::Evasion), static_cast<int32>(EMCVAbilityInputID::CancelEvasion)));
-	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("LightAttack"), FString("CancelLightAttack"), FString("EMCVAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::LightAttack), static_cast<int32>(EMCVAbilityInputID::CancelLightAttack)));
-	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("HeavyAttack"), FString("CancelHeavyAttack"), FString("EMCVAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::HeavyAttack), static_cast<int32>(EMCVAbilityInputID::CancelHeavyAttack)));
+	//AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("PowerSkill"), FString("CancelPowerSkill"), FString("EMCVAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::PowerSkill), static_cast<int32>(EMCVAbilityInputID::CancelPowerSkill)));
+	//AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("Jump"), FString("StopJump"), FString("EMCVAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::Jump), static_cast<int32>(EMCVAbilityInputID::StopJump)));
+	//AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("Evasion"), FString("StopEvasion"), FString("EMCVAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::Evasion), static_cast<int32>(EMCVAbilityInputID::CancelEvasion)));
+	//AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("LightAttack"), FString("CancelLightAttack"), FString("EMCVAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::LightAttack), static_cast<int32>(EMCVAbilityInputID::CancelLightAttack)));
+	//AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("HeavyAttack"), FString("CancelHeavyAttack"), FString("EMCVAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::HeavyAttack), static_cast<int32>(EMCVAbilityInputID::CancelHeavyAttack)));
 }
 
 void ARGX_PlayerCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
+
+	AddGameplayTag(FGameplayTag::RequestGameplayTag("PossessedBy.Player"));
 }
 
 void ARGX_PlayerCharacter::SetGenericTeamId(const FGenericTeamId& TeamID)
@@ -88,6 +100,74 @@ void ARGX_PlayerCharacter::SetGenericTeamId(const FGenericTeamId& TeamID)
 FGenericTeamId ARGX_PlayerCharacter::GetGenericTeamId() const
 {
 	return CharacterTeam;
+}
+
+void ARGX_PlayerCharacter::ManageLightAttackInput()
+{
+	ComboSystemComponent->ManageInputToken(ERGXPlayerInputID::LightAttackInput);
+}
+
+void ARGX_PlayerCharacter::ManageHeavyAttackInput()
+{
+	ComboSystemComponent->ManageInputToken(ERGXPlayerInputID::HeavyAttackInput);
+}
+
+void ARGX_PlayerCharacter::ManagePowerSkillInput()
+{
+	// TODO: Make a component for managing skills?
+
+	if (PowerSkills.Num() <= CurrentSkillSelected)
+	{
+		return;
+	}
+	UE_LOG(LogTemp, Warning, TEXT("Manuela\n"));
+	// Fire next attack
+	FGameplayEventData EventData;
+	AbilitySystemComponent->HandleGameplayEvent(PowerSkills[CurrentSkillSelected], &EventData);
+}
+
+void ARGX_PlayerCharacter::ChangePowerSkill()
+{
+	if (PowerSkills.Num() < 2)
+		return;
+
+	RemoveGameplayTag(PowerSkills[CurrentSkillSelected]);
+	CurrentSkillSelected++;
+
+	if (CurrentSkillSelected == PowerSkills.Num())
+	{
+		CurrentSkillSelected = 0;
+	}
+
+	AddGameplayTag(PowerSkills[CurrentSkillSelected]);
+
+	FString SkillName = PowerSkills[CurrentSkillSelected].ToString();
+	UE_LOG(LogTemp, Warning, TEXT("Power Skill Selected: %s\n"), *SkillName);
+}
+
+void ARGX_PlayerCharacter::PrintDebugInformation()
+{
+	TArray<FGameplayAttribute> attributes;
+	AbilitySystemComponent->GetAllAttributes(attributes);
+
+	for (FGameplayAttribute& attribute : attributes)
+	{
+		FString AttributeName = attribute.GetName();
+		UE_LOG(LogTemp, Warning, TEXT("Attribute Name: %s\n"), *AttributeName);
+
+		float AttributeValue = AbilitySystemComponent->GetNumericAttribute(attribute);
+		UE_LOG(LogTemp, Warning, TEXT("Attribute Value: %f\n"), AttributeValue);
+	}
+
+	bool bHasTag = HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("Power.Spears"));
+	if (bHasTag)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Has Power Spears tag: TRUE\n"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Has Power Spears tag: FALSE\n"));
+	}
 }
 
 void ARGX_PlayerCharacter::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
@@ -120,8 +200,35 @@ void ARGX_PlayerCharacter::RemoveGameplayTag(const FGameplayTag& TagToRemove)
 	AbilitySystemComponent->RemoveLooseGameplayTag(TagToRemove);
 }
 
+void ARGX_PlayerCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+
+	if (PowerSkills.Num() < 1 == false)
+	{
+		CurrentSkillTag = PowerSkills[0];
+		AddGameplayTag(CurrentSkillTag);
+	}
+}
+
 void ARGX_PlayerCharacter::Tick(float DeltaTime)
 {
+	// Combo system
+	FGameplayTag NextAttack = ComboSystemComponent->GetNextAttack();
+	if (NextAttack != FGameplayTag::RequestGameplayTag("Combo.None"))
+	{
+		// Call AbilityComponentSystem
+		FString NextAttackString = NextAttack.ToString();
+		UE_LOG(LogTemp, Warning, TEXT("Next Attack: %s\n"), *NextAttackString);
+
+		// Fire next attack
+		FGameplayEventData EventData;
+		AbilitySystemComponent->HandleGameplayEvent(NextAttack, &EventData);
+
+		// Clear next attack status
+		ComboSystemComponent->CleanNextAttack();
+	}
+	// --------------------
 }
 
 UAbilitySystemComponent* ARGX_PlayerCharacter::GetAbilitySystemComponent() const
