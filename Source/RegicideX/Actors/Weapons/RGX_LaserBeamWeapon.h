@@ -51,6 +51,9 @@ public:
 		float ForgetDistance = 150.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float ForgetTime = 1.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UStaticMesh* Mesh;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -76,6 +79,9 @@ public:
 
 	UFUNCTION()
 		void SetOwnerActor(AActor* OA);
+
+	UFUNCTION()
+		void SetFollowTargetTrue();
 
 };
 

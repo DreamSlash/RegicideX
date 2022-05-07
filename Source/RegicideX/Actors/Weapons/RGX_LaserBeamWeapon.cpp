@@ -10,6 +10,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
+
 // Sets default values
 ARGX_LaserBeamWeapon::ARGX_LaserBeamWeapon()
 {
@@ -20,6 +21,8 @@ ARGX_LaserBeamWeapon::ARGX_LaserBeamWeapon()
 	EndPointMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EndPointMesh"));
 	EndPointParticle = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("EndPointParticle"));
 }
+
+
 
 // Called when the game starts or when spawned
 void ARGX_LaserBeamWeapon::BeginPlay()
@@ -34,39 +37,63 @@ void ARGX_LaserBeamWeapon::ComputeNewEndpoint(float DeltaTime)
 {
 	const FVector MyLocation = EndPointMesh->K2_GetComponentLocation();
 
+	const FVector TargetLocation = TargetActor->GetActorLocation();
+
+	if (FollowTarget && FVector::Distance(MyLocation, TargetLocation) <= ForgetDistance) {
+		FollowTarget = false;
+		FTimerHandle Timerhandle;
+		GetWorld()->GetTimerManager().SetTimer(Timerhandle, this, &ARGX_LaserBeamWeapon::SetFollowTargetTrue, ForgetTime, false);
+	}
+
 	if (FollowTarget)
 	{
-		const FVector TargetLocation = TargetActor->GetActorLocation();
 		const FRotator RotOffset = UKismetMathLibrary::FindLookAtRotation(MyLocation, TargetLocation);
 		EndPointMesh->SetWorldRotation(RotOffset);
 	}
 
 	const FVector MyForward = EndPointMesh->GetForwardVector();
 
-	FVector NewLocation = MyLocation + MyForward * RaySpeed * DeltaTime; NewLocation.Z = 100;
+	FVector NewLocation = MyLocation + MyForward * RaySpeed * DeltaTime;
 
-	FHitResult Result;
+	//Rays
 
-	FVector RaySrc = GetOwner()->GetActorLocation() + GetOwner()->GetActorForwardVector() * 200.0;
-	FVector RayEndPoint = NewLocation + MyForward;
+	//InFrontRay
+	/*FHitResult Result_Front;
 
-	UKismetSystemLibrary::DrawDebugLine(
-		GetWorld(),
-		RaySrc,
-		RayEndPoint,
-		FColor(255, 0, 0),
-		DeltaTime,
-		5.0f
-	);
-	UKismetSystemLibrary::DrawDebugPoint(GetWorld(), RaySrc, 22, FColor(255, 0, 255), DeltaTime);
+	FVector FrontRaySrc = NewLocation;
 
-	if(GetWorld()->LineTraceSingleByChannel(Result, RaySrc, NewLocation, ECollisionChannel::ECC_WorldStatic))
+	FVector FrontRayEndPoint = NewLocation + EndPointMesh->GetForwardVector() * 100.0;
+
+	if (GetWorld()->LineTraceSingleByChannel(Result_Front, FrontRaySrc, FrontRayEndPoint, ECollisionChannel::ECC_WorldStatic))
 	{
-		FVector ImpactPoint = Result.ImpactPoint;
+		FVector ImpactPoint = Result_Front.ImpactPoint;
 		NewLocation = ImpactPoint;
+	}*/
+
+	//Down ray
+	FHitResult Result_Down;
+
+	FVector DownRaySrc = NewLocation;
+
+	FVector DownRayEndPoint = NewLocation + EndPointMesh->GetUpVector() * -1000.0;
+
+	if (GetWorld()->LineTraceSingleByChannel(Result_Down, DownRaySrc, DownRayEndPoint, ECollisionChannel::ECC_WorldStatic)) {
+			FVector ImpactPoint = Result_Down.ImpactPoint;
+			NewLocation.Z = ImpactPoint.Z;
 	}
 
 	EndPointMesh->SetWorldLocation(NewLocation);
+
+	/*UKismetSystemLibrary::DrawDebugLine(
+		GetWorld(),
+		DownRaySrc,
+		DownRayEndPoint,
+		FColor(255, 0, 0),
+		DeltaTime,
+		5.0f
+	);*/
+	//UKismetSystemLibrary::DrawDebugPoint(GetWorld(), RaySrc, 22, FColor(255, 0, 255), DeltaTime);
+
 }
 
 
@@ -106,6 +133,11 @@ void ARGX_LaserBeamWeapon::SetSourcePoint(FVector SP)
 void ARGX_LaserBeamWeapon::SetOwnerActor(AActor* OA)
 {
 	OwnerActor = OA;
+}
+
+void ARGX_LaserBeamWeapon::SetFollowTargetTrue()
+{
+	FollowTarget = true;
 }
 
 
