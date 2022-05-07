@@ -14,10 +14,13 @@ EBTNodeResult::Type URGX_BTTaskLaserBeamAttack::ExecuteTask(UBehaviorTreeCompone
 
 	OwnerActor = AIController->GetPawn();
 
-	LaserWeapon = GetWorld()->SpawnActor<ARGX_LaserBeamWeapon>(LaserBeamClass);
+	FActorSpawnParameters SpawnParams; 
 
+	SpawnParams.Owner = OwnerActor;
+
+	LaserWeapon = GetWorld()->SpawnActor<ARGX_LaserBeamWeapon>(LaserBeamClass, SpawnParams);
 	LaserWeapon->SetSourcePoint(OwnerActor->GetActorLocation());
-	LaserWeapon->SetOwner(OwnerActor);
+
 
 	bNotifyTick = true;
 

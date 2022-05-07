@@ -25,7 +25,7 @@ public:
 	float MaxTime = 5.0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float RingsRotationSpeedMultiplier = 2.0;
+	float RingsRotationSpeedMultiplier = 1.4;
 
 	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 

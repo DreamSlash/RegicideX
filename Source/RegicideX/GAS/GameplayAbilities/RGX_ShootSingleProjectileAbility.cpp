@@ -20,7 +20,7 @@ void URGX_ShootSingleProjectileAbility::ActivateAbility(const FGameplayAbilitySp
 
 void URGX_ShootSingleProjectileAbility::Shoot(AActor* Actor)
 {
-	const FVector ProjectileLocation = Actor->GetActorLocation() + Actor->GetActorForwardVector() * FVector(0.0f, 200.0f, 0.0f);
+	const FVector ProjectileLocation = Actor->GetActorLocation() + Actor->GetActorForwardVector() * 200.0;
 
 	FTransform BulletTransform(FRotator(),ProjectileLocation, FVector(0.1));
 

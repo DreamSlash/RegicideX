@@ -131,7 +131,7 @@ void ARGX_DistanceAngel::TestSpawn()
 
 FVector ARGX_DistanceAngel::GenerateRandomLocationAroundPoint(FVector Location)
 {
-	return UNavigationSystemV1::GetRandomReachablePointInRadius(GetWorld(), Location, AttackRadius * 2.0);
+	return UNavigationSystemV1::GetRandomReachablePointInRadius(GetWorld(), Location, AttackRadius);
 }
 
 

@@ -28,8 +28,7 @@ ARGX_LaserBeamWeapon::ARGX_LaserBeamWeapon()
 void ARGX_LaserBeamWeapon::BeginPlay()
 {
 	Super::BeginPlay();
-	//TargetActor = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	
+	OwnerActor = GetOwner();
 }
 
 
@@ -58,17 +57,28 @@ void ARGX_LaserBeamWeapon::ComputeNewEndpoint(float DeltaTime)
 	//Rays
 
 	//InFrontRay
-	/*FHitResult Result_Front;
+	FHitResult RayTraceResult;
 
-	FVector FrontRaySrc = NewLocation;
+	const FVector FrontRaySrc = OwnerActor->GetActorLocation() + OwnerActor->GetActorForwardVector() * 200.0f;
 
-	FVector FrontRayEndPoint = NewLocation + EndPointMesh->GetForwardVector() * 100.0;
+	const FVector FrontRayEndPoint = NewLocation;
 
-	if (GetWorld()->LineTraceSingleByChannel(Result_Front, FrontRaySrc, FrontRayEndPoint, ECollisionChannel::ECC_WorldStatic))
+	UKismetSystemLibrary::DrawDebugPoint(GetWorld(), FrontRaySrc, 22, FColor(255, 0, 255), DeltaTime);
+	UKismetSystemLibrary::DrawDebugLine(
+		GetWorld(),
+		FrontRaySrc,
+		FrontRayEndPoint,
+		FColor(255, 0, 0),
+		DeltaTime,
+		5.0f
+	);
+	if (GetWorld()->LineTraceSingleByChannel(RayTraceResult, FrontRaySrc, FrontRayEndPoint, ECollisionChannel::ECC_WorldStatic))
 	{
-		FVector ImpactPoint = Result_Front.ImpactPoint;
-		NewLocation = ImpactPoint;
-	}*/
+		AActor* Actor = RayTraceResult.GetActor();
+		if (Actor != nullptr) {
+			UE_LOG(LogTemp, Warning, TEXT("Hitting Actor: %s"), *Actor->GetName());
+		}
+	}
 
 	//Down ray
 	FHitResult Result_Down;

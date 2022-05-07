@@ -8,8 +8,7 @@
 
 class UStaticMeshComponent;
 class UParticleSystemComponent;
-class UBoxComponent;
-
+class URGX_HitboxComponent;
 
 UCLASS()
 class REGICIDEX_API ARGX_Bullet : public AActor
@@ -23,8 +22,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UStaticMeshComponent* BulletMesh;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UBoxComponent* BulletCollider;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+		URGX_HitboxComponent* BulletCollider;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		UParticleSystemComponent* BulletParticleSystem;

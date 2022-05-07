@@ -11,7 +11,7 @@ EBTNodeResult::Type URGX_BTTaskDANewAttackMode::ExecuteTask(UBehaviorTreeCompone
 	AAIController* AIController = OwnerComp.GetAIOwner();
 	UBlackboardComponent* BB = AIController->GetBlackboardComponent();
 
-	const int AMode = BB->GetValueAsEnum(TEXT("AttackMode"));
+	int AMode = BB->GetValueAsInt(TEXT("EnumNum"));
 
 	int RandomNum = FMath::RandRange(MinAttacksNum, MaxAttacksNum);
 
@@ -22,6 +22,7 @@ EBTNodeResult::Type URGX_BTTaskDANewAttackMode::ExecuteTask(UBehaviorTreeCompone
 	}
 
 	BB->SetValueAsEnum(TEXT("AttackMode"), RandomNum);
+	BB->SetValueAsInt(TEXT("EnumNum"), RandomNum);
 
 	return EBTNodeResult::Succeeded;
 

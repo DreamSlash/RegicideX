@@ -4,7 +4,7 @@
 #include "RGX_Bullet.h"
 #include "Particles/ParticleSystemComponent.h"
 #include "Components/StaticMeshComponent.h"
-#include "Components/BoxComponent.h"
+#include "RegicideX\Components\RGX_HitboxComponent.h"
 
 // Sets default values
 ARGX_Bullet::ARGX_Bullet()
@@ -13,7 +13,7 @@ ARGX_Bullet::ARGX_Bullet()
 	PrimaryActorTick.bCanEverTick = true;
 
 	BulletMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletStaticMesh"));
-	BulletCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("BulletCollider"));
+	BulletCollider = CreateDefaultSubobject<URGX_HitboxComponent>(TEXT("BulletCollider"));
 	BulletParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("BulletParticles"));
 	RootComponent = BulletMesh;
 	//BulletMesh->SetupAttachment(RootComponent);
