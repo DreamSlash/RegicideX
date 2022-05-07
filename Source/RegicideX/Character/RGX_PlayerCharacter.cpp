@@ -211,16 +211,15 @@ bool ARGX_PlayerCharacter::IsBeingAttacked()
 	UClass* SeekClass = ARGX_EnemyBase::StaticClass();
 
 	TArray<AActor*> IgnoreActors;
+	IgnoreActors.Init(this, 1);
+
 	TArray<AActor*> OutActors;
 
-	FHitResult HitResult;
+	bool bIsBeingAttacked = UKismetSystemLibrary::SphereOverlapActors(
+		GetWorld(), PlayerLocation, 200.0f, TraceObjectTypes, nullptr, IgnoreActors, OutActors
+	);
 
-	bool bIsBeingAttacked = 
-		UKismetSystemLibrary::SphereTraceSingleForObjects(
-			GetWorld(), PlayerLocation, PlayerLocation, 200.0f, TraceObjectTypes, 
-			false, IgnoreActors, EDrawDebugTrace::ForOneFrame, HitResult, true);
-
-	return bIsBeingAttacked;
+	return OutActors.Num() > 0;
 }
 
 void ARGX_PlayerCharacter::ChangePowerSkill()
@@ -328,6 +327,8 @@ void ARGX_PlayerCharacter::BeginPlay()
 
 void ARGX_PlayerCharacter::Tick(float DeltaTime)
 {
+	Super::Tick(DeltaTime);
+
 	// Leaning
 	FRGX_LeanInfo LeanInfo = CalculateLeanAmount();
 	LeanAmount = UKismetMathLibrary::FInterpTo(LeanAmount, LeanInfo.LeanAmount, DeltaTime, LeanInfo.InterSpeed);
@@ -339,18 +340,23 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 	{
 		// Call AbilityComponentSystem
 		FString NextAttackString = NextAttack.ToString();
-		UE_LOG(LogTemp, Warning, TEXT("Next Attack: %s\n"), *NextAttackString);
+		//UE_LOG(LogTemp, Warning, TEXT("Next Attack: %s\n"), *NextAttackString);
 
 		// Fire next attack
 		FGameplayEventData EventData;
 		int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(NextAttack, &EventData);
 
-		UE_LOG(LogTemp, Warning, TEXT("Triggered Abilities: %d\n"), TriggeredAbilities);
+		//UE_LOG(LogTemp, Warning, TEXT("Triggered Abilities: %d\n"), TriggeredAbilities);
 
 		// Clear next attack status
 		ComboSystemComponent->CleanStatus(TriggeredAbilities);
 	}
 	// --------------------
+
+	if (IsBeingAttacked())
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("Being Attacked\n"));
+	}
 
 	UKismetSystemLibrary::DrawDebugCircle(GetWorld(), GetActorLocation(), 200.0f, 24, FLinearColor::Green, 0.0f, 0.0f, FVector(0.0f, 1.0f, 0.0f), FVector(1.0f, 0.0f, 0.0f));
 }

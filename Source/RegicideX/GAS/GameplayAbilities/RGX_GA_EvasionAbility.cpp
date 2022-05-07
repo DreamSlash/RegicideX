@@ -25,6 +25,5 @@ void URGX_EvasionAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 		ActorInfo->AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Action.Dash")), &EventData);
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Evasion Ability"));
 	EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
 }
