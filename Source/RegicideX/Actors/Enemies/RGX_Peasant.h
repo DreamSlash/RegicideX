@@ -10,9 +10,6 @@
 class UBehaviorTree;
 class ARGX_GroupManager;
 
-/**
- * 
- */
 UCLASS()
 class REGICIDEX_API ARGX_Peasant : public ARGX_EnemyBase
 {
@@ -24,10 +21,6 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	UBehaviorTree* BTree;
-
-	// Player target
-	UPROPERTY(EditDefaultsOnly)
-	AActor* TargetActor;
 
 	UPROPERTY(EditAnywhere)
 	ARGX_GroupManager* manager;
@@ -70,8 +63,4 @@ protected:
 	UAnimMontage* ReceiveDamageMontage;
 
 	virtual void BeginPlay() override;
-
-private:
-
-	void RotateToTarget();
 };

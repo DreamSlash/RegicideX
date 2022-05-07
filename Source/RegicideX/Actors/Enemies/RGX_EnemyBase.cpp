@@ -27,7 +27,8 @@ void ARGX_EnemyBase::BeginPlay()
 
 void ARGX_EnemyBase::PossessedBy(AController* NewController)
 {
-	AddGameplayTag(FGameplayTag::RequestGameplayTag("PossessedBy.AI"));
+	Super::PossessedBy(NewController);
+	AddGameplayTag(FGameplayTag::RequestGameplayTag("RGXCharacter.Enemy"));
 }
 
 void ARGX_EnemyBase::MoveToTarget(float DeltaTime, FVector TargetPos)

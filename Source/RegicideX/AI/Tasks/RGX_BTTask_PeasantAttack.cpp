@@ -3,6 +3,7 @@
 
 #include "RGX_BTTask_PeasantAttack.h"
 #include "AIController.h"
+#include "AbilitySystemComponent.h"
 #include "RegicideX/Actors/Enemies/RGX_Peasant.h"
 
 URGX_BTTask_PeasantAttack::URGX_BTTask_PeasantAttack()
@@ -19,6 +20,12 @@ EBTNodeResult::Type URGX_BTTask_PeasantAttack::ExecuteTask(UBehaviorTreeComponen
 	ARGX_Peasant* const self = Cast<ARGX_Peasant>(owner->GetPawn());
 	if (!self)
 		return EBTNodeResult::Failed;
+
+	UAbilitySystemComponent* ASC = self->GetAbilitySystemComponent();
+	if (ASC)
+	{
+		//ASC->TryActivateAbility()
+	}
 
 	FBTPeasantMeleeAttackMemory* memory = reinterpret_cast<FBTPeasantMeleeAttackMemory*>(NodeMemory);
 	memory->bIsAttacking = true;

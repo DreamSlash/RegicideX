@@ -7,12 +7,17 @@
 
 EBTNodeResult::Type URGX_BTTask_PeasantMove::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	AAIController* const PeasantController = OwnerComp.GetAIOwner();
-	ARGX_Peasant* const self = Cast<ARGX_Peasant>(PeasantController->GetPawn());
+	AAIController* PeasantController = OwnerComp.GetAIOwner();
+	if (PeasantController)
+	{
+		PeasantController->MoveToLocation(FVector());
+	}
+	
+	/*ARGX_Peasant* const self = Cast<ARGX_Peasant>(PeasantController->GetPawn());
 	if (self)
 	{
 		self->Move();
-	}
+	}*/
 
 	return EBTNodeResult::Succeeded;
 }

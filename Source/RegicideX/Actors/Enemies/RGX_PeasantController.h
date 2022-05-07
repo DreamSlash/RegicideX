@@ -9,9 +9,6 @@
 class UBlackboardComponent;
 class UBehaviorTreeComponent;
 
-/**
- * 
- */
 UCLASS()
 class REGICIDEX_API ARGX_PeasantController : public AAIController
 {
