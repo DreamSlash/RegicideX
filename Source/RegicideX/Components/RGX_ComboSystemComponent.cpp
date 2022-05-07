@@ -17,14 +17,17 @@ void URGX_ComboSystemComponent::EndPlay(EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
-void URGX_ComboSystemComponent::ManageInputToken(ERGXPlayerInputID PlayerInput)
+FGameplayTag URGX_ComboSystemComponent::ManageInputToken(ERGXPlayerInputID PlayerInput)
 {
 	if (!IsAttacking())
 	{
 		InitiateCombo(PlayerInput);
+		return CurrentAttack;
 	}
 
 	SetNextComboAttack(PlayerInput);
+
+	return FGameplayTag::RequestGameplayTag(FName("Combo.None"));
 }
 
 FGameplayTag URGX_ComboSystemComponent::GetNextAttack()
@@ -81,6 +84,8 @@ FGameplayTag URGX_ComboSystemComponent::FindNextAttack(ERGXPlayerInputID PlayerI
 
 void URGX_ComboSystemComponent::OnCombo()
 {
+	UE_LOG(LogTemp, Warning, TEXT("OnCombo\n"));
+
 	bComboFlag = false;
 	bEnableComboFlag = false;
 
@@ -113,7 +118,7 @@ void URGX_ComboSystemComponent::OnDisableCombo()
 
 void URGX_ComboSystemComponent::OnEndCombo()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("On End Combo\n"));
+	UE_LOG(LogTemp, Warning, TEXT("On End Combo\n"));
 	CurrentAttack = FGameplayTag::RequestGameplayTag("Combo.None");
 	NextAttack = FGameplayTag::RequestGameplayTag("Combo.None");
 	bComboFlag = false;

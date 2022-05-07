@@ -41,6 +41,7 @@ void ARGX_SpearProjectile::Tick(float DeltaTime)
 	if (bWasLaunched == true)
 		return;
 	
+	// TODO: Meter en una funcion
 	FVector CasterLocation = Caster->GetActorLocation();
 	FVector CasterRight = Caster->GetActorRightVector();
 	FVector CasterForward = Caster->GetActorForwardVector();

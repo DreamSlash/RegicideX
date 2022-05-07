@@ -2,20 +2,29 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "../../Character/RGX_PlayerCharacter.h"
+#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 
-/*
 void URGX_DashAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	ACharacter* character = Cast<ACharacter>(ActorInfo->AvatarActor);
-	if (character)
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
+	ARGX_PlayerCharacter* Character = Cast<ARGX_PlayerCharacter>(ActorInfo->AvatarActor);
+
+	if (Character)
 	{
-		character->Jump();
+		Character->GetCharacterMovement()->GravityScale = 0.0f;
+		Character->GetCharacterMovement()->MaxWalkSpeed = DashSpeed;
+
+		UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, MontageToPlay);
+		PlayMontageTask->OnBlendOut.AddDynamic(this, &URGX_DashAbility::FinishDash);
+		PlayMontageTask->OnCancelled.AddDynamic(this, &URGX_DashAbility::FinishDash);
+		PlayMontageTask->OnCompleted.AddDynamic(this, &URGX_DashAbility::FinishDash);
+		PlayMontageTask->OnInterrupted.AddDynamic(this, &URGX_DashAbility::FinishDash);
+		PlayMontageTask->ReadyForActivation();
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Jump Ability"));
-	EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
+	UE_LOG(LogTemp, Warning, TEXT("Dash Ability"));
 }
-*/
 
 void URGX_DashAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
@@ -24,29 +33,10 @@ void URGX_DashAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const
 	ARGX_PlayerCharacter* Character = Cast<ARGX_PlayerCharacter>(ActorInfo->AvatarActor);
 
 	Character->GetCharacterMovement()->GravityScale = Character->DefaultGravity;
+	Character->GetCharacterMovement()->MaxWalkSpeed = Character->MaxWalkSpeed;
 }
 
-float URGX_DashAbility::GetDashDuration()
+void URGX_DashAbility::FinishDash()
 {
-	return DashDuration;
-}
-
-void URGX_DashAbility::PerformDash()
-{
-	ACharacter* Character = Cast<ACharacter>(CurrentActorInfo->AvatarActor);
-
-	FVector Forward = Character->GetActorForwardVector();
-
-	FVector LaunchForce = Forward * DashForce;
-
-	Character->GetCharacterMovement()->GravityScale = 0.0f;
-
-	if (Character->GetCharacterMovement()->IsFalling() == true)
-	{
-		Character->LaunchCharacter(LaunchForce / 2.0f, true, true);
-	}
-	else
-	{
-		Character->LaunchCharacter(LaunchForce, true, true);
-	}
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
 }

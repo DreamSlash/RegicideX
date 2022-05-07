@@ -37,25 +37,25 @@ class REGICIDEX_API ARGX_PlayerCharacter : public ACharacter, public IAbilitySys
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class USpringArmComponent* CameraBoom;
+	class USpringArmComponent* CameraBoom = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	class UCameraComponent* FollowCamera;
+	class UCameraComponent* FollowCamera = nullptr;
 
 	/** Ability System Component to be used */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	UMCV_AbilitySystemComponent* AbilitySystemComponent;
+	UMCV_AbilitySystemComponent* AbilitySystemComponent = nullptr;
 
 	/** Combo System Component to manage player combos */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combos, meta = (AllowPrivateAccess = "true"))
-	URGX_ComboSystemComponent* ComboSystemComponent;
+	URGX_ComboSystemComponent* ComboSystemComponent = nullptr;
 
 	// Attributes ---------------
 	UPROPERTY()
-	URGX_HealthAttributeSet* HealthAttributeSet;
+	URGX_HealthAttributeSet* HealthAttributeSet = nullptr;
 
 	UPROPERTY()
-	URGX_CombatAttributeSet* CombatAttributeSet;
+	URGX_CombatAttributeSet* CombatAttributeSet = nullptr;
 	// --------------------------
 public:
 	ARGX_PlayerCharacter();
@@ -69,7 +69,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FGenericTeamId CharacterTeam;
 
-	// TODO: Make a component to manage skills?
+	// TODO [REFACTOR]: Move this to AbilitySystemComponent.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<FGameplayTag> PowerSkills;
 
@@ -86,14 +86,32 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	float DefaultGravity = 3.0f;
 
-	virtual void BeginPlay() override;
+	UPROPERTY(EditDefaultsOnly)
+	float MaxWalkSpeed = 600.0f;
 
-	virtual void Tick(float DeltaTime) override;
+	void BeginPlay() override;
 
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+	void Tick(float DeltaTime) override;
+
+	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 	UFUNCTION(BlueprintNativeEvent)
 	void OnJump();
+
+	UFUNCTION()
+	void AddMovementVector(FVector MovementVector);
+
+	UFUNCTION()
+	void RemoveMovementVector();
+
+	UFUNCTION(BlueprintCallable)
+	void DisableMovementInput();
+
+	UFUNCTION(BlueprintCallable)
+	void EnableMovementInput();
+
+	UFUNCTION(BlueprintCallable)
+	void OnFollowCombo();
 
 protected:
 	/** Animation variables */
@@ -105,6 +123,17 @@ protected:
 
 	UPROPERTY()
 	float PitchChange;
+	// -----------------------
+
+	/** Move variables */
+	UPROPERTY()
+	FVector MoveVector = FVector(0.0f);
+
+	UPROPERTY()
+	bool bAddMoveVector = false;
+
+	UPROPERTY()
+	bool bIgnoreInputMoveVector = false;
 	// -----------------------
 
 	UPROPERTY()
@@ -134,14 +163,14 @@ protected:
 
 protected:
 	// --- APawn interface ---
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	virtual void PossessedBy(AController* NewController) override;
+	void PossessedBy(AController* NewController) override;
 	// -----------------------
 
 	// FGenericTeamId interface
-	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
-	virtual FGenericTeamId GetGenericTeamId() const override;
+	void SetGenericTeamId(const FGenericTeamId& TeamID) override;
+	FGenericTeamId GetGenericTeamId() const override;
 	// End of FGenericTeamId interface
 
 	// Combat input functions that redirect the managing of the input to the combat system passing 
@@ -171,14 +200,14 @@ public:
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 	/** GameplayTagAssetInterface methods */
-	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
-	virtual bool HasMatchingGameplayTag(FGameplayTag TagToCheck) const override;
-	virtual bool HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
-	virtual bool HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
+	void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
+	bool HasMatchingGameplayTag(FGameplayTag TagToCheck) const override;
+	bool HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
+	bool HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
 
 	/** RX_GameplayTagInterface methods */
-	virtual void AddGameplayTag(const FGameplayTag& TagToAdd) override;
-	virtual void RemoveGameplayTag(const FGameplayTag& TagToRemove) override;
+	void AddGameplayTag(const FGameplayTag& TagToAdd) override;
+	void RemoveGameplayTag(const FGameplayTag& TagToRemove) override;
 
 	/** Utility methods */
 	UFUNCTION(BlueprintCallable)

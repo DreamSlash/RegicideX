@@ -37,6 +37,7 @@ ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 	GetCharacterMovement()->JumpZVelocity = 600.0f;
 	GetCharacterMovement()->AirControl = 0.2f;
 	GetCharacterMovement()->GravityScale = DefaultGravity;
+	GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
 
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -66,7 +67,6 @@ void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAction("LightAttack", IE_Pressed, this, &ARGX_PlayerCharacter::ManageLightAttackInput);
 	PlayerInputComponent->BindAction("HeavyAttack", IE_Pressed, this, &ARGX_PlayerCharacter::ManageHeavyAttackInput);
 	PlayerInputComponent->BindAction("SwitchPowerSkill", IE_Pressed, this, &ARGX_PlayerCharacter::ChangePowerSkill);
-	//PlayerInputComponent->BindAction("PowerSkill", IE_Pressed, this, &ARGX_PlayerCharacter::ManagePowerSkillInput);
 	PlayerInputComponent->BindAction("TimeScale", IE_Pressed, this, &ARGX_PlayerCharacter::ChangeTimeScale);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ARGX_PlayerCharacter::MoveForward);
@@ -82,11 +82,6 @@ void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 
 
 	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"), FString("CancelTarget"), FString("EMCVAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::Confirm), static_cast<int32>(EMCVAbilityInputID::Cancel)));
-	//AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("PowerSkill"), FString("CancelPowerSkill"), FString("EMCVAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::PowerSkill), static_cast<int32>(EMCVAbilityInputID::CancelPowerSkill)));
-	//AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("Jump"), FString("StopJump"), FString("EMCVAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::Jump), static_cast<int32>(EMCVAbilityInputID::StopJump)));
-	//AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("Evasion"), FString("StopEvasion"), FString("EMCVAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::Evasion), static_cast<int32>(EMCVAbilityInputID::CancelEvasion)));
-	//AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("LightAttack"), FString("CancelLightAttack"), FString("EMCVAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::LightAttack), static_cast<int32>(EMCVAbilityInputID::CancelLightAttack)));
-	//AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("HeavyAttack"), FString("CancelHeavyAttack"), FString("EMCVAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::HeavyAttack), static_cast<int32>(EMCVAbilityInputID::CancelHeavyAttack)));
 }
 
 void ARGX_PlayerCharacter::PossessedBy(AController* NewController)
@@ -106,12 +101,36 @@ FGenericTeamId ARGX_PlayerCharacter::GetGenericTeamId() const
 
 void ARGX_PlayerCharacter::ManageLightAttackInput()
 {
-	ComboSystemComponent->ManageInputToken(ERGXPlayerInputID::LightAttackInput);
+	FGameplayTag NextAttack = ComboSystemComponent->ManageInputToken(ERGXPlayerInputID::LightAttackInput);
+
+	if (NextAttack == FGameplayTag::RequestGameplayTag(FName("Combo.Light")))
+	{
+		FGameplayEventData EventData;
+		int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(NextAttack, &EventData);
+		UE_LOG(LogTemp, Warning, TEXT("Triggered Abilities: %d\n"), TriggeredAbilities);
+		// clean state if ability was not activated
+		if (TriggeredAbilities == 0)
+		{
+			ComboSystemComponent->OnEndCombo();
+		}
+	}
 }
 
 void ARGX_PlayerCharacter::ManageHeavyAttackInput()
 {
-	ComboSystemComponent->ManageInputToken(ERGXPlayerInputID::HeavyAttackInput);
+	FGameplayTag NextAttack = ComboSystemComponent->ManageInputToken(ERGXPlayerInputID::HeavyAttackInput);
+
+	if (NextAttack == FGameplayTag::RequestGameplayTag(FName("Combo.Heavy")))
+	{
+		FGameplayEventData EventData;
+		int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(NextAttack, &EventData);
+		UE_LOG(LogTemp, Warning, TEXT("Triggered Abilities: %d\n"), TriggeredAbilities);
+		// clean state if ability was not activated
+		if (TriggeredAbilities == 0)
+		{
+			ComboSystemComponent->OnEndCombo();
+		}
+	}
 }
 
 void ARGX_PlayerCharacter::ManagePowerSkillInput()
@@ -128,6 +147,7 @@ void ARGX_PlayerCharacter::ManagePowerSkillInput()
 	AbilitySystemComponent->HandleGameplayEvent(PowerSkills[CurrentSkillSelected], &EventData);
 }
 
+// TODO [REFACTOR]: Component for autoassist
 void ARGX_PlayerCharacter::PerformAttackAutoAssist()
 {
 	FVector PlayerLocation = GetActorLocation();
@@ -203,7 +223,7 @@ void ARGX_PlayerCharacter::PerformAttackAutoAssist()
 
 bool ARGX_PlayerCharacter::IsBeingAttacked()
 {
-	FVector PlayerLocation = GetActorLocation();
+	const FVector PlayerLocation = GetActorLocation();
 
 	TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjectTypes;
 	TraceObjectTypes.Add(DodgeableObjectType);
@@ -215,7 +235,7 @@ bool ARGX_PlayerCharacter::IsBeingAttacked()
 
 	TArray<AActor*> OutActors;
 
-	bool bIsBeingAttacked = UKismetSystemLibrary::SphereOverlapActors(
+	const bool bIsBeingAttacked = UKismetSystemLibrary::SphereOverlapActors(
 		GetWorld(), PlayerLocation, 200.0f, TraceObjectTypes, nullptr, IgnoreActors, OutActors
 	);
 
@@ -334,12 +354,15 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 	LeanAmount = UKismetMathLibrary::FInterpTo(LeanAmount, LeanInfo.LeanAmount, DeltaTime, LeanInfo.InterSpeed);
 	// ------------------
 
+	/**TODO [REFACTOR]: On combo function event must be placed in PlayerCharacter. 
+	On combo calls the combo system for next attack and cleans combo system state*/
+	/*
 	// Combo system
 	FGameplayTag NextAttack = ComboSystemComponent->GetNextAttack();
 	if (NextAttack != FGameplayTag::RequestGameplayTag("Combo.None"))
 	{
 		// Call AbilityComponentSystem
-		FString NextAttackString = NextAttack.ToString();
+		//FString NextAttackString = NextAttack.ToString();
 		//UE_LOG(LogTemp, Warning, TEXT("Next Attack: %s\n"), *NextAttackString);
 
 		// Fire next attack
@@ -352,7 +375,7 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 		ComboSystemComponent->CleanStatus(TriggeredAbilities);
 	}
 	// --------------------
-
+	*/
 	if (IsBeingAttacked())
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("Being Attacked\n"));
@@ -364,6 +387,51 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 UAbilitySystemComponent* ARGX_PlayerCharacter::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
+}
+
+void ARGX_PlayerCharacter::AddMovementVector(FVector MovementVector)
+{
+	MoveVector = MovementVector;
+	bAddMoveVector = true;
+}
+
+void ARGX_PlayerCharacter::RemoveMovementVector()
+{
+	MoveVector = FVector(0.0f);
+	bAddMoveVector = false;
+}
+
+void ARGX_PlayerCharacter::DisableMovementInput()
+{
+	bIgnoreInputMoveVector = true;
+}
+
+void ARGX_PlayerCharacter::EnableMovementInput()
+{
+	bIgnoreInputMoveVector = false;
+}
+
+void ARGX_PlayerCharacter::OnFollowCombo()
+{
+	ComboSystemComponent->OnCombo();
+
+	UE_LOG(LogTemp, Warning, TEXT("On Follow Combo\n"));
+
+	FGameplayTag NextAttack = ComboSystemComponent->GetNextAttack();
+	if (NextAttack != FGameplayTag::RequestGameplayTag("Combo.None"))
+	{
+		FString NextAttackString = NextAttack.ToString();
+		UE_LOG(LogTemp, Warning, TEXT("Next Attack: %s\n"), *NextAttackString);
+		
+		// Fire next attack
+		FGameplayEventData EventData;
+		int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(NextAttack, &EventData);
+
+		UE_LOG(LogTemp, Warning, TEXT("Triggered Abilities: %d\n"), TriggeredAbilities);
+
+		// Clear next attack status
+		ComboSystemComponent->CleanStatus(TriggeredAbilities);
+	}
 }
 
 void ARGX_PlayerCharacter::MoveForward(float Value)

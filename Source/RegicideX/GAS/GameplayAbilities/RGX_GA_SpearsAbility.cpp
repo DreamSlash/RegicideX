@@ -23,34 +23,30 @@ void URGX_SpearsAbility::CastSpearsAttack(AActor* CasterActor)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Cast Spears Attack\n"));
 	
-	float AnglePerSpear = SpearsSpawnAngle / (MaxNumSpears - 1);
+	const float AnglePerSpear = SpearsSpawnAngle / (MaxNumSpears - 1);
 
 	for (int i = 0; i < MaxNumSpears - 1; ++i)
 	{
-		FVector CasterLocation = CasterActor->GetActorLocation();
-		FVector Right = CasterActor->GetActorRightVector();
-		FVector Forward = CasterActor->GetActorForwardVector();
+		const FVector CasterLocation = CasterActor->GetActorLocation();
+		const FVector Right = CasterActor->GetActorRightVector();
+		const FVector Forward = CasterActor->GetActorForwardVector();
 
 		// Rotation around caster forward's vector
 		float SpearAngle = AnglePerSpear * i;
-		FVector SpearOffsetRotation = Right.RotateAngleAxis(SpearAngle, Forward);
+		const FVector SpearOffsetRotation = Right.RotateAngleAxis(SpearAngle, Forward);
 
 		// Place the spear away from the caster and rotated around forward
-		FVector SpawnLocation = CasterActor->GetActorLocation();
-		FVector SpearOffset = DistanceFromCaster * SpearOffsetRotation;
-		SpawnLocation += SpearOffset;
+		const FVector SpearOffset = DistanceFromCaster * SpearOffsetRotation;
+		const FVector SpawnLocation = CasterActor->GetActorLocation() + SpearOffset;
 
-		FRotator SpawnRotation = CasterActor->GetActorRotation();
+		const FRotator SpawnRotation = CasterActor->GetActorRotation();
 
 		ARGX_SpearProjectile* SpawnedSpear = GetWorld()->SpawnActor<ARGX_SpearProjectile>(SpearProjectileClass, SpawnLocation, SpawnRotation);
 		SpawnedSpear->Angle = SpearAngle;
 		SpawnedSpear->Caster = CasterActor;
 
-		IGenericTeamAgentInterface* TeamAgent = Cast<IGenericTeamAgentInterface>(CasterActor);
-
-		if (TeamAgent != nullptr)
+		if (const IGenericTeamAgentInterface* TeamAgent = Cast<IGenericTeamAgentInterface>(CasterActor))
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Not null manuela\n"));
 			SpawnedSpear->CharacterTeam = TeamAgent->GetGenericTeamId();
 		}
 
