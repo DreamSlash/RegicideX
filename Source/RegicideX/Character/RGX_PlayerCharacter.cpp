@@ -11,6 +11,7 @@
 #include "../GameplayFramework/RGX_PlayerState.h" // TODO: write path to project settings
 #include "../Components/RGX_ComboSystemComponent.h"
 #include "../GAS/AttributeSets/RGX_HealthAttributeSet.h"
+#include "../GAS/AttributeSets/RGX_MovementAttributeSet.h"
 #include "../GAS/AttributeSets/RGX_CombatAttributeSet.h"
 #include "../Actors/Enemies/RGX_EnemyBase.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -55,6 +56,7 @@ ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 	ComboSystemComponent = CreateDefaultSubobject<URGX_ComboSystemComponent>(TEXT("ComboSystemComponent"));
 	CombatAssistComponent = CreateDefaultSubobject<URGX_CombatAssistComponent>(TEXT("CombatAssistComponent"));
 	HealthAttributeSet = CreateDefaultSubobject<URGX_HealthAttributeSet>(TEXT("HealthAttributeSet"));
+	MovementAttributeSet = CreateDefaultSubobject<URGX_MovementAttributeSet>(TEXT("MovementAttributeSet"));
 	CombatAttributeSet = CreateDefaultSubobject<URGX_CombatAttributeSet>(TEXT("CombatAttributeSet"));
 }
 
@@ -88,6 +90,8 @@ void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 void ARGX_PlayerCharacter::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
+
+	AddGameplayTag(FGameplayTag::RequestGameplayTag("PossessedBy.Player"));
 }
 
 void ARGX_PlayerCharacter::SetGenericTeamId(const FGenericTeamId& TeamID)

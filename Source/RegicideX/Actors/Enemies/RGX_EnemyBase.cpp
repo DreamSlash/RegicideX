@@ -25,13 +25,19 @@ void ARGX_EnemyBase::BeginPlay()
 
 }
 
+void ARGX_EnemyBase::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+	AddGameplayTag(FGameplayTag::RequestGameplayTag("RGXCharacter.Enemy"));
+}
+
 void ARGX_EnemyBase::MoveToTarget(float DeltaTime, FVector TargetPos)
 {
 	if (TargetActor)
 	{
 		const FVector MyFront = this->GetActorForwardVector();
 		const FVector CurrentLocation = this->GetActorLocation();
-		const FVector NewLocation = CurrentLocation + MyFront * MoveSpeed * DeltaTime;
+		FVector NewLocation = CurrentLocation + MyFront * MoveSpeed * DeltaTime;
 		this->SetActorLocation(NewLocation);
 	}
 }
@@ -45,6 +51,17 @@ void ARGX_EnemyBase::RotateToTarget(float DeltaTime)
 		const FRotator RotOffset = UKismetMathLibrary::FindLookAtRotation(MyLocation, TargetLocation);
 		const FRotator NewRotation = FMath::Lerp(this->GetActorRotation(), RotOffset, DeltaTime * InterpSpeed);
 		this->SetActorRotation(NewRotation);
+	}
+}
+
+void ARGX_EnemyBase::RotateToTarget()
+{
+	if (TargetActor)
+	{
+		const FVector MyLocation = this->GetActorLocation();
+		const FVector TargetLocation = TargetActor->GetActorLocation();
+		const FRotator RotOffset = UKismetMathLibrary::FindLookAtRotation(MyLocation, TargetLocation);
+		this->SetActorRotation(RotOffset);
 	}
 }
 

@@ -11,6 +11,7 @@
 
 USTRUCT()
 struct FAttackInfo {
+
 	GENERATED_BODY()
 
 	UPROPERTY()
@@ -51,6 +52,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float AttackRadius = 700.0f;
 
+
 protected:
 	/** Ability System Component to be used */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -70,7 +72,9 @@ public:
 
 protected:
 	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	void BeginPlay() override;
+
+	void PossessedBy(AController* NewController) override;
 
 	// FGenericTeamId interface
 	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
@@ -80,6 +84,8 @@ protected:
 public:
 	/** Movement methods */
 	virtual void RotateToTarget(float DeltaTime);
+
+	virtual void RotateToTarget();
 
 	virtual void MoveToTarget(float DeltaTime, FVector TargetPos);
 

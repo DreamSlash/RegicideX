@@ -18,6 +18,7 @@ class URGX_AbilitySystemComponent;
 class URGX_ComboSystemComponent;
 class URGX_CombatAssistComponent;
 class URGX_HealthAttributeSet;
+class URGX_MovementAttributeSet;
 class URGX_CombatAttributeSet;
 
 USTRUCT()
@@ -62,6 +63,9 @@ class REGICIDEX_API ARGX_PlayerCharacter : public ACharacter, public IAbilitySys
 
 	UPROPERTY()
 	URGX_CombatAttributeSet* CombatAttributeSet = nullptr;
+
+	URGX_MovementAttributeSet* MovementAttributeSet;
+
 	// --------------------------
 public:
 	ARGX_PlayerCharacter();
