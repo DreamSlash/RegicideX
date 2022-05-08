@@ -12,7 +12,8 @@
 				"Engine",
 				"AIModule",
 				"MCVGASFramework",
-				"GameplayAbilities"
+				"GameplayAbilities",
+				"AIModule"
 			]
 		}
 	]
