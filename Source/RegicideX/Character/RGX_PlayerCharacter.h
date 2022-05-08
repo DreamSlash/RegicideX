@@ -19,6 +19,19 @@ class URGX_HealthAttributeSet;
 class URGX_MovementAttributeSet;
 class URGX_CombatAttributeSet;
 
+USTRUCT()
+struct FRGX_LeanInfo
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY()
+	float LeanAmount;
+
+	UPROPERTY(EditAnywhere)
+	float InterSpeed;
+};
+
 UCLASS(config = Game)
 class REGICIDEX_API ARGX_PlayerCharacter : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface, public IGenericTeamAgentInterface
 {
@@ -71,11 +84,35 @@ public:
 	FGameplayTag CurrentSkillTag;
 	//--------------------------
 
+	UPROPERTY(EditDefaultsOnly)
+	TEnumAsByte<EObjectTypeQuery> DodgeableObjectType;
+
+	UPROPERTY(EditDefaultsOnly)
+	float DefaultGravity = 3.0f;
+
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaTime) override;
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
+
+	UFUNCTION(BlueprintNativeEvent)
+	void OnJump();
+
+protected:
+	/** Animation variables */
+	UPROPERTY(BlueprintReadOnly)
+	float LeanAmount;
+
+	UPROPERTY()
+	float YawChange;
+
+	UPROPERTY()
+	float PitchChange;
+	// -----------------------
+
+	UPROPERTY()
+	bool bTimeScale = false;
 
 protected:
 	/** Called for forwards/backwards input */
@@ -96,6 +133,9 @@ protected:
 	 */
 	void LookUpAtRate(float Rate);
 
+	//** Animation Functions */
+	FRGX_LeanInfo CalculateLeanAmount();
+
 protected:
 	// --- APawn interface ---
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -115,11 +155,17 @@ protected:
 	void ManageHeavyAttackInput();
 
 	void ManagePowerSkillInput();
+	// ----------------------------------
+
+	UFUNCTION(BlueprintCallable)
+	void PerformAttackAutoAssist();
 
 	void ChangePowerSkill();
 
 	// Debug
 	void PrintDebugInformation();
+
+	void ChangeTimeScale();
 	// ----------------
 
 public:
@@ -137,4 +183,8 @@ public:
 	/** RX_GameplayTagInterface methods */
 	virtual void AddGameplayTag(const FGameplayTag& TagToAdd) override;
 	virtual void RemoveGameplayTag(const FGameplayTag& TagToRemove) override;
+
+	/** Utility methods */
+	UFUNCTION(BlueprintCallable)
+	bool IsBeingAttacked();
 };

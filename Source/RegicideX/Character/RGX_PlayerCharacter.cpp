@@ -13,6 +13,10 @@
 #include "../GAS/AttributeSets/RGX_HealthAttributeSet.h"
 #include "../GAS/AttributeSets/RGX_MovementAttributeSet.h"
 #include "../GAS/AttributeSets/RGX_CombatAttributeSet.h"
+#include "../Actors/Enemies/RGX_EnemyBase.h"
+#include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 {
@@ -33,6 +37,7 @@ ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f);
 	GetCharacterMovement()->JumpZVelocity = 600.0f;
 	GetCharacterMovement()->AirControl = 0.2f;
+	GetCharacterMovement()->GravityScale = DefaultGravity;
 
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -64,6 +69,7 @@ void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAction("HeavyAttack", IE_Pressed, this, &ARGX_PlayerCharacter::ManageHeavyAttackInput);
 	PlayerInputComponent->BindAction("SwitchPowerSkill", IE_Pressed, this, &ARGX_PlayerCharacter::ChangePowerSkill);
 	//PlayerInputComponent->BindAction("PowerSkill", IE_Pressed, this, &ARGX_PlayerCharacter::ManagePowerSkillInput);
+	PlayerInputComponent->BindAction("TimeScale", IE_Pressed, this, &ARGX_PlayerCharacter::ChangeTimeScale);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ARGX_PlayerCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ARGX_PlayerCharacter::MoveRight);
@@ -126,6 +132,100 @@ void ARGX_PlayerCharacter::ManagePowerSkillInput()
 	AbilitySystemComponent->HandleGameplayEvent(PowerSkills[CurrentSkillSelected], &EventData);
 }
 
+void ARGX_PlayerCharacter::PerformAttackAutoAssist()
+{
+	FVector PlayerLocation = GetActorLocation();
+
+	float radius = 300.0f;
+
+	TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjectTypes;
+	TraceObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Pawn));
+
+	UClass* SeekClass = ARGX_EnemyBase::StaticClass();
+
+	TArray<AActor*> IgnoreActors;
+	TArray<AActor*> OutActors;
+
+	// Check for nearby enemies
+	if (UKismetSystemLibrary::SphereOverlapActors(GetWorld(), PlayerLocation, radius, TraceObjectTypes, SeekClass, IgnoreActors, OutActors) == false)
+		return;
+
+	float CurrentClosestDistance = INFINITY;
+	FVector NearestEnemyLocation = FVector(0.0f, 0.0f, 0.0f);
+	bool bHasTarget = false;
+
+	// Check the closest enemy inside a cone in front of the player
+	for (AActor* Actor : OutActors)
+	{
+		ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(Actor);
+
+		bool bIsDead = Enemy->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.Dead")));
+
+		if (bIsDead == true)
+			continue;
+
+		FVector EnemyLocation = Enemy->GetActorLocation();
+
+		float Distance = FVector::Dist(PlayerLocation, EnemyLocation);
+		
+		FVector PlayerToEnemyVector = EnemyLocation - PlayerLocation;
+		PlayerToEnemyVector.Normalize();
+
+		FVector PlayerForward = GetActorForwardVector();
+
+		// Cone check
+		float Dot = FVector::DotProduct(PlayerToEnemyVector, PlayerForward);
+
+		if (Distance < CurrentClosestDistance && Dot > 0.5f)
+		{
+			CurrentClosestDistance = Distance;
+			NearestEnemyLocation = EnemyLocation;
+			bHasTarget = true;
+		}
+	}
+
+	if (bHasTarget == false)
+		return;
+
+	FVector PlayerToEnemyVector = NearestEnemyLocation - PlayerLocation;
+	FRotator Rotation = UKismetMathLibrary::MakeRotFromX(PlayerToEnemyVector);
+
+	SetActorRotation(Rotation);
+
+	float OffsetToEnemy = 150.0f;
+
+	if (CurrentClosestDistance > OffsetToEnemy == false)
+		return;
+
+	FVector AssistDirection = FVector(PlayerToEnemyVector.X, PlayerToEnemyVector.Y, 0.0f);
+	AssistDirection.Normalize();
+
+	FVector FinalLocation = PlayerLocation + AssistDirection * (CurrentClosestDistance - OffsetToEnemy);
+
+	SetActorLocation(FinalLocation);
+}
+
+bool ARGX_PlayerCharacter::IsBeingAttacked()
+{
+	FVector PlayerLocation = GetActorLocation();
+
+	TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjectTypes;
+	TraceObjectTypes.Add(DodgeableObjectType);
+
+	UClass* SeekClass = ARGX_EnemyBase::StaticClass();
+
+	TArray<AActor*> IgnoreActors;
+	IgnoreActors.Init(this, 1);
+
+	TArray<AActor*> OutActors;
+
+	bool bIsBeingAttacked = UKismetSystemLibrary::SphereOverlapActors(
+		GetWorld(), PlayerLocation, 200.0f, TraceObjectTypes, nullptr, IgnoreActors, OutActors
+	);
+
+	return OutActors.Num() > 0;
+}
+
 void ARGX_PlayerCharacter::ChangePowerSkill()
 {
 	if (PowerSkills.Num() < 2)
@@ -150,6 +250,7 @@ void ARGX_PlayerCharacter::PrintDebugInformation()
 	TArray<FGameplayAttribute> attributes;
 	AbilitySystemComponent->GetAllAttributes(attributes);
 
+	/*
 	for (FGameplayAttribute& attribute : attributes)
 	{
 		FString AttributeName = attribute.GetName();
@@ -167,6 +268,23 @@ void ARGX_PlayerCharacter::PrintDebugInformation()
 	else
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Has Power Spears tag: FALSE\n"));
+	}
+	*/
+
+	ComboSystemComponent->DrawDebugInfo();
+}
+
+void ARGX_PlayerCharacter::ChangeTimeScale()
+{
+	if (bTimeScale == false)
+	{
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.3f);
+		bTimeScale = true;
+	}
+	else
+	{
+		UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
+		bTimeScale = false;
 	}
 }
 
@@ -213,22 +331,38 @@ void ARGX_PlayerCharacter::BeginPlay()
 
 void ARGX_PlayerCharacter::Tick(float DeltaTime)
 {
+	Super::Tick(DeltaTime);
+
+	// Leaning
+	FRGX_LeanInfo LeanInfo = CalculateLeanAmount();
+	LeanAmount = UKismetMathLibrary::FInterpTo(LeanAmount, LeanInfo.LeanAmount, DeltaTime, LeanInfo.InterSpeed);
+	// ------------------
+
 	// Combo system
 	FGameplayTag NextAttack = ComboSystemComponent->GetNextAttack();
 	if (NextAttack != FGameplayTag::RequestGameplayTag("Combo.None"))
 	{
 		// Call AbilityComponentSystem
 		FString NextAttackString = NextAttack.ToString();
-		UE_LOG(LogTemp, Warning, TEXT("Next Attack: %s\n"), *NextAttackString);
+		//UE_LOG(LogTemp, Warning, TEXT("Next Attack: %s\n"), *NextAttackString);
 
 		// Fire next attack
 		FGameplayEventData EventData;
-		AbilitySystemComponent->HandleGameplayEvent(NextAttack, &EventData);
+		int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(NextAttack, &EventData);
+
+		//UE_LOG(LogTemp, Warning, TEXT("Triggered Abilities: %d\n"), TriggeredAbilities);
 
 		// Clear next attack status
-		ComboSystemComponent->CleanNextAttack();
+		ComboSystemComponent->CleanStatus(TriggeredAbilities);
 	}
 	// --------------------
+
+	if (IsBeingAttacked())
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("Being Attacked\n"));
+	}
+
+	UKismetSystemLibrary::DrawDebugCircle(GetWorld(), GetActorLocation(), 200.0f, 24, FLinearColor::Green, 0.0f, 0.0f, FVector(0.0f, 1.0f, 0.0f), FVector(1.0f, 0.0f, 0.0f));
 }
 
 UAbilitySystemComponent* ARGX_PlayerCharacter::GetAbilitySystemComponent() const
@@ -268,10 +402,38 @@ void ARGX_PlayerCharacter::MoveRight(float Value)
 
 void ARGX_PlayerCharacter::TurnAtRate(float Rate)
 {
-	AddControllerYawInput(Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds());
+	YawChange = Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds();
+	AddControllerYawInput(YawChange);
 }
 
 void ARGX_PlayerCharacter::LookUpAtRate(float Rate)
 {
-	AddControllerPitchInput(Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds());
+	PitchChange = Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds();
+	AddControllerPitchInput(PitchChange);
+}
+
+FRGX_LeanInfo ARGX_PlayerCharacter::CalculateLeanAmount()
+{
+	FRGX_LeanInfo LeanInfo;
+
+	const float YawChangeClamped = UKismetMathLibrary::FClamp(YawChange, -1.0f, 1.0f);
+	const bool bInsuficientVelocity = GetCharacterMovement()->IsFalling() || GetVelocity().Size() < 5.0f;
+
+	if (bInsuficientVelocity == true)
+	{
+		LeanInfo.LeanAmount = 0.0f;
+		LeanInfo.InterSpeed = 10.0f;
+	}
+	else
+	{
+		LeanInfo.LeanAmount = YawChangeClamped;
+		LeanInfo.InterSpeed = 1.0f;
+	}
+
+	return LeanInfo;
+}
+
+void ARGX_PlayerCharacter::OnJump_Implementation()
+{
+
 }

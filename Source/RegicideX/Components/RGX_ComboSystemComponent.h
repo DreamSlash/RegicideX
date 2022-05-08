@@ -33,7 +33,7 @@ public:
 
 	void ManageInputToken(ERGXPlayerInputID PlayerInput);
 	FGameplayTag GetNextAttack();
-	void CleanNextAttack();
+	void CleanStatus(int32 ActivatedAbilities);
 
 protected:
 
@@ -85,4 +85,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void OnEndCombo();
+
+	UFUNCTION()
+	void DrawDebugInfo();
 };
