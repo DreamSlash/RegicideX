@@ -6,6 +6,8 @@
 #include "GameFramework/Actor.h"
 #include "RGX_RingWave.generated.h"
 
+class UStaticMeshComponent;
+
 UCLASS()
 class REGICIDEX_API ARGX_RingWave : public AActor
 {
@@ -15,15 +17,24 @@ public:
 	// Sets default values for this actor's properties
 	ARGX_RingWave();
 
-public:
-	void Tick(float DeltaTime) override;
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent* StaticMeshComponent = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float RingTimeLife = 2.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float ScaleSpeed = 10.0f;
 
 protected:
-	// Called when the game starts or when spawned
 	void BeginPlay() override;
 
 public:
+	void Tick(float DeltaTime) override;
+
+public:
 	UFUNCTION()
-	void HitActor(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void DamageActor(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 };

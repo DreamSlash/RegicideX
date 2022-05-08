@@ -7,7 +7,6 @@
 #include "AbilitySystemComponent.h"
 #include "Components/BoxComponent.h"
 #include "GameplayTags.h"
-#include "../../GAS/Effects/RGX_SlowEffect.h"
 
 // Sets default values
 ARGX_SlowWall::ARGX_SlowWall()

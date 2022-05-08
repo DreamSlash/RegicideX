@@ -2,12 +2,12 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/MCV_GameplayAbility.h"
-#include "RGX_SlowWallAbility.generated.h"
+#include "RGX_GroundExplosionAbility.generated.h"
 
-class ARGX_SlowWall;
+class ARGX_GroundExplosion;
 
 UCLASS()
-class REGICIDEX_API URGX_SlowWallAbility : public UMCV_GameplayAbility
+class REGICIDEX_API URGX_GroundExplosionAbility : public UMCV_GameplayAbility
 {
 	GENERATED_BODY()
 
@@ -15,9 +15,6 @@ class REGICIDEX_API URGX_SlowWallAbility : public UMCV_GameplayAbility
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float DistanceToTarget = 300.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSubclassOf<ARGX_SlowWall> WallActorClass;
+	TSubclassOf<ARGX_GroundExplosion> ExplosionActorClass;
 
 };
