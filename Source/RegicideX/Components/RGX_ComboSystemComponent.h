@@ -28,10 +28,10 @@ class REGICIDEX_API URGX_ComboSystemComponent : public UActorComponent
 public:
 	URGX_ComboSystemComponent();
 
-	virtual void BeginPlay() override;
-	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
+	void BeginPlay() override;
+	void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
-	void ManageInputToken(ERGXPlayerInputID PlayerInput);
+	FGameplayTag ManageInputToken(ERGXPlayerInputID PlayerInput);
 	FGameplayTag GetNextAttack();
 	void CleanStatus(int32 ActivatedAbilities);
 
@@ -60,9 +60,6 @@ protected:
 
 protected:
 
-	UFUNCTION(BlueprintCallable, Category = "Combo", Meta = (DisplayName = "IsAttacking"))
-	bool IsAttacking();
-
 	UFUNCTION()
 	void SetNextComboAttack(ERGXPlayerInputID PlayerInput);
 
@@ -74,16 +71,19 @@ protected:
 
 public:
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Combo", Meta = (DisplayName = "IsAttacking"))
+	bool IsAttacking();
+
+	UFUNCTION(BlueprintCallable, Category = "Combo", Meta = (DisplayName = "OnCombo"))
 	void OnCombo();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Combo", Meta = (DisplayName = "OnEnableCombo"))
 	void OnEnableCombo();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Combo", Meta = (DisplayName = "OnDisableCombo"))
 	void OnDisableCombo();
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintCallable, Category = "Combo", Meta = (DisplayName = "OnEndCombo"))
 	void OnEndCombo();
 
 	UFUNCTION()

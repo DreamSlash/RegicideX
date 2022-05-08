@@ -9,7 +9,7 @@ public class RegicideX : ModuleRules
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay",
-		"GameplayTags", "AIModule", "GameplayTasks"});
+		"GameplayTags", "AIModule", "GameplayTasks", "NavigationSystem"});
 
 
 		PublicDependencyModuleNames.Add("GameplayAbilities");

@@ -12,7 +12,7 @@ URGX_HitboxComponent::URGX_HitboxComponent()
 void URGX_HitboxComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	OnComponentBeginOverlap.AddDynamic(this, &URGX_HitboxComponent::OnComponentOverlap);
+	//OnComponentBeginOverlap.AddDynamic(this, &URGX_HitboxComponent::OnComponentOverlap);
 
 	if (bStartActive)
 	{
