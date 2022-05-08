@@ -77,7 +77,9 @@ void URGX_CombatAssistComponent::PerformAttackAutoAssist()
 		return;
 
 	const FVector PlayerToEnemyVector = NearestEnemyLocation - PlayerLocation;
-	const FRotator Rotation = UKismetMathLibrary::MakeRotFromX(PlayerToEnemyVector);
+	FRotator Rotation = UKismetMathLibrary::MakeRotFromX(PlayerToEnemyVector);
+	Rotation.Pitch = 0.0f;
+	Rotation.Roll = 0.0f;
 
 	PlayerActor->SetActorRotation(Rotation);
 
