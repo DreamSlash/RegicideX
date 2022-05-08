@@ -48,10 +48,12 @@ void ARGX_Bullet::Tick(float DeltaTime)
 
 void ARGX_Bullet::Move(float DeltaTime)
 {
-	FVector MyFront = this->GetActorForwardVector();
-	MyFront.Normalize();
-	FVector CurrentLocation = this->GetActorLocation();
-	FVector NewLocation = CurrentLocation + MyFront * MoveSpeed * DeltaTime;
+	const FVector MyFront = this->GetActorForwardVector();
+
+	const FVector CurrentLocation = this->GetActorLocation();
+
+	const FVector NewLocation = CurrentLocation + MyFront * MoveSpeed * DeltaTime;
+
 	this->SetActorLocation(NewLocation);
 }
 

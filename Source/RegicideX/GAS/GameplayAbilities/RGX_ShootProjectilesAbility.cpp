@@ -24,7 +24,6 @@ void URGX_ShootProjectilesAbility::Shoot(ARGX_DistanceAngel* DistAngel)
 	int count = DistAngel->SimpleBombsCount;
 	float offset = DistAngel->SimpleBombsOffset;
 
-
 	for (int i = -count; i <= count; i++) 
 	{
 		FRotator BulletRotation = DistAngel->GetActorRotation();

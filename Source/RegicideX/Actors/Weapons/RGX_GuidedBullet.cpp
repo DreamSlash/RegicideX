@@ -11,11 +11,6 @@ ARGX_GuidedBullet::ARGX_GuidedBullet() : ARGX_Bullet()
 
 }
 
-ARGX_GuidedBullet::ARGX_GuidedBullet(AActor* Target) : ARGX_Bullet()
-{
-
-}
-
 void ARGX_GuidedBullet::BeginPlay()
 {
 	Super::BeginPlay();

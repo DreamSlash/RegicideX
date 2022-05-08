@@ -66,10 +66,10 @@ protected:
 public:	
 
 	UFUNCTION()
-		void ComputeNewEndpoint(float DeltaTime);
+		void ComputeNewEndpoint(const float& DeltaTime);
 
 	UFUNCTION()
-		void MoveRay(float DeltaTime);
+		void MoveAndDrawRay(const float& DeltaTime);
 
 	UFUNCTION(BlueprintImplementableEvent)
 		void SpawnSplineMesh();
@@ -82,6 +82,9 @@ public:
 
 	UFUNCTION()
 		void SetFollowTargetTrue();
+
+	UFUNCTION()
+		void CheckRayTraces(FVector& NewLocation, const float& DeltaTime);
 
 };
 

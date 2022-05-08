@@ -31,8 +31,50 @@ void ARGX_LaserBeamWeapon::BeginPlay()
 	OwnerActor = GetOwner();
 }
 
+void ARGX_LaserBeamWeapon::CheckRayTraces(FVector& NewLocation, const float& DeltaTime)
+{
+	//Front ray to check if the ray is hitting some actor
+	FHitResult FrontRayTraceResult;
 
-void ARGX_LaserBeamWeapon::ComputeNewEndpoint(float DeltaTime)
+	const FVector FrontRaySrc = OwnerActor->GetActorLocation() + OwnerActor->GetActorForwardVector() * 200.0f;
+
+	const FVector FrontRayEndPoint = NewLocation;
+
+	//debug
+	UKismetSystemLibrary::DrawDebugPoint(GetWorld(), FrontRaySrc, 22, FColor(255, 0, 255), DeltaTime);
+	UKismetSystemLibrary::DrawDebugLine(
+		GetWorld(),
+		FrontRaySrc,
+		FrontRayEndPoint,
+		FColor(255, 0, 0),
+		DeltaTime,
+		5.0f
+	);
+
+	if (GetWorld()->LineTraceSingleByChannel(FrontRayTraceResult, FrontRaySrc, FrontRayEndPoint, ECollisionChannel::ECC_WorldStatic))
+	{
+		AActor* Actor = FrontRayTraceResult.GetActor();
+		if (Actor != nullptr) {
+			//If actor hitting target, apply damage effect
+			UE_LOG(LogTemp, Warning, TEXT("Hitting Actor: %s"), *Actor->GetName());
+		}
+	}
+
+	//Down ray to mantain endpoint in the ground
+	FHitResult DownRayTraceResult;
+
+	const FVector DownRaySrc = NewLocation;
+
+	const FVector DownRayEndPoint = NewLocation + EndPointMesh->GetUpVector() * -1000.0;
+
+	if (GetWorld()->LineTraceSingleByChannel(DownRayTraceResult, DownRaySrc, DownRayEndPoint, ECollisionChannel::ECC_WorldStatic)) {
+		FVector ImpactPoint = DownRayTraceResult.ImpactPoint;
+		NewLocation.Z = ImpactPoint.Z;
+	}
+
+}
+
+void ARGX_LaserBeamWeapon::ComputeNewEndpoint(const float& DeltaTime)
 {
 	const FVector MyLocation = EndPointMesh->K2_GetComponentLocation();
 
@@ -54,60 +96,13 @@ void ARGX_LaserBeamWeapon::ComputeNewEndpoint(float DeltaTime)
 
 	FVector NewLocation = MyLocation + MyForward * RaySpeed * DeltaTime;
 
-	//Rays
-
-	//InFrontRay
-	FHitResult RayTraceResult;
-
-	const FVector FrontRaySrc = OwnerActor->GetActorLocation() + OwnerActor->GetActorForwardVector() * 200.0f;
-
-	const FVector FrontRayEndPoint = NewLocation;
-
-	UKismetSystemLibrary::DrawDebugPoint(GetWorld(), FrontRaySrc, 22, FColor(255, 0, 255), DeltaTime);
-	UKismetSystemLibrary::DrawDebugLine(
-		GetWorld(),
-		FrontRaySrc,
-		FrontRayEndPoint,
-		FColor(255, 0, 0),
-		DeltaTime,
-		5.0f
-	);
-	if (GetWorld()->LineTraceSingleByChannel(RayTraceResult, FrontRaySrc, FrontRayEndPoint, ECollisionChannel::ECC_WorldStatic))
-	{
-		AActor* Actor = RayTraceResult.GetActor();
-		if (Actor != nullptr) {
-			UE_LOG(LogTemp, Warning, TEXT("Hitting Actor: %s"), *Actor->GetName());
-		}
-	}
-
-	//Down ray
-	FHitResult Result_Down;
-
-	FVector DownRaySrc = NewLocation;
-
-	FVector DownRayEndPoint = NewLocation + EndPointMesh->GetUpVector() * -1000.0;
-
-	if (GetWorld()->LineTraceSingleByChannel(Result_Down, DownRaySrc, DownRayEndPoint, ECollisionChannel::ECC_WorldStatic)) {
-			FVector ImpactPoint = Result_Down.ImpactPoint;
-			NewLocation.Z = ImpactPoint.Z;
-	}
+	CheckRayTraces(NewLocation, DeltaTime);
 
 	EndPointMesh->SetWorldLocation(NewLocation);
-
-	/*UKismetSystemLibrary::DrawDebugLine(
-		GetWorld(),
-		DownRaySrc,
-		DownRayEndPoint,
-		FColor(255, 0, 0),
-		DeltaTime,
-		5.0f
-	);*/
-	//UKismetSystemLibrary::DrawDebugPoint(GetWorld(), RaySrc, 22, FColor(255, 0, 255), DeltaTime);
-
 }
 
 
-void ARGX_LaserBeamWeapon::MoveRay(float DeltaTime)
+void ARGX_LaserBeamWeapon::MoveAndDrawRay(const float& DeltaTime)
 {
 	ComputeNewEndpoint(DeltaTime);
 
@@ -128,8 +123,8 @@ void ARGX_LaserBeamWeapon::MoveRay(float DeltaTime)
 		//PathSplineMeshes[0]->SetMaterial(0, Material);
 	}
 
-	FVector StartTangent = PathSplineComponent->GetTangentAtSplinePoint(0, ESplineCoordinateSpace::World);
-	FVector EndTangent = PathSplineComponent->GetTangentAtSplinePoint(1, ESplineCoordinateSpace::World);
+	const FVector StartTangent = PathSplineComponent->GetTangentAtSplinePoint(0, ESplineCoordinateSpace::World);
+	const FVector EndTangent = PathSplineComponent->GetTangentAtSplinePoint(1, ESplineCoordinateSpace::World);
 
 	PathSplineMeshes[0]->SetStartAndEnd(SourcePoint, StartTangent, EndPoint, EndTangent);
 }
@@ -149,6 +144,8 @@ void ARGX_LaserBeamWeapon::SetFollowTargetTrue()
 {
 	FollowTarget = true;
 }
+
+
 
 
 

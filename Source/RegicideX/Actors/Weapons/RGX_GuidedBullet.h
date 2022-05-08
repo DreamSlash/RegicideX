@@ -22,8 +22,6 @@ class REGICIDEX_API ARGX_GuidedBullet : public ARGX_Bullet
 public:
 	ARGX_GuidedBullet();
 
-	ARGX_GuidedBullet(AActor* Target);
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		AActor* TargetActor;
 

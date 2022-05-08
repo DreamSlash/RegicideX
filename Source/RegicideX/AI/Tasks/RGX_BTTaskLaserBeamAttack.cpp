@@ -43,7 +43,7 @@ void URGX_BTTaskLaserBeamAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uin
 	const FRotator RotOffset = UKismetMathLibrary::FindLookAtRotation(ActorLocation, EndPointLocation);
 	OwnerActor->SetActorRotation(RotOffset);
 
-	LaserWeapon->MoveRay(DeltaSeconds);
+	LaserWeapon->MoveAndDrawRay(DeltaSeconds);
 
 	FinishLatentTask(OwnerComp, EBTNodeResult::InProgress);
 }
