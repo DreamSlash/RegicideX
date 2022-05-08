@@ -29,18 +29,19 @@ void ARGX_EnemySpawner::BeginPlay()
 void ARGX_EnemySpawner::Spawn()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 4.0f, FColor::Blue, TEXT("Spawning enemies ..."));
-	AActor* actor = nullptr;
+	AActor* Actor = nullptr;
 	if (manager && manager->bCanSpawn)
 	{
 		if (manager->CurrentNumberOfPeasants < manager->MaxNumberOfPeasants)
 		{
-			int nToSpawn = manager->MaxNumberOfPeasants - manager->CurrentNumberOfPeasants;
+			const int NToSpawn = manager->MaxNumberOfPeasants - manager->CurrentNumberOfPeasants;
 			FVector SpawnerLocation = GetActorLocation();
-			for (int i = 0; i < nToSpawn; ++i)
+			for (int i = 0; i < NToSpawn; ++i)
 			{
 				FVector Location = FMath::RandPointInBox(SpawnBox) + FVector(0.0f, 0.0f, 90.0f);
 				FRotator Rotation(0.0f, 0.0f, 0.0f);
-				FTransform Transform(Rotation, Location);
+				const FTransform Transform(Rotation, Location);
+				
 				SpawnPeasant(Transform);
 			}
 			manager->OnPeasantAdded();

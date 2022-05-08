@@ -22,5 +22,8 @@ public:
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
 	USkeletalMesh* Mesh;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	UBlueprint* EnemyBP;
 	
 };

@@ -15,27 +15,51 @@ class REGICIDEX_API ARGX_ScoreGameState : public AGameStateBase
 	GENERATED_BODY()
 
 
+protected:
+	
+	UPROPERTY()
+	int Score;
+
+	UPROPERTY()
+	int Round;
+
+	UPROPERTY()
+	int NumEnemies;
+	
 public:
+
+	
 	ARGX_ScoreGameState();
 	virtual ~ARGX_ScoreGameState() = default;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int Score;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int Round;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int NumEnemies;
-	
+	/** Sets Score, Enemies and Rounds to default values for game start **/
 	UFUNCTION(BlueprintCallable)
-		bool EnemyDeath(int Type);
+		void SetStateDefaults();
 
+	/** Adds score depending on type, decreases enemy amount. Returns if there are no enemies remaining **/
+	UFUNCTION(BlueprintCallable)
+		bool OnEnemyDeath(int Type);
+
+	/** Manages the game state changes for round change. **/
 	UFUNCTION(BlueprintCallable)
 		int NextRound();
 
+	UFUNCTION(BlueprintPure)
+		int GetScore() const;
+
+	UFUNCTION(BlueprintPure)
+		int GetRound() const;
+	
+	UFUNCTION(BlueprintPure)
+		int GetNumEnemies() const;
+
 	UFUNCTION(BlueprintCallable)
-		void SetNumEnemies(int NewNumEnemies);
+		void SetScore(const int NewScore);
+	
+	UFUNCTION(BlueprintCallable)
+		void SetNumEnemies(const int NewNumEnemies);
+
+
 };
 
 

@@ -1,75 +1,72 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "RGX_ScoreGameMode.h"
+#include "RGX_RoundGameMode.h"
 
 #include "RGX_ScoreGameState.h"
 #include "Engine/AssetManager.h"
+#include "RegicideX/Data/RGX_EnemyDataAsset.h"
+#include "RegicideX/Data/RGX_RoundDataTable.h"
 
-ARGX_ScoreGameMode::ARGX_ScoreGameMode()
+ARGX_RoundGameMode::ARGX_RoundGameMode()
 {
 	GameStateClass = ARGX_ScoreGameState::StaticClass();
 }
 
-int ARGX_ScoreGameMode::GetScore() const
+int ARGX_RoundGameMode::GetScore() const
 {
-	return GetGameState<ARGX_ScoreGameState>()->Score;
+	return GetGameState<ARGX_ScoreGameState>()->GetScore();
 }
 
-void ARGX_ScoreGameMode::SetScore(const int NewScore)
+void ARGX_RoundGameMode::SetScore(const int NewScore)
 {
-	GetGameState<ARGX_ScoreGameState>()->Score = NewScore;
+	GetGameState<ARGX_ScoreGameState>()->SetScore(NewScore);
 
 }
 
-int ARGX_ScoreGameMode::GetRound() const
+int ARGX_RoundGameMode::GetRound() const
 {
-	return GetGameState<ARGX_ScoreGameState>()->Round;
+	return GetGameState<ARGX_ScoreGameState>()->GetRound();
 }
 
-void ARGX_ScoreGameMode::StartPlay()
+void ARGX_RoundGameMode::StartPlay()
 {
 	StartPlayEvent();
 
-	GetGameState<ARGX_ScoreGameState>()->Score = 0;
-	GetGameState<ARGX_ScoreGameState>()->Round = 1;
-	GetGameState<ARGX_ScoreGameState>()->NumEnemies = 0;
+	ARGX_ScoreGameState* GameStateTemp = GetGameState<ARGX_ScoreGameState>(); // @todo: Reduce Calls to GetGameState
+	GameStateTemp->SetStateDefaults();
 	
 	Super::StartPlay(); //Must be at the end
 }
 
-void ARGX_ScoreGameMode::BeginPlay()
+void ARGX_RoundGameMode::BeginPlay()
 {
-	GetGameState<ARGX_ScoreGameState>()->NumEnemies += SpawnEnemies(GetGameState<ARGX_ScoreGameState>()->Round);
+	GetGameState<ARGX_ScoreGameState>()->SetNumEnemies(SpawnEnemies());
 	Super::BeginPlay();
 }
 
-void ARGX_ScoreGameMode::EnemyDeath(const int Type)
+void ARGX_RoundGameMode::OnEnemyDeath(const int Type)
 {
-	if(GetGameState<ARGX_ScoreGameState>()->EnemyDeath(Type))
+	if(GetGameState<ARGX_ScoreGameState>()->OnEnemyDeath(Type))
 	{
 		NextRound();
 	}
-	
 }
 
-void ARGX_ScoreGameMode::NextRound()
+void ARGX_RoundGameMode::NextRound()
 {
-
 	GEngine->AddOnScreenDebugMessage(-1, 10.f, FColor::Green, TEXT("Next Round"));
-			
 	GetGameState<ARGX_ScoreGameState>()->NextRound();
-	
-	GetGameState<ARGX_ScoreGameState>()->NumEnemies += SpawnEnemies(GetGameState<ARGX_ScoreGameState>()->Round);
-	
+	GetGameState<ARGX_ScoreGameState>()->SetNumEnemies(SpawnEnemies());
 }
 
-int ARGX_ScoreGameMode::SpawnEnemies(const int Round)
+int ARGX_RoundGameMode::SpawnEnemies()
 {
 
 	if(UAssetManager* Manager = UAssetManager::GetIfValid())
 	{
 
+		/*
 		FPrimaryAssetId AssetId = GetPrimaryAssetId();
 		
 		const FName AssetType = FName("EnemyInfo");
@@ -84,13 +81,11 @@ int ARGX_ScoreGameMode::SpawnEnemies(const int Round)
 			Manager->GetPrimaryAssetData(EnemyId, AssetDataToParse);
 
 			// WIP
-		}
-
-
+		}*/
 		
 		int SpawnedEnemies = 0;
 	
-		FString RoundName = RoundName.FromInt(Round);
+		FString RoundName = RoundName.FromInt(GetGameState<ARGX_ScoreGameState>()->GetRound());
 		RoundName = "Round" + RoundName;
 		const FName FRoundName = FName(RoundName);
 		FRGX_RoundDataTable* RoundInfo = DTRounds->FindRow<FRGX_RoundDataTable>(FRoundName, "");
@@ -106,7 +101,7 @@ int ARGX_ScoreGameMode::SpawnEnemies(const int Round)
 			{
 				
 				GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Red, TEXT("Enemy Spawn"));
-				//SpawnEnemy(DTEnemies->FindRow<FRGX_EnemiesDataTable>(EnemyNames[i], "")->EnemyInfo);
+				SpawnEnemy(DTEnemies->FindRow<FRGX_EnemiesDataTable>(EnemyNames[i], "")->EnemyInfo);
 				SpawnedEnemies++;
 			}
 		}
@@ -119,9 +114,11 @@ int ARGX_ScoreGameMode::SpawnEnemies(const int Round)
 
 }
 
-void ARGX_ScoreGameMode::SpawnEnemy(ARGX_EnemyBase* EnemyToSpawn)
+void ARGX_RoundGameMode::SpawnEnemy(UDataAsset* EnemyInfo)
 {
 	//@todo: Get List of spawners, decide which spawner to use, call spawn enemy
+
+	URGX_EnemyDataAsset* EnemyInfoCasted = Cast<URGX_EnemyDataAsset>(EnemyInfo);
 }
 
 /*
@@ -130,7 +127,7 @@ void ARGX_ScoreGameMode::PopulateRoundMap(int Round)
 	
 }*/
 
-void ARGX_ScoreGameMode::StartPlayEvent_Implementation()
+void ARGX_RoundGameMode::StartPlayEvent_Implementation()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("StartPlay Default Called"));
 	

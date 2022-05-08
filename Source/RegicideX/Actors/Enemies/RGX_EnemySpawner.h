@@ -28,11 +28,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void Spawn();
 
-	// Function called to spawn BP_Peasant
+	/** Function called to spawn BP_Peasant **/
 	UFUNCTION(BlueprintImplementableEvent)
 	void SpawnPeasant(FTransform Transform);
 
 protected:
-	// Called when the game starts or when spawned
+	/** Called when the game starts or when spawned **/
 	virtual void BeginPlay() override;
 };
