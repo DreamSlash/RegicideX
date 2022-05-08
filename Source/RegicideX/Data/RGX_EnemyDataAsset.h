@@ -24,6 +24,11 @@ public:
 	USkeletalMesh* Mesh;
 
 	UPROPERTY(EditAnywhere,BlueprintReadOnly)
-	UBlueprint* EnemyBP;
-	
+	TSubclassOf<ARGX_EnemyBase> EnemyBP;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	int Life;
+
+	UPROPERTY(EditAnywhere,BlueprintReadOnly)
+	int Damage;
 };

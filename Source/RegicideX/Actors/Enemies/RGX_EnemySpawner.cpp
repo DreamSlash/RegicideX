@@ -18,37 +18,46 @@ ARGX_EnemySpawner::ARGX_EnemySpawner()
 void ARGX_EnemySpawner::BeginPlay()
 {
 	Super::BeginPlay();
-	Spawn();
+	//Spawn();
 	FVector Location(0.0f, 0.0f, 0.0f);
 	FRotator Rotation(0.0f, 0.0f, 0.0f);
 	FVector Scale(0.3f);
 
-	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &ARGX_EnemySpawner::Spawn, 4.0f, true);
+	//GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &ARGX_EnemySpawner::Spawn, 4.0f, true);
 }
 
-void ARGX_EnemySpawner::Spawn()
+void ARGX_EnemySpawner::Spawn(const TSubclassOf<ARGX_EnemyBase> EnemyBP)
 {
-	GEngine->AddOnScreenDebugMessage(-1, 4.0f, FColor::Blue, TEXT("Spawning enemies ..."));
-	AActor* Actor = nullptr;
-	if (manager && manager->bCanSpawn)
+	GEngine->AddOnScreenDebugMessage(-1, 20.0f, FColor::Blue, TEXT("Spawning enemy"));
+
+	const FVector Location = FMath::RandPointInBox(SpawnBox) + FVector(0.0f, 0.0f, 300.0f);
+	const FRotator Rotation(0.0f, 0.0f, 0.0f);
+
+	ARGX_EnemyBase* SpawnedEnemy = GetWorld()->SpawnActor<ARGX_EnemyBase>(EnemyBP, Location, Rotation);
+
+	//AActor* Actor = nullptr;
+	/*
+	if (Manager && Manager->bCanSpawn)
 	{
-		if (manager->CurrentNumberOfPeasants < manager->MaxNumberOfPeasants)
+		if (Manager->CurrentNumberOfPeasants < Manager->MaxNumberOfPeasants)
 		{
-			const int NToSpawn = manager->MaxNumberOfPeasants - manager->CurrentNumberOfPeasants;
-			FVector SpawnerLocation = GetActorLocation();
+			const int NToSpawn = Manager->MaxNumberOfPeasants - Manager->CurrentNumberOfPeasants;
+			//FVector SpawnerLocation = GetActorLocation();
 			for (int i = 0; i < NToSpawn; ++i)
 			{
 				FVector Location = FMath::RandPointInBox(SpawnBox) + FVector(0.0f, 0.0f, 90.0f);
 				FRotator Rotation(0.0f, 0.0f, 0.0f);
-				const FTransform Transform(Rotation, Location);
+				//const FTransform Transform(Rotation, Location);
+
+				ARGX_EnemyBase* SpawnedEnemy = GetWorld()->SpawnActor<ARGX_EnemyBase>(EnemyBP, Location, Rotation);
 				
-				SpawnPeasant(Transform);
+				//SpawnPeasant(Transform);
 			}
-			manager->OnPeasantAdded();
+			Manager->OnPeasantAdded();
 		}
 	}
 	else
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("No manager available ..."));
-	}
+	}*/
 }
