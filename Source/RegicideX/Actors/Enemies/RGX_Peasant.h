@@ -50,10 +50,9 @@ public:
 
 	float GetDistanceToTarget();
 
+protected:
 	UPROPERTY(EditDefaultsOnly)
 	UAnimMontage* PunchMontage;
-
-protected:
 
 	// Animation Montages ...
 	UPROPERTY(EditDefaultsOnly);
@@ -61,6 +60,12 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly);
 	UAnimMontage* ReceiveDamageMontage;
+
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* ScreamMontage;
+
+	UPROPERTY()
+	FVector WanderingPoint;
 
 	virtual void BeginPlay() override;
 };

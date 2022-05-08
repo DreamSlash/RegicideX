@@ -32,6 +32,7 @@ struct FAttackInfo {
 
 class UMCV_AbilitySystemComponent;
 class URGX_HealthAttributeSet;
+class URGX_CombatAttributeSet;
 
 UCLASS()
 class REGICIDEX_API ARGX_EnemyBase : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface, public IGenericTeamAgentInterface
@@ -56,8 +57,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UMCV_AbilitySystemComponent* AbilitySystemComponent;
 
-	UPROPERTY()
+	UPROPERTY(EditAnywhere)
 	URGX_HealthAttributeSet* HealthAttributeSet;
+
+	UPROPERTY(EditAnywhere)
+	URGX_CombatAttributeSet* CombatAttributeSet;
 
 public:
 
