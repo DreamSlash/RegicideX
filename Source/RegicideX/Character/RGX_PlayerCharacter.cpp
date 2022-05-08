@@ -354,28 +354,6 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 	LeanAmount = UKismetMathLibrary::FInterpTo(LeanAmount, LeanInfo.LeanAmount, DeltaTime, LeanInfo.InterSpeed);
 	// ------------------
 
-	/**TODO [REFACTOR]: On combo function event must be placed in PlayerCharacter. 
-	On combo calls the combo system for next attack and cleans combo system state*/
-	/*
-	// Combo system
-	FGameplayTag NextAttack = ComboSystemComponent->GetNextAttack();
-	if (NextAttack != FGameplayTag::RequestGameplayTag("Combo.None"))
-	{
-		// Call AbilityComponentSystem
-		//FString NextAttackString = NextAttack.ToString();
-		//UE_LOG(LogTemp, Warning, TEXT("Next Attack: %s\n"), *NextAttackString);
-
-		// Fire next attack
-		FGameplayEventData EventData;
-		int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(NextAttack, &EventData);
-
-		//UE_LOG(LogTemp, Warning, TEXT("Triggered Abilities: %d\n"), TriggeredAbilities);
-
-		// Clear next attack status
-		ComboSystemComponent->CleanStatus(TriggeredAbilities);
-	}
-	// --------------------
-	*/
 	if (IsBeingAttacked())
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("Being Attacked\n"));
