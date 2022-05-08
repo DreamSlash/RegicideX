@@ -28,8 +28,8 @@ class REGICIDEX_API URGX_ComboSystemComponent : public UActorComponent
 public:
 	URGX_ComboSystemComponent();
 
-	virtual void BeginPlay() override;
-	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
+	void BeginPlay() override;
+	void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
 	FGameplayTag ManageInputToken(ERGXPlayerInputID PlayerInput);
 	FGameplayTag GetNextAttack();

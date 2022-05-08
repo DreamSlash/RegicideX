@@ -5,6 +5,7 @@
 #include "GameplayTags.h"
 #include "AbilitySystemInterface.h"
 #include "Components/MCV_AbilitySystemComponent.h"
+#include "../Components/RGX_CombatAssistComponent.h"
 #include "../Interfaces/RGX_GameplayTagInterface.h"
 #include "../Enums/RGX_InputEnums.h"
 #include "GenericTeamAgentInterface.h"
@@ -15,6 +16,7 @@ class USpringArmComponent;
 class UCameraComponent;
 class URGX_AbilitySystemComponent;
 class URGX_ComboSystemComponent;
+class URGX_CombatAssistComponent;
 class URGX_HealthAttributeSet;
 class URGX_CombatAttributeSet;
 
@@ -43,12 +45,16 @@ class REGICIDEX_API ARGX_PlayerCharacter : public ACharacter, public IAbilitySys
 	class UCameraComponent* FollowCamera = nullptr;
 
 	/** Ability System Component to be used */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Abilities, meta = (AllowPrivateAccess = "true"))
 	UMCV_AbilitySystemComponent* AbilitySystemComponent = nullptr;
 
 	/** Combo System Component to manage player combos */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combos, meta = (AllowPrivateAccess = "true"))
 	URGX_ComboSystemComponent* ComboSystemComponent = nullptr;
+
+	/** Combat Assist Component to manage player movement while doing combat actions */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
+	URGX_CombatAssistComponent* CombatAssistComponent = nullptr;
 
 	// Attributes ---------------
 	UPROPERTY()
@@ -181,9 +187,6 @@ protected:
 
 	void ManagePowerSkillInput();
 	// ----------------------------------
-
-	UFUNCTION(BlueprintCallable)
-	void PerformAttackAutoAssist();
 
 	void ChangePowerSkill();
 

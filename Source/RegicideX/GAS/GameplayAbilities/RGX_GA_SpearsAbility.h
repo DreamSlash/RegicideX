@@ -22,7 +22,7 @@ protected:
 	float SpearsSpawnAngle = 180.0f;
 
 	UPROPERTY(EditDefaultsOnly)
-	float MaxNumSpears = 12.0f; // wtf
+	int MaxNumSpears = 12;
 
 	UPROPERTY(EditDefaultsOnly)
 	float DistanceFromCaster = 100.0f;

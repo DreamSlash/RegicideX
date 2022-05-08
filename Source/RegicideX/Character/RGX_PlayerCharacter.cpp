@@ -53,6 +53,7 @@ ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 
 	AbilitySystemComponent = CreateDefaultSubobject<UMCV_AbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	ComboSystemComponent = CreateDefaultSubobject<URGX_ComboSystemComponent>(TEXT("ComboSystemComponent"));
+	CombatAssistComponent = CreateDefaultSubobject<URGX_CombatAssistComponent>(TEXT("CombatAssistComponent"));
 	HealthAttributeSet = CreateDefaultSubobject<URGX_HealthAttributeSet>(TEXT("HealthAttributeSet"));
 	CombatAttributeSet = CreateDefaultSubobject<URGX_CombatAttributeSet>(TEXT("CombatAttributeSet"));
 }
@@ -145,80 +146,6 @@ void ARGX_PlayerCharacter::ManagePowerSkillInput()
 	// Fire next attack
 	FGameplayEventData EventData;
 	AbilitySystemComponent->HandleGameplayEvent(PowerSkills[CurrentSkillSelected], &EventData);
-}
-
-// TODO [REFACTOR]: Component for autoassist
-void ARGX_PlayerCharacter::PerformAttackAutoAssist()
-{
-	FVector PlayerLocation = GetActorLocation();
-
-	float radius = 300.0f;
-
-	TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjectTypes;
-	TraceObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Pawn));
-
-	UClass* SeekClass = ARGX_EnemyBase::StaticClass();
-
-	TArray<AActor*> IgnoreActors;
-	TArray<AActor*> OutActors;
-
-	// Check for nearby enemies
-	if (UKismetSystemLibrary::SphereOverlapActors(GetWorld(), PlayerLocation, radius, TraceObjectTypes, SeekClass, IgnoreActors, OutActors) == false)
-		return;
-
-	float CurrentClosestDistance = INFINITY;
-	FVector NearestEnemyLocation = FVector(0.0f, 0.0f, 0.0f);
-	bool bHasTarget = false;
-
-	// Check the closest enemy inside a cone in front of the player
-	for (AActor* Actor : OutActors)
-	{
-		ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(Actor);
-
-		bool bIsDead = Enemy->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.Dead")));
-
-		if (bIsDead == true)
-			continue;
-
-		FVector EnemyLocation = Enemy->GetActorLocation();
-
-		float Distance = FVector::Dist(PlayerLocation, EnemyLocation);
-		
-		FVector PlayerToEnemyVector = EnemyLocation - PlayerLocation;
-		PlayerToEnemyVector.Normalize();
-
-		FVector PlayerForward = GetActorForwardVector();
-
-		// Cone check
-		float Dot = FVector::DotProduct(PlayerToEnemyVector, PlayerForward);
-
-		if (Distance < CurrentClosestDistance && Dot > 0.5f)
-		{
-			CurrentClosestDistance = Distance;
-			NearestEnemyLocation = EnemyLocation;
-			bHasTarget = true;
-		}
-	}
-
-	if (bHasTarget == false)
-		return;
-
-	FVector PlayerToEnemyVector = NearestEnemyLocation - PlayerLocation;
-	FRotator Rotation = UKismetMathLibrary::MakeRotFromX(PlayerToEnemyVector);
-
-	SetActorRotation(Rotation);
-
-	float OffsetToEnemy = 150.0f;
-
-	if (CurrentClosestDistance > OffsetToEnemy == false)
-		return;
-
-	FVector AssistDirection = FVector(PlayerToEnemyVector.X, PlayerToEnemyVector.Y, 0.0f);
-	AssistDirection.Normalize();
-
-	FVector FinalLocation = PlayerLocation + AssistDirection * (CurrentClosestDistance - OffsetToEnemy);
-
-	SetActorLocation(FinalLocation);
 }
 
 bool ARGX_PlayerCharacter::IsBeingAttacked()
