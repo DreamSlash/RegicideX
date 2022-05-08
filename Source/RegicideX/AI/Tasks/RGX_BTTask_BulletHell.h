@@ -20,20 +20,14 @@ class REGICIDEX_API URGX_BTTask_BulletHell : public UBTTaskNode
 
 	float RotationSpeedMultiplier = 2.0;
 
-	ARGX_DistanceAngel* DistAngelPawn;
-
-	FTimerHandle TimerHandle;
+	ARGX_DistanceAngel* DistAngelPawn = nullptr;
 
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float MaxTime = 5.0;
 
-
 	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
 	void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
-	
-	void Shoot();
-
 };

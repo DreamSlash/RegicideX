@@ -9,7 +9,6 @@
 EBTNodeResult::Type URGX_BT_EnemyMoveTo::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	bNotifyTick = true;
-
 	return EBTNodeResult::InProgress;
 }
 
@@ -29,14 +28,17 @@ void URGX_BT_EnemyMoveTo::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Nod
 
 	const FVector TargetLocation = Enemy->TargetActor->GetActorLocation();
 	const float Dist = FVector::Distance(Enemy->GetActorLocation(), TargetLocation);
+
+	//UE_LOG(LogTemp, Warning, TEXT("Before, distance to target: %f"), Dist);
+
 	if (Dist <= Enemy->AttackRadius)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("Task Succeeded, distance to target: %f"), Dist);
+		//UE_LOG(LogTemp, Warning, TEXT("After, distance to target: %f"), Dist);
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		return;
 	}
 
-	Enemy->MoveToTarget(DeltaSeconds, TargetLocation);
+	Enemy->MoveToTarget(DeltaSeconds, FVector());
 	FinishLatentTask(OwnerComp, EBTNodeResult::InProgress);
 }
 

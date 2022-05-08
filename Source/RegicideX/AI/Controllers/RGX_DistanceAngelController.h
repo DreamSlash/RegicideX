@@ -11,15 +11,23 @@
  */
 
 
-UENUM()
-enum class ERGX_DistAngelAttackMode 
+UENUM(BlueprintType)
+enum class ERGX_DistAngelAttackMode : uint8
 {
-	PREPAREFORATTACK, BULLETHELL, LASERBEAM, GUIDEDBOMBS
+	PREPAREFORATTACK, 
+	BULLETHELL, 
+	LASERBEAM, 
+	GUIDEDBOMBS
+
 };
 
 UCLASS()
 class REGICIDEX_API ARGX_DistanceAngelController : public AAIController
 {
 	GENERATED_BODY()
+public:
+	ARGX_DistanceAngelController();
 
+	UFUNCTION()
+	void SetRandomLocationAroundTarget();
 };

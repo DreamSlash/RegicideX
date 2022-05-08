@@ -4,26 +4,27 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/MCV_GameplayAbility.h"
-#include "RGX_ShootProjectilesAbility.generated.h"
+#include "RGX_ShootSingleProjectileAbility.generated.h"
+
 /**
  * 
  */
 class ARGX_Bullet;
-class ARGX_DistanceAngel;
 
 UCLASS()
-class REGICIDEX_API URGX_ShootProjectilesAbility : public UMCV_GameplayAbility
+class REGICIDEX_API URGX_ShootSingleProjectileAbility : public UMCV_GameplayAbility
 {
 	GENERATED_BODY()
-
-	URGX_ShootProjectilesAbility();
 
 	void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
 public:
+
+	URGX_ShootSingleProjectileAbility();
+
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<ARGX_Bullet> ProjectileClass;
 
 	UFUNCTION()
-		void Shoot(ARGX_DistanceAngel* DistAngel);
+		void Shoot(APawn* Actor);
 };
