@@ -18,26 +18,30 @@ void ARGX_GuidedBullet::BeginPlay()
 
 void ARGX_GuidedBullet::Tick(float DeltaTime)
 {
-
+	CheckDistance();
 	RotateToTarget(DeltaTime);
 	Super::Tick(DeltaTime);
-	
 }
 
 void ARGX_GuidedBullet::RotateToTarget(float DeltaTime)
 {
-	if (!StopFollowing && TargetActor)
+	if (TargetActor && bStopFollowing == false)
 	{
 		const FVector MyLocation = this->GetActorLocation();
 		const FVector TargetLocation = TargetActor->GetActorLocation();
 		const FRotator RotOffset = UKismetMathLibrary::FindLookAtRotation(MyLocation, TargetLocation);
 		this->SetActorRotation(RotOffset);
-		float Dist = FVector::Distance(MyLocation, TargetLocation);
+	}
+}
 
-		if(Dist <= StopFollowingDistance)
-		{
-			StopFollowing = true;
-		}
+void ARGX_GuidedBullet::CheckDistance()
+{
+	const FVector MyLocation = this->GetActorLocation();
+	const FVector TargetLocation = TargetActor->GetActorLocation();
 
+	const  float Dist = FVector::Distance(MyLocation, TargetLocation);
+	if (Dist <= StopFollowingDistance)
+	{
+		bStopFollowing = true;
 	}
 }

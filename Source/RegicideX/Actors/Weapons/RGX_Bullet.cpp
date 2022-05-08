@@ -2,8 +2,9 @@
 
 
 #include "RGX_Bullet.h"
-#include "Particles/ParticleSystemComponent.h"
+
 #include "Components/StaticMeshComponent.h"
+#include "Particles/ParticleSystemComponent.h"
 #include "RegicideX\Components\RGX_HitboxComponent.h"
 
 // Sets default values
@@ -16,7 +17,6 @@ ARGX_Bullet::ARGX_Bullet()
 	BulletCollider = CreateDefaultSubobject<URGX_HitboxComponent>(TEXT("BulletCollider"));
 	BulletParticleSystem = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("BulletParticles"));
 	RootComponent = BulletMesh;
-	//BulletMesh->SetupAttachment(RootComponent);
 
 	BulletCollider->SetRelativeLocation(FVector(0.0));
 	BulletCollider->SetupAttachment(RootComponent);
@@ -33,25 +33,19 @@ ARGX_Bullet::ARGX_Bullet()
 void ARGX_Bullet::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 // Called every frame
 void ARGX_Bullet::Tick(float DeltaTime)
 {
-
 	Super::Tick(DeltaTime);
-	MyTimer += DeltaTime;
 	Move(DeltaTime);
-
 }
 
 void ARGX_Bullet::Move(float DeltaTime)
 {
 	const FVector MyFront = this->GetActorForwardVector();
-
 	const FVector CurrentLocation = this->GetActorLocation();
-
 	const FVector NewLocation = CurrentLocation + MyFront * MoveSpeed * DeltaTime;
 
 	this->SetActorLocation(NewLocation);
@@ -59,10 +53,12 @@ void ARGX_Bullet::Move(float DeltaTime)
 
 void ARGX_Bullet::Hit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	//do stuff
-	if (MyTimer > 0.5 && OtherActor != MyOwner)
-	{
-		this->Destroy();
-	}	
+	if (OtherActor == GetInstigator()) return;
+
+	this->Destroy();
+	////do stuff
+	//if (MyTimer > 0.5 && OtherActor != MyOwner)
+	//{
+	//}	
 }
 

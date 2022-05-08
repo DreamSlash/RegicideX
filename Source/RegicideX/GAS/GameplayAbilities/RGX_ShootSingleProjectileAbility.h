@@ -16,7 +16,7 @@ class REGICIDEX_API URGX_ShootSingleProjectileAbility : public UMCV_GameplayAbil
 {
 	GENERATED_BODY()
 
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
 public:
 
@@ -26,5 +26,5 @@ public:
 		TSubclassOf<ARGX_Bullet> ProjectileClass;
 
 	UFUNCTION()
-		void Shoot(AActor* Actor);
+		void Shoot(APawn* Actor);
 };

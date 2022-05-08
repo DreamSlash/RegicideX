@@ -18,9 +18,10 @@ class REGICIDEX_API URGX_BTTaskLaserBeamAttack : public UBTTaskNode
 
 	float TaskTime = 0.0;
 
-	ARGX_LaserBeamWeapon* LaserWeapon;
+	ARGX_LaserBeamWeapon* LaserWeapon = nullptr;
 
-	AActor* OwnerActor;
+	APawn* OwnerActor = nullptr;
+
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

@@ -10,20 +10,17 @@
 EBTNodeResult::Type URGX_BTTaskRotateToTarget::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	AAIController* AIController = OwnerComp.GetAIOwner();
-
 	APawn* ControlledPawn = AIController->GetPawn();
 
 	Enemy = Cast<ARGX_EnemyBase>(ControlledPawn);
 
 	bNotifyTick = true;
-
 	return EBTNodeResult::InProgress;
 }
 
 void URGX_BTTaskRotateToTarget::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	TaskTime += DeltaSeconds;
-
 	if (TaskTime >= MaxTime)
 	{
 		TaskTime = 0.0f;

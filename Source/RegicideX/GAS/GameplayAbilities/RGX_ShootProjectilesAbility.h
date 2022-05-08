@@ -18,7 +18,7 @@ class REGICIDEX_API URGX_ShootProjectilesAbility : public UMCV_GameplayAbility
 
 	URGX_ShootProjectilesAbility();
 
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
 public:
 	UPROPERTY(EditAnywhere)

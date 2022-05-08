@@ -12,7 +12,6 @@ EBTNodeResult::Type URGX_BTTask_BulletHell::ExecuteTask(UBehaviorTreeComponent& 
 {
 
 	AAIController* AIController = OwnerComp.GetAIOwner();
-
 	APawn* ControlledPawn = AIController->GetPawn();
 
 	DistAngelPawn = Cast<ARGX_DistanceAngel>(ControlledPawn);
@@ -23,7 +22,6 @@ EBTNodeResult::Type URGX_BTTask_BulletHell::ExecuteTask(UBehaviorTreeComponent& 
 
 void URGX_BTTask_BulletHell::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
-
 	TaskTime += DeltaSeconds;
 	if(TaskTime >= MaxTime)
 	{

@@ -1,13 +1,15 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RGX_DistanceAngel.h"
+
+#include "Components/MCV_AbilitySystemComponent.h"
+#include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "Math/UnrealMathUtility.h"
-#include "Components/SphereComponent.h"
-#include "Components/MCV_AbilitySystemComponent.h"
-#include "NavigationSystem.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Math/UnrealMathUtility.h"
+#include "NavigationSystem.h"
+
 
 ARGX_DistanceAngel::ARGX_DistanceAngel()
 	: ARGX_EnemyBase()
@@ -31,22 +33,19 @@ ARGX_DistanceAngel::ARGX_DistanceAngel()
 void ARGX_DistanceAngel::BeginPlay()
 {
 	Super::BeginPlay();
-	HeightPos = GetActorLocation().Z;
+	SetLocationHeight(HeightPos);
 	RingOriginalRotatingSpeed = RingRotatingSpeed;
 }
 
 void ARGX_DistanceAngel::MoveToTarget(float DeltaTime, FVector TargetPos)
 {
 	Super::MoveToTarget(DeltaTime, TargetPos);
-
-	FVector Location = this->GetActorLocation();
-	Location.Z = HeightPos;
-	this->SetActorLocation(Location);
+	SetLocationHeight(HeightPos);
 }
 
 void ARGX_DistanceAngel::RotateRings(float DeltaTime) 
 {
-	float speed = RingRotatingSpeed * DeltaTime;
+	const float speed = RingRotatingSpeed * DeltaTime;
 	Ring_2_Mesh->AddLocalRotation(FRotator(-speed, 0.0, speed));
 	Ring_3_Mesh->AddLocalRotation(FRotator(0.0, speed, speed));
 }
@@ -61,89 +60,48 @@ void ARGX_DistanceAngel::RotateMe(float DeltaTime, float Speed)
 void ARGX_DistanceAngel::TPToFloor()
 {
 	const FVector DownVector = -GetActorUpVector();
+	float NewHeight = HeightPos;
 
 	FHitResult Result;
 
-	FVector NewLocation = GetActorLocation();
+	const float DownRaySrcOffset = HeightPos / 2.0f;
+	const float DownRayEndOffset = HeightPos * 2.0f;
 
-	if(GetWorld()->LineTraceSingleByChannel(Result, GetActorLocation() + DownVector*(HeightPos/2.0f), GetActorLocation() + DownVector * HeightPos * 2.0f, ECollisionChannel::ECC_WorldStatic))
+	const FVector ActorLocation = GetActorLocation();
+
+	if(GetWorld()->LineTraceSingleByChannel(Result, ActorLocation + DownVector * DownRaySrcOffset, ActorLocation + DownVector * DownRayEndOffset, ECollisionChannel::ECC_WorldStatic))
 	{
-		FVector ImpactPoint = Result.ImpactPoint;
-		NewLocation.Z = ImpactPoint.Z + ActorMidHeight;
-
-		/*if (Result.Actor != nullptr) {
-			AActor* actor = Cast<AActor>(Result.Actor);
-			UE_LOG(LogTemp, Warning, TEXT("OtherActor: %s"), *actor->GetName());
-		}
-		
-		UKismetSystemLibrary::DrawDebugLine(
-			GetWorld(),
-			GetActorLocation(),
-			ImpactPoint,
-			FColor(255, 0, 0),
-			22.0f,
-			5.0f
-			);*/
+		NewHeight = Result.ImpactPoint.Z + ActorMidHeight;
 	}
 
-	SetActorLocation(NewLocation);
+	SetLocationHeight(NewHeight);
 
 }
 
 void ARGX_DistanceAngel::TPToOriginalHeight()
 {
-	FVector NewLocation = GetActorLocation();
-	NewLocation.Z = HeightPos;
-	SetActorLocation(NewLocation);
+	SetLocationHeight(HeightPos);
 }
 
-void ARGX_DistanceAngel::ShootSimpleBullets()
-{
-	FVector MyFront = this->GetActorForwardVector();
-	FRotator MyRotation = this->GetActorRotation();
-	for(FVector Position : BombingPoints)
-	{
-		FRotator BulletRotation = MyRotation; 
-		FVector BulletNormRotationVector = BulletRotation.Vector(); BulletNormRotationVector.Normalize();
-
-		float RotYawOffset = FMath::RandRange(-180.0f, 180.0f);
-		BulletRotation.Yaw += RotYawOffset;
-
-		float RotPitchOffset = FMath::RandRange(-45.0f, 45.0f);
-		BulletRotation.Pitch += RotPitchOffset;
-
-		FVector BulletPosition = this->GetActorLocation() + FVector(0.0, 0.0, Position.Z);
-		FVector BulletScale(0.1);
-		FTransform BulletTransform(BulletRotation, BulletPosition, BulletScale);
-		SpawnSimpleBullet(BulletTransform, this);
-	}
-
-}
-
-void ARGX_DistanceAngel::TestSpawn()
-{
-	FVector Location(0.0f, 0.0f, 300.0f);
-	FRotator Rotation(0.0f, 0.0f, 0.0f);
-	FVector Scale(1.0f);
-	ARGX_DistanceAngel* Actor = GetWorld()->SpawnActor<ARGX_DistanceAngel>(Location, Rotation);
-	UE_LOG(LogTemp, Warning, TEXT("ESPAWNEJANT L'ACTOR: %s"), *Actor->GetName());
-}
-
-FVector ARGX_DistanceAngel::GenerateRandomLocationAroundPoint(FVector Location)
+FVector ARGX_DistanceAngel::GenerateRandomLocationAroundPoint(FVector Location) const
 {
 	return UNavigationSystemV1::GetRandomReachablePointInRadius(GetWorld(), Location, AttackRadius);
 }
 
-
-float ARGX_DistanceAngel::GetDistanceToTarget()
+float ARGX_DistanceAngel::GetDistanceToTarget() const
 {
 	return FVector::Distance(this->GetActorLocation(), TargetActor->GetActorLocation());
+}
+
+void ARGX_DistanceAngel::SetLocationHeight(float Height) {
+	FVector NewLocation = GetActorLocation();
+	NewLocation.Z = Height;
+	SetActorLocation(NewLocation);
 }
 
 void ARGX_DistanceAngel::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
 	RotateRings(DeltaTime);
 }
 

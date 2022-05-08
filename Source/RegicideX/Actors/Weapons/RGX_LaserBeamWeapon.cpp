@@ -14,15 +14,10 @@
 // Sets default values
 ARGX_LaserBeamWeapon::ARGX_LaserBeamWeapon()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
-
 	PathSplineComponent = CreateDefaultSubobject<USplineComponent>(TEXT("PathSplineComponent"));
 	EndPointMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("EndPointMesh"));
 	EndPointParticle = CreateDefaultSubobject<UParticleSystemComponent>(TEXT("EndPointParticle"));
 }
-
-
 
 // Called when the game starts or when spawned
 void ARGX_LaserBeamWeapon::BeginPlay()
@@ -31,13 +26,12 @@ void ARGX_LaserBeamWeapon::BeginPlay()
 	OwnerActor = GetOwner();
 }
 
-void ARGX_LaserBeamWeapon::CheckRayTraces(FVector& NewLocation, const float& DeltaTime)
+void ARGX_LaserBeamWeapon::CheckRayTraces(FVector& NewLocation, float DeltaTime)
 {
 	//Front ray to check if the ray is hitting some actor
 	FHitResult FrontRayTraceResult;
 
 	const FVector FrontRaySrc = OwnerActor->GetActorLocation() + OwnerActor->GetActorForwardVector() * 200.0f;
-
 	const FVector FrontRayEndPoint = NewLocation;
 
 	//debug
@@ -53,8 +47,7 @@ void ARGX_LaserBeamWeapon::CheckRayTraces(FVector& NewLocation, const float& Del
 
 	if (GetWorld()->LineTraceSingleByChannel(FrontRayTraceResult, FrontRaySrc, FrontRayEndPoint, ECollisionChannel::ECC_WorldStatic))
 	{
-		AActor* Actor = FrontRayTraceResult.GetActor();
-		if (Actor != nullptr) {
+		if (const AActor* Actor = FrontRayTraceResult.GetActor()) {
 			//If actor hitting target, apply damage effect
 			UE_LOG(LogTemp, Warning, TEXT("Hitting Actor: %s"), *Actor->GetName());
 		}
@@ -64,27 +57,29 @@ void ARGX_LaserBeamWeapon::CheckRayTraces(FVector& NewLocation, const float& Del
 	FHitResult DownRayTraceResult;
 
 	const FVector DownRaySrc = NewLocation;
-
 	const FVector DownRayEndPoint = NewLocation + EndPointMesh->GetUpVector() * -1000.0;
 
 	if (GetWorld()->LineTraceSingleByChannel(DownRayTraceResult, DownRaySrc, DownRayEndPoint, ECollisionChannel::ECC_WorldStatic)) {
-		FVector ImpactPoint = DownRayTraceResult.ImpactPoint;
-		NewLocation.Z = ImpactPoint.Z;
+		NewLocation.Z = DownRayTraceResult.ImpactPoint.Z;
 	}
-
 }
 
-void ARGX_LaserBeamWeapon::ComputeNewEndpoint(const float& DeltaTime)
+void ARGX_LaserBeamWeapon::CheckDistance()
 {
 	const FVector MyLocation = EndPointMesh->K2_GetComponentLocation();
-
 	const FVector TargetLocation = TargetActor->GetActorLocation();
 
 	if (FollowTarget && FVector::Distance(MyLocation, TargetLocation) <= ForgetDistance) {
 		FollowTarget = false;
 		FTimerHandle Timerhandle;
-		GetWorld()->GetTimerManager().SetTimer(Timerhandle, this, &ARGX_LaserBeamWeapon::SetFollowTargetTrue, ForgetTime, false);
+		GetWorld()->GetTimerManager().SetTimer(Timerhandle, [this]() {this->FollowTarget = true; }, ForgetTime, false);
 	}
+}
+
+void ARGX_LaserBeamWeapon::ComputeNewEndpoint(float DeltaTime)
+{
+	const FVector MyLocation = EndPointMesh->K2_GetComponentLocation();
+	const FVector TargetLocation = TargetActor->GetActorLocation();
 
 	if (FollowTarget)
 	{
@@ -93,7 +88,6 @@ void ARGX_LaserBeamWeapon::ComputeNewEndpoint(const float& DeltaTime)
 	}
 
 	const FVector MyForward = EndPointMesh->GetForwardVector();
-
 	FVector NewLocation = MyLocation + MyForward * RaySpeed * DeltaTime;
 
 	CheckRayTraces(NewLocation, DeltaTime);
@@ -102,8 +96,9 @@ void ARGX_LaserBeamWeapon::ComputeNewEndpoint(const float& DeltaTime)
 }
 
 
-void ARGX_LaserBeamWeapon::MoveAndDrawRay(const float& DeltaTime)
+void ARGX_LaserBeamWeapon::MoveAndDrawRay(float DeltaTime)
 {
+	CheckDistance();
 	ComputeNewEndpoint(DeltaTime);
 
 	const FVector EndPoint = EndPointMesh->K2_GetComponentLocation();
@@ -120,7 +115,6 @@ void ARGX_LaserBeamWeapon::MoveAndDrawRay(const float& DeltaTime)
 		SpawnSplineMesh();
 		PathSplineMeshes[0]->SetStartScale(FVector2D(2.f));
 		PathSplineMeshes[0]->SetEndScale(FVector2D(2.f));
-		//PathSplineMeshes[0]->SetMaterial(0, Material);
 	}
 
 	const FVector StartTangent = PathSplineComponent->GetTangentAtSplinePoint(0, ESplineCoordinateSpace::World);
@@ -140,10 +134,6 @@ void ARGX_LaserBeamWeapon::SetOwnerActor(AActor* OA)
 	OwnerActor = OA;
 }
 
-void ARGX_LaserBeamWeapon::SetFollowTargetTrue()
-{
-	FollowTarget = true;
-}
 
 
 

@@ -19,8 +19,7 @@ class REGICIDEX_API URGX_BTTaskRotateToTarget : public UBTTaskNode
 
 	float TaskTime = 0.0;
 
-	ARGX_EnemyBase* Enemy;
-
+	ARGX_EnemyBase* Enemy = nullptr;
 
 public:
 

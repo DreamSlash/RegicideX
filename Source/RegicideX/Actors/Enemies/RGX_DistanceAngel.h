@@ -24,19 +24,19 @@ public:
 	ARGX_DistanceAngel();
 
 	UPROPERTY(EditAnywhere)
-		UStaticMeshComponent* Ring_1_Mesh;
+		UStaticMeshComponent* Ring_1_Mesh = nullptr;
 
 	UPROPERTY(EditAnywhere)
-		UStaticMeshComponent* Ring_2_Mesh;
+		UStaticMeshComponent* Ring_2_Mesh = nullptr;
 
 	UPROPERTY(EditAnywhere)
-		UStaticMeshComponent* Ring_3_Mesh;
+		UStaticMeshComponent* Ring_3_Mesh = nullptr;
 
 	UPROPERTY(EditAnywhere)
-		UStaticMeshComponent* LaserEndPointMesh;
+		UStaticMeshComponent* LaserEndPointMesh = nullptr;
 
 	UPROPERTY(EditAnywhere)
-		USphereComponent* SphereCollider;
+		USphereComponent* SphereCollider = nullptr;
 
 	UPROPERTY(EditAnywhere)
 		TArray<FVector> BombingPoints;
@@ -82,19 +82,17 @@ public:
 	void TPToOriginalHeight();
 
 	UFUNCTION()
-		FVector GenerateRandomLocationAroundPoint(FVector Location);
+		FVector GenerateRandomLocationAroundPoint(FVector Location) const;
 
 	/** Attack methods */
-	void ShootSimpleBullets();
-
-	UFUNCTION(BlueprintCallable) 
-		void TestSpawn();
 
 	UFUNCTION(BlueprintCallable)
-		float GetDistanceToTarget();
+		float GetDistanceToTarget() const;
 
 	UFUNCTION(BlueprintImplementableEvent)
 		void SpawnSimpleBullet(FTransform Transform, AActor* MyOwner);
 
-	
+	UFUNCTION()
+		void SetLocationHeight(float Height);
+
 };

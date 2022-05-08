@@ -18,7 +18,7 @@ class REGICIDEX_API URGX_BTTask_DT_PrepareForAttack : public UBTTaskNode
 
 	float TaskTime = 0.0;
 
-	ARGX_DistanceAngel* DistAngelPawn;
+	ARGX_DistanceAngel* DistAngelPawn = nullptr;
 
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

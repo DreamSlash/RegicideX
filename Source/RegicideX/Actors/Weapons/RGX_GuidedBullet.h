@@ -17,20 +17,20 @@ class REGICIDEX_API ARGX_GuidedBullet : public ARGX_Bullet
 
 	GENERATED_BODY()
 
-	bool StopFollowing = false;
+	bool bStopFollowing = false;
 
 public:
 	ARGX_GuidedBullet();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		AActor* TargetActor;
+		AActor* TargetActor = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float StopFollowingDistance = 200.f;
 
 protected:
 	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	void BeginPlay() override;
 
 public:
 
@@ -38,5 +38,7 @@ public:
 	void Tick(float DeltaTime) override;
 
 	void RotateToTarget(float DeltaTime);
+
+	void CheckDistance();
 
 };

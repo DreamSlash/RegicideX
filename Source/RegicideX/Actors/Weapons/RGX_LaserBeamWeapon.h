@@ -16,8 +16,7 @@ class REGICIDEX_API ARGX_LaserBeamWeapon : public AActor
 {
 	GENERATED_BODY()
 
-		bool FollowTarget = true;
-
+	bool FollowTarget = true;
 
 public:	
 	// Sets default values for this actor's properties
@@ -27,19 +26,19 @@ public:
 		FVector SourcePoint;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		AActor* TargetActor;
+		AActor* TargetActor = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		AActor* OwnerActor;
+		AActor* OwnerActor = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UStaticMeshComponent* EndPointMesh;
+		UStaticMeshComponent* EndPointMesh = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UParticleSystemComponent* EndPointParticle;
+		UParticleSystemComponent* EndPointParticle = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		USplineComponent* PathSplineComponent;
+		USplineComponent* PathSplineComponent = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		TArray<USplineMeshComponent*> PathSplineMeshes;
@@ -53,23 +52,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float ForgetTime = 1.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UStaticMesh* Mesh;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UMaterial* Material;
-
 protected:
 	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	void BeginPlay() override;
 
 public:	
 
 	UFUNCTION()
-		void ComputeNewEndpoint(const float& DeltaTime);
+		void ComputeNewEndpoint(float DeltaTime);
 
 	UFUNCTION()
-		void MoveAndDrawRay(const float& DeltaTime);
+		void MoveAndDrawRay(float DeltaTime);
 
 	UFUNCTION(BlueprintImplementableEvent)
 		void SpawnSplineMesh();
@@ -81,11 +74,9 @@ public:
 		void SetOwnerActor(AActor* OA);
 
 	UFUNCTION()
-		void SetFollowTargetTrue();
+		void CheckRayTraces(FVector& NewLocation, float DeltaTime);
 
-	UFUNCTION()
-		void CheckRayTraces(FVector& NewLocation, const float& DeltaTime);
-
+	void CheckDistance();
 };
 
 

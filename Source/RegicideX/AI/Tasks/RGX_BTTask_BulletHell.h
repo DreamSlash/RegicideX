@@ -20,7 +20,7 @@ class REGICIDEX_API URGX_BTTask_BulletHell : public UBTTaskNode
 
 	float RotationSpeedMultiplier = 2.0;
 
-	ARGX_DistanceAngel* DistAngelPawn;;
+	ARGX_DistanceAngel* DistAngelPawn = nullptr;
 
 public:
 
