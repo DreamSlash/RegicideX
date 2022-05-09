@@ -11,12 +11,15 @@ class UStaticMesh;
 class UMaterial;
 class UParticleSystemComponent;
 
+class UGameplayEffect;
+
 UCLASS()
 class REGICIDEX_API ARGX_LaserBeamWeapon : public AActor
 {
 	GENERATED_BODY()
 
 	bool FollowTarget = true;
+	bool bHittingTarget = false;
 
 public:	
 	// Sets default values for this actor's properties
@@ -52,6 +55,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float ForgetTime = 1.0f;
 
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<UGameplayEffect> EffectToApply;
+
 protected:
 	// Called when the game starts or when spawned
 	void BeginPlay() override;
@@ -72,6 +78,9 @@ public:
 
 	UFUNCTION()
 		void SetOwnerActor(AActor* OA);
+
+	UFUNCTION()
+		void ApplyEffect(AActor* OtherActor);
 
 	UFUNCTION()
 		void CheckRayTraces(FVector& NewLocation, float DeltaTime);

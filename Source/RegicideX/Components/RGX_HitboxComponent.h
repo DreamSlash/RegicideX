@@ -28,7 +28,7 @@ protected:
 
 	void ApplyEffects(AActor* OtherActor);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void OnComponentOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UPROPERTY(EditDefaultsOnly)

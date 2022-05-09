@@ -8,7 +8,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Math/UnrealMathUtility.h"
-#include "NavigationSystem.h"
+
 
 
 ARGX_DistanceAngel::ARGX_DistanceAngel()
@@ -83,16 +83,6 @@ void ARGX_DistanceAngel::TPToOriginalHeight()
 	SetLocationHeight(HeightPos);
 }
 
-FVector ARGX_DistanceAngel::GenerateRandomLocationAroundPoint(FVector Location) const
-{
-	return UNavigationSystemV1::GetRandomReachablePointInRadius(GetWorld(), Location, AttackRadius);
-}
-
-float ARGX_DistanceAngel::GetDistanceToTarget() const
-{
-	return FVector::Distance(this->GetActorLocation(), TargetActor->GetActorLocation());
-}
-
 void ARGX_DistanceAngel::SetLocationHeight(float Height) {
 	FVector NewLocation = GetActorLocation();
 	NewLocation.Z = Height;
@@ -105,3 +95,7 @@ void ARGX_DistanceAngel::Tick(float DeltaTime)
 	RotateRings(DeltaTime);
 }
 
+float ARGX_DistanceAngel::GetDistanceToTarget() const
+{
+	return FVector::Distance(GetActorLocation(), TargetActor->GetActorLocation());
+}

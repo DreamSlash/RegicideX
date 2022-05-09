@@ -24,7 +24,7 @@ ARGX_Bullet::ARGX_Bullet()
 	BulletParticleSystem->SetRelativeLocation(FVector(0.0));
 	BulletParticleSystem->SetupAttachment(RootComponent);
 
-	BulletCollider->OnComponentBeginOverlap.AddUniqueDynamic(this, &ARGX_Bullet::Hit);
+	//BulletCollider->OnComponentBeginOverlap.AddUniqueDynamic(this, &ARGX_Bullet::Hit);
 
 	this->InitialLifeSpan = 2.0f;
 }

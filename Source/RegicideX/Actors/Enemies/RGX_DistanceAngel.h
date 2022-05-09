@@ -81,9 +81,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void TPToOriginalHeight();
 
-	UFUNCTION()
-		FVector GenerateRandomLocationAroundPoint(FVector Location) const;
-
 	/** Attack methods */
 
 	UFUNCTION(BlueprintCallable)
