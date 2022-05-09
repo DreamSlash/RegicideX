@@ -51,6 +51,7 @@ void ARGX_RingWave::DamageActor(UPrimitiveComponent* OverlappedComponent
 	{
 		if (ASC->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("PossessedBy.Player")))
 		{
+			ASC->ApplyGameplayEffectToSelf(RingWaveEffect->GetDefaultObject<UGameplayEffect>(), 1.0, ASC->MakeEffectContext());
 			//ASC->ApplyGameplayEffectToSelf(WallEffect->GetDefaultObject<UGameplayEffect>(), 1.0, ASC->MakeEffectContext());
 		}
 	}

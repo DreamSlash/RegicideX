@@ -1,6 +1,7 @@
 #include "RGX_RingWavesAbility.h"
 
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
+#include "../../Actors/Enemies/RGX_MageAngel.h"
 #include "../../Actors/Weapons/RGX_RingWave.h"
 
 void URGX_RingWavesAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -18,7 +19,8 @@ void URGX_RingWavesAbility::ActivateAbility(const FGameplayAbilitySpecHandle Han
 void URGX_RingWavesAbility::OnSpawnRingWave()
 {
 	const AActor* AvatarActor = GetAvatarActorFromActorInfo();
-	const FTransform RingTransform(AvatarActor->GetActorLocation());
+	const ARGX_MageAngel* MageAngel = Cast<const ARGX_MageAngel>(AvatarActor);
+	const FTransform RingTransform(MageAngel->RingWaveSource->GetComponentLocation());
 	GetWorld()->SpawnActor<ARGX_RingWave>(RingActorClass, RingTransform);
 
 	if (--PendingWaves > 0)

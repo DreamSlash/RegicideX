@@ -6,6 +6,8 @@
 #include "RGX_EnemyBase.h"
 #include "RGX_MageAngel.generated.h"
 
+class USceneComponent;
+
 /**
  * 
  */
@@ -14,4 +16,21 @@ class REGICIDEX_API ARGX_MageAngel : public ARGX_EnemyBase
 {
 	GENERATED_BODY()
 	
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		USceneComponent* RingWaveSource = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float HeightPos = 500.0f;
+
+	ARGX_MageAngel();
+
+	void BeginPlay() override;
+
+	void MoveToTarget(float DeltaTime, FVector TargetPos) override;
+
+private:
+	// Temporal fix to set the height position of the angel
+	void ForceHeight();
+
 };
