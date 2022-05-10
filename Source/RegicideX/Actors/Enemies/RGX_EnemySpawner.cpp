@@ -34,6 +34,15 @@ void ARGX_EnemySpawner::Spawn(const TSubclassOf<ARGX_EnemyBase> EnemyBP)
 	const FRotator Rotation(0.0f, 0.0f, 0.0f);
 
 	ARGX_EnemyBase* SpawnedEnemy = GetWorld()->SpawnActor<ARGX_EnemyBase>(EnemyBP, Location, Rotation);
+	Cast<ARGX_Peasant>(SpawnedEnemy);
+
+	if (Manager && Manager->bCanSpawn)
+	{
+		
+	} else
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("No manager available ..."));
+	}
 
 	//AActor* Actor = nullptr;
 	/*
