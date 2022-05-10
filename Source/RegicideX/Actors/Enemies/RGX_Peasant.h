@@ -38,34 +38,35 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	bool bInCombat = false;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	bool bAttacking = false;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FVector IdlePosition;
 
-	//virtual void BeginPlay() override;
-	virtual void Tick(float DeltaTime) override;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	int IdleAction;
+
+	UPROPERTY(EditDefaultsOnly)
+	float WanderSpeed = 100.0f;
+
+	UPROPERTY(EditDefaultsOnly)
+	float MaxSpeed = 400.0f;
 
 	void Idle();
-	void Move();
-	void Attack();
+
+	UFUNCTION(BlueprintCallable)
+	void ResetAttacking();
 
 	float GetDistanceToTarget();
 
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* IdleMontage;
 protected:
-	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* PunchMontage;
-
-	// Animation Montages ...
-	UPROPERTY(EditDefaultsOnly);
-	UAnimMontage* DeathMontage;
-
-	UPROPERTY(EditDefaultsOnly);
-	UAnimMontage* ReceiveDamageMontage;
-
-	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* ScreamMontage;
 
 	UPROPERTY()
 	FVector WanderingPoint;
 
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
 };
