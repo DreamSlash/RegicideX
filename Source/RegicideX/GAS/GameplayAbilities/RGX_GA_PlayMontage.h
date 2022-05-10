@@ -17,6 +17,10 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UAnimMontage* MontageToPlay = nullptr;
 
+	FGameplayAbilitySpecHandle MyHandle;
+	const FGameplayAbilityActorInfo* MyAinfo;
+	FGameplayAbilityActivationInfo MyActivationInfo;
+
 private:
 	virtual void ActivateAbility(
 		const FGameplayAbilitySpecHandle Handle, 
