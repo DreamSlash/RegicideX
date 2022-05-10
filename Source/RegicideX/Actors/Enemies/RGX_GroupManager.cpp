@@ -31,6 +31,9 @@ void ARGX_GroupManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (!TargetActor)
+		return;
+
 	if (FVector::Distance(LastPlayerLocation, TargetActor->GetActorLocation()) > OffsetPlayer)
 	{
 		Invalidate();

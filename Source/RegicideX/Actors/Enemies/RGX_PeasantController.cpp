@@ -63,5 +63,7 @@ void ARGX_PeasantController::Tick(float DeltaTime)
 		BBComponent->SetValueAsBool("bAttacking", Peasant->bAttacking);
 		BBComponent->SetValueAsVector("IdlePosition", Peasant->IdlePosition);
 		BBComponent->SetValueAsInt("IdleAction", Peasant->IdleAction);
+
+		//UMCV_AbilitySystemComponent* ASC = Peasant->GetComponentByClass(TSubclassOf<UMCV_AbilitySystemComponent>());
 	}
 }
