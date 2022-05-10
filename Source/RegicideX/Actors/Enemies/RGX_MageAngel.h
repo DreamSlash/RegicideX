@@ -27,10 +27,4 @@ public:
 
 	void BeginPlay() override;
 
-	void MoveToTarget(float DeltaTime, FVector TargetPos) override;
-
-private:
-	// Temporal fix to set the height position of the angel
-	void ForceHeight();
-
 };
