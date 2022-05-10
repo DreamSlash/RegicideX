@@ -13,7 +13,7 @@ void URGX_MovementAttributeSet::PreAttributeChange(const FGameplayAttribute& Att
 
 		// TODO: I think this shouldn't be here
 		UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent();
-		AActor* Target = ASC->AvatarActor;
+		const AActor* Target = ASC->GetAvatarActor();
 		UCharacterMovementComponent* CharacterMovementComponent = Cast<UCharacterMovementComponent>(Target->GetComponentByClass(UCharacterMovementComponent::StaticClass()));
 		CharacterMovementComponent->MaxWalkSpeed = NewValue;
 	}
@@ -33,8 +33,8 @@ void URGX_MovementAttributeSet::PostGameplayEffectExecute(const struct FGameplay
 {
 	Super::PostGameplayEffectExecute(Data);
 
-	UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent();
-	AActor* Target = ASC->AvatarActor;
+	const UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent();
+	const AActor* Target = ASC->GetAvatarActor();
 	UCharacterMovementComponent* CharacterMovementComponent = Cast<UCharacterMovementComponent>(Target->GetComponentByClass(UCharacterMovementComponent::StaticClass()));
 	CharacterMovementComponent->MaxWalkSpeed = GetMovementSpeed();
 }
