@@ -21,8 +21,7 @@ void URGX_PlayerMeleeAttackAbility::ActivateAbility(const FGameplayAbilitySpecHa
 	if (Character)
 	{
 		Character->DisableMovementInput();
-		Character->AddMovementVector(Character->GetActorForwardVector());
-		Character->AddMovementVectorLength(MoveVectorLength);
+		CombatAssistComponent->AddMovementVector(Character->GetActorForwardVector(), MoveVectorLength);
 
 		UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, MontageToPlay, PlayRatio, StartSectionName, true);
 		PlayMontageTask->OnBlendOut.AddDynamic(this, &URGX_PlayerMeleeAttackAbility::FinishAttack);
@@ -48,8 +47,9 @@ void URGX_PlayerMeleeAttackAbility::EndAbility(const FGameplayAbilitySpecHandle 
 void URGX_PlayerMeleeAttackAbility::FinishAttack()
 {
 	ARGX_PlayerCharacter* Character = Cast<ARGX_PlayerCharacter>(CurrentActorInfo->AvatarActor);
+	URGX_CombatAssistComponent* CombatAssistComponent = Character->FindComponentByClass<URGX_CombatAssistComponent>();
 
-	Character->RemoveMovementVector();
+	CombatAssistComponent->RemoveMovementVector();
 	Character->EnableMovementInput();
 	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);

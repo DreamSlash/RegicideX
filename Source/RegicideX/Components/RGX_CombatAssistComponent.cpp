@@ -3,15 +3,30 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "../Actors/Enemies/RGX_EnemyBase.h"
+#include "GameFramework/Actor.h"
 
 URGX_CombatAssistComponent::URGX_CombatAssistComponent()
 {
-
+	PrimaryComponentTick.bCanEverTick = true;
 }
 
 void URGX_CombatAssistComponent::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void URGX_CombatAssistComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	// Extra movement vector (from animation attacks, etc...)
+	if (bAddMoveVector == true)
+	{
+		AActor* Owner = GetOwner();
+
+		const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * MoveVectorLength;
+		Owner->SetActorLocation(NewLocation, true);
+	}
+	// -----------------------------
 }
 
 void URGX_CombatAssistComponent::EndPlay(EEndPlayReason::Type EndPlayReason)
@@ -94,4 +109,18 @@ void URGX_CombatAssistComponent::PerformAttackAutoAssist()
 	const FVector FinalLocation = PlayerLocation + AssistDirection * (CurrentClosestDistance - OffsetToEnemy);
 
 	PlayerActor->SetActorLocation(FinalLocation);
+}
+
+void URGX_CombatAssistComponent::AddMovementVector(FVector Direction, float Length)
+{
+	MoveVectorDirection = Direction;
+	MoveVectorLength = Length;
+	bAddMoveVector = true;
+}
+
+void URGX_CombatAssistComponent::RemoveMovementVector()
+{
+	MoveVectorDirection = FVector(0.0f);
+	MoveVectorLength = 0.0f;
+	bAddMoveVector = false;
 }

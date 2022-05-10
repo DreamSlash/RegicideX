@@ -110,15 +110,6 @@ public:
 	void OnJump();
 
 	UFUNCTION(BlueprintCallable)
-	void AddMovementVector(FVector MovementVector);
-
-	UFUNCTION(BlueprintCallable)
-	void AddMovementVectorLength(float Length);
-
-	UFUNCTION(BlueprintCallable)
-	void RemoveMovementVector();
-
-	UFUNCTION(BlueprintCallable)
 	void DisableMovementInput();
 
 	UFUNCTION(BlueprintCallable)
@@ -140,14 +131,6 @@ protected:
 	// -----------------------
 
 	/** Move variables */
-	UPROPERTY()
-	FVector MoveVectorDirection = FVector(0.0f);
-
-	float MoveVectorLength = 0.0f;
-
-	UPROPERTY()
-	bool bAddMoveVector = false;
-
 	UPROPERTY()
 	bool bIgnoreInputMoveVector = false;
 	// -----------------------

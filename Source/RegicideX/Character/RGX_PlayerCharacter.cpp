@@ -285,14 +285,6 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 	LeanAmount = UKismetMathLibrary::FInterpTo(LeanAmount, LeanInfo.LeanAmount, DeltaTime, LeanInfo.InterSpeed);
 	// ------------------
 
-	// Extra movement vector (from animation attacks, etc...)
-	if (bAddMoveVector == true)
-	{
-		const FVector NewLocation = GetActorLocation() + MoveVectorDirection * MoveVectorLength;
-		SetActorLocation(NewLocation, true);
-	}
-	// -----------------------------
-
 	/*
 	if (IsBeingAttacked())
 	{
@@ -306,24 +298,6 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 UAbilitySystemComponent* ARGX_PlayerCharacter::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
-}
-
-void ARGX_PlayerCharacter::AddMovementVector(FVector MovementVector)
-{
-	MoveVectorDirection = MovementVector;
-	bAddMoveVector = true;
-}
-
-void ARGX_PlayerCharacter::AddMovementVectorLength(float Length)
-{
-	MoveVectorLength = Length;
-}
-
-void ARGX_PlayerCharacter::RemoveMovementVector()
-{
-	MoveVectorDirection = FVector(0.0f);
-	MoveVectorLength = 0.0f;
-	bAddMoveVector = false;
 }
 
 void ARGX_PlayerCharacter::DisableMovementInput()
