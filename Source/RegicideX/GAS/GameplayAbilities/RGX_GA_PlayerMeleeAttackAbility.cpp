@@ -20,6 +20,7 @@ void URGX_PlayerMeleeAttackAbility::ActivateAbility(const FGameplayAbilitySpecHa
 
 	if (Character)
 	{
+		Character->DisableMovementInput();
 		Character->AddMovementVector(Character->GetActorForwardVector());
 		Character->AddMovementVectorLength(MoveVectorLength);
 
@@ -49,6 +50,7 @@ void URGX_PlayerMeleeAttackAbility::FinishAttack()
 	ARGX_PlayerCharacter* Character = Cast<ARGX_PlayerCharacter>(CurrentActorInfo->AvatarActor);
 
 	Character->RemoveMovementVector();
+	Character->EnableMovementInput();
 	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
 }
