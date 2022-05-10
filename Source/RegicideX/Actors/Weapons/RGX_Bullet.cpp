@@ -35,6 +35,16 @@ void ARGX_Bullet::BeginPlay()
 	Super::BeginPlay();
 }
 
+void ARGX_Bullet::SetGenericTeamId(const FGenericTeamId& TeamID)
+{
+	CharacterTeam = TeamID;
+}
+
+FGenericTeamId ARGX_Bullet::GetGenericTeamId() const
+{
+	return CharacterTeam;
+}
+
 // Called every frame
 void ARGX_Bullet::Tick(float DeltaTime)
 {
@@ -56,9 +66,5 @@ void ARGX_Bullet::Hit(UPrimitiveComponent* OverlappedComponent, AActor* OtherAct
 	if (OtherActor == GetInstigator()) return;
 
 	this->Destroy();
-	////do stuff
-	//if (MyTimer > 0.5 && OtherActor != MyOwner)
-	//{
-	//}	
 }
 

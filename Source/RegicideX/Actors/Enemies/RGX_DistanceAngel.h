@@ -19,6 +19,8 @@ class REGICIDEX_API ARGX_DistanceAngel : public ARGX_EnemyBase
 {
 	GENERATED_BODY()
 
+	bool TickMe = true;
+
 public:
 
 	ARGX_DistanceAngel();
@@ -91,5 +93,8 @@ public:
 
 	UFUNCTION()
 		void SetLocationHeight(float Height);
+
+	UFUNCTION()
+		void DestroyMyself(float Time);
 
 };

@@ -91,6 +91,7 @@ void ARGX_DistanceAngel::SetLocationHeight(float Height) {
 
 void ARGX_DistanceAngel::Tick(float DeltaTime)
 {
+	if (TickMe == false) return;
 	Super::Tick(DeltaTime);
 	RotateRings(DeltaTime);
 }
@@ -98,4 +99,11 @@ void ARGX_DistanceAngel::Tick(float DeltaTime)
 float ARGX_DistanceAngel::GetDistanceToTarget() const
 {
 	return FVector::Distance(GetActorLocation(), TargetActor->GetActorLocation());
+}
+
+void ARGX_DistanceAngel::DestroyMyself(float Time)
+{
+	TickMe = false;
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this] {this->Destroy(); }, Time, false);
 }
