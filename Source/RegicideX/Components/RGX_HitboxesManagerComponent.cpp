@@ -18,6 +18,7 @@ void URGX_HitboxesManagerComponent::EndPlay(EEndPlayReason::Type EndPlayReason)
 
 void URGX_HitboxesManagerComponent::AddHitboxToMap(FGameplayTag IdentifierTag, URGX_HitboxComponent* HitboxComponent)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Add Hitbox to map: %s\n"), *IdentifierTag.ToString());
 	HitboxesMap.Add(IdentifierTag, HitboxComponent);
 }
 
@@ -30,6 +31,8 @@ URGX_HitboxComponent* URGX_HitboxesManagerComponent::GetHitboxByTag(FGameplayTag
 	{
 		ComponentToReturn = *FoundComponent;
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Get Hitbox by tag: %s\n"), *IdentifierTag.ToString());
 
 	return ComponentToReturn;
 }
