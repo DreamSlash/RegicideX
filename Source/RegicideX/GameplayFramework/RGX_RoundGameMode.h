@@ -83,6 +83,15 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void PopulateSpawnerList();
+
+	UPROPERTY()
+		AActor* TargetActor = nullptr;
+
+private:
+	void StartGameSpawn();
+
+private:
+	FTimerHandle FirstSpawnTimerHandle;
 	
 	/*
 	UFUNCTION(BlueprintCallable)

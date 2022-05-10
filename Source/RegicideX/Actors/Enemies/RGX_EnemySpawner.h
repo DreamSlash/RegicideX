@@ -27,7 +27,7 @@ public:
 	FBox SpawnBox;
 
 	UFUNCTION(BlueprintCallable)
-	void Spawn(TSubclassOf<ARGX_EnemyBase> EnemyBP);
+	ARGX_EnemyBase* Spawn(TSubclassOf<ARGX_EnemyBase> EnemyBP);
 
 	/** Function called to spawn BP_Peasant **/
 	UFUNCTION(BlueprintImplementableEvent)

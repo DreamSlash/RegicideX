@@ -156,7 +156,8 @@ void ARGX_GroupManager::RecalcPeasants()
 		TArray<ARGX_Peasant*> PeasantsToAttack;
 		PeasantToDistance.GenerateKeyArray(PeasantsToAttack);
 
-		for (unsigned int i = 0; i < MaxAttackers; ++i)
+		const unsigned int NumAttackers = std::min(PeasantToDistance.Num(), (int)MaxAttackers);
+		for (unsigned int i = 0; i < NumAttackers; ++i)
 		{
 			ARGX_Peasant* p = PeasantsToAttack[i];
 			p->bInCombat = true;

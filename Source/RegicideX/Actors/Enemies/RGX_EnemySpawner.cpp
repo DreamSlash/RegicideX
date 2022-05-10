@@ -18,6 +18,9 @@ ARGX_EnemySpawner::ARGX_EnemySpawner()
 void ARGX_EnemySpawner::BeginPlay()
 {
 	Super::BeginPlay();
+
+	SpawnBox = SpawnBox.ShiftBy(GetActorLocation());
+
 	//Spawn();
 	FVector Location(0.0f, 0.0f, 0.0f);
 	FRotator Rotation(0.0f, 0.0f, 0.0f);
@@ -26,7 +29,7 @@ void ARGX_EnemySpawner::BeginPlay()
 	//GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &ARGX_EnemySpawner::Spawn, 4.0f, true);
 }
 
-void ARGX_EnemySpawner::Spawn(const TSubclassOf<ARGX_EnemyBase> EnemyBP)
+ARGX_EnemyBase* ARGX_EnemySpawner::Spawn(TSubclassOf<ARGX_EnemyBase> EnemyBP)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 20.0f, FColor::Blue, TEXT("Spawning enemy"));
 
@@ -34,8 +37,9 @@ void ARGX_EnemySpawner::Spawn(const TSubclassOf<ARGX_EnemyBase> EnemyBP)
 	const FRotator Rotation(0.0f, 0.0f, 0.0f);
 
 	ARGX_EnemyBase* SpawnedEnemy = GetWorld()->SpawnActor<ARGX_EnemyBase>(EnemyBP, Location, Rotation);
-	Cast<ARGX_Peasant>(SpawnedEnemy);
+	return SpawnedEnemy;
 
+	/*
 	if (Manager && Manager->bCanSpawn)
 	{
 		
@@ -43,6 +47,7 @@ void ARGX_EnemySpawner::Spawn(const TSubclassOf<ARGX_EnemyBase> EnemyBP)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1.0f, FColor::Red, TEXT("No manager available ..."));
 	}
+	*/
 
 	//AActor* Actor = nullptr;
 	/*

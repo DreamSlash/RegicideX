@@ -7,6 +7,7 @@
 #include "Engine/AssetManager.h"
 #include "RegicideX/Data/RGX_EnemyDataAsset.h"
 #include "RegicideX/Data/RGX_RoundDataTable.h"
+#include "Kismet/GameplayStatics.h"
 
 TArray<AActor*> ARGX_RoundGameMode::GetEnemySpawners() const
 {
@@ -51,10 +52,11 @@ void ARGX_RoundGameMode::StartPlay()
 
 void ARGX_RoundGameMode::BeginPlay()
 {
+	Super::BeginPlay();
+
 	GetGameState<ARGX_ScoreGameState>()->SetStateDefaults();
 	PopulateSpawnerList();
-	GetGameState<ARGX_ScoreGameState>()->SetNumEnemies(SpawnEnemies());
-	Super::BeginPlay();
+	GetWorld()->GetTimerManager().SetTimer(FirstSpawnTimerHandle, this, &ARGX_RoundGameMode::StartGameSpawn, 5.0f, false);
 }
 
 void ARGX_RoundGameMode::OnEnemyDeath(const int Type)
@@ -143,7 +145,10 @@ void ARGX_RoundGameMode::SpawnEnemy(UDataAsset* EnemyInfo)
 		const int Rand = FMath::RandRange(0, EnemySpawners.Num()-1);
 		if(EnemySpawners[Rand])
 		{
-			Cast<ARGX_EnemySpawner>(EnemySpawners[Rand])->Spawn(EnemyInfoCasted->EnemyBP);
+			if (ARGX_EnemyBase* Enemy = (Cast<ARGX_EnemySpawner>(EnemySpawners[Rand])->Spawn(EnemyInfoCasted->EnemyBP)))
+			{
+				Enemy->TargetActor = TargetActor;
+			}
 		}
 		
 	} else
@@ -174,4 +179,14 @@ void ARGX_RoundGameMode::StartPlayEvent_Implementation()
 {
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("StartPlay Default Called"));
 	
+}
+
+void ARGX_RoundGameMode::StartGameSpawn()
+{
+	if (AActor* Target = UGameplayStatics::GetPlayerCharacter(GetWorld(),0))
+	{
+		TargetActor = Target;
+	}
+
+	GetGameState<ARGX_ScoreGameState>()->SetNumEnemies(SpawnEnemies());
 }
