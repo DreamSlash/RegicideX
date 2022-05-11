@@ -1,42 +1,44 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "RGX_GA_PeasantDie.h"
+#include "RGX_GA_PeasantReactionHit.h"
 #include "Animation/AnimMontage.h"
 #include "AIController.h"
 #include "BrainComponent.h"
-#include "RegicideX/Actors/Enemies/RGX_Peasant.h"
-#include "RegicideX/Actors/Enemies/RGX_GroupManager.h"
 #include "GameFramework/Character.h"
+#include "RegicideX/Actors/Enemies/RGX_Peasant.h"
 
-void URGX_GA_PeasantDie::ActivateAbility(
+void URGX_GA_PeasantReactionHit::ActivateAbility(
 	const FGameplayAbilitySpecHandle Handle, 
 	const FGameplayAbilityActorInfo* ActorInfo, 
 	const FGameplayAbilityActivationInfo ActivationInfo, 
 	const FGameplayEventData* TriggerEventData)
 {
-	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
 	ACharacter* Character = Cast<ACharacter>(ActorInfo->OwnerActor);
 	AAIController* Controller = Cast<AAIController>(Character->GetController());
 
-	// If dead, should not move
+	// If reacting to hit, should not move
 	if (Controller)
-		Controller->GetBrainComponent()->StopLogic(FString("Actor is dead."));
+		Controller->GetBrainComponent()->StopLogic(FString("Animation playing"));
 
-	if (MontageToPlay && Character)
+	// Launch Peasant a small bit backwards
+	ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(Character);
+	FVector TargetActorForward = Peasant->TargetActor->GetActorForwardVector();
+	Character->LaunchCharacter(TargetActorForward * 1000.0f, true, false);
+
+	if (MontageToPlay)
 	{
 		UAnimInstance* AnimInstance = ActorInfo->GetAnimInstance();
-		if (AnimInstance) 
+		if (AnimInstance)
 		{
 			float duration = AnimInstance->Montage_Play(MontageToPlay);
 			FTimerDelegate TimerCallback;
 
 			MyHandle = Handle; MyAinfo = ActorInfo; MyActivationInfo = ActivationInfo;
 			TimerCallback.BindLambda([this]
-			{
-				EndAbility(MyHandle, MyAinfo, MyActivationInfo, false, false);
-			});
+				{
+					EndAbility(MyHandle, MyAinfo, MyActivationInfo, false, false);
+				});
 
 			FTimerHandle MontageTimerHandle;
 			//en vez de esto puedes usar el delegate de onmontage ended pero queria hacer que funcionase rapido
@@ -45,10 +47,9 @@ void URGX_GA_PeasantDie::ActivateAbility(
 			GetWorld()->GetTimerManager().SetTimer(MontageTimerHandle, TimerCallback, duration - 0.5, false);
 		}
 	}
-
 }
 
-void URGX_GA_PeasantDie::EndAbility(
+void URGX_GA_PeasantReactionHit::EndAbility(
 	const FGameplayAbilitySpecHandle Handle, 
 	const FGameplayAbilityActorInfo* ActorInfo, 
 	const FGameplayAbilityActivationInfo ActivationInfo, 
@@ -57,7 +58,11 @@ void URGX_GA_PeasantDie::EndAbility(
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 
-	ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(ActorInfo->OwnerActor);
-	if(Peasant)
-		Peasant->manager->RemovePeasant(Peasant);
+	ACharacter* Character = Cast<ACharacter>(ActorInfo->OwnerActor);
+	if (Character)
+	{
+		AAIController* Controller = Cast<AAIController>(Character->GetController());
+		if (Controller)
+			Controller->GetBrainComponent()->StartLogic();
+	}
 }
