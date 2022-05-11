@@ -80,6 +80,7 @@ public:
 
 	void AddPeasant(ARGX_Peasant* newPeasant);
 
+	UFUNCTION(BlueprintCallable)
 	void RemovePeasant(ARGX_Peasant* PeasantToRemove);
 
 	void RecalcPositions();

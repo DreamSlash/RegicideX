@@ -47,7 +47,4 @@ void URGX_GA_PlayMontage::EndAbility(
 	bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-	AActor* Actor = Cast<AActor>(ActorInfo->AvatarActor); //porsiacaso
-	Actor->Destroy();
-
 }

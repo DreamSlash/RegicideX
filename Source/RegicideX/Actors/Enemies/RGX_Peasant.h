@@ -22,7 +22,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	UBehaviorTree* BTree;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	ARGX_GroupManager* manager;
 
 	// String to show the status in the Text RenderComponent
@@ -61,7 +61,7 @@ public:
 	float GetDistanceToTarget();
 
 	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* IdleMontage;
+	UAnimMontage* IdleMontage = nullptr;
 protected:
 
 	UPROPERTY()

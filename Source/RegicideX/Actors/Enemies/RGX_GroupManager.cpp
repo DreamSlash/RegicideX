@@ -58,7 +58,14 @@ void ARGX_GroupManager::AddPeasant(ARGX_Peasant* newPeasant)
 
 void ARGX_GroupManager::RemovePeasant(ARGX_Peasant* PeasantToRemove)
 {
-	PeasantArray.RemoveSingle(PeasantToRemove);
+
+	PeasantArray.RemoveSingle(PeasantToRemove); // Not needed ??
+	if (PeasantToRemove->bInCombat)
+		PeasantsInCombat.RemoveSingle(PeasantToRemove);
+	else
+		PeasantToPosition.Remove(PeasantToRemove);
+
+	PeasantToRemove->Destroy();
 	CurrentNumberOfPeasants--;
 	RecalcPeasants();
 }
