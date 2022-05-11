@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "GenericTeamAgentInterface.h"
 #include "RGX_Bullet.generated.h"
 
 class UStaticMeshComponent;
@@ -11,7 +12,7 @@ class UParticleSystemComponent;
 class URGX_HitboxComponent;
 
 UCLASS()
-class REGICIDEX_API ARGX_Bullet : public AActor
+class REGICIDEX_API ARGX_Bullet : public AActor, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
 
@@ -36,10 +37,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		AActor* MyOwner = nullptr;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+		FGenericTeamId CharacterTeam;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	// FGenericTeamId interface
+	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
+
+	virtual FGenericTeamId GetGenericTeamId() const override;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

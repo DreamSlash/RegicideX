@@ -12,6 +12,18 @@ EBTNodeResult::Type URGX_BTTask_PeasantIdle::ExecuteTask(UBehaviorTreeComponent&
     if (Peasant)
     {
         Peasant->Idle();
+
+        FTimerHandle TimerHandle;
+        FTimerDelegate TimerCallback;
+        TimerCallback.BindLambda([this, &OwnerComp] {
+            this->FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+        });
+
+        GetWorld()->GetTimerManager().SetTimer(
+            TimerHandle, 
+            TimerCallback,
+            Peasant->IdleMontage->GetPlayLength(), 
+            false);
     }
-    return EBTNodeResult::Succeeded;
+    return EBTNodeResult::InProgress;
 }

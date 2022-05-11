@@ -9,7 +9,7 @@ EBTNodeResult::Type URGX_BTTask_GenerateTPLocation::ExecuteTask(UBehaviorTreeCom
 {
 	ARGX_DistanceAngelController* AIController = Cast<ARGX_DistanceAngelController>(OwnerComp.GetAIOwner());
 	
-	AIController->SetRandomLocationAroundTarget();
+	AIController->SetRandomLocationAroundTarget(Distance);
 
 	return EBTNodeResult::Succeeded;
 }

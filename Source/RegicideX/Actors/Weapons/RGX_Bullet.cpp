@@ -24,7 +24,7 @@ ARGX_Bullet::ARGX_Bullet()
 	BulletParticleSystem->SetRelativeLocation(FVector(0.0));
 	BulletParticleSystem->SetupAttachment(RootComponent);
 
-	BulletCollider->OnComponentBeginOverlap.AddUniqueDynamic(this, &ARGX_Bullet::Hit);
+	//BulletCollider->OnComponentBeginOverlap.AddUniqueDynamic(this, &ARGX_Bullet::Hit);
 
 	this->InitialLifeSpan = 2.0f;
 }
@@ -33,6 +33,16 @@ ARGX_Bullet::ARGX_Bullet()
 void ARGX_Bullet::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void ARGX_Bullet::SetGenericTeamId(const FGenericTeamId& TeamID)
+{
+	CharacterTeam = TeamID;
+}
+
+FGenericTeamId ARGX_Bullet::GetGenericTeamId() const
+{
+	return CharacterTeam;
 }
 
 // Called every frame
@@ -56,9 +66,5 @@ void ARGX_Bullet::Hit(UPrimitiveComponent* OverlappedComponent, AActor* OtherAct
 	if (OtherActor == GetInstigator()) return;
 
 	this->Destroy();
-	////do stuff
-	//if (MyTimer > 0.5 && OtherActor != MyOwner)
-	//{
-	//}	
 }
 

@@ -34,6 +34,8 @@ void ARGX_PeasantController::OnPossess(APawn* pawn)
 			OnAirID = BBComponent->GetKeyID("bOnAir");
 			WasHitID = BBComponent->GetKeyID("bWasHit");
 			InCombatID = BBComponent->GetKeyID("bInCombat");
+			AttackingID = BBComponent->GetKeyID("bAttacking");
+			IdleActionID = BBComponent->GetKeyID("IdleAction");
 			IdlePositionID = BBComponent->GetKeyID("IdlePosition");
 
 			// Execute behavior tree after initialization.
@@ -58,6 +60,10 @@ void ARGX_PeasantController::Tick(float DeltaTime)
 		BBComponent->SetValueAsBool("bWasHit", Peasant->bWasHit);
 		BBComponent->SetValueAsBool("bOnAir", Peasant->bOnAir);
 		BBComponent->SetValueAsBool("bInCombat", Peasant->bInCombat);
+		BBComponent->SetValueAsBool("bAttacking", Peasant->bAttacking);
 		BBComponent->SetValueAsVector("IdlePosition", Peasant->IdlePosition);
+		BBComponent->SetValueAsInt("IdleAction", Peasant->IdleAction);
+
+		//UMCV_AbilitySystemComponent* ASC = Peasant->GetComponentByClass(TSubclassOf<UMCV_AbilitySystemComponent>());
 	}
 }

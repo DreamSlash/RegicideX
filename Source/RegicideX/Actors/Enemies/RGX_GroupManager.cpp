@@ -31,6 +31,9 @@ void ARGX_GroupManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (!TargetActor)
+		return;
+
 	if (FVector::Distance(LastPlayerLocation, TargetActor->GetActorLocation()) > OffsetPlayer)
 	{
 		Invalidate();
@@ -55,7 +58,17 @@ void ARGX_GroupManager::AddPeasant(ARGX_Peasant* newPeasant)
 
 void ARGX_GroupManager::RemovePeasant(ARGX_Peasant* PeasantToRemove)
 {
-	PeasantArray.RemoveSingle(PeasantToRemove);
+	// If peasant to remove is the attacking 
+	if (PeasantToRemove == AttackingPeasant)
+		SwitchFighter();
+
+	PeasantArray.RemoveSingle(PeasantToRemove); // Not needed ??
+	if (PeasantToRemove->bInCombat)
+		PeasantsInCombat.RemoveSingle(PeasantToRemove);
+	else
+		PeasantToPosition.Remove(PeasantToRemove);
+
+	PeasantToRemove->Destroy();
 	CurrentNumberOfPeasants--;
 	RecalcPeasants();
 }
@@ -156,7 +169,8 @@ void ARGX_GroupManager::RecalcPeasants()
 		TArray<ARGX_Peasant*> PeasantsToAttack;
 		PeasantToDistance.GenerateKeyArray(PeasantsToAttack);
 
-		for (unsigned int i = 0; i < MaxAttackers; ++i)
+		const unsigned int NumAttackers = std::min(PeasantToDistance.Num(), (int)MaxAttackers);
+		for (unsigned int i = 0; i < NumAttackers; ++i)
 		{
 			ARGX_Peasant* p = PeasantsToAttack[i];
 			p->bInCombat = true;
@@ -164,5 +178,23 @@ void ARGX_GroupManager::RecalcPeasants()
 			PeasantsInCombat.Add(p);
 			CurrentAttackers++;
 		}
+	}
+}
+
+void ARGX_GroupManager::SwitchFighter()
+{
+	if (PeasantsInCombat.Num() <= 0)
+		return;
+
+	// Should it take a different peasant? Or can it reapeat?
+	bool Found = false;
+	while (!Found)
+	{
+		int Index = FMath::FRandRange(0, PeasantsInCombat.Num() - 1);
+		if(AttackingPeasant)
+			AttackingPeasant->bAttacking = false;
+		AttackingPeasant = PeasantsInCombat[Index];
+		AttackingPeasant->bAttacking = true;
+		Found = true;
 	}
 }

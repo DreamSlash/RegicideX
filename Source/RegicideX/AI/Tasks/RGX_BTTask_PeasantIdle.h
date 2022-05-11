@@ -16,5 +16,4 @@ class REGICIDEX_API URGX_BTTask_PeasantIdle : public UBTTaskNode
 
 public:
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
-	
 };

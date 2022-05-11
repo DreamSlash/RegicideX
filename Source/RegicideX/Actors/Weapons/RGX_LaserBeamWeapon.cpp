@@ -3,6 +3,8 @@
 
 #include "RGX_LaserBeamWeapon.h"
 
+#include "AbilitySystemGlobals.h"
+#include "AbilitySystemComponent.h"
 #include "Components/SplineComponent.h"
 #include "Components/SplineMeshComponent.h"
 #include "Particles/ParticleSystemComponent.h"
@@ -23,6 +25,7 @@ ARGX_LaserBeamWeapon::ARGX_LaserBeamWeapon()
 void ARGX_LaserBeamWeapon::BeginPlay()
 {
 	Super::BeginPlay();
+
 	OwnerActor = GetOwner();
 }
 
@@ -35,7 +38,7 @@ void ARGX_LaserBeamWeapon::CheckRayTraces(FVector& NewLocation, float DeltaTime)
 	const FVector FrontRayEndPoint = NewLocation;
 
 	//debug
-	UKismetSystemLibrary::DrawDebugPoint(GetWorld(), FrontRaySrc, 22, FColor(255, 0, 255), DeltaTime);
+	/*UKismetSystemLibrary::DrawDebugPoint(GetWorld(), FrontRaySrc, 22, FColor(255, 0, 255), DeltaTime);
 	UKismetSystemLibrary::DrawDebugLine(
 		GetWorld(),
 		FrontRaySrc,
@@ -43,13 +46,17 @@ void ARGX_LaserBeamWeapon::CheckRayTraces(FVector& NewLocation, float DeltaTime)
 		FColor(255, 0, 0),
 		DeltaTime,
 		5.0f
-	);
+	);*/
 
 	if (GetWorld()->LineTraceSingleByChannel(FrontRayTraceResult, FrontRaySrc, FrontRayEndPoint, ECollisionChannel::ECC_WorldStatic))
 	{
-		if (const AActor* Actor = FrontRayTraceResult.GetActor()) {
+		AActor* Actor = FrontRayTraceResult.GetActor();
+		if (bHittingTarget == false && Actor == TargetActor) {
 			//If actor hitting target, apply damage effect
-			UE_LOG(LogTemp, Warning, TEXT("Hitting Actor: %s"), *Actor->GetName());
+			bHittingTarget = true;
+			FTimerHandle Timerhandle;
+			GetWorld()->GetTimerManager().SetTimer(Timerhandle, [this]() {this->bHittingTarget = false; }, ForgetTime, false);
+			ApplyEffect(Actor);
 		}
 	}
 
@@ -132,6 +139,28 @@ void ARGX_LaserBeamWeapon::SetSourcePoint(FVector SP)
 void ARGX_LaserBeamWeapon::SetOwnerActor(AActor* OA)
 {
 	OwnerActor = OA;
+}
+
+void ARGX_LaserBeamWeapon::ApplyEffect(AActor* OtherActor)
+{
+	if (ensureMsgf(EffectToApply.Get(), TEXT("URGX_HitboxComponent::ApplyEffects No valid effect to apply")))
+	{
+		// Try to get owner ASC
+		UAbilitySystemComponent* ApplierASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OwnerActor);
+		UAbilitySystemComponent* TargetASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OtherActor);
+
+		// If not fallback to target
+		if (!ApplierASC)
+		{
+			ApplierASC = TargetASC;
+		}
+
+		// Only apply if ASC valid
+		if (ApplierASC && TargetASC)
+		{
+			ApplierASC->ApplyGameplayEffectToTarget(EffectToApply->GetDefaultObject<UGameplayEffect>(), TargetASC, 1, ApplierASC->MakeEffectContext());
+		}
+	}
 }
 
 
