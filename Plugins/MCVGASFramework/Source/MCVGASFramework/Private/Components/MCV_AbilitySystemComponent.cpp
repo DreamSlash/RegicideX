@@ -7,7 +7,7 @@
 void UMCV_AbilitySystemComponent::InitAbilityActorInfo(AActor* InOwnerActor, AActor* InAvatarActor)
 {
 	Super::InitAbilityActorInfo(InOwnerActor, InAvatarActor);
-
+	
 	if (AbilityActorInfo)
 	{
 		if (UGameInstance* GameInstance = InOwnerActor->GetGameInstance())

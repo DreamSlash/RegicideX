@@ -4,6 +4,8 @@
 #include "Components/ActorComponent.h"
 #include "RGX_CombatAssistComponent.generated.h"
 
+class AActor;
+
 UCLASS(meta = (BlueprintSpawnableComponent))
 class REGICIDEX_API URGX_CombatAssistComponent : public UActorComponent
 {
@@ -20,18 +22,51 @@ public:
 	void PerformAttackAutoAssist();
 
 	UFUNCTION(BlueprintCallable)
+	void EnableMovementVector();
+
+	UFUNCTION(BlueprintCallable)
+	void DisableMovementVector();
+
+	UFUNCTION(BlueprintCallable)
 	void AddMovementVector(FVector Direction, float Length);
 
 	UFUNCTION(BlueprintCallable)
 	void RemoveMovementVector();
 
+	UFUNCTION(BlueprintCallable)
+	void SetAttackMoveDuration(float Duration);
+
 protected:
+
+	/** Attack Auto Assist */
+	UPROPERTY(EditAnywhere)
+	float AutoAssistRadius = 300.0f;
+
+	UPROPERTY(EditAnywhere)
+	float AutoAssistDot = 0.5f;
+
+	UPROPERTY(EditAnywhere)
+	float AutoAssistOffsetToEnemy = 200.0f;
+
+	AActor* Target = nullptr;
+	// ----------------------
+
+	/** Attack Movement */
+	UPROPERTY(EditAnywhere)
+	float AttackOffsetToEnemy = 150.0f;
 
 	UPROPERTY()
 	FVector MoveVectorDirection = FVector(0.0f);
 
 	float MoveVectorLength = 0.0f;
 
+	float AutoAssistMove = 0.0f;
+
 	UPROPERTY()
 	bool bAddMoveVector = false;
+
+	bool bMoveVectorEnabled = false;
+
+	float AttackMoveDuration = 0.0f;
+	// ------------------------------
 };

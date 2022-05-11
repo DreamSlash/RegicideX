@@ -18,13 +18,31 @@ void URGX_CombatAssistComponent::BeginPlay()
 void URGX_CombatAssistComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
 	// Extra movement vector (from animation attacks, etc...)
-	if (bAddMoveVector == true)
+	if (bMoveVectorEnabled && bAddMoveVector)
 	{
 		AActor* Owner = GetOwner();
 
-		const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * MoveVectorLength;
-		Owner->SetActorLocation(NewLocation, true);
+		if (Target)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Has Target\n"));
+			const float DistanceToTarget = FVector::Distance(Owner->GetActorLocation(), Target->GetActorLocation());
+
+			// Apply attack movement only if it does not get too close to the target
+			if (DistanceToTarget > AttackOffsetToEnemy)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("AutoAssistMove This Frame: %f\n"), AutoAssistMove / AttackMoveDuration);
+				const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * (MoveVectorLength + AutoAssistMove / AttackMoveDuration * DeltaTime);
+				Owner->SetActorLocation(NewLocation, true);
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Does not have Target\n"));
+			const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * MoveVectorLength;
+			Owner->SetActorLocation(NewLocation, true);
+		}
 	}
 	// -----------------------------
 }
@@ -34,13 +52,12 @@ void URGX_CombatAssistComponent::EndPlay(EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
+// TODO [REFACTOR]: Autoassist should give extra movement to the attack being done and not be a teleport
 void URGX_CombatAssistComponent::PerformAttackAutoAssist()
 {
 	AActor* PlayerActor = GetOwner();
 
 	const FVector PlayerLocation = PlayerActor->GetActorLocation();
-
-	const float radius = 300.0f;
 
 	TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjectTypes;
 	TraceObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Pawn));
@@ -51,7 +68,7 @@ void URGX_CombatAssistComponent::PerformAttackAutoAssist()
 	TArray<AActor*> OutActors;
 
 	// Check for nearby enemies
-	if (UKismetSystemLibrary::SphereOverlapActors(GetWorld(), PlayerLocation, radius, TraceObjectTypes, SeekClass, IgnoreActors, OutActors) == false)
+	if (UKismetSystemLibrary::SphereOverlapActors(GetWorld(), PlayerLocation, AutoAssistRadius, TraceObjectTypes, SeekClass, IgnoreActors, OutActors) == false)
 		return;
 
 	float CurrentClosestDistance = INFINITY;
@@ -80,11 +97,12 @@ void URGX_CombatAssistComponent::PerformAttackAutoAssist()
 		// Cone check
 		const float Dot = FVector::DotProduct(PlayerToEnemyVector, PlayerForward);
 
-		if (Distance < CurrentClosestDistance && Dot > 0.5f)
+		if (Distance < CurrentClosestDistance && Dot > AutoAssistDot)
 		{
 			CurrentClosestDistance = Distance;
 			NearestEnemyLocation = EnemyLocation;
 			bHasTarget = true;
+			Target = Enemy;
 		}
 	}
 
@@ -98,21 +116,36 @@ void URGX_CombatAssistComponent::PerformAttackAutoAssist()
 
 	PlayerActor->SetActorRotation(Rotation);
 
-	const float OffsetToEnemy = 150.0f;
-
-	if (CurrentClosestDistance > OffsetToEnemy == false)
+	if (CurrentClosestDistance > AutoAssistOffsetToEnemy == false)
 		return;
 
 	FVector AssistDirection = FVector(PlayerToEnemyVector.X, PlayerToEnemyVector.Y, 0.0f);
 	AssistDirection.Normalize();
 
-	const FVector FinalLocation = PlayerLocation + AssistDirection * (CurrentClosestDistance - OffsetToEnemy);
+	AutoAssistMove = CurrentClosestDistance - AutoAssistOffsetToEnemy;
 
-	PlayerActor->SetActorLocation(FinalLocation);
+	UE_LOG(LogTemp, Warning, TEXT("AutoAssistMove: %f\n"), AutoAssistMove);
+	//const FVector FinalLocation = PlayerLocation + AssistDirection * (CurrentClosestDistance - AutoAssistOffsetToEnemy);
+
+	//PlayerActor->SetActorLocation(FinalLocation);
+}
+
+void URGX_CombatAssistComponent::EnableMovementVector()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Enable Move Vector\n"));
+	bMoveVectorEnabled = true;
+}
+
+void URGX_CombatAssistComponent::DisableMovementVector()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Disable Move Vector\n"));
+	bMoveVectorEnabled = false;
+	Target = nullptr; // [TODO]: This is hardcoded.
 }
 
 void URGX_CombatAssistComponent::AddMovementVector(FVector Direction, float Length)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Add Move Vector\n"));
 	MoveVectorDirection = Direction;
 	MoveVectorLength = Length;
 	bAddMoveVector = true;
@@ -120,7 +153,13 @@ void URGX_CombatAssistComponent::AddMovementVector(FVector Direction, float Leng
 
 void URGX_CombatAssistComponent::RemoveMovementVector()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Remove Move Vector\n"));
 	MoveVectorDirection = FVector(0.0f);
 	MoveVectorLength = 0.0f;
 	bAddMoveVector = false;
+}
+
+void URGX_CombatAssistComponent::SetAttackMoveDuration(float Duration)
+{
+	AttackMoveDuration = Duration;
 }
