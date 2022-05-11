@@ -1,7 +1,7 @@
 #include "RGX_GA_DodgeAbility.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "../../Character/RGX_PlayerCharacter.h"
+#include "RegicideX/Character/RGX_PlayerCharacter.h"
 
 void URGX_DodgeAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
@@ -19,10 +19,12 @@ float URGX_DodgeAbility::GetDodgeDuration()
 
 void URGX_DodgeAbility::PerformDodge()
 {
+
+	FGameplayEventData EventData;
+	CurrentActorInfo->AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Character.Interrupted")), &EventData);
+
 	ACharacter* Character = Cast<ACharacter>(CurrentActorInfo->AvatarActor);
-
 	FVector Forward = Character->GetActorForwardVector();
-
 	FVector LaunchForce = Forward * DodgeForce;
 
 	Character->GetCharacterMovement()->GravityScale = 0.0f;
