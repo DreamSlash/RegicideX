@@ -29,5 +29,8 @@ public:
 	ARGX_DistanceAngelController();
 
 	UFUNCTION()
-	void SetRandomLocationAroundTarget();
+	void SetRandomLocationAroundTarget(float Distance);
+
+	UFUNCTION()
+		FVector GenerateRandomLocationAroundPoint(FVector Location, float Radius) const;
 };

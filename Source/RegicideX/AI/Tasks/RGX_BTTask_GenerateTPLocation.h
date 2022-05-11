@@ -17,6 +17,8 @@ class REGICIDEX_API URGX_BTTask_GenerateTPLocation : public UBTTaskNode
 	GENERATED_BODY()
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float Distance = 1000.0f;
 
 	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 };
