@@ -3,12 +3,14 @@
 
 #include "RGX_GroundExplosion.h"
 
-#include "AbilitySystemGlobals.h"
 #include "AbilitySystemComponent.h"
-#include "Components/SphereComponent.h"
+#include "AbilitySystemGlobals.h"
 #include "Components/DecalComponent.h"
-#include "Materials/MaterialInstanceDynamic.h"
+#include "Components/SphereComponent.h"
 #include "GameplayTags.h"
+#include "Kismet/GameplayStatics.h"
+#include "Materials/MaterialInstanceDynamic.h"
+#include "Particles/ParticleSystem.h"
 
 // Sets default values
 ARGX_GroundExplosion::ARGX_GroundExplosion()
@@ -82,7 +84,7 @@ void ARGX_GroundExplosion::Explode()
 		}
 	}
 
-	// Spawn Emitter
+	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ParticleSystem, GetActorLocation());
 
 	Destroy();
 }
