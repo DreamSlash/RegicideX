@@ -285,8 +285,6 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 	LeanAmount = UKismetMathLibrary::FInterpTo(LeanAmount, LeanInfo.LeanAmount, DeltaTime, LeanInfo.InterSpeed);
 	// ------------------
 
-	//UE_LOG(LogTemp, Warning, TEXT("Gravity Scale: %f\n"), GetCharacterMovement()->GravityScale);
-
 	/*
 	if (IsBeingAttacked())
 	{

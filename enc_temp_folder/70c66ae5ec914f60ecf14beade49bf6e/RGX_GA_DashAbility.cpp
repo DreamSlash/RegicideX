@@ -12,20 +12,14 @@ void URGX_DashAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 
 	if (Character)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Dash Ability"));
-
 		if (Character->GetCharacterMovement()->IsFalling())
 		{
 			if (bool bHasAirDashed = Character->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.HasAirDashed"))))
 			{
 				EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
-				return;
 			}
 			else
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Air Dash\n"));
-				Character->StopJumping();
-				Character->LaunchCharacter(FVector(0.0f, 0.0f, 0.0f), false, true);
 				Character->AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.HasAirDashed")));
 			}
 		}
@@ -40,10 +34,8 @@ void URGX_DashAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 		PlayMontageTask->OnInterrupted.AddDynamic(this, &URGX_DashAbility::FinishDash);
 		PlayMontageTask->ReadyForActivation();
 	}
-	else
-	{
-		EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
-	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Dash Ability"));
 }
 
 void URGX_DashAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
@@ -54,8 +46,6 @@ void URGX_DashAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const
 
 	Character->GetCharacterMovement()->GravityScale = Character->DefaultGravity;
 	Character->GetCharacterMovement()->MaxWalkSpeed = Character->MaxWalkSpeed;
-
-	UE_LOG(LogTemp, Warning, TEXT("Finish Dash. Current Gravity: %f\n"), Character->GetCharacterMovement()->GravityScale);
 }
 
 void URGX_DashAbility::FinishDash()
