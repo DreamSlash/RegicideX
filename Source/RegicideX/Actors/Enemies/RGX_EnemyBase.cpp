@@ -129,7 +129,9 @@ void ARGX_EnemyBase::RemoveGameplayTag(const FGameplayTag& TagToRemove)
 
 void ARGX_EnemyBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
+	if (ARGX_RoundGameMode* MyGameMode = Cast<ARGX_RoundGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		MyGameMode->OnEnemyDeath(0);
+	}
 	Super::EndPlay(EndPlayReason);
-	ARGX_RoundGameMode* MyGameMode = Cast<ARGX_RoundGameMode>(GetWorld()->GetAuthGameMode());
-	MyGameMode->OnEnemyDeath(0);
 }
