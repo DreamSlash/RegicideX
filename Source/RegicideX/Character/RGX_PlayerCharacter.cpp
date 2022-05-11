@@ -146,7 +146,7 @@ void ARGX_PlayerCharacter::ManagePowerSkillInput()
 	{
 		return;
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Manuela\n"));
+
 	// Fire next attack
 	FGameplayEventData EventData;
 	AbilitySystemComponent->HandleGameplayEvent(PowerSkills[CurrentSkillSelected], &EventData);
@@ -281,14 +281,16 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	// Leaning
-	FRGX_LeanInfo LeanInfo = CalculateLeanAmount();
+	const FRGX_LeanInfo LeanInfo = CalculateLeanAmount();
 	LeanAmount = UKismetMathLibrary::FInterpTo(LeanAmount, LeanInfo.LeanAmount, DeltaTime, LeanInfo.InterSpeed);
 	// ------------------
 
+	/*
 	if (IsBeingAttacked())
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("Being Attacked\n"));
+		UE_LOG(LogTemp, Warning, TEXT("Being Attacked\n"));
 	}
+	*/
 
 	UKismetSystemLibrary::DrawDebugCircle(GetWorld(), GetActorLocation(), 200.0f, 24, FLinearColor::Green, 0.0f, 0.0f, FVector(0.0f, 1.0f, 0.0f), FVector(1.0f, 0.0f, 0.0f));
 }
@@ -296,18 +298,6 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 UAbilitySystemComponent* ARGX_PlayerCharacter::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
-}
-
-void ARGX_PlayerCharacter::AddMovementVector(FVector MovementVector)
-{
-	MoveVector = MovementVector;
-	bAddMoveVector = true;
-}
-
-void ARGX_PlayerCharacter::RemoveMovementVector()
-{
-	MoveVector = FVector(0.0f);
-	bAddMoveVector = false;
 }
 
 void ARGX_PlayerCharacter::DisableMovementInput()
@@ -345,7 +335,7 @@ void ARGX_PlayerCharacter::OnFollowCombo()
 
 void ARGX_PlayerCharacter::MoveForward(float Value)
 {
-	if ((Controller != nullptr) && (Value != 0.0f))
+	if ((Controller != nullptr) && (Value != 0.0f) && !bIgnoreInputMoveVector)
 	{
 		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
@@ -360,7 +350,7 @@ void ARGX_PlayerCharacter::MoveForward(float Value)
 
 void ARGX_PlayerCharacter::MoveRight(float Value)
 {
-	if ((Controller != nullptr) && (Value != 0.0f))
+	if ((Controller != nullptr) && (Value != 0.0f) && !bIgnoreInputMoveVector)
 	{
 		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();

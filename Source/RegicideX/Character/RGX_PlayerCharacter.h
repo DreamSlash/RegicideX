@@ -64,7 +64,8 @@ class REGICIDEX_API ARGX_PlayerCharacter : public ACharacter, public IAbilitySys
 	UPROPERTY()
 	URGX_CombatAttributeSet* CombatAttributeSet = nullptr;
 
-	URGX_MovementAttributeSet* MovementAttributeSet;
+	UPROPERTY()
+	URGX_MovementAttributeSet* MovementAttributeSet = nullptr;
 
 	// --------------------------
 public:
@@ -108,12 +109,6 @@ public:
 	UFUNCTION(BlueprintNativeEvent)
 	void OnJump();
 
-	UFUNCTION()
-	void AddMovementVector(FVector MovementVector);
-
-	UFUNCTION()
-	void RemoveMovementVector();
-
 	UFUNCTION(BlueprintCallable)
 	void DisableMovementInput();
 
@@ -136,12 +131,6 @@ protected:
 	// -----------------------
 
 	/** Move variables */
-	UPROPERTY()
-	FVector MoveVector = FVector(0.0f);
-
-	UPROPERTY()
-	bool bAddMoveVector = false;
-
 	UPROPERTY()
 	bool bIgnoreInputMoveVector = false;
 	// -----------------------

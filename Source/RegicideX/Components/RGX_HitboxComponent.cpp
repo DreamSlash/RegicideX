@@ -32,6 +32,15 @@ void URGX_HitboxComponent::EndPlay(EEndPlayReason::Type EndPlayReason)
 
 void URGX_HitboxComponent::ActivateHitbox()
 {
+	USceneComponent* Parent = GetAttachParent();
+	AActor* OwnerActor = Parent->GetAttachmentRootActor();
+
+	if (!OwnerActor)
+	{
+		OwnerActor = GetOwner();
+	}
+
+	UE_LOG(LogTemp, Warning, TEXT("Name Hitbox Object: %s\n"), *OwnerActor->GetName());
 	SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	SetCollisionProfileName("Dodgeable");
 }
