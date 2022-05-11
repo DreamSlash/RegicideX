@@ -12,4 +12,6 @@ struct FRGX_EnemiesDataTable : public FTableRowBase
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UDataAsset* EnemyInfo;
+
+
 };

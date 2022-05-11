@@ -3,6 +3,7 @@
 #include "RGX_Peasant.h"
 #include "Components/MCV_AbilitySystemComponent.h"
 #include "EngineUtils.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "RGX_GroupManager.h"
 #include "Kismet/GameplayStatics.h"
 
@@ -12,6 +13,7 @@ ARGX_Peasant::ARGX_Peasant()
 
 void ARGX_Peasant::BeginPlay()
 {
+	
 	Super::BeginPlay();
 	TargetActor = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 	for (TActorIterator<ARGX_GroupManager> MngItr(GetWorld()); MngItr; ++MngItr)
@@ -28,6 +30,14 @@ void ARGX_Peasant::BeginPlay()
 void ARGX_Peasant::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	GetCharacterMovement()->MaxWalkSpeed = bInCombat ? 400.0f : 100.0f;
+
+	if (bInCombat && !manager->AttackingPeasant)
+	{
+		manager->AttackingPeasant = this;
+		bAttacking = true;
+	}
 }
 
 void ARGX_Peasant::Idle()
@@ -36,17 +46,13 @@ void ARGX_Peasant::Idle()
 	TextStatusString = "Idle";
 }
 
-void ARGX_Peasant::Move()
+void ARGX_Peasant::ResetAttacking()
 {
-	TextStatusString = "Moving to target";
-}
-
-void ARGX_Peasant::Attack()
-{
-	// TODO Rotate to target
-	TextStatusString = "Attacking";
-	PlayAnimMontage(PunchMontage);
-	TextStatusString = "Attacking Cooldown";
+	if (manager)
+	{
+		bAttacking = false;
+		manager->AttackingPeasant = nullptr;
+	}
 }
 
 float ARGX_Peasant::GetDistanceToTarget()

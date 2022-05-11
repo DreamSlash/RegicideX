@@ -3,10 +3,11 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "../Actors/Enemies/RGX_EnemyBase.h"
+#include "GameFramework/Actor.h"
 
 URGX_CombatAssistComponent::URGX_CombatAssistComponent()
 {
-
+	PrimaryComponentTick.bCanEverTick = true;
 }
 
 void URGX_CombatAssistComponent::BeginPlay()
@@ -14,18 +15,70 @@ void URGX_CombatAssistComponent::BeginPlay()
 	Super::BeginPlay();
 }
 
+void URGX_CombatAssistComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	// Extra movement vector (from animation attacks, etc...)
+	if (bMoveVectorEnabled && bAddMoveVector)
+	{
+		AActor* Owner = GetOwner();
+
+		if (Target)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Has Target\n"));
+			const float DistanceToTarget = FVector::Distance(Owner->GetActorLocation(), Target->GetActorLocation());
+
+			// Apply attack movement only if it does not get too close to the target
+			if (DistanceToTarget > AutoAssistOffsetToEnemy)
+			{
+				float MoveSpeed = MoveVectorSpeed + AutoAssistMove / AttackMoveDuration;
+				UE_LOG(LogTemp, Warning, TEXT("AutoAssist MoveSpeed: %f\n"), MoveSpeed);
+				const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * MoveSpeed * DeltaTime;
+				Owner->SetActorLocation(NewLocation, true);
+			}
+			else if (DistanceToTarget > AttackOffsetToEnemy)
+			{
+				const float TotalMoveLeft = AttackMoveDurationLeft * MoveVectorSpeed;
+				const float MaxMove = DistanceToTarget - AttackOffsetToEnemy;
+
+				if (TotalMoveLeft <= MaxMove)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Inferior to MaxMove Speed: %f\n"), MoveVectorSpeed);
+					const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * MoveVectorSpeed * DeltaTime;
+					Owner->SetActorLocation(NewLocation, true);
+				}
+				else
+				{
+					float MoveSpeed = MaxMove / AttackMoveDurationLeft;
+					UE_LOG(LogTemp, Warning, TEXT("Superior to MaxMove Speed: %f\n"), MoveSpeed);
+					const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * MoveSpeed * DeltaTime;
+				}
+			}
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Does not have Target\n"));
+			const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * MoveVectorSpeed * DeltaTime;
+			Owner->SetActorLocation(NewLocation, true);
+		}
+	}
+
+	AttackMoveDurationLeft -= DeltaTime;
+	// -----------------------------
+}
+
 void URGX_CombatAssistComponent::EndPlay(EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
 }
 
+// TODO [REFACTOR]: Autoassist should give extra movement to the attack being done and not be a teleport
 void URGX_CombatAssistComponent::PerformAttackAutoAssist()
 {
 	AActor* PlayerActor = GetOwner();
 
 	const FVector PlayerLocation = PlayerActor->GetActorLocation();
-
-	const float radius = 300.0f;
 
 	TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjectTypes;
 	TraceObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Pawn));
@@ -36,7 +89,7 @@ void URGX_CombatAssistComponent::PerformAttackAutoAssist()
 	TArray<AActor*> OutActors;
 
 	// Check for nearby enemies
-	if (UKismetSystemLibrary::SphereOverlapActors(GetWorld(), PlayerLocation, radius, TraceObjectTypes, SeekClass, IgnoreActors, OutActors) == false)
+	if (UKismetSystemLibrary::SphereOverlapActors(GetWorld(), PlayerLocation, AutoAssistRadius, TraceObjectTypes, SeekClass, IgnoreActors, OutActors) == false)
 		return;
 
 	float CurrentClosestDistance = INFINITY;
@@ -65,11 +118,12 @@ void URGX_CombatAssistComponent::PerformAttackAutoAssist()
 		// Cone check
 		const float Dot = FVector::DotProduct(PlayerToEnemyVector, PlayerForward);
 
-		if (Distance < CurrentClosestDistance && Dot > 0.5f)
+		if (Distance < CurrentClosestDistance && Dot > AutoAssistDot)
 		{
 			CurrentClosestDistance = Distance;
 			NearestEnemyLocation = EnemyLocation;
 			bHasTarget = true;
+			Target = Enemy;
 		}
 	}
 
@@ -83,15 +137,51 @@ void URGX_CombatAssistComponent::PerformAttackAutoAssist()
 
 	PlayerActor->SetActorRotation(Rotation);
 
-	const float OffsetToEnemy = 150.0f;
-
-	if (CurrentClosestDistance > OffsetToEnemy == false)
+	if (CurrentClosestDistance > AutoAssistOffsetToEnemy == false)
 		return;
 
 	FVector AssistDirection = FVector(PlayerToEnemyVector.X, PlayerToEnemyVector.Y, 0.0f);
 	AssistDirection.Normalize();
 
-	const FVector FinalLocation = PlayerLocation + AssistDirection * (CurrentClosestDistance - OffsetToEnemy);
+	AutoAssistMove = CurrentClosestDistance - AutoAssistOffsetToEnemy;
 
-	PlayerActor->SetActorLocation(FinalLocation);
+	UE_LOG(LogTemp, Warning, TEXT("AutoAssistMove: %f\n"), AutoAssistMove);
+	//const FVector FinalLocation = PlayerLocation + AssistDirection * (CurrentClosestDistance - AutoAssistOffsetToEnemy);
+
+	//PlayerActor->SetActorLocation(FinalLocation);
+}
+
+void URGX_CombatAssistComponent::EnableMovementVector()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Enable Move Vector\n"));
+	bMoveVectorEnabled = true;
+}
+
+void URGX_CombatAssistComponent::DisableMovementVector()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Disable Move Vector\n"));
+	bMoveVectorEnabled = false;
+	Target = nullptr; // [TODO]: This is hardcoded.
+}
+
+void URGX_CombatAssistComponent::AddMovementVector(FVector Direction, float Speed)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Add Move Vector\n"));
+	MoveVectorDirection = Direction;
+	MoveVectorSpeed = Speed;
+	bAddMoveVector = true;
+}
+
+void URGX_CombatAssistComponent::RemoveMovementVector()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Remove Move Vector\n"));
+	MoveVectorDirection = FVector(0.0f);
+	MoveVectorSpeed = 0.0f;
+	bAddMoveVector = false;
+}
+
+void URGX_CombatAssistComponent::SetAttackMoveDuration(float Duration)
+{
+	AttackMoveDuration = Duration;
+	AttackMoveDurationLeft = AttackMoveDuration;
 }

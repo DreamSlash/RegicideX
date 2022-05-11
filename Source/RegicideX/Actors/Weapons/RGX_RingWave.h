@@ -7,6 +7,7 @@
 #include "RGX_RingWave.generated.h"
 
 class UStaticMeshComponent;
+class UGameplayEffect;
 
 UCLASS()
 class REGICIDEX_API ARGX_RingWave : public AActor
@@ -26,6 +27,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float ScaleSpeed = 10.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UGameplayEffect> RingWaveEffect;
 
 protected:
 	void BeginPlay() override;

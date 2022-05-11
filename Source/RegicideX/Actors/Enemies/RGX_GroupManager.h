@@ -38,10 +38,15 @@ class REGICIDEX_API ARGX_GroupManager : public AActor
 	UPROPERTY()
 	FVector LastPlayerLocation;
 
+
 	
 public:	
 	// Sets default values for this actor's properties
 	ARGX_GroupManager();
+
+	// Peasant from the attacking group who's gonna perform the combat action.
+	UPROPERTY()
+	ARGX_Peasant* AttackingPeasant = nullptr;
 
 protected:
 	// Called when the game starts or when spawned
@@ -75,6 +80,7 @@ public:
 
 	void AddPeasant(ARGX_Peasant* newPeasant);
 
+	UFUNCTION(BlueprintCallable)
 	void RemovePeasant(ARGX_Peasant* PeasantToRemove);
 
 	void RecalcPositions();

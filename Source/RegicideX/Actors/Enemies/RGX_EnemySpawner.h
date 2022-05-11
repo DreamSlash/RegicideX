@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "RGX_EnemyBase.h"
 #include "GameFramework/Actor.h"
 #include "RGX_EnemySpawner.generated.h"
 
@@ -20,19 +21,19 @@ public:
 	FTimerHandle SpawnTimerHandle;
 
 	UPROPERTY(EditAnywhere)
-	ARGX_GroupManager* manager;
+	ARGX_GroupManager* Manager;
 
 	UPROPERTY(EditAnywhere)
 	FBox SpawnBox;
 
 	UFUNCTION(BlueprintCallable)
-	void Spawn();
+	ARGX_EnemyBase* Spawn(TSubclassOf<ARGX_EnemyBase> EnemyBP);
 
-	// Function called to spawn BP_Peasant
+	/** Function called to spawn BP_Peasant **/
 	UFUNCTION(BlueprintImplementableEvent)
 	void SpawnPeasant(FTransform Transform);
 
 protected:
-	// Called when the game starts or when spawned
+	/** Called when the game starts or when spawned **/
 	virtual void BeginPlay() override;
 };

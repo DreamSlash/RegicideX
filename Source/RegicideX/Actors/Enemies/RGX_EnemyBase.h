@@ -34,6 +34,7 @@ struct FAttackInfo {
 class UMCV_AbilitySystemComponent;
 class URGX_HealthAttributeSet;
 class URGX_CombatAttributeSet;
+class UWidgetComponent;
 
 UCLASS()
 class REGICIDEX_API ARGX_EnemyBase : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface, public IGenericTeamAgentInterface
@@ -65,6 +66,10 @@ protected:
 	UPROPERTY(EditAnywhere)
 	URGX_CombatAttributeSet* CombatAttributeSet;
 
+	// Debug
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UWidgetComponent* DebugAttributesWidgetComponent = nullptr;
+
 public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -88,8 +93,6 @@ protected:
 public:
 	/** Movement methods */
 	virtual void RotateToTarget(float DeltaTime);
-
-	virtual void RotateToTarget();
 
 	virtual void MoveToTarget(float DeltaTime, FVector TargetPos);
 

@@ -5,20 +5,27 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
-#include "RegicideX/Data/RGX_EnemiesDataTable.h"
-#include "RegicideX/Data/RGX_RoundDataTable.h"
-#include "RGX_ScoreGameMode.generated.h"
+#include "RegicideX/Actors/Enemies/RGX_EnemySpawner.h"
+
+#include "RGX_RoundGameMode.generated.h"
+
 
 /**
  * 
  */
 UCLASS()
-class REGICIDEX_API ARGX_ScoreGameMode : public AGameModeBase
+class REGICIDEX_API ARGX_RoundGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
+
+	UPROPERTY()
+	TArray<AActor*> EnemySpawners;
 	
 public:
+	
+	
 
+	// @todo: Map DataTables On BeginPlay/StartPlay
 	/*
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FString, int> WaveSpawnsMap;
@@ -29,30 +36,38 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UDataTable* DTRounds;
+
+	UFUNCTION(BlueprintCallable)
+	TArray<AActor*> GetEnemySpawners() const;
+
+	UFUNCTION(BlueprintCallable)
+	void SetEnemySpawners(const TArray<AActor*>& EnemySpawnersList);
 	
-	ARGX_ScoreGameMode();
-	virtual ~ARGX_ScoreGameMode() = default;
+	ARGX_RoundGameMode();
+	virtual ~ARGX_RoundGameMode() = default;
 
 	/** Return score **/
 	UFUNCTION(BlueprintPure)
-	virtual int GetScore() const;
+	int GetScore() const;
 
 	/** Set score: use for test purposes only **/
 	UFUNCTION(BlueprintCallable)
 	void SetScore(int NewScore);
 
 	/** Return Round **/
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION(BlueprintPure)
 	int GetRound() const;
 
-	virtual void StartPlay() override;
+	void StartPlay() override;
+
+	void BeginPlay() override;
 
 	UFUNCTION(BlueprintNativeEvent, DisplayName="StartPlay")
 	void StartPlayEvent();
 
 	/** To call when an enemy dies **/
 	UFUNCTION(BlueprintCallable)
-	void EnemyDeath(int Type);
+	void OnEnemyDeath(int Type);
 
 	/** Increments the round count and handles all the round logic **/
 	UFUNCTION(BlueprintCallable)
@@ -60,15 +75,28 @@ public:
 
 	/** Spawns enemies in the defined spawn points depending on the round. Returns the amount of enemies spawned. **/
 	UFUNCTION(BlueprintCallable)
-	int SpawnEnemies(int Round);
+	int SpawnEnemies();
 
 	/** Spawns enemy of the defined class **/
 	UFUNCTION(BlueprintCallable)
-	void SpawnEnemy(ARGX_EnemyBase* EnemyToSpawn);
+	void SpawnEnemy(UDataAsset* EnemyInfo);
 
-	virtual void BeginPlay() override;
+	UFUNCTION(BlueprintCallable)
+	void PopulateSpawnerList();
+
+	UPROPERTY()
+		AActor* TargetActor = nullptr;
+
+private:
+	void StartGameSpawn();
+
+private:
+	FTimerHandle FirstSpawnTimerHandle;
+	
 	/*
 	UFUNCTION(BlueprintCallable)
 	void PopulateRoundMap(int Round);
 	*/
 };
+
+
