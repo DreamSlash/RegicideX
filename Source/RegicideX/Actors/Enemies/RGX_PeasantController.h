@@ -32,7 +32,9 @@ public:
 	uint8 WasHitID;
 	uint8 OnAirID;
 	uint8 InCombatID;
+	uint8 AttackingID;
 	uint8 IdlePositionID;
+	uint8 IdleActionID;
 
 protected:
 };

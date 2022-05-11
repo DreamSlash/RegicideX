@@ -3,6 +3,7 @@
 
 #include "RGX_EnemyBase.h"
 #include "Components/MCV_AbilitySystemComponent.h"
+#include "Components/WidgetComponent.h"
 #include "RegicideX/GAS/AttributeSets/RGX_HealthAttributeSet.h"
 
 #include "Kismet/KismetMathLibrary.h"
@@ -15,6 +16,9 @@ ARGX_EnemyBase::ARGX_EnemyBase()
 
 	AbilitySystemComponent = CreateDefaultSubobject<UMCV_AbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	HealthAttributeSet = CreateDefaultSubobject<URGX_HealthAttributeSet>(TEXT("HealthAttributeSet"));
+	
+	DebugAttributesWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("DebugAttributesWidgetComponent"));
+	DebugAttributesWidgetComponent->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -49,19 +53,9 @@ void ARGX_EnemyBase::RotateToTarget(float DeltaTime)
 		const FVector MyLocation = this->GetActorLocation();
 		const FVector TargetLocation = TargetActor->GetActorLocation();
 		const FRotator RotOffset = UKismetMathLibrary::FindLookAtRotation(MyLocation, TargetLocation);
-		const FRotator NewRotation = FMath::Lerp(this->GetActorRotation(), RotOffset, DeltaTime * InterpSpeed);
+		FRotator NewRotation = FMath::Lerp(this->GetActorRotation(), RotOffset, DeltaTime * InterpSpeed);
+		NewRotation.Pitch = 0.0;
 		this->SetActorRotation(NewRotation);
-	}
-}
-
-void ARGX_EnemyBase::RotateToTarget()
-{
-	if (TargetActor)
-	{
-		const FVector MyLocation = this->GetActorLocation();
-		const FVector TargetLocation = TargetActor->GetActorLocation();
-		const FRotator RotOffset = UKismetMathLibrary::FindLookAtRotation(MyLocation, TargetLocation);
-		this->SetActorRotation(RotOffset);
 	}
 }
 

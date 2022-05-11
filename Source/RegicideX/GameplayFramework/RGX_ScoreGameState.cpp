@@ -3,6 +3,27 @@
 
 #include "RGX_ScoreGameState.h"
 
+int ARGX_ScoreGameState::GetNumEnemies() const
+{
+	return NumEnemies;
+}
+
+
+int ARGX_ScoreGameState::GetScore() const
+{
+	return Score;
+}
+
+int ARGX_ScoreGameState::GetRound() const
+{
+	return Round;
+}
+
+void ARGX_ScoreGameState::SetScore(const int NewScore)
+{
+	this->Score = NewScore;
+}
+
 ARGX_ScoreGameState::ARGX_ScoreGameState()
 {
 	Score = 0;
@@ -11,7 +32,14 @@ ARGX_ScoreGameState::ARGX_ScoreGameState()
 	
 }
 
-bool ARGX_ScoreGameState::EnemyDeath(const int Type)
+void ARGX_ScoreGameState::SetStateDefaults()
+{
+	Score = 0;
+	Round = 1;
+	NumEnemies = 0;
+}
+
+bool ARGX_ScoreGameState::OnEnemyDeath(const int Type)
 {
 	switch (Type)
 	{

@@ -15,6 +15,9 @@ void URGX_BarrierAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	if (CommitAbility(Handle, ActorInfo, ActivationInfo) == false)
 		return;
 
+	FGameplayEventData EventData;
+	CurrentActorInfo->AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Character.Interrupted")), &EventData);
+
 	ACharacter* Character = Cast<ACharacter>(ActorInfo->AvatarActor);
 	URGX_CombatAssistComponent* CombatAssistComponent = Character->FindComponentByClass<URGX_CombatAssistComponent>();
 
