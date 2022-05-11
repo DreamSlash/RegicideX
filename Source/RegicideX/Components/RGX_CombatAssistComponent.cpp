@@ -30,20 +30,41 @@ void URGX_CombatAssistComponent::TickComponent(float DeltaTime, ELevelTick TickT
 			const float DistanceToTarget = FVector::Distance(Owner->GetActorLocation(), Target->GetActorLocation());
 
 			// Apply attack movement only if it does not get too close to the target
-			if (DistanceToTarget > AttackOffsetToEnemy)
+			if (DistanceToTarget > AutoAssistOffsetToEnemy)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("AutoAssistMove This Frame: %f\n"), AutoAssistMove / AttackMoveDuration);
-				const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * (MoveVectorLength + AutoAssistMove / AttackMoveDuration * DeltaTime);
+				float MoveSpeed = MoveVectorSpeed + AutoAssistMove / AttackMoveDuration;
+				UE_LOG(LogTemp, Warning, TEXT("AutoAssist MoveSpeed: %f\n"), MoveSpeed);
+				const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * MoveSpeed * DeltaTime;
 				Owner->SetActorLocation(NewLocation, true);
+			}
+			else if (DistanceToTarget > AttackOffsetToEnemy)
+			{
+				const float TotalMoveLeft = AttackMoveDurationLeft * MoveVectorSpeed;
+				const float MaxMove = DistanceToTarget - AttackOffsetToEnemy;
+
+				if (TotalMoveLeft <= MaxMove)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Inferior to MaxMove Speed: %f\n"), MoveVectorSpeed);
+					const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * MoveVectorSpeed * DeltaTime;
+					Owner->SetActorLocation(NewLocation, true);
+				}
+				else
+				{
+					float MoveSpeed = MaxMove / AttackMoveDurationLeft;
+					UE_LOG(LogTemp, Warning, TEXT("Superior to MaxMove Speed: %f\n"), MoveSpeed);
+					const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * MoveSpeed * DeltaTime;
+				}
 			}
 		}
 		else
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Does not have Target\n"));
-			const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * MoveVectorLength;
+			const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * MoveVectorSpeed * DeltaTime;
 			Owner->SetActorLocation(NewLocation, true);
 		}
 	}
+
+	AttackMoveDurationLeft -= DeltaTime;
 	// -----------------------------
 }
 
@@ -143,11 +164,11 @@ void URGX_CombatAssistComponent::DisableMovementVector()
 	Target = nullptr; // [TODO]: This is hardcoded.
 }
 
-void URGX_CombatAssistComponent::AddMovementVector(FVector Direction, float Length)
+void URGX_CombatAssistComponent::AddMovementVector(FVector Direction, float Speed)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Add Move Vector\n"));
 	MoveVectorDirection = Direction;
-	MoveVectorLength = Length;
+	MoveVectorSpeed = Speed;
 	bAddMoveVector = true;
 }
 
@@ -155,11 +176,12 @@ void URGX_CombatAssistComponent::RemoveMovementVector()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Remove Move Vector\n"));
 	MoveVectorDirection = FVector(0.0f);
-	MoveVectorLength = 0.0f;
+	MoveVectorSpeed = 0.0f;
 	bAddMoveVector = false;
 }
 
 void URGX_CombatAssistComponent::SetAttackMoveDuration(float Duration)
 {
 	AttackMoveDuration = Duration;
+	AttackMoveDurationLeft = AttackMoveDuration;
 }
