@@ -8,6 +8,8 @@
 
 #include "Kismet/KismetMathLibrary.h"
 
+#include "RegicideX/GameplayFramework/RGX_RoundGameMode.h"
+
 // Sets default values
 ARGX_EnemyBase::ARGX_EnemyBase()
 {
@@ -125,3 +127,11 @@ void ARGX_EnemyBase::RemoveGameplayTag(const FGameplayTag& TagToRemove)
 	AbilitySystemComponent->RemoveLooseGameplayTag(TagToRemove);
 }
 
+void ARGX_EnemyBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	if (ARGX_RoundGameMode* MyGameMode = Cast<ARGX_RoundGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		MyGameMode->OnEnemyDeath(0);
+	}
+	Super::EndPlay(EndPlayReason);
+}

@@ -38,7 +38,7 @@ void ARGX_LaserBeamWeapon::CheckRayTraces(FVector& NewLocation, float DeltaTime)
 	const FVector FrontRayEndPoint = NewLocation;
 
 	//debug
-	UKismetSystemLibrary::DrawDebugPoint(GetWorld(), FrontRaySrc, 22, FColor(255, 0, 255), DeltaTime);
+	/*UKismetSystemLibrary::DrawDebugPoint(GetWorld(), FrontRaySrc, 22, FColor(255, 0, 255), DeltaTime);
 	UKismetSystemLibrary::DrawDebugLine(
 		GetWorld(),
 		FrontRaySrc,
@@ -46,7 +46,7 @@ void ARGX_LaserBeamWeapon::CheckRayTraces(FVector& NewLocation, float DeltaTime)
 		FColor(255, 0, 0),
 		DeltaTime,
 		5.0f
-	);
+	);*/
 
 	if (GetWorld()->LineTraceSingleByChannel(FrontRayTraceResult, FrontRaySrc, FrontRayEndPoint, ECollisionChannel::ECC_WorldStatic))
 	{

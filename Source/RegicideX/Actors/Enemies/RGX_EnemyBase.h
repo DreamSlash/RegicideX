@@ -120,4 +120,6 @@ public:
 
 	virtual void RemoveGameplayTag(const FGameplayTag& TagToRemove) override;
 
+	void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
 };
