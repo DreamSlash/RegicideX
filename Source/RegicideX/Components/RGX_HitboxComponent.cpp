@@ -17,10 +17,12 @@ void URGX_HitboxComponent::BeginPlay()
 	if (bStartActive)
 	{
 		ActivateHitbox();
+		ActivateEffect();
 	}
 	else
 	{
 		DeactivateHitbox();
+		DeactivateEffect();
 	}
 }
 
