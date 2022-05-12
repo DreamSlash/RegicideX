@@ -160,6 +160,8 @@ protected:
 	//** Animation Functions */
 	FRGX_LeanInfo CalculateLeanAmount();
 
+	void Landed(const FHitResult& Hit) override;
+
 protected:
 	// --- APawn interface ---
 	void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;

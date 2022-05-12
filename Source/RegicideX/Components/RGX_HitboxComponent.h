@@ -16,13 +16,20 @@ class URGX_HitboxComponent : public UCapsuleComponent
 public:
 	URGX_HitboxComponent();
 
-	virtual void BeginPlay() override;
-	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
+	void BeginPlay() override;
+	void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
 	UFUNCTION(BlueprintCallable)
 	void ActivateHitbox();
+
 	UFUNCTION(BlueprintCallable)
 	void DeactivateHitbox();
+	
+	UFUNCTION(BlueprintCallable)
+	void ActivateEffect();
+
+	UFUNCTION(BlueprintCallable)
+	void DeactivateEffect();
 
 protected:
 
@@ -39,4 +46,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	bool bStartActive = true;
+
+	UPROPERTY()
+	bool bEffectActivated = false;
 };

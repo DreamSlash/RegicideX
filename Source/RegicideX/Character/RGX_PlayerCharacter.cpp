@@ -285,6 +285,8 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 	LeanAmount = UKismetMathLibrary::FInterpTo(LeanAmount, LeanInfo.LeanAmount, DeltaTime, LeanInfo.InterSpeed);
 	// ------------------
 
+	//UE_LOG(LogTemp, Warning, TEXT("Gravity Scale: %f\n"), GetCharacterMovement()->GravityScale);
+
 	/*
 	if (IsBeingAttacked())
 	{
@@ -394,6 +396,13 @@ FRGX_LeanInfo ARGX_PlayerCharacter::CalculateLeanAmount()
 	}
 
 	return LeanInfo;
+}
+
+void ARGX_PlayerCharacter::Landed(const FHitResult& Hit)
+{
+	Super::Landed(Hit);
+
+	RemoveGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.HasAirDashed")));
 }
 
 void ARGX_PlayerCharacter::OnJump_Implementation()
