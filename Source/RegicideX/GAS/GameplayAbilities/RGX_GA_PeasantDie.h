@@ -4,12 +4,8 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/MCV_GameplayAbility.h"
-
 #include "RGX_GA_PeasantDie.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class REGICIDEX_API URGX_GA_PeasantDie : public UMCV_GameplayAbility
 {
@@ -36,4 +32,7 @@ private:
 		const FGameplayAbilityActivationInfo ActivationInfo,
 		bool bReplicateEndAbility,
 		bool bWasCancelled);
+
+	UFUNCTION()
+	void OnEndMontage();
 };

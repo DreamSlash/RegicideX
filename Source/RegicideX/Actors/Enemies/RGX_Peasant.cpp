@@ -31,6 +31,9 @@ void ARGX_Peasant::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (ToBeDestroyed)
+		manager->RemovePeasant(this);
+
 	GetCharacterMovement()->MaxWalkSpeed = bInCombat ? 400.0f : 100.0f;
 
 	if (bInCombat && !manager->AttackingPeasant)

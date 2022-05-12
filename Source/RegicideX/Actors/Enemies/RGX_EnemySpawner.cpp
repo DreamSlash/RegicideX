@@ -33,7 +33,7 @@ ARGX_EnemyBase* ARGX_EnemySpawner::Spawn(TSubclassOf<ARGX_EnemyBase> EnemyBP)
 {
 	GEngine->AddOnScreenDebugMessage(-1, 20.0f, FColor::Blue, TEXT("Spawning enemy"));
 
-	const FVector Location = FMath::RandPointInBox(SpawnBox) + FVector(0.0f, 0.0f, 300.0f);
+	const FVector Location = FMath::RandPointInBox(SpawnBox) + FVector(150.0f, 150.0f, 300.0f);
 	const FRotator Rotation(0.0f, 0.0f, 0.0f);
 
 	ARGX_EnemyBase* SpawnedEnemy = GetWorld()->SpawnActor<ARGX_EnemyBase>(EnemyBP, Location, Rotation);

@@ -8,6 +8,7 @@
 #include "RegicideX/Actors/Enemies/RGX_Peasant.h"
 #include "RegicideX/Actors/Enemies/RGX_GroupManager.h"
 #include "GameFramework/Character.h"
+#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 
 void URGX_GA_PeasantAttack::ActivateAbility(
 	const FGameplayAbilitySpecHandle Handle, 
@@ -22,23 +23,15 @@ void URGX_GA_PeasantAttack::ActivateAbility(
 
 	if (MontageToPlay && Character)
 	{
-		UAnimInstance* AnimInstance = ActorInfo->GetAnimInstance();
-		if (AnimInstance)
+		bool bPlayedMontageSuccessfully = false;
+		if (UAnimInstance* AnimInstance = ActorInfo->GetAnimInstance())
 		{
-			float duration = AnimInstance->Montage_Play(MontageToPlay);
-			FTimerDelegate TimerCallback;
-
-			MyHandle = Handle; MyAinfo = ActorInfo; MyActivationInfo = ActivationInfo;
-			TimerCallback.BindLambda([this]
-				{
-					EndAbility(MyHandle, MyAinfo, MyActivationInfo, false, false);
-				});
-
-			FTimerHandle MontageTimerHandle;
-			//en vez de esto puedes usar el delegate de onmontage ended pero queria hacer que funcionase rapido
-			//IMPORTANTE: en cuanto hagas play del montage, debes parar el Behaviour tree ya que puede que no te hagan el montage pq 
-			//haran lo que les diga el peasant manager y se seguiran moviendo hasta que se destruyan
-			GetWorld()->GetTimerManager().SetTimer(MontageTimerHandle, TimerCallback, duration - 0.5, false);
+			UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, MontageToPlay);
+			PlayMontageTask->OnBlendOut.AddDynamic(this, &URGX_GA_PeasantAttack::OnEndMontage);
+			PlayMontageTask->OnCancelled.AddDynamic(this, &URGX_GA_PeasantAttack::OnEndMontage);
+			PlayMontageTask->OnCompleted.AddDynamic(this, &URGX_GA_PeasantAttack::OnEndMontage);
+			PlayMontageTask->OnInterrupted.AddDynamic(this, &URGX_GA_PeasantAttack::OnEndMontage);
+			PlayMontageTask->ReadyForActivation();
 		}
 	}
 }
@@ -55,4 +48,9 @@ void URGX_GA_PeasantAttack::EndAbility(
 	ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(ActorInfo->OwnerActor);
 	if (Peasant)
 		Peasant->manager->SwitchFighter();
+}
+
+void URGX_GA_PeasantAttack::OnEndMontage()
+{
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
 }
