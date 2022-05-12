@@ -23,8 +23,16 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float HeightPos = 500.0f;
 
+public:
 	ARGX_MageAngel();
 
 	void BeginPlay() override;
+	void Tick(float DeltaTime) override;
+
+public:
+	void SetToBeDestroyed() { bToBeDestroyed = true; }
+
+private:
+	bool bToBeDestroyed = false;
 
 };
