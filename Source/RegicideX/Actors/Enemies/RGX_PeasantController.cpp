@@ -27,8 +27,10 @@ void ARGX_PeasantController::OnPossess(APawn* pawn)
 
 	if (Peasant && Peasant->BTree)
 	{
+		//UBlackboardComponent* BBComponent = GetBlackboardComponent();
 		if (BBComponent->InitializeBlackboard(*Peasant->BTree->BlackboardAsset))
 		{
+			//UBehaviorTreeComponent* BTComponent = GetBrainComponent()->
 			TargetActorID = BBComponent->GetKeyID("TargetActor");
 			DistanceToPlayerID = BBComponent->GetKeyID("DistanceToPlayer");
 			OnAirID = BBComponent->GetKeyID("bOnAir");
@@ -52,6 +54,7 @@ void ARGX_PeasantController::Tick(float DeltaTime)
 
 	if (Peasant)
 	{
+		//UBlackboardComponent* BBComponent = GetBlackboardComponent();
 		// Update values for the BB of the BT.
 		if(Peasant->TargetActor)
 			BBComponent->SetValueAsObject("TargetActor", Peasant->TargetActor);
