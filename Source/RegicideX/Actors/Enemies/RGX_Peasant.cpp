@@ -43,12 +43,6 @@ void ARGX_Peasant::Tick(float DeltaTime)
 	}
 }
 
-void ARGX_Peasant::Idle()
-{
-	// TODO Rotate to target
-	TextStatusString = "Idle";
-}
-
 void ARGX_Peasant::ResetAttacking()
 {
 	if (manager)

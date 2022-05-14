@@ -16,14 +16,13 @@ class REGICIDEX_API ARGX_Peasant : public ARGX_EnemyBase
 	GENERATED_BODY()
 public:
 
-	// Setting default values
 	ARGX_Peasant();
 
 	UPROPERTY(EditAnywhere)
-	UBehaviorTree* BTree;
+	UBehaviorTree* BTree = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	ARGX_GroupManager* manager;
+	ARGX_GroupManager* manager = nullptr;
 
 	// String to show the status in the Text RenderComponent
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -53,8 +52,6 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	float MaxSpeed = 400.0f;
 
-	void Idle();
-
 	UFUNCTION(BlueprintCallable)
 	void ResetAttacking();
 
@@ -63,13 +60,12 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	UAnimMontage* IdleMontage = nullptr;
 
-	// This is a parche
+	// Bool to signal if actor is going to get destroyed.
 	bool ToBeDestroyed = false;
 protected:
 
 	UPROPERTY()
 	FVector WanderingPoint;
-
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
