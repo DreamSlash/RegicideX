@@ -2,24 +2,22 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "RegicideX/Character/RGX_PlayerCharacter.h"
+#include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 
-void URGX_DodgeAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+void URGX_DodgeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+	UE_LOG(LogTemp, Warning, TEXT("Activate Dodge\n"));
+	ACharacter* Character = Cast<ACharacter>(ActorInfo->AvatarActor);
 
-	ARGX_PlayerCharacter* Character = Cast<ARGX_PlayerCharacter>(ActorInfo->AvatarActor);
+	PerformDodge();
 
-	Character->GetCharacterMovement()->GravityScale = Character->DefaultGravity;
-}
-
-float URGX_DodgeAbility::GetDodgeDuration()
-{
-	return DodgeDuration;
+	UAbilityTask_WaitDelay* WaitDelayTask = UAbilityTask_WaitDelay::WaitDelay(this, DodgeDuration);
+	WaitDelayTask->OnFinish.AddDynamic(this, &URGX_DodgeAbility::FinishDodge);
+	WaitDelayTask->ReadyForActivation();
 }
 
 void URGX_DodgeAbility::PerformDodge()
 {
-
 	FGameplayEventData EventData;
 	CurrentActorInfo->AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Character.Interrupted")), &EventData);
 
@@ -37,4 +35,20 @@ void URGX_DodgeAbility::PerformDodge()
 	{
 		Character->LaunchCharacter(LaunchForce, true, true);
 	}
+}
+
+void URGX_DodgeAbility::FinishDodge()
+{
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
+}
+
+void URGX_DodgeAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+{
+	UE_LOG(LogTemp, Warning, TEXT("End Dodge\n"));
+
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+
+	ARGX_PlayerCharacter* Character = Cast<ARGX_PlayerCharacter>(ActorInfo->AvatarActor);
+
+	Character->GetCharacterMovement()->GravityScale = Character->DefaultGravity;
 }

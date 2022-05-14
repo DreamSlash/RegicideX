@@ -42,21 +42,21 @@ void URGX_HitboxComponent::ActivateHitbox()
 		OwnerActor = GetOwner();
 	}
 
-	//UE_LOG(LogTemp, Warning, TEXT("Activate Hitbox\n"));
+	UE_LOG(LogTemp, Warning, TEXT("Activate Hitbox\n"));
 	SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	SetCollisionProfileName("Dodgeable");
 }
 
 void URGX_HitboxComponent::DeactivateHitbox()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Deactivate Hitbox\n"));
+	UE_LOG(LogTemp, Warning, TEXT("Deactivate Hitbox\n"));
 	SetCollisionProfileName("Dodgeable");
 	SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 void URGX_HitboxComponent::ActivateEffect()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Activate Effect\n"));
+	UE_LOG(LogTemp, Warning, TEXT("Activate Effect\n"));
 	bEffectActivated = true;
 	SetCollisionEnabled(ECollisionEnabled::QueryOnly);
 	SetCollisionProfileName("Dodgeable");
@@ -64,7 +64,7 @@ void URGX_HitboxComponent::ActivateEffect()
 
 void URGX_HitboxComponent::DeactivateEffect()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Deactivate Effect\n"));
+	UE_LOG(LogTemp, Warning, TEXT("Deactivate Effect\n"));
 	bEffectActivated = false;
 	SetCollisionProfileName("Dodgeable");
 	SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -101,11 +101,11 @@ void URGX_HitboxComponent::ApplyEffects(AActor* OtherActor)
 
 void URGX_HitboxComponent::OnComponentOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("On Component Overlap Hitbox\n"));
+	UE_LOG(LogTemp, Warning, TEXT("On Component Overlap Hitbox\n"));
 	if (bEffectActivated == false)
 		return;
 
-	//UE_LOG(LogTemp, Warning, TEXT("Overlap\n"));
+	UE_LOG(LogTemp, Warning, TEXT("Overlap\n"));
 	USceneComponent* Parent = GetAttachParent();
 	AActor* OwnerActor = Parent->GetAttachmentRootActor();
 
