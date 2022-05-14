@@ -11,22 +11,25 @@ class REGICIDEX_API URGX_DodgeAbility : public UMCV_GameplayAbility
 {
 	GENERATED_BODY()
 
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
 	void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 protected:
 
 	UPROPERTY(EditDefaultsOnly)
-	float DodgeForce;
+	UAnimMontage* MontageToPlay = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	FName BackDodgeSection;
+
+	UPROPERTY(EditAnywhere)
+	FName SideDodgeSection;
 
 	UPROPERTY(EditDefaultsOnly)
-	float DodgeDuration;
+	float DodgeSpeed = 900.0f;
 
 protected:
-
-	UFUNCTION()
-	void PerformDodge();
 
 	UFUNCTION()
 	void FinishDodge();

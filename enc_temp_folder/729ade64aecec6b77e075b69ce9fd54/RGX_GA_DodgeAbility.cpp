@@ -22,14 +22,6 @@ void URGX_DodgeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		Character->GetCharacterMovement()->GravityScale = 0.0f;
 		FVector MoveDirection = Character->GetVelocity();
 
-		if (MoveDirection.Size() <= 10.0f)
-		{
-			MoveDirection = -Character->GetActorForwardVector();
-		}
-
-		MoveDirection.Normalize();
-
-		Character->DisableMovementInput();
 		CombatAssistComponent->EnableMovementVector();
 		CombatAssistComponent->AddMovementVector(MoveDirection, DodgeSpeed);
 
@@ -76,5 +68,4 @@ void URGX_DodgeAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, cons
 	Character->GetCharacterMovement()->GravityScale = Character->DefaultGravity;
 	CombatAssistComponent->DisableMovementVector();
 	CombatAssistComponent->RemoveMovementVector();
-	Character->EnableMovementInput();
 }

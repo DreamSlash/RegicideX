@@ -168,8 +168,7 @@ void URGX_CombatAssistComponent::DisableMovementVector()
 
 void URGX_CombatAssistComponent::AddMovementVector(FVector Direction, float Speed)
 {
-	FVector VelocityVector = Direction * Speed;
-	UE_LOG(LogTemp, Warning, TEXT("Add Move Vector: %f, %f, %f\n"), VelocityVector.X, VelocityVector.Y, VelocityVector.Z);
+	UE_LOG(LogTemp, Warning, TEXT("Add Move Vector\n"));
 	MoveVectorDirection = Direction;
 	MoveVectorSpeed = Speed;
 	bAddMoveVector = true;
