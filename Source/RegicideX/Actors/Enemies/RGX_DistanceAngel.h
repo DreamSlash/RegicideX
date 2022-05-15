@@ -64,6 +64,8 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float ActorMidHeight = 50.0f;
 
+	AActor* LaserBeamRef = nullptr;
+
 	void BeginPlay() override;
 
 	// Called every frame

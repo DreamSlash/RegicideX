@@ -3,6 +3,7 @@
 
 #include "RGX_BTTaskLaserBeamAttack.h"
 
+#include "RegicideX\Actors\Enemies\RGX_DistanceAngel.h"
 #include "RegicideX\Actors\Weapons\RGX_LaserBeamWeapon.h"
 
 #include "AIController.h"
@@ -11,7 +12,7 @@
 EBTNodeResult::Type URGX_BTTaskLaserBeamAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	AAIController* AIController = OwnerComp.GetAIOwner();
-	OwnerActor = AIController->GetPawn();
+	OwnerActor = Cast<ARGX_DistanceAngel>(AIController->GetPawn());
 
 	FActorSpawnParameters SpawnParams; 
 	SpawnParams.Owner = OwnerActor;
@@ -19,8 +20,10 @@ EBTNodeResult::Type URGX_BTTaskLaserBeamAttack::ExecuteTask(UBehaviorTreeCompone
 
 	LaserWeapon = GetWorld()->SpawnActor<ARGX_LaserBeamWeapon>(LaserBeamClass, SpawnParams);
 	LaserWeapon->SetSourcePoint(OwnerActor->GetActorLocation());
+	OwnerActor->LaserBeamRef = LaserWeapon;
 
 	bNotifyTick = true;
+
 	return EBTNodeResult::InProgress;
 }
 
@@ -30,6 +33,7 @@ void URGX_BTTaskLaserBeamAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uin
 	if (TaskTime >= MaxTime)
 	{
 		TaskTime = 0.0f;
+		OwnerActor->LaserBeamRef = nullptr;
 		LaserWeapon->Destroy();
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
