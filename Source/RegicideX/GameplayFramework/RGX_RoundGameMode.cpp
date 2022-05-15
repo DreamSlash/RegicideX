@@ -5,6 +5,7 @@
 
 #include "RGX_ScoreGameState.h"
 #include "Engine/AssetManager.h"
+#include "GameplayTagContainer.h"
 #include "RegicideX/Data/RGX_EnemyDataAsset.h"
 #include "RegicideX/Data/RGX_RoundDataTable.h"
 #include "Kismet/GameplayStatics.h"
@@ -63,6 +64,8 @@ void ARGX_RoundGameMode::OnEnemyDeath(const int Type)
 {
 	if(GetGameState<ARGX_ScoreGameState>()->OnEnemyDeath(Type))
 	{
+		// Clean enemies
+		CleanCorpses();
 		NextRound();
 	}
 }
@@ -189,4 +192,15 @@ void ARGX_RoundGameMode::StartGameSpawn()
 	}
 
 	GetGameState<ARGX_ScoreGameState>()->SetNumEnemies(SpawnEnemies());
+}
+
+void ARGX_RoundGameMode::CleanCorpses()
+{
+	TArray<AActor*> AllActors;
+	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FGameplayTag::RequestGameplayTag(FName("Status.Dead")).GetTagName(), AllActors);
+
+	for (AActor* Actor : AllActors)
+	{
+		Actor->Destroy();
+	}
 }

@@ -39,26 +39,6 @@ void URGX_GA_PeasantReactionHit::ActivateAbility(
 			PlayMontageTask->OnInterrupted.AddDynamic(this, &URGX_GA_PeasantReactionHit::OnEndMontage);
 			PlayMontageTask->ReadyForActivation();
 		}
-
-
-		//UAnimInstance* AnimInstance = ActorInfo->GetAnimInstance();
-		//if (AnimInstance)
-		//{
-		//	float duration = AnimInstance->Montage_Play(MontageToPlay);
-		//	FTimerDelegate TimerCallback;
-
-		//	MyHandle = Handle; MyAinfo = ActorInfo; MyActivationInfo = ActivationInfo;
-		//	TimerCallback.BindWeakLambda(this, [this]
-		//		{
-		//			EndAbility(MyHandle, MyAinfo, MyActivationInfo, false, false);
-		//		});
-
-		//	FTimerHandle MontageTimerHandle;
-		//	//en vez de esto puedes usar el delegate de onmontage ended pero queria hacer que funcionase rapido
-		//	//IMPORTANTE: en cuanto hagas play del montage, debes parar el Behaviour tree ya que puede que no te hagan el montage pq 
-		//	//haran lo que les diga el peasant manager y se seguiran moviendo hasta que se destruyan
-		//	GetWorld()->GetTimerManager().SetTimer(MontageTimerHandle, TimerCallback, duration - 0.5, false);
-		//}
 	}
 }
 

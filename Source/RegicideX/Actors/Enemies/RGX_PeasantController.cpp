@@ -51,7 +51,7 @@ void ARGX_PeasantController::Tick(float DeltaTime)
 
 	ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(GetPawn());
 
-	if (Peasant->TargetActor && !bIsInFocus)
+	if (Peasant->TargetActor && bIsInFocus == false)
 	{
 		SetFocus(Peasant->TargetActor);
 		bIsInFocus = true;
@@ -63,6 +63,7 @@ void ARGX_PeasantController::Tick(float DeltaTime)
 		if(Peasant->TargetActor)
 			BBComponent->SetValueAsObject("TargetActor", Peasant->TargetActor);
 
+		// Do not do it every tick
 		BBComponent->SetValueAsFloat("DistanceToPlayer", Peasant->GetDistanceToTarget());
 		BBComponent->SetValueAsBool("bWasHit", Peasant->bWasHit);
 		BBComponent->SetValueAsBool("bOnAir", Peasant->bOnAir);

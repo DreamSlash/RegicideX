@@ -10,6 +10,7 @@
 #include "Components/CapsuleComponent.h"
 #include "RegicideX/Actors/Enemies/RGX_Peasant.h"
 #include "RegicideX/Actors/Enemies/RGX_GroupManager.h"
+#include "RegicideX/GameplayFramework/RGX_RoundGameMode.h"
 #include "GameFramework/Character.h"
 
 void URGX_GA_PeasantDie::ActivateAbility(
@@ -33,10 +34,15 @@ void URGX_GA_PeasantDie::ActivateAbility(
 
 	// Add Status.Dead
 	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
-	ASC->AddLooseGameplayTag(FGameplayTag::RequestGameplayTag("PossessedBy.Player"));
+	ASC->AddLooseGameplayTag(FGameplayTag::RequestGameplayTag("Status.Dead"));
 
 	// Disable Collision
 	Character->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
+	if (ARGX_RoundGameMode* MyGameMode = Cast<ARGX_RoundGameMode>(GetWorld()->GetAuthGameMode()))
+	{
+		MyGameMode->OnEnemyDeath(0);
+	}
 
 	if (MontageToPlay && Character)
 	{
