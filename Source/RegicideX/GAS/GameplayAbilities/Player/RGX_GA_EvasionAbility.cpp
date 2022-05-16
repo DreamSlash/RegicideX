@@ -1,6 +1,6 @@
 #include "RGX_GA_EvasionAbility.h"
 #include "GameFramework/Character.h"
-#include "../../Character/RGX_PlayerCharacter.h"
+#include "../../../Character/RGX_PlayerCharacter.h"
 
 void URGX_EvasionAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {

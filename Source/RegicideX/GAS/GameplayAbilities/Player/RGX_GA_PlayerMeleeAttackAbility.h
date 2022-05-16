@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/MCV_GameplayAbility.h"
+#include "../../RGX_PayloadObjects.h"
 #include "RGX_GA_PlayerMeleeAttackAbility.generated.h"
 
 UCLASS()
@@ -26,9 +27,34 @@ protected:
 	float PlayRatio = 1.0f;
 
 	UPROPERTY(EditAnywhere)
+	FGameplayTag HitboxTag;
+
+	UPROPERTY(EditDefaultsOnly)
+	TArray<TSubclassOf<UGameplayEffect>> EffectsToApply;
+
+	UPROPERTY(EditDefaultsOnly)
+	TArray<FGameplayTag> EventsToApply;
+
+	UPROPERTY(EditAnywhere)
 	float MoveVectorLength = 10.0f;
 
+	// TODO [REFACTOR]: Interface for all possible ability events?
+	UPROPERTY(EditAnywhere)
+	float LaunchHorizontalForce = 0.0f; //TODO: Do not hardcode this
+
+	UPROPERTY(EditAnywhere)
+	float LaunchVerticalForce = 0.0f;
+
+	UPROPERTY(EditAnywhere)
+	bool bOverrideHorizontal = true;
+
+	UPROPERTY(EditAnywhere)
+	bool bOverrideVertical = true;
+
 protected:
+
+	UFUNCTION()
+	virtual FRGX_AbilityEffectsInfo GetAbilityEffectsInfo();
 
 	UFUNCTION()
 	void FinishAttack();

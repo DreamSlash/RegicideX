@@ -1,7 +1,7 @@
 #include "RGX_GA_DashAbility.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "../../Character/RGX_PlayerCharacter.h"
+#include "../../../Character/RGX_PlayerCharacter.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 
 void URGX_DashAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)

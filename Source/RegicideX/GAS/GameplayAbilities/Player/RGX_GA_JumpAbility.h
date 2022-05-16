@@ -2,7 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/MCV_GameplayAbility.h"
-#include "../../Character/RGX_PlayerAnimInstance.h"
+#include "../../../Character/RGX_PlayerAnimInstance.h"
 #include "RGX_GA_JumpAbility.generated.h"
 
 UCLASS()

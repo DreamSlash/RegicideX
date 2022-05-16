@@ -123,6 +123,7 @@ void ARGX_PlayerCharacter::ManageLightAttackInput()
 
 void ARGX_PlayerCharacter::ManageHeavyAttackInput()
 {
+	/*
 	FGameplayTag NextAttack = ComboSystemComponent->ManageInputToken(ERGXPlayerInputID::HeavyAttackInput);
 
 	if (NextAttack == FGameplayTag::RequestGameplayTag(FName("Combo.Heavy")))
@@ -136,6 +137,12 @@ void ARGX_PlayerCharacter::ManageHeavyAttackInput()
 			ComboSystemComponent->OnEndCombo();
 		}
 	}
+	*/
+	//TODO: Below code is temporal.
+	FGameplayEventData EventData;
+	int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("Combo.Launch")), &EventData);
+
+	UE_LOG(LogTemp, Warning, TEXT("Triggered Abilities: %d\n"), TriggeredAbilities);
 }
 
 void ARGX_PlayerCharacter::ManagePowerSkillInput()

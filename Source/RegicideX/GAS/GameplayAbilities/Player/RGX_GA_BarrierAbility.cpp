@@ -1,11 +1,11 @@
 #include "RGX_GA_BarrierAbility.h"
 #include "GameFramework/Character.h"
 #include "Kismet/KismetSystemLibrary.h"
-#include "../../Actors/Enemies/RGX_EnemyBase.h"
+#include "../../../Actors/Enemies/RGX_EnemyBase.h"
 #include "Components/MCV_AbilitySystemComponent.h"
-#include "../RGX_PayloadObjects.h"
+#include "../../RGX_PayloadObjects.h"
 #include "UObject/UObjectGlobals.h"
-#include "../../Character/RGX_PlayerCharacter.h"
+#include "../../../Character/RGX_PlayerCharacter.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 
 void URGX_BarrierAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)

@@ -161,7 +161,7 @@ void URGX_HitboxComponent::ApplyEffects(AActor* OtherActor)
 			{
 				if (DefaultEvent.bActivated == true)
 				{
-					TargetASC->HandleGameplayEvent(DefaultEvent.GameplayEvent, &DefaultEvent.EventData);
+					ApplierASC->HandleGameplayEvent(DefaultEvent.GameplayEvent, &DefaultEvent.EventData);
 				}
 			}
 
@@ -173,7 +173,7 @@ void URGX_HitboxComponent::ApplyEffects(AActor* OtherActor)
 
 			for (FRGX_AbilityGameplayEvent AbilityEvent : AbilityEffectsInfo.GameplayEvents)
 			{
-				TargetASC->HandleGameplayEvent(AbilityEvent.GameplayEvent, &AbilityEvent.EventData);
+				ApplierASC->HandleGameplayEvent(AbilityEvent.GameplayEvent, &AbilityEvent.EventData);
 			}
 		}
 	}

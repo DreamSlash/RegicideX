@@ -30,3 +30,31 @@ public:
 	URGX_LaunchEventPayload();
 
 };
+
+USTRUCT()
+struct FRGX_AbilityGameplayEvent
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY()
+	FGameplayTag GameplayEvent;
+
+	UPROPERTY()
+	FGameplayEventData EventData;
+};
+
+USTRUCT()
+struct FRGX_AbilityEffectsInfo
+{
+	GENERATED_BODY()
+
+public:
+
+	UPROPERTY()
+	TArray<FRGX_AbilityGameplayEvent> GameplayEvents;
+
+	UPROPERTY()
+	TArray<TSubclassOf<UGameplayEffect>> GameplayEffects;
+};

@@ -6,7 +6,24 @@
 #include "Components/CapsuleComponent.h"
 #include "GameplayEffect.h"
 #include "GenericTeamAgentInterface.h"
+#include "Abilities/GameplayAbilityTypes.h"
+#include "../GAS/RGX_PayloadObjects.h"
 #include "RGX_HitboxComponent.generated.h"
+
+USTRUCT()
+struct FRGX_HitboxGameplayEvent
+{
+	GENERATED_BODY()
+
+	UPROPERTY()
+	FGameplayTag GameplayEvent;
+	
+	UPROPERTY()
+	FGameplayEventData EventData;
+
+	UPROPERTY()
+	bool bActivated = false;
+};
 
 UCLASS(BlueprintType, Blueprintable, meta = (BlueprintSpawnableComponent))
 class URGX_HitboxComponent : public UCapsuleComponent
@@ -31,6 +48,24 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DeactivateEffect();
 
+	UFUNCTION(BlueprintCallable)
+	void ActivateEvent(const FGameplayTag& EventTag);
+
+	UFUNCTION(BlueprintCallable)
+	void DeactivateEvent(const FGameplayTag& EventTag);
+
+	UFUNCTION(BlueprintCallable)
+	void AddEvent(const FGameplayTag& EventTag, const FGameplayEventData& EventData, bool bAutoActivateEvent);
+
+	UFUNCTION(BlueprintCallable)
+	void RemoveEvent(const FGameplayTag& EventTag);
+
+	UFUNCTION()
+	void SetAbilityEffectsInfo(FRGX_AbilityEffectsInfo& NewAbilityEffectsInfo);
+
+	UFUNCTION()
+	void RemoveAbilityEffectsInfo();
+
 protected:
 
 	void ApplyEffects(AActor* OtherActor);
@@ -40,6 +75,12 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UGameplayEffect> EffectToApply;
+
+	UPROPERTY()
+	TArray<FRGX_HitboxGameplayEvent> EventsToApply;
+
+	UPROPERTY()
+	FRGX_AbilityEffectsInfo AbilityEffectsInfo;
 
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<ETeamAttitude::Type> TeamToApply = ETeamAttitude::Hostile;

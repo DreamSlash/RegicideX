@@ -1,6 +1,6 @@
 #include "RGX_GA_SpearsAbility.h"
 #include "GameFramework/Character.h"
-#include "../../Actors/RGX_SpearProjectile.h"
+#include "../../../Actors/RGX_SpearProjectile.h"
 #include "Components/MCV_AbilitySystemComponent.h"
 #include "GenericTeamAgentInterface.h"
 

@@ -26,14 +26,14 @@ void URGX_CombatAssistComponent::TickComponent(float DeltaTime, ELevelTick TickT
 
 		if (Target)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Has Target\n"));
+			//UE_LOG(LogTemp, Warning, TEXT("Has Target\n"));
 			const float DistanceToTarget = FVector::Distance(Owner->GetActorLocation(), Target->GetActorLocation());
 
 			// Apply attack movement only if it does not get too close to the target
 			if (DistanceToTarget > AutoAssistOffsetToEnemy)
 			{
 				float MoveSpeed = MoveVectorSpeed + AutoAssistMove / AttackMoveDuration;
-				UE_LOG(LogTemp, Warning, TEXT("AutoAssist MoveSpeed: %f\n"), MoveSpeed);
+				//UE_LOG(LogTemp, Warning, TEXT("AutoAssist MoveSpeed: %f\n"), MoveSpeed);
 				const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * MoveSpeed * DeltaTime;
 				Owner->SetActorLocation(NewLocation, true);
 			}
@@ -44,23 +44,23 @@ void URGX_CombatAssistComponent::TickComponent(float DeltaTime, ELevelTick TickT
 
 				if (TotalMoveLeft <= MaxMove)
 				{
-					UE_LOG(LogTemp, Warning, TEXT("Inferior to MaxMove Speed: %f\n"), MoveVectorSpeed);
+					//UE_LOG(LogTemp, Warning, TEXT("Inferior to MaxMove Speed: %f\n"), MoveVectorSpeed);
 					const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * MoveVectorSpeed * DeltaTime;
 					Owner->SetActorLocation(NewLocation, true);
 				}
 				else
 				{
 					float MoveSpeed = MaxMove / AttackMoveDurationLeft;
-					UE_LOG(LogTemp, Warning, TEXT("Superior to MaxMove Speed: %f\n"), MoveSpeed);
+					//UE_LOG(LogTemp, Warning, TEXT("Superior to MaxMove Speed: %f\n"), MoveSpeed);
 					const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * MoveSpeed * DeltaTime;
 				}
 			}
 		}
 		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Does not have Target\n"));
+			//UE_LOG(LogTemp, Warning, TEXT("Does not have Target\n"));
 			FVector FinalVelocity = MoveVectorDirection * MoveVectorSpeed;
-			UE_LOG(LogTemp, Warning, TEXT("Speed: %f, %f, %f\n"), FinalVelocity.X, FinalVelocity.Y, FinalVelocity.Z);
+			//UE_LOG(LogTemp, Warning, TEXT("Speed: %f, %f, %f\n"), FinalVelocity.X, FinalVelocity.Y, FinalVelocity.Z);
 			const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * MoveVectorSpeed * DeltaTime;
 			Owner->SetActorLocation(NewLocation, true);
 		}
@@ -147,7 +147,7 @@ void URGX_CombatAssistComponent::PerformAttackAutoAssist()
 
 	AutoAssistMove = CurrentClosestDistance - AutoAssistOffsetToEnemy;
 
-	UE_LOG(LogTemp, Warning, TEXT("AutoAssistMove: %f\n"), AutoAssistMove);
+	//UE_LOG(LogTemp, Warning, TEXT("AutoAssistMove: %f\n"), AutoAssistMove);
 	//const FVector FinalLocation = PlayerLocation + AssistDirection * (CurrentClosestDistance - AutoAssistOffsetToEnemy);
 
 	//PlayerActor->SetActorLocation(FinalLocation);
@@ -155,13 +155,13 @@ void URGX_CombatAssistComponent::PerformAttackAutoAssist()
 
 void URGX_CombatAssistComponent::EnableMovementVector()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Enable Move Vector\n"));
+	//UE_LOG(LogTemp, Warning, TEXT("Enable Move Vector\n"));
 	bMoveVectorEnabled = true;
 }
 
 void URGX_CombatAssistComponent::DisableMovementVector()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Disable Move Vector\n"));
+	//UE_LOG(LogTemp, Warning, TEXT("Disable Move Vector\n"));
 	bMoveVectorEnabled = false;
 	Target = nullptr; // [TODO]: This is hardcoded.
 }
@@ -169,7 +169,7 @@ void URGX_CombatAssistComponent::DisableMovementVector()
 void URGX_CombatAssistComponent::AddMovementVector(FVector Direction, float Speed)
 {
 	FVector VelocityVector = Direction * Speed;
-	UE_LOG(LogTemp, Warning, TEXT("Add Move Vector: %f, %f, %f\n"), VelocityVector.X, VelocityVector.Y, VelocityVector.Z);
+	//UE_LOG(LogTemp, Warning, TEXT("Add Move Vector: %f, %f, %f\n"), VelocityVector.X, VelocityVector.Y, VelocityVector.Z);
 	MoveVectorDirection = Direction;
 	MoveVectorSpeed = Speed;
 	bAddMoveVector = true;
@@ -177,7 +177,7 @@ void URGX_CombatAssistComponent::AddMovementVector(FVector Direction, float Spee
 
 void URGX_CombatAssistComponent::RemoveMovementVector()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Remove Move Vector\n"));
+	//UE_LOG(LogTemp, Warning, TEXT("Remove Move Vector\n"));
 	MoveVectorDirection = FVector(0.0f);
 	MoveVectorSpeed = 0.0f;
 	bAddMoveVector = false;

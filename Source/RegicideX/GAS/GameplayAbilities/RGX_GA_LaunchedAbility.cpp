@@ -16,8 +16,8 @@ void URGX_LaunchedAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	FVector ActorLocation = ActorInfo->AvatarActor->GetActorLocation();
 	FVector ForceOrigin = LaunchPayload->ForceOrigin;
 	float HorizontalForce = LaunchPayload->LaunchHorizontalForce;
-	float VerticalForce = LaunchPayload->LaunchHorizontalForce;
-
+	float VerticalForce = LaunchPayload->LaunchVerticalForce;
+	UE_LOG(LogTemp, Warning, TEXT("Vertical Force: %f\n"), VerticalForce);
 	FVector LaunchHorizontalDirection = ActorLocation - ForceOrigin;
 	LaunchHorizontalDirection.Z = 0.0f;
 	LaunchHorizontalDirection.Normalize();
