@@ -1,6 +1,8 @@
 #include "RGX_ComboSystemComponent.h"
 #include "AbilitySystemGlobals.h"
 #include "AbilitySystemComponent.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 URGX_ComboSystemComponent::URGX_ComboSystemComponent()
 {
@@ -17,10 +19,15 @@ void URGX_ComboSystemComponent::EndPlay(EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
-FGameplayTag URGX_ComboSystemComponent::ManageInputToken(ERGXPlayerInputID PlayerInput)
+FGameplayTag URGX_ComboSystemComponent::ManageInputToken(ERGXPlayerInputID PlayerInput, bool bIsOnAir, bool bCanAirCombo)
 {
 	if (!IsAttacking())
 	{
+		if (bIsOnAir == true && bCanAirCombo == false)
+		{
+			return FGameplayTag::RequestGameplayTag(FName("Combo.None"));
+		}
+
 		InitiateCombo(PlayerInput);
 		return CurrentAttack;
 	}
@@ -101,6 +108,14 @@ void URGX_ComboSystemComponent::OnCombo()
 		//UE_LOG(LogTemp, Warning, TEXT("No Combo\n"));
 		CurrentAttack = FGameplayTag::RequestGameplayTag("Combo.None");
 		OnEndCombo();
+	}
+
+	AActor* Owner = GetOwner();
+	UCharacterMovementComponent* CharacterMovementComponent = Owner->FindComponentByClass<UCharacterMovementComponent>();
+
+	if (CharacterMovementComponent->IsFalling() == true)
+	{
+
 	}
 }
 

@@ -138,6 +138,9 @@ protected:
 	UPROPERTY()
 	bool bTimeScale = false;
 
+	/** Input Variables */
+	// -------------------
+
 protected:
 	/** Called for forwards/backwards input */
 	void MoveForward(float Value);

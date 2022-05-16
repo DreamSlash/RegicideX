@@ -30,13 +30,22 @@ protected:
 	FGameplayTag HitboxTag;
 
 	UPROPERTY(EditDefaultsOnly)
-	TArray<TSubclassOf<UGameplayEffect>> EffectsToApply;
+	TArray<TSubclassOf<UGameplayEffect>> EffectsToApplyToTarget;
 
 	UPROPERTY(EditDefaultsOnly)
-	TArray<FGameplayTag> EventsToApply;
+	TArray<FGameplayTag> EventsToApplyToTarget;
+
+	UPROPERTY(EditDefaultsOnly)
+	TArray<TSubclassOf<UGameplayEffect>> EffectsToApplyToOwner;
+
+	UPROPERTY(EditDefaultsOnly)
+	TArray<FGameplayTag> EventsToApplyToOwner;
 
 	UPROPERTY(EditAnywhere)
 	float MoveVectorLength = 10.0f;
+
+	UPROPERTY(EditAnywhere)
+	float ZAirForce = 800.0f;
 
 	// TODO [REFACTOR]: Interface for all possible ability events?
 	UPROPERTY(EditAnywhere)

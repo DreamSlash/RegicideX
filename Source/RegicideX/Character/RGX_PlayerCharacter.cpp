@@ -106,7 +106,8 @@ FGenericTeamId ARGX_PlayerCharacter::GetGenericTeamId() const
 
 void ARGX_PlayerCharacter::ManageLightAttackInput()
 {
-	FGameplayTag NextAttack = ComboSystemComponent->ManageInputToken(ERGXPlayerInputID::LightAttackInput);
+	bool bCanAirCombo = HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
+	FGameplayTag NextAttack = ComboSystemComponent->ManageInputToken(ERGXPlayerInputID::LightAttackInput, GetCharacterMovement()->IsFalling(), bCanAirCombo);
 
 	if (NextAttack == FGameplayTag::RequestGameplayTag(FName("Combo.Light")))
 	{
@@ -118,13 +119,22 @@ void ARGX_PlayerCharacter::ManageLightAttackInput()
 		{
 			ComboSystemComponent->OnEndCombo();
 		}
+		else
+		{
+			if (GetCharacterMovement()->IsFalling() && bCanAirCombo == true)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Remove Can Air Combo\n"));
+				RemoveGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
+			}
+		}
 	}
 }
 
 void ARGX_PlayerCharacter::ManageHeavyAttackInput()
 {
 	/*
-	FGameplayTag NextAttack = ComboSystemComponent->ManageInputToken(ERGXPlayerInputID::HeavyAttackInput);
+	bool bCanAirCombo = HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
+	FGameplayTag NextAttack = ComboSystemComponent->ManageInputToken(ERGXPlayerInputID::HeavyAttackInput, GetCharacterMovement()->IsFalling(), bCanAirCombo);
 
 	if (NextAttack == FGameplayTag::RequestGameplayTag(FName("Combo.Heavy")))
 	{
@@ -139,6 +149,9 @@ void ARGX_PlayerCharacter::ManageHeavyAttackInput()
 	}
 	*/
 	//TODO: Below code is temporal.
+	if (GetCharacterMovement()->IsFalling() == true)
+		return;
+
 	FGameplayEventData EventData;
 	int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("Combo.Launch")), &EventData);
 
@@ -276,6 +289,8 @@ void ARGX_PlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
+
 	if (PowerSkills.Num() < 1 == false)
 	{
 		CurrentSkillTag = PowerSkills[0];
@@ -298,6 +313,19 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 	if (IsBeingAttacked())
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Being Attacked\n"));
+	}
+	*/
+
+	/*
+	bool bCanAirCombo = HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
+
+	if (bCanAirCombo == true)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Can Air Combo\n"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Cannot Air Combo\n"));
 	}
 	*/
 
@@ -409,6 +437,8 @@ void ARGX_PlayerCharacter::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
 
+	UE_LOG(LogTemp, Warning, TEXT("Add Can Air Combo\n"))
+	AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
 	RemoveGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.HasAirDashed")));
 }
 

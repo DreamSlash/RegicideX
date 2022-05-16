@@ -5,7 +5,7 @@
 void URGX_LaunchedAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	const URGX_LaunchEventPayload* LaunchPayload = Cast<URGX_LaunchEventPayload>(TriggerEventData->OptionalObject);
-
+	
 	UE_LOG(LogTemp, Warning, TEXT("Launch Ability\n"));
 
 	if (LaunchPayload == false)

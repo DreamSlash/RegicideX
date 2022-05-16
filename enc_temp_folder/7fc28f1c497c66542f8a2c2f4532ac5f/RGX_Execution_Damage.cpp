@@ -62,8 +62,8 @@ void UExecution_Damage::Execute_Implementation(const FGameplayEffectCustomExecut
 		EventPayload.Instigator = SrcACS->GetOwnerActor();
 	}
 
-	int32 TriggeredCount = ExecutionParams.GetTargetAbilitySystemComponent()->HandleGameplayEvent(FGameplayTag::RequestGameplayTag("GameplayEvent.Combat.TakeDamage"), &EventPayload);
-	UE_LOG(LogTemp, Warning, TEXT("Take Damage Activated: %d\n"), TriggeredCount);
+	UE_LOG(LogTemp, Warning, TEXT("Take Damage Event\n"));
+	ExecutionParams.GetTargetAbilitySystemComponent()->HandleGameplayEvent(FGameplayTag::RequestGameplayTag("GameplayEvent.Combat.TakeDamage"), &EventPayload);
 
 	OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(RGX_DamageStatics().HealthProperty, EGameplayModOp::Additive, -FinalDamage));
 }

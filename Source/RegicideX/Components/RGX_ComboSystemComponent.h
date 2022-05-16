@@ -31,7 +31,7 @@ public:
 	void BeginPlay() override;
 	void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
-	FGameplayTag ManageInputToken(ERGXPlayerInputID PlayerInput);
+	FGameplayTag ManageInputToken(ERGXPlayerInputID PlayerInput, bool bIsOnAir, bool bCanAirCombo);
 	FGameplayTag GetNextAttack();
 	void CleanStatus(int32 ActivatedAbilities);
 
@@ -56,6 +56,9 @@ protected:
 
 	UPROPERTY()
 	bool bComboFlag = false;
+
+	UPROPERTY()
+	bool bAirComboFlag = false;
 	// ------------------------
 
 protected:

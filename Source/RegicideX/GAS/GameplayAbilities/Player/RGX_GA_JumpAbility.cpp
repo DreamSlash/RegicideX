@@ -4,6 +4,8 @@
 
 void URGX_JumpAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
 	ACharacter* Character = Cast<ACharacter>(ActorInfo->AvatarActor);
 
 	ARGX_PlayerCharacter* PlayerCharacter = Cast<ARGX_PlayerCharacter>(Character);

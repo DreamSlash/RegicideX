@@ -53,8 +53,14 @@ struct FRGX_AbilityEffectsInfo
 public:
 
 	UPROPERTY()
-	TArray<FRGX_AbilityGameplayEvent> GameplayEvents;
+	TArray<FRGX_AbilityGameplayEvent> GameplayEventsToTarget;
 
 	UPROPERTY()
-	TArray<TSubclassOf<UGameplayEffect>> GameplayEffects;
+	TArray<FRGX_AbilityGameplayEvent> GameplayEventsToOwner;
+
+	UPROPERTY()
+	TArray<TSubclassOf<UGameplayEffect>> GameplayEffectsToTarget;
+
+	UPROPERTY()
+	TArray<TSubclassOf<UGameplayEffect>> GameplayEffectsToOwner;
 };

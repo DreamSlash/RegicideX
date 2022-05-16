@@ -18,13 +18,24 @@ void URGX_PlayerMeleeAttackAbility::ActivateAbility(const FGameplayAbilitySpecHa
 	ARGX_PlayerCharacter* Character = Cast<ARGX_PlayerCharacter>(ActorInfo->AvatarActor);
 	URGX_CombatAssistComponent* CombatAssistComponent = Character->FindComponentByClass<URGX_CombatAssistComponent>();
 	URGX_HitboxesManagerComponent* HitboxManagerComponent = Character->FindComponentByClass<URGX_HitboxesManagerComponent>();
+	UCharacterMovementComponent* CharacterMovementComponent = Character->FindComponentByClass<UCharacterMovementComponent>();
 
 	CombatAssistComponent->PerformAttackAutoAssist();
 
 	if (Character)
 	{
 		Character->DisableMovementInput();
-		CombatAssistComponent->AddMovementVector(Character->GetActorForwardVector(), MoveVectorLength);
+		
+		if (CharacterMovementComponent->IsFalling() == true)
+		{
+			//UE_LOG(LogTemp, Warning, TEXT("Is Falling\n"));
+			Character->LaunchCharacter(FVector(0.0f, 0.0f, ZAirForce), false, true);
+		}
+		else
+		{
+			//UE_LOG(LogTemp, Warning, TEXT("Is Not Falling\n"));
+			CombatAssistComponent->AddMovementVector(Character->GetActorForwardVector(), MoveVectorLength);
+		}
 
 		URGX_HitboxComponent* Hitbox = HitboxManagerComponent->GetHitboxByTag(HitboxTag);
 
@@ -63,9 +74,10 @@ void URGX_PlayerMeleeAttackAbility::EndAbility(const FGameplayAbilitySpecHandle 
 FRGX_AbilityEffectsInfo URGX_PlayerMeleeAttackAbility::GetAbilityEffectsInfo()
 {
 	FRGX_AbilityEffectsInfo AbilityEffectsInfo;
-	AbilityEffectsInfo.GameplayEffects = EffectsToApply;
+	AbilityEffectsInfo.GameplayEffectsToTarget = EffectsToApplyToTarget;
+	AbilityEffectsInfo.GameplayEffectsToOwner = EffectsToApplyToOwner;
 
-	for (FGameplayTag EventTag : EventsToApply)
+	for (FGameplayTag EventTag : EventsToApplyToTarget)
 	{
 		FRGX_AbilityGameplayEvent Event = {};
 		Event.GameplayEvent = EventTag;
@@ -88,7 +100,33 @@ FRGX_AbilityEffectsInfo URGX_PlayerMeleeAttackAbility::GetAbilityEffectsInfo()
 			Event.EventData = EventData;
 		}
 
-		AbilityEffectsInfo.GameplayEvents.Add(Event);
+		AbilityEffectsInfo.GameplayEventsToTarget.Add(Event);
+	}
+
+	for (FGameplayTag EventTag : EventsToApplyToOwner)
+	{
+		FRGX_AbilityGameplayEvent Event = {};
+		Event.GameplayEvent = EventTag;
+
+		// TODO [REFACTOR]: Hardcoded
+		FGameplayEventData EventData = {};
+		if (EventTag == FGameplayTag::RequestGameplayTag("GameplayEvent.Launched"))
+		{
+			URGX_LaunchEventPayload* LaunchPayloadObject = NewObject<URGX_LaunchEventPayload>();
+			LaunchPayloadObject->LaunchHorizontalForce = LaunchHorizontalForce;
+			LaunchPayloadObject->LaunchVerticalForce = LaunchVerticalForce;
+			LaunchPayloadObject->bOverrideHorizontal = bOverrideHorizontal;
+			LaunchPayloadObject->bOverrideVertical = bOverrideVertical;
+			LaunchPayloadObject->ForceOrigin = CurrentActorInfo->AvatarActor.Get()->GetActorLocation();
+
+			Event.EventData.OptionalObject = LaunchPayloadObject;
+		}
+		else
+		{
+			Event.EventData = EventData;
+		}
+
+		AbilityEffectsInfo.GameplayEventsToOwner.Add(Event);
 	}
 
 	return AbilityEffectsInfo;

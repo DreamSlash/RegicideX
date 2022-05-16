@@ -122,13 +122,16 @@ void URGX_HitboxComponent::SetAbilityEffectsInfo(FRGX_AbilityEffectsInfo& NewAbi
 
 void URGX_HitboxComponent::RemoveAbilityEffectsInfo()
 {
-	AbilityEffectsInfo.GameplayEffects.Empty();
-	AbilityEffectsInfo.GameplayEvents.Empty();
+	AbilityEffectsInfo.GameplayEffectsToTarget.Empty();
+	AbilityEffectsInfo.GameplayEventsToTarget.Empty();
+	AbilityEffectsInfo.GameplayEffectsToOwner.Empty();
+	AbilityEffectsInfo.GameplayEventsToOwner.Empty();
 }
 
 void URGX_HitboxComponent::ApplyEffects(AActor* OtherActor)
 {
-	if (EffectToApply || AbilityEffectsInfo.GameplayEffects.Num() > 0 || AbilityEffectsInfo.GameplayEvents.Num() > 0)
+	if (EffectToApply || AbilityEffectsInfo.GameplayEffectsToTarget.Num() > 0 || AbilityEffectsInfo.GameplayEventsToTarget.Num() > 0
+		|| AbilityEffectsInfo.GameplayEffectsToOwner.Num() > 0 || AbilityEffectsInfo.GameplayEventsToOwner.Num() > 0)
 	{
 		USceneComponent* Parent = GetAttachParent();
 		AActor* OwnerActor = Parent->GetAttachmentRootActor();
@@ -161,19 +164,33 @@ void URGX_HitboxComponent::ApplyEffects(AActor* OtherActor)
 			{
 				if (DefaultEvent.bActivated == true)
 				{
+					DefaultEvent.EventData.Instigator = OwnerActor;
 					TargetASC->HandleGameplayEvent(DefaultEvent.GameplayEvent, &DefaultEvent.EventData);
 				}
 			}
 
 			// Effects and Events to apply that come from an ability activation
-			for (TSubclassOf<UGameplayEffect> Effect : AbilityEffectsInfo.GameplayEffects)
+			for (TSubclassOf<UGameplayEffect> Effect : AbilityEffectsInfo.GameplayEffectsToTarget)
 			{
 				ApplierASC->ApplyGameplayEffectToTarget(Effect->GetDefaultObject<UGameplayEffect>(), TargetASC, 1, ApplierASC->MakeEffectContext());
 			}
 
-			for (FRGX_AbilityGameplayEvent AbilityEvent : AbilityEffectsInfo.GameplayEvents)
+			for (FRGX_AbilityGameplayEvent AbilityEvent : AbilityEffectsInfo.GameplayEventsToTarget)
 			{
+				AbilityEvent.EventData.Instigator = OwnerActor;
 				TargetASC->HandleGameplayEvent(AbilityEvent.GameplayEvent, &AbilityEvent.EventData);
+			}
+
+			for (TSubclassOf<UGameplayEffect> Effect : AbilityEffectsInfo.GameplayEffectsToOwner)
+			{
+				ApplierASC->ApplyGameplayEffectToSelf(Effect->GetDefaultObject<UGameplayEffect>(), 1, ApplierASC->MakeEffectContext());
+
+			}
+
+			for (FRGX_AbilityGameplayEvent AbilityEvent : AbilityEffectsInfo.GameplayEventsToOwner)
+			{
+				AbilityEvent.EventData.Instigator = OwnerActor;
+				ApplierASC->HandleGameplayEvent(AbilityEvent.GameplayEvent, &AbilityEvent.EventData);
 			}
 		}
 	}
