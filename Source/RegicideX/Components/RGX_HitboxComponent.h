@@ -61,7 +61,7 @@ public:
 	void RemoveEvent(const FGameplayTag& EventTag);
 
 	UFUNCTION()
-	void SetAbilityEffectsInfo(FRGX_AbilityEffectsInfo& NewAbilityEffectsInfo);
+	void SetAbilityEffectsInfo(const FRGX_AbilityEffectsInfo& NewAbilityEffectsInfo);
 
 	UFUNCTION()
 	void RemoveAbilityEffectsInfo();
@@ -74,10 +74,10 @@ protected:
 	void OnComponentOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UGameplayEffect> EffectToApply;
+	TSubclassOf<UGameplayEffect> DefaultEffectToApply;
 
 	UPROPERTY()
-	TArray<FRGX_HitboxGameplayEvent> EventsToApply;
+	TArray<FRGX_HitboxGameplayEvent> DefaultEventsToApply;
 
 	UPROPERTY()
 	FRGX_AbilityEffectsInfo AbilityEffectsInfo;

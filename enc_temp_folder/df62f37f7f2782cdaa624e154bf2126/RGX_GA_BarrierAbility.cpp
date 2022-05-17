@@ -9,8 +9,6 @@
 
 void URGX_BarrierAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	// TODO: Ensure size of tag and event arrays are the same.
-
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	if (CommitAbility(Handle, ActorInfo, ActivationInfo) == false)

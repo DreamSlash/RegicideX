@@ -76,58 +76,10 @@ FRGX_AbilityEffectsInfo URGX_PlayerMeleeAttackAbility::GetAbilityEffectsInfo()
 	FRGX_AbilityEffectsInfo AbilityEffectsInfo;
 	AbilityEffectsInfo.GameplayEffectsToTarget = EffectsToApplyToTarget;
 	AbilityEffectsInfo.GameplayEffectsToOwner = EffectsToApplyToOwner;
-
-	for (FGameplayTag EventTag : EventsToApplyToTarget)
-	{
-		FRGX_AbilityGameplayEvent Event = {};
-		Event.GameplayEvent = EventTag;
-
-		// TODO [REFACTOR]: Hardcoded
-		FGameplayEventData EventData = {};
-		if (EventTag == FGameplayTag::RequestGameplayTag("GameplayEvent.Launched"))
-		{
-			URGX_LaunchEventPayload* LaunchPayloadObject = NewObject<URGX_LaunchEventPayload>();
-			LaunchPayloadObject->LaunchHorizontalForce = LaunchHorizontalForce;
-			LaunchPayloadObject->LaunchVerticalForce = LaunchVerticalForce;
-			LaunchPayloadObject->bOverrideHorizontal = bOverrideHorizontal;
-			LaunchPayloadObject->bOverrideVertical = bOverrideVertical;
-			LaunchPayloadObject->ForceOrigin = CurrentActorInfo->AvatarActor.Get()->GetActorLocation();
-
-			Event.EventData.OptionalObject = LaunchPayloadObject;
-		}
-		else
-		{
-			Event.EventData = EventData;
-		}
-
-		AbilityEffectsInfo.GameplayEventsToTarget.Add(Event);
-	}
-
-	for (FGameplayTag EventTag : EventsToApplyToOwner)
-	{
-		FRGX_AbilityGameplayEvent Event = {};
-		Event.GameplayEvent = EventTag;
-
-		// TODO [REFACTOR]: Hardcoded
-		FGameplayEventData EventData = {};
-		if (EventTag == FGameplayTag::RequestGameplayTag("GameplayEvent.Launched"))
-		{
-			URGX_LaunchEventPayload* LaunchPayloadObject = NewObject<URGX_LaunchEventPayload>();
-			LaunchPayloadObject->LaunchHorizontalForce = LaunchHorizontalForce;
-			LaunchPayloadObject->LaunchVerticalForce = LaunchVerticalForce;
-			LaunchPayloadObject->bOverrideHorizontal = bOverrideHorizontal;
-			LaunchPayloadObject->bOverrideVertical = bOverrideVertical;
-			LaunchPayloadObject->ForceOrigin = CurrentActorInfo->AvatarActor.Get()->GetActorLocation();
-
-			Event.EventData.OptionalObject = LaunchPayloadObject;
-		}
-		else
-		{
-			Event.EventData = EventData;
-		}
-
-		AbilityEffectsInfo.GameplayEventsToOwner.Add(Event);
-	}
+	AbilityEffectsInfo.EventToTargetTags = EventToTargetTags;
+	AbilityEffectsInfo.GameplayEventsToTarget = EventsToApplyToTarget;
+	AbilityEffectsInfo.EventToOwnerTags = EventToOwnerTags;
+	AbilityEffectsInfo.GameplayEventsToOwner = EventsToApplyToOwner;
 
 	return AbilityEffectsInfo;
 }

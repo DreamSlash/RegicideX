@@ -32,20 +32,6 @@ public:
 };
 
 USTRUCT()
-struct FRGX_AbilityGameplayEvent
-{
-	GENERATED_BODY()
-
-public:
-
-	UPROPERTY()
-	FGameplayTag GameplayEvent;
-
-	UPROPERTY()
-	FGameplayEventData EventData;
-};
-
-USTRUCT()
 struct FRGX_AbilityEffectsInfo
 {
 	GENERATED_BODY()
@@ -53,10 +39,16 @@ struct FRGX_AbilityEffectsInfo
 public:
 
 	UPROPERTY()
-	TArray<FRGX_AbilityGameplayEvent> GameplayEventsToTarget;
+	TArray<FGameplayTag> EventToTargetTags;
 
 	UPROPERTY()
-	TArray<FRGX_AbilityGameplayEvent> GameplayEventsToOwner;
+	TArray<UDataAsset*> GameplayEventsToTarget;
+
+	UPROPERTY()
+	TArray<FGameplayTag> EventToOwnerTags;
+
+	UPROPERTY()
+	TArray<UDataAsset*> GameplayEventsToOwner;
 
 	UPROPERTY()
 	TArray<TSubclassOf<UGameplayEffect>> GameplayEffectsToTarget;
@@ -66,13 +58,11 @@ public:
 };
 
 UCLASS(BlueprintType)
-class URGX_LaunchedEventDataAsset : public UDataAsset
+class URGX_LaunchEventDataAsset : public UDataAsset
 {
 	GENERATED_BODY()
 
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	FGameplayTag EventTag;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float LaunchHorizontalForce;

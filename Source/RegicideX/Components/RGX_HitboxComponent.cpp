@@ -73,7 +73,7 @@ void URGX_HitboxComponent::DeactivateEffect()
 
 void URGX_HitboxComponent::ActivateEvent(const FGameplayTag& EventTag)
 {
-	for (FRGX_HitboxGameplayEvent& Event : EventsToApply)
+	for (FRGX_HitboxGameplayEvent& Event : DefaultEventsToApply)
 	{
 		if (Event.GameplayEvent == EventTag)
 		{
@@ -84,7 +84,7 @@ void URGX_HitboxComponent::ActivateEvent(const FGameplayTag& EventTag)
 
 void URGX_HitboxComponent::DeactivateEvent(const FGameplayTag& EventTag)
 {
-	for (FRGX_HitboxGameplayEvent& Event : EventsToApply)
+	for (FRGX_HitboxGameplayEvent& Event : DefaultEventsToApply)
 	{
 		if (Event.GameplayEvent == EventTag)
 		{
@@ -100,22 +100,22 @@ void URGX_HitboxComponent::AddEvent(const FGameplayTag& EventTag, const FGamepla
 	NewEvent.EventData = EventData;
 	NewEvent.bActivated = false;
 
-	EventsToApply.Add(NewEvent);
+	DefaultEventsToApply.Add(NewEvent);
 }
 
 void URGX_HitboxComponent::RemoveEvent(const FGameplayTag& EventTag)
 {
-	for (int i = 0; i < EventsToApply.Num(); ++i)
+	for (int i = 0; i < DefaultEventsToApply.Num(); ++i)
 	{
-		if (EventsToApply[i].GameplayEvent == EventTag)
+		if (DefaultEventsToApply[i].GameplayEvent == EventTag)
 		{
-			EventsToApply.RemoveAt(i); // TODO: Faig removeAt enlloc de remove perque "==" no esta definit i em fa pal definir-lo
+			DefaultEventsToApply.RemoveAt(i); // TODO: Faig removeAt enlloc de remove perque "==" no esta definit i em fa pal definir-lo
 			break;
 		}
 	}
 }
 
-void URGX_HitboxComponent::SetAbilityEffectsInfo(FRGX_AbilityEffectsInfo& NewAbilityEffectsInfo)
+void URGX_HitboxComponent::SetAbilityEffectsInfo(const FRGX_AbilityEffectsInfo& NewAbilityEffectsInfo)
 {
 	AbilityEffectsInfo = NewAbilityEffectsInfo;
 }
@@ -130,7 +130,7 @@ void URGX_HitboxComponent::RemoveAbilityEffectsInfo()
 
 void URGX_HitboxComponent::ApplyEffects(AActor* OtherActor)
 {
-	if (EffectToApply || AbilityEffectsInfo.GameplayEffectsToTarget.Num() > 0 || AbilityEffectsInfo.GameplayEventsToTarget.Num() > 0
+	if (DefaultEffectToApply || AbilityEffectsInfo.GameplayEffectsToTarget.Num() > 0 || AbilityEffectsInfo.GameplayEventsToTarget.Num() > 0
 		|| AbilityEffectsInfo.GameplayEffectsToOwner.Num() > 0 || AbilityEffectsInfo.GameplayEventsToOwner.Num() > 0)
 	{
 		USceneComponent* Parent = GetAttachParent();
@@ -154,13 +154,13 @@ void URGX_HitboxComponent::ApplyEffects(AActor* OtherActor)
 		if (ApplierASC && TargetASC)
 		{
 			// Default Effect to apply
-			if (EffectToApply)
+			if (DefaultEffectToApply)
 			{
-				ApplierASC->ApplyGameplayEffectToTarget(EffectToApply->GetDefaultObject<UGameplayEffect>(), TargetASC, 1, ApplierASC->MakeEffectContext());
+				ApplierASC->ApplyGameplayEffectToTarget(DefaultEffectToApply->GetDefaultObject<UGameplayEffect>(), TargetASC, 1, ApplierASC->MakeEffectContext());
 			}
 			
 			// Default Events to apply
-			for (FRGX_HitboxGameplayEvent& DefaultEvent : EventsToApply)
+			for (FRGX_HitboxGameplayEvent& DefaultEvent : DefaultEventsToApply)
 			{
 				if (DefaultEvent.bActivated == true)
 				{
@@ -175,22 +175,26 @@ void URGX_HitboxComponent::ApplyEffects(AActor* OtherActor)
 				ApplierASC->ApplyGameplayEffectToTarget(Effect->GetDefaultObject<UGameplayEffect>(), TargetASC, 1, ApplierASC->MakeEffectContext());
 			}
 
-			for (FRGX_AbilityGameplayEvent AbilityEvent : AbilityEffectsInfo.GameplayEventsToTarget)
-			{
-				AbilityEvent.EventData.Instigator = OwnerActor;
-				TargetASC->HandleGameplayEvent(AbilityEvent.GameplayEvent, &AbilityEvent.EventData);
-			}
-
 			for (TSubclassOf<UGameplayEffect> Effect : AbilityEffectsInfo.GameplayEffectsToOwner)
 			{
 				ApplierASC->ApplyGameplayEffectToSelf(Effect->GetDefaultObject<UGameplayEffect>(), 1, ApplierASC->MakeEffectContext());
 
 			}
 
-			for (FRGX_AbilityGameplayEvent AbilityEvent : AbilityEffectsInfo.GameplayEventsToOwner)
+			for (int i = 0; i < AbilityEffectsInfo.EventToTargetTags.Num(); ++i)
 			{
-				AbilityEvent.EventData.Instigator = OwnerActor;
-				ApplierASC->HandleGameplayEvent(AbilityEvent.GameplayEvent, &AbilityEvent.EventData);
+				FGameplayEventData EventData = {};
+				EventData.Instigator = OwnerActor;
+				EventData.OptionalObject = AbilityEffectsInfo.GameplayEventsToTarget[i];
+				TargetASC->HandleGameplayEvent(AbilityEffectsInfo.EventToTargetTags[i], &EventData);
+			}
+
+			for (int i = 0; i < AbilityEffectsInfo.EventToOwnerTags.Num(); ++i)
+			{
+				FGameplayEventData EventData = {};
+				EventData.Instigator = OwnerActor;
+				EventData.OptionalObject = AbilityEffectsInfo.GameplayEventsToOwner[i];
+				ApplierASC->HandleGameplayEvent(AbilityEffectsInfo.EventToOwnerTags[i], &EventData);
 			}
 		}
 	}

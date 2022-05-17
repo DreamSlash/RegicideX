@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/MCV_GameplayAbility.h"
+#include "../../RGX_PayloadObjects.h"
 #include "RGX_GA_BarrierAbility.generated.h"
 
 UCLASS()
@@ -20,6 +21,9 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	class UAnimMontage* MontageToPlay;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	URGX_LaunchEventDataAsset* LaunchEventData;
 
 protected:
 

@@ -33,38 +33,25 @@ protected:
 	TArray<TSubclassOf<UGameplayEffect>> EffectsToApplyToTarget;
 
 	UPROPERTY(EditDefaultsOnly)
-	TArray<FGameplayTag> EventsToApplyToTarget;
-
-	UPROPERTY(EditDefaultsOnly)
 	TArray<TSubclassOf<UGameplayEffect>> EffectsToApplyToOwner;
 
 	UPROPERTY(EditDefaultsOnly)
-	TArray<FGameplayTag> EventsToApplyToOwner;
+	TArray<FGameplayTag> EventToTargetTags;
+
+	UPROPERTY(EditDefaultsOnly)
+	TArray<UDataAsset*> EventsToApplyToTarget;
+
+	UPROPERTY(EditDefaultsOnly)
+	TArray<FGameplayTag> EventToOwnerTags;
+
+	UPROPERTY(EditDefaultsOnly)
+	TArray<UDataAsset*> EventsToApplyToOwner;
 
 	UPROPERTY(EditAnywhere)
 	float MoveVectorLength = 10.0f;
 
 	UPROPERTY(EditAnywhere)
 	float ZAirForce = 800.0f;
-
-	// TODO [REFACTOR]: Interface for all possible ability events?
-	UPROPERTY(EditAnywhere)
-	float LaunchHorizontalForce = 0.0f; //TODO: Do not hardcode this
-
-	UPROPERTY(EditAnywhere)
-	float LaunchVerticalForce = 0.0f;
-
-	UPROPERTY(EditAnywhere)
-	bool bOverrideHorizontal = true;
-
-	UPROPERTY(EditAnywhere)
-	bool bOverrideVertical = true;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TArray<UDataAsset*> EventsTarget;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TArray<UDataAsset*> EventsOwner;
 
 protected:
 
