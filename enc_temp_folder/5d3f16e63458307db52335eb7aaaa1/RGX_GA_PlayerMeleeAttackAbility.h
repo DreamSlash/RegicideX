@@ -61,10 +61,10 @@ protected:
 	bool bOverrideVertical = true;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TArray<UDataAsset*> EventsTarget;
+	UDataAsset* EventsTarget;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TArray<UDataAsset*> EventsOwner;
+	UDataAsset* EventsOwner;
 
 protected:
 

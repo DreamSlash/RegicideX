@@ -64,3 +64,25 @@ public:
 	UPROPERTY()
 	TArray<TSubclassOf<UGameplayEffect>> GameplayEffectsToOwner;
 };
+
+UCLASS(BlueprintType)
+class URGX_LaunchedEventDataAsset : public UDataAsset
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FGameplayTag EventTag;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float LaunchHorizontalForce;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float LaunchVerticalForce;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bOverrideHorizontal;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bOverrideVertical;
+};
