@@ -150,19 +150,12 @@ void ARGX_PlayerCharacter::ManageHeavyAttackInput()
 	*/
 	//TODO: Below code is temporal.
 	if (GetCharacterMovement()->IsFalling() == true)
-	{
-		FGameplayEventData EventData;
-		int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("Combo.Air.Takedown")), &EventData);
+		return;
 
-		UE_LOG(LogTemp, Warning, TEXT("Triggered Abilities: %d\n"), TriggeredAbilities);
-	}
-	else
-	{
-		FGameplayEventData EventData;
-		int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("Combo.Launch")), &EventData);
+	FGameplayEventData EventData;
+	int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("Combo.Launch")), &EventData);
 
-		UE_LOG(LogTemp, Warning, TEXT("Triggered Abilities: %d\n"), TriggeredAbilities);
-	}
+	UE_LOG(LogTemp, Warning, TEXT("Triggered Abilities: %d\n"), TriggeredAbilities);
 }
 
 void ARGX_PlayerCharacter::ManagePowerSkillInput()
