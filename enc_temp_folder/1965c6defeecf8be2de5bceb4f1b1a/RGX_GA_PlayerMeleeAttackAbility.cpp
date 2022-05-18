@@ -29,11 +29,13 @@ void URGX_PlayerMeleeAttackAbility::ActivateAbility(const FGameplayAbilitySpecHa
 		if (CharacterMovementComponent->IsFalling() == true)
 		{
 			//UE_LOG(LogTemp, Warning, TEXT("Is Falling\n"));
-			//Character->LaunchCharacter(FVector(0.0f, 0.0f, ZAirForce), false, true);
+			Character->LaunchCharacter(FVector(0.0f, 0.0f, ZAirForce), false, true);
 		}
-
-		CombatAssistComponent->AddMovementVector(Character->GetActorForwardVector(), MoveVectorLength);
-
+		else
+		{
+			//UE_LOG(LogTemp, Warning, TEXT("Is Not Falling\n"));
+			CombatAssistComponent->AddMovementVector(Character->GetActorForwardVector(), MoveVectorLength);
+		}
 
 		URGX_HitboxComponent* Hitbox = HitboxManagerComponent->GetHitboxByTag(HitboxTag);
 

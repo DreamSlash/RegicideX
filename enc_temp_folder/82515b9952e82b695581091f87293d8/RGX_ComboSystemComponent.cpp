@@ -28,7 +28,7 @@ FGameplayTag URGX_ComboSystemComponent::ManageInputToken(ERGXPlayerInputID Playe
 			return FGameplayTag::RequestGameplayTag(FName("Combo.None"));
 		}
 
-		InitiateCombo(PlayerInput, bIsOnAir);
+		InitiateCombo(PlayerInput);
 		return CurrentAttack;
 	}
 
@@ -67,24 +67,11 @@ void URGX_ComboSystemComponent::SetNextComboAttack(ERGXPlayerInputID PlayerInput
 	}
 }
 
-void URGX_ComboSystemComponent::InitiateCombo(ERGXPlayerInputID PlayerInput, bool bIsOnAir)
+void URGX_ComboSystemComponent::InitiateCombo(ERGXPlayerInputID PlayerInput)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Initiate Combo\n"));
-	// TODO: hardcodeada padre
-	if (bIsOnAir)
-	{
-		FRGX_ComboTransition* transition = ComboMap.Find(FGameplayTag::RequestGameplayTag(FName("Combo.Air.Light")));
-		if (transition)
-		{
-			NextAttack = FGameplayTag::RequestGameplayTag(FName("Combo.Air.Light"));
-			CurrentAttack = NextAttack;
-		}
-	}
-	else
-	{
-		NextAttack = FindNextAttack(PlayerInput);
-		CurrentAttack = NextAttack; // WARNING: Next attack is not being executed yet
-	}
+	NextAttack = FindNextAttack(PlayerInput);
+	CurrentAttack = NextAttack; // WARNING: Next attack is not being executed yet
 }
 
 FGameplayTag URGX_ComboSystemComponent::FindNextAttack(ERGXPlayerInputID PlayerInput)
@@ -122,6 +109,14 @@ void URGX_ComboSystemComponent::OnCombo()
 		CurrentAttack = FGameplayTag::RequestGameplayTag("Combo.None");
 		OnEndCombo();
 	}
+
+	AActor* Owner = GetOwner();
+	UCharacterMovementComponent* CharacterMovementComponent = Owner->FindComponentByClass<UCharacterMovementComponent>();
+
+	if (CharacterMovementComponent->IsFalling() == true)
+	{
+
+	}
 }
 
 void URGX_ComboSystemComponent::OnEnableCombo()
@@ -144,11 +139,6 @@ void URGX_ComboSystemComponent::OnEndCombo()
 	bComboFlag = false;
 	bEnableComboFlag = false;
 	NextComboInput = ERGXPlayerInputID::None;
-
-	AActor* Owner = GetOwner();
-	UCharacterMovementComponent* CharacterMovementComponent = Owner->FindComponentByClass<UCharacterMovementComponent>();
-
-	CharacterMovementComponent->GravityScale = 3.0f; //TODO: hardcoded
 }
 
 void URGX_ComboSystemComponent::DrawDebugInfo()

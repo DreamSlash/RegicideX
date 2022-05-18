@@ -67,7 +67,7 @@ protected:
 	void SetNextComboAttack(ERGXPlayerInputID PlayerInput);
 
 	UFUNCTION()
-	void InitiateCombo(ERGXPlayerInputID PlayerInput, bool bIsOnAir);
+	void InitiateCombo(ERGXPlayerInputID PlayerInput);
 
 	UFUNCTION()
 	FGameplayTag FindNextAttack(ERGXPlayerInputID PlayerInput);

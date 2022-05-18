@@ -109,7 +109,7 @@ void ARGX_PlayerCharacter::ManageLightAttackInput()
 	bool bCanAirCombo = HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
 	FGameplayTag NextAttack = ComboSystemComponent->ManageInputToken(ERGXPlayerInputID::LightAttackInput, GetCharacterMovement()->IsFalling(), bCanAirCombo);
 
-	if (NextAttack == FGameplayTag::RequestGameplayTag(FName("Combo.Light")) || NextAttack == FGameplayTag::RequestGameplayTag(FName("Combo.Air.Light")))
+	if (NextAttack == FGameplayTag::RequestGameplayTag(FName("Combo.Light")))
 	{
 		FGameplayEventData EventData;
 		int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(NextAttack, &EventData);
@@ -119,13 +119,13 @@ void ARGX_PlayerCharacter::ManageLightAttackInput()
 		{
 			ComboSystemComponent->OnEndCombo();
 		}
-		else if (GetCharacterMovement()->IsFalling() && bCanAirCombo == true)
+		else
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Remove Can Air Combo\n"));
-			RemoveGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
-			StopJumping();
-			LaunchCharacter(FVector(0.0f, 0.0f, -1.0f), true, true); // If Z force is 0.0f for some reason it doesn't work
-			GetCharacterMovement()->GravityScale = 0.0f;
+			if (GetCharacterMovement()->IsFalling() && bCanAirCombo == true)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Remove Can Air Combo\n"));
+				RemoveGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
+			}
 		}
 	}
 }
