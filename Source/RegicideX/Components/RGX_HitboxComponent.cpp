@@ -122,6 +122,7 @@ void URGX_HitboxComponent::SetAbilityEffectsInfo(const FRGX_AbilityEffectsInfo& 
 
 void URGX_HitboxComponent::RemoveAbilityEffectsInfo()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Remove Ability Effects\n"));
 	AbilityEffectsInfo.GameplayEffectsToTarget.Empty();
 	AbilityEffectsInfo.GameplayEventsToTarget.Empty();
 	AbilityEffectsInfo.GameplayEffectsToOwner.Empty();
@@ -130,6 +131,7 @@ void URGX_HitboxComponent::RemoveAbilityEffectsInfo()
 
 void URGX_HitboxComponent::ApplyEffects(AActor* OtherActor)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Apply putos efectos\n"));
 	if (DefaultEffectToApply || AbilityEffectsInfo.GameplayEffectsToTarget.Num() > 0 || AbilityEffectsInfo.GameplayEventsToTarget.Num() > 0
 		|| AbilityEffectsInfo.GameplayEffectsToOwner.Num() > 0 || AbilityEffectsInfo.GameplayEventsToOwner.Num() > 0)
 	{

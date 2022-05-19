@@ -39,7 +39,7 @@ void URGX_PlayerMeleeAttackAbility::ActivateAbility(const FGameplayAbilitySpecHa
 
 		FRGX_AbilityEffectsInfo AbilityEffectsInfo = GetAbilityEffectsInfo();
 		Hitbox->SetAbilityEffectsInfo(AbilityEffectsInfo);
-		UE_LOG(LogTemp, Warning, TEXT("Add Ability Effects\n"));
+		//UE_LOG(LogTemp, Warning, TEXT("Add Ability Effects\n"));
 
 		UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, MontageToPlay, PlayRatio, StartSectionName, true);
 		PlayMontageTask->OnBlendOut.AddDynamic(this, &URGX_PlayerMeleeAttackAbility::FinishAttack);
@@ -54,7 +54,7 @@ void URGX_PlayerMeleeAttackAbility::ActivateAbility(const FGameplayAbilitySpecHa
 	}
 
 
-	UE_LOG(LogTemp, Warning, TEXT("Melee Attack Ability"));
+	//UE_LOG(LogTemp, Warning, TEXT("Melee Attack Ability"));
 }
 
 void URGX_PlayerMeleeAttackAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)

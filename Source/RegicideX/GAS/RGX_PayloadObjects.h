@@ -42,13 +42,13 @@ public:
 	TArray<FGameplayTag> EventToTargetTags;
 
 	UPROPERTY()
-	TArray<UDataAsset*> GameplayEventsToTarget;
+	TArray<UPrimaryDataAsset*> GameplayEventsToTarget;
 
 	UPROPERTY()
 	TArray<FGameplayTag> EventToOwnerTags;
 
 	UPROPERTY()
-	TArray<UDataAsset*> GameplayEventsToOwner;
+	TArray<UPrimaryDataAsset*> GameplayEventsToOwner;
 
 	UPROPERTY()
 	TArray<TSubclassOf<UGameplayEffect>> GameplayEffectsToTarget;
@@ -58,7 +58,7 @@ public:
 };
 
 UCLASS(BlueprintType)
-class URGX_LaunchEventDataAsset : public UDataAsset
+class URGX_LaunchEventDataAsset : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 

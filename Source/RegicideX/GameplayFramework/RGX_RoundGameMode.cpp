@@ -170,14 +170,14 @@ void ARGX_RoundGameMode::PopulateSpawnerList()
 
 	for (int i = 0; i<EnemySpawners.Num();i++)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::White, EnemySpawners[i]->GetActorLabel());
+		//GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::White, EnemySpawners[i]->GetActorLabel());
 		UE_LOG(LogTemp, Warning, TEXT("Spawner Detected"));
 	}
 }
 
 void ARGX_RoundGameMode::StartPlayEvent_Implementation()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("StartPlay Default Called"));
+	//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("StartPlay Default Called"));
 	
 }
 
