@@ -4,10 +4,11 @@
 #include "Components/ChildActorComponent.h"
 #include "GenericTeamAgentInterface.h"
 #include "../GAS/RGX_PayloadObjects.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 URGX_HitboxComponent::URGX_HitboxComponent()
 {
-
+	PrimaryComponentTick.bCanEverTick = true;
 }
 
 void URGX_HitboxComponent::BeginPlay()
@@ -25,6 +26,19 @@ void URGX_HitboxComponent::BeginPlay()
 		DeactivateHitbox();
 		DeactivateEffect();
 	}
+}
+
+void URGX_HitboxComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	// Tick component to get last position of socket for being able to calculate velocity direction later
+	ECollisionEnabled::Type CollisionType = GetCollisionEnabled();
+	if (CollisionType == ECollisionEnabled::NoCollision)
+		return;
+
+	if (ChildActorComponent == nullptr)
+		return;
+
+	LastSocketPosition = ChildActorComponent->GetSocketLocation(SocketName);
 }
 
 void URGX_HitboxComponent::EndPlay(EEndPlayReason::Type EndPlayReason)
@@ -71,50 +85,6 @@ void URGX_HitboxComponent::DeactivateEffect()
 	SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
-void URGX_HitboxComponent::ActivateEvent(const FGameplayTag& EventTag)
-{
-	for (FRGX_HitboxGameplayEvent& Event : DefaultEventsToApply)
-	{
-		if (Event.GameplayEvent == EventTag)
-		{
-			Event.bActivated = true;
-		}
-	}
-}
-
-void URGX_HitboxComponent::DeactivateEvent(const FGameplayTag& EventTag)
-{
-	for (FRGX_HitboxGameplayEvent& Event : DefaultEventsToApply)
-	{
-		if (Event.GameplayEvent == EventTag)
-		{
-			Event.bActivated = false;
-		}
-	}
-}
-
-void URGX_HitboxComponent::AddEvent(const FGameplayTag& EventTag, const FGameplayEventData& EventData, bool bAutoActivateEvent)
-{
-	FRGX_HitboxGameplayEvent NewEvent = {};
-	NewEvent.GameplayEvent = EventTag;
-	NewEvent.EventData = EventData;
-	NewEvent.bActivated = false;
-
-	DefaultEventsToApply.Add(NewEvent);
-}
-
-void URGX_HitboxComponent::RemoveEvent(const FGameplayTag& EventTag)
-{
-	for (int i = 0; i < DefaultEventsToApply.Num(); ++i)
-	{
-		if (DefaultEventsToApply[i].GameplayEvent == EventTag)
-		{
-			DefaultEventsToApply.RemoveAt(i); // TODO: Faig removeAt enlloc de remove perque "==" no esta definit i em fa pal definir-lo
-			break;
-		}
-	}
-}
-
 void URGX_HitboxComponent::SetAbilityEffectsInfo(const FRGX_AbilityEffectsInfo& NewAbilityEffectsInfo)
 {
 	AbilityEffectsInfo = NewAbilityEffectsInfo;
@@ -127,6 +97,71 @@ void URGX_HitboxComponent::RemoveAbilityEffectsInfo()
 	AbilityEffectsInfo.GameplayEventsToTarget.Empty();
 	AbilityEffectsInfo.GameplayEffectsToOwner.Empty();
 	AbilityEffectsInfo.GameplayEventsToOwner.Empty();
+}
+
+bool URGX_HitboxComponent::IsGoingToOverlapActor(AActor* Actor)
+{
+	const USceneComponent* Parent = GetAttachParent();
+	AActor* OwnerActor = Parent->GetAttachmentRootActor();
+
+	FVector Direction = FVector(0.0f);
+	FVector StartLocation = FVector(0.0f);
+
+	// means it is not an actor spawned by a child actor
+	if (!OwnerActor)
+	{
+		OwnerActor = GetOwner();
+
+		Direction = OwnerActor->GetVelocity();
+		Direction.Normalize();
+
+		StartLocation = OwnerActor->GetActorLocation();
+	}
+	else
+	{
+		const FVector SocketLocation = ChildActorComponent->GetSocketLocation(SocketName);
+		Direction = LastSocketPosition - ChildActorComponent->GetSocketLocation(SocketName);
+		Direction.Normalize();
+
+		StartLocation = OwnerActor->GetActorLocation() + GetRelativeLocation();
+	}
+
+	FVector EndLocation = StartLocation * Direction * 1000.0f;
+
+	TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjectTypes;
+	TraceObjectTypes.Add(TargetObjectType);
+
+	UClass* SeekClass = nullptr;
+
+	TArray<AActor*> IgnoreActors;
+	IgnoreActors.Init(OwnerActor, 1);
+
+	TArray<FHitResult> OutHits;
+	
+	UKismetSystemLibrary::SphereTraceMultiForObjects(GetWorld(), StartLocation, EndLocation, CastSphereRadius,
+		TraceObjectTypes, false, IgnoreActors, EDrawDebugTrace::ForDuration, OutHits, true,
+		FLinearColor::Red, FLinearColor::Green, 3.0f);
+
+	for (FHitResult Hit : OutHits)
+	{
+		if (Hit.Actor == Actor)
+		{
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void URGX_HitboxComponent::SetChildActorAndSocket(UChildActorComponent* NewChildActorComponent, const FName NewSocketName)
+{
+	ChildActorComponent = NewChildActorComponent;
+	SocketName = NewSocketName;
+}
+
+bool URGX_HitboxComponent::HasChildActor()
+{
+	return ChildActorComponent != nullptr;
 }
 
 void URGX_HitboxComponent::ApplyEffects(AActor* OtherActor)

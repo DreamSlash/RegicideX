@@ -195,7 +195,7 @@ bool ARGX_PlayerCharacter::IsBeingAttacked()
 	TArray<AActor*> OutActors;
 
 	UKismetSystemLibrary::SphereOverlapActors(
-		GetWorld(), PlayerLocation, 100.0f, TraceObjectTypes, nullptr, IgnoreActors, OutActors);
+		GetWorld(), PlayerLocation, 200.0f, TraceObjectTypes, nullptr, IgnoreActors, OutActors);
 
 	for (AActor* HitActor : OutActors)
 	{
@@ -348,7 +348,7 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 	}
 	*/
 
-	UKismetSystemLibrary::DrawDebugCircle(GetWorld(), GetActorLocation(), 100.0f, 24, FLinearColor::Green, 0.0f, 0.0f, FVector(0.0f, 1.0f, 0.0f), FVector(1.0f, 0.0f, 0.0f));
+	UKismetSystemLibrary::DrawDebugCircle(GetWorld(), GetActorLocation(), 200.0f, 24, FLinearColor::Green, 0.0f, 0.0f, FVector(0.0f, 1.0f, 0.0f), FVector(1.0f, 0.0f, 0.0f));
 }
 
 UAbilitySystemComponent* ARGX_PlayerCharacter::GetAbilitySystemComponent() const

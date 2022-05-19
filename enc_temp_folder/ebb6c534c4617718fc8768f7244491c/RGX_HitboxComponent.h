@@ -96,7 +96,7 @@ protected:
 
 	UChildActorComponent* ChildActorComponent = nullptr;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = HitboxComponent)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category=HitboxComponent)
 	FName SocketName;
 
 	/* Only used if it has socket*/
@@ -105,6 +105,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = HitboxComponent)
 	float CastSphereRadius = 22.0f;	
 
-	UPROPERTY(EditDefaultsOnly, Category = HitboxComponent)
+	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EObjectTypeQuery> TargetObjectType;
 };
