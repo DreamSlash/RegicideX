@@ -62,10 +62,14 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 	UAnimMontage* IdleMontage = nullptr;
+
+	// This is a parche
+	bool ToBeDestroyed = false;
 protected:
 
 	UPROPERTY()
 	FVector WanderingPoint;
+
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;

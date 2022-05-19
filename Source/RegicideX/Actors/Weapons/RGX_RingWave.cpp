@@ -16,7 +16,6 @@ ARGX_RingWave::ARGX_RingWave()
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
-	StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	StaticMeshComponent->SetupAttachment(RootComponent);
 
 	StaticMeshComponent->OnComponentBeginOverlap.__Internal_AddUniqueDynamic(this, &ARGX_RingWave::DamageActor, FName("DamageActor"));

@@ -17,8 +17,8 @@ class URGX_HitboxesManagerComponent : public UActorComponent
 public:
 	URGX_HitboxesManagerComponent();
 
-	virtual void BeginPlay() override;
-	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
+	void BeginPlay() override;
+	void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
 	UFUNCTION(BlueprintCallable)
 	void AddHitboxToMap(FGameplayTag IdentifierTag, URGX_HitboxComponent* HitboxComponent);

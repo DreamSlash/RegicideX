@@ -35,4 +35,7 @@ private:
 		const FGameplayAbilityActivationInfo ActivationInfo,
 		bool bReplicateEndAbility,
 		bool bWasCancelled);
+
+	UFUNCTION()
+		void OnEndMontage();
 };

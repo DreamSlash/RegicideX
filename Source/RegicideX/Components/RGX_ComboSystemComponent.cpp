@@ -150,3 +150,8 @@ void URGX_ComboSystemComponent::DrawDebugInfo()
 		UE_LOG(LogTemp, Warning, TEXT("Combo Flag: FALSE\n"));
 	}
 }
+
+FGameplayTag URGX_ComboSystemComponent::GetCurrentAttackTag() const
+{
+	return CurrentAttack;
+}

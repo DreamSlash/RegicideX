@@ -88,4 +88,8 @@ public:
 
 	UFUNCTION()
 	void DrawDebugInfo();
+
+	UFUNCTION(BlueprintCallable)
+	FGameplayTag GetCurrentAttackTag() const;
+
 };

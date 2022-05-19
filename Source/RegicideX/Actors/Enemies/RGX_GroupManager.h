@@ -37,8 +37,6 @@ class REGICIDEX_API ARGX_GroupManager : public AActor
 
 	UPROPERTY()
 	FVector LastPlayerLocation;
-
-
 	
 public:	
 	// Sets default values for this actor's properties
@@ -90,4 +88,6 @@ public:
 	void OnPeasantAdded();
 
 	void RecalcPeasants();
+
+	void SwitchFighter();
 };
