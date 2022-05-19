@@ -38,16 +38,10 @@ protected:
 	TArray<TSubclassOf<UGameplayEffect>> EffectsToApplyToOwner;
 
 	UPROPERTY(EditDefaultsOnly)
-	TArray<FGameplayTag> EventToTargetTags;
+	TArray<URGX_RGXEventDataAsset*> EventsToApplyToTarget;
 
 	UPROPERTY(EditDefaultsOnly)
-	TArray<UPrimaryDataAsset*> EventsToApplyToTarget;
-
-	UPROPERTY(EditDefaultsOnly)
-	TArray<FGameplayTag> EventToOwnerTags;
-
-	UPROPERTY(EditDefaultsOnly)
-	TArray<UPrimaryDataAsset*> EventsToApplyToOwner;
+	TArray<URGX_RGXEventDataAsset*> EventsToApplyToOwner;
 
 	UPROPERTY(EditAnywhere)
 	float MoveVectorLength = 10.0f;

@@ -34,9 +34,7 @@ void URGX_PlayerFallAttackAbility::ActivateAbility(const FGameplayAbilitySpecHan
 		FRGX_AbilityEffectsInfo AbilityEffectsInfo;
 		AbilityEffectsInfo.GameplayEffectsToTarget = EffectsToApplyToTarget;
 		AbilityEffectsInfo.GameplayEffectsToOwner = EffectsToApplyToOwner;
-		AbilityEffectsInfo.EventToTargetTags = EventToTargetTags;
 		AbilityEffectsInfo.GameplayEventsToTarget = EventsToApplyToTarget;
-		AbilityEffectsInfo.EventToOwnerTags = EventToOwnerTags;
 		AbilityEffectsInfo.GameplayEventsToOwner = EventsToApplyToOwner;
 		Hitbox->SetAbilityEffectsInfo(AbilityEffectsInfo);
 		//UE_LOG(LogTemp, Warning, TEXT("Add Ability Effects\n"));

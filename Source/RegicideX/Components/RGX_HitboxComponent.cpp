@@ -183,20 +183,22 @@ void URGX_HitboxComponent::ApplyEffects(AActor* OtherActor)
 
 			}
 
-			for (int i = 0; i < AbilityEffectsInfo.EventToTargetTags.Num(); ++i)
+			for (int i = 0; i < AbilityEffectsInfo.GameplayEventsToTarget.Num(); ++i)
 			{
+				FGameplayTag EventTag = AbilityEffectsInfo.GameplayEventsToTarget[i]->EventTag;
 				FGameplayEventData EventData = {};
 				EventData.Instigator = OwnerActor;
 				EventData.OptionalObject = AbilityEffectsInfo.GameplayEventsToTarget[i];
-				TargetASC->HandleGameplayEvent(AbilityEffectsInfo.EventToTargetTags[i], &EventData);
+				TargetASC->HandleGameplayEvent(EventTag, &EventData);
 			}
 
-			for (int i = 0; i < AbilityEffectsInfo.EventToOwnerTags.Num(); ++i)
+			for (int i = 0; i < AbilityEffectsInfo.GameplayEventsToOwner.Num(); ++i)
 			{
+				FGameplayTag EventTag = AbilityEffectsInfo.GameplayEventsToOwner[i]->EventTag;
 				FGameplayEventData EventData = {};
 				EventData.Instigator = OwnerActor;
 				EventData.OptionalObject = AbilityEffectsInfo.GameplayEventsToOwner[i];
-				ApplierASC->HandleGameplayEvent(AbilityEffectsInfo.EventToOwnerTags[i], &EventData);
+				ApplierASC->HandleGameplayEvent(EventTag, &EventData);
 			}
 		}
 	}

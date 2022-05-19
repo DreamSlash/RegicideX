@@ -75,9 +75,7 @@ FRGX_AbilityEffectsInfo URGX_PlayerMeleeAttackAbility::GetAbilityEffectsInfo()
 	FRGX_AbilityEffectsInfo AbilityEffectsInfo;
 	AbilityEffectsInfo.GameplayEffectsToTarget = EffectsToApplyToTarget;
 	AbilityEffectsInfo.GameplayEffectsToOwner = EffectsToApplyToOwner;
-	AbilityEffectsInfo.EventToTargetTags = EventToTargetTags;
 	AbilityEffectsInfo.GameplayEventsToTarget = EventsToApplyToTarget;
-	AbilityEffectsInfo.EventToOwnerTags = EventToOwnerTags;
 	AbilityEffectsInfo.GameplayEventsToOwner = EventsToApplyToOwner;
 
 	return AbilityEffectsInfo;
