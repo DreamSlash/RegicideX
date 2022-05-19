@@ -13,6 +13,8 @@
 
 class UStaticMeshComponent;
 class USphereComponent;
+class UMaterialInterface;
+class UMaterialInstanceDynamic;
 
 UCLASS()
 class REGICIDEX_API ARGX_DistanceAngel : public ARGX_EnemyBase
@@ -64,7 +66,13 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float ActorMidHeight = 50.0f;
 
+	UPROPERTY(BlueprintReadWrite)
+		bool Invincible = false;
+
 	AActor* LaserBeamRef = nullptr;
+
+	UMaterialInterface* MaterialInterface = nullptr;
+	UMaterialInstanceDynamic* DynamicMaterial = nullptr;
 
 	void BeginPlay() override;
 
@@ -74,6 +82,8 @@ public:
 
 	/** Movement methods */
 	void MoveToTarget(float DeltaTime, FVector TargetPos) override;
+
+	void RotateToTarget(float DeltaTime) override;
 
 	void RotateRings(float DeltaTime);
 
@@ -98,5 +108,8 @@ public:
 
 	UFUNCTION()
 		void DestroyMyself(float Time);
+
+	UFUNCTION(BlueprintCallable)
+		void ChangeEyeColor(FLinearColor Color);
 
 };

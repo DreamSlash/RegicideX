@@ -24,6 +24,8 @@ EBTNodeResult::Type URGX_BTTaskLaserBeamAttack::ExecuteTask(UBehaviorTreeCompone
 
 	bNotifyTick = true;
 
+	OwnerActor->Invincible = true;
+
 	return EBTNodeResult::InProgress;
 }
 
@@ -34,6 +36,7 @@ void URGX_BTTaskLaserBeamAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uin
 	{
 		TaskTime = 0.0f;
 		OwnerActor->LaserBeamRef = nullptr;
+		OwnerActor->Invincible = false;
 		LaserWeapon->Destroy();
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
