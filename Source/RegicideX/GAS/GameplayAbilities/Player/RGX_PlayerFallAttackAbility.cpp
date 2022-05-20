@@ -60,7 +60,7 @@ void URGX_PlayerFallAttackAbility::EndAbility(const FGameplayAbilitySpecHandle H
 
 	URGX_HitboxComponent* Hitbox = HitboxManagerComponent->GetHitboxByTag(HitboxTag);
 	Hitbox->RemoveAbilityEffectsInfo();
-	UE_LOG(LogTemp, Warning, TEXT("Remove Ability Effects\n"));
+	UE_LOG(LogTemp, Warning, TEXT("End fall attack\n"));
 
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
