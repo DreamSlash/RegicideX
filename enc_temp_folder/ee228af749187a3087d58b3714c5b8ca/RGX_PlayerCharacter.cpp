@@ -194,24 +194,8 @@ bool ARGX_PlayerCharacter::IsBeingAttacked()
 
 	TArray<AActor*> OutActors;
 
-	float OutRadius;
-	float OutHalfHeight;
-
-	GetCapsuleComponent()->GetScaledCapsuleSize(OutRadius, OutHalfHeight);
-
-	// TODO: Use the capsule component of ACharacter to check if there is any hostile collider overlapping
-	// Check hostile colliders that may be already overlapping us
-	UKismetSystemLibrary::CapsuleOverlapActors(
-		GetWorld(), PlayerLocation, OutRadius, OutHalfHeight, TraceObjectTypes, nullptr, IgnoreActors, OutActors);
-
-	if (OutActors.Num() > 0)
-	{
-		return true;
-	}
-
-	// Check dynamic colliders that potentially will hit us in the next frames
-	UKismetSystemLibrary::CapsuleOverlapActors(
-		GetWorld(), PlayerLocation, OutRadius * 1.5f, OutHalfHeight * 1.2f, TraceObjectTypes, nullptr, IgnoreActors, OutActors);
+	UKismetSystemLibrary::SphereOverlapActors(
+		GetWorld(), PlayerLocation, 100.0f, TraceObjectTypes, nullptr, IgnoreActors, OutActors);
 
 	for (AActor* HitActor : OutActors)
 	{

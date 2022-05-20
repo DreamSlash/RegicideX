@@ -30,8 +30,11 @@ void URGX_HitboxComponent::BeginPlay()
 
 void URGX_HitboxComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
+	if (bIsStatic)
+		return;
+
 	// Tick component to get last position of socket for being able to calculate velocity direction later
-	ECollisionEnabled::Type CollisionType = GetCollisionEnabled();
+	const ECollisionEnabled::Type CollisionType = GetCollisionEnabled();
 	if (CollisionType == ECollisionEnabled::NoCollision)
 		return;
 
@@ -49,7 +52,7 @@ void URGX_HitboxComponent::EndPlay(EEndPlayReason::Type EndPlayReason)
 
 void URGX_HitboxComponent::ActivateHitbox()
 {
-	USceneComponent* Parent = GetAttachParent();
+	const USceneComponent* Parent = GetAttachParent();
 	AActor* OwnerActor = Parent->GetAttachmentRootActor();
 
 	if (!OwnerActor)
@@ -92,7 +95,7 @@ void URGX_HitboxComponent::SetAbilityEffectsInfo(const FRGX_AbilityEffectsInfo& 
 
 void URGX_HitboxComponent::RemoveAbilityEffectsInfo()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Remove Ability Effects\n"));
+	//UE_LOG(LogTemp, Warning, TEXT("Remove Ability Effects\n"));
 	AbilityEffectsInfo.GameplayEffectsToTarget.Empty();
 	AbilityEffectsInfo.GameplayEventsToTarget.Empty();
 	AbilityEffectsInfo.GameplayEffectsToOwner.Empty();
@@ -101,6 +104,10 @@ void URGX_HitboxComponent::RemoveAbilityEffectsInfo()
 
 bool URGX_HitboxComponent::IsGoingToOverlapActor(AActor* Actor)
 {
+	// if it is static we do not check if will overlap in the future, because it does not move
+	if (bIsStatic)
+		return false;
+
 	const USceneComponent* Parent = GetAttachParent();
 	AActor* OwnerActor = Parent->GetAttachmentRootActor();
 

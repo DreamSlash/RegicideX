@@ -91,9 +91,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = HitboxComponent)
 	bool bStartActive = true;
 
-	UPROPERTY(EditDefaultsOnly, Category = HitboxComponent)
-	bool bIsStatic = true;
-
 	UPROPERTY()
 	bool bEffectActivated = false;
 
