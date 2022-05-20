@@ -38,14 +38,7 @@ void URGX_PlayerMeleeAttackAbility::ActivateAbility(const FGameplayAbilitySpecHa
 		URGX_HitboxComponent* Hitbox = HitboxManagerComponent->GetHitboxByTag(HitboxTag);
 
 		FRGX_AbilityEffectsInfo AbilityEffectsInfo = GetAbilityEffectsInfo();
-		if (Hitbox)
-		{
-			Hitbox->SetAbilityEffectsInfo(AbilityEffectsInfo);
-		}
-		else
-		{
-			UE_LOG(LogTemp, Error, TEXT("Hitbox sent to ability does not exist"));
-		}
+		Hitbox->SetAbilityEffectsInfo(AbilityEffectsInfo);
 		//UE_LOG(LogTemp, Warning, TEXT("Add Ability Effects\n"));
 
 		UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, MontageToPlay, PlayRatio, StartSectionName, true);
@@ -70,10 +63,7 @@ void URGX_PlayerMeleeAttackAbility::EndAbility(const FGameplayAbilitySpecHandle 
 	URGX_HitboxesManagerComponent* HitboxManagerComponent = Character->FindComponentByClass<URGX_HitboxesManagerComponent>();
 
 	URGX_HitboxComponent* Hitbox = HitboxManagerComponent->GetHitboxByTag(HitboxTag);
-	if (Hitbox)
-	{
-		Hitbox->RemoveAbilityEffectsInfo();
-	}
+	Hitbox->RemoveAbilityEffectsInfo();
 	UE_LOG(LogTemp, Warning, TEXT("Remove Ability Effects\n"));
 
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, false, false);

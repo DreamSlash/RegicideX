@@ -122,8 +122,6 @@ void URGX_HitboxComponent::DeactivateEffect()
 		Shape->SetCollisionProfileName("Dodgeable");
 		Shape->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
-
-	ActorsHit.Empty();
 }
 
 void URGX_HitboxComponent::SetAbilityEffectsInfo(const FRGX_AbilityEffectsInfo& NewAbilityEffectsInfo)
