@@ -5,6 +5,7 @@
 #include "RGX_CombatAssistComponent.generated.h"
 
 class AActor;
+class ARGX_EnemyBase;
 
 UCLASS(meta = (BlueprintSpawnableComponent))
 class REGICIDEX_API URGX_CombatAssistComponent : public UActorComponent
@@ -48,7 +49,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	float AutoAssistOffsetToEnemy = 200.0f;
 
-	AActor* Target = nullptr;
+	ARGX_EnemyBase* Target = nullptr;
 	// ----------------------
 
 	/** Attack Movement */

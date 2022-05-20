@@ -68,16 +68,9 @@ void URGX_CombatAssistComponent::TickComponent(float DeltaTime, ELevelTick TickT
 
 	AttackMoveDurationLeft -= DeltaTime;
 	// -----------------------------
-}
 
-void URGX_CombatAssistComponent::EndPlay(EEndPlayReason::Type EndPlayReason)
-{
-	Super::EndPlay(EndPlayReason);
-}
-
-// TODO [REFACTOR]: Autoassist should give extra movement to the attack being done and not be a teleport
-void URGX_CombatAssistComponent::PerformAttackAutoAssist()
-{
+	// Check nearby potential targets
+	// TODO: Do not check this every frame.
 	AActor* PlayerActor = GetOwner();
 
 	const FVector PlayerLocation = PlayerActor->GetActorLocation();
@@ -92,12 +85,21 @@ void URGX_CombatAssistComponent::PerformAttackAutoAssist()
 
 	// Check for nearby enemies
 	if (UKismetSystemLibrary::SphereOverlapActors(GetWorld(), PlayerLocation, AutoAssistRadius, TraceObjectTypes, SeekClass, IgnoreActors, OutActors) == false)
+	{
+		if (Target)
+		{
+			Target->HideCombatTargetWidget();
+			Target = nullptr;
+		}
+
 		return;
+	}
 
 	float CurrentClosestDistance = INFINITY;
 	FVector NearestEnemyLocation = FVector(0.0f, 0.0f, 0.0f);
 	bool bHasTarget = false;
 
+	ARGX_EnemyBase* NewTarget = nullptr;
 	// Check the closest enemy inside a cone in front of the player
 	for (AActor* Actor : OutActors)
 	{
@@ -124,28 +126,52 @@ void URGX_CombatAssistComponent::PerformAttackAutoAssist()
 		{
 			CurrentClosestDistance = Distance;
 			NearestEnemyLocation = EnemyLocation;
-			bHasTarget = true;
-			Target = Enemy;
+			NewTarget = Enemy;
 		}
 	}
 
-	if (bHasTarget == false)
+	if (NewTarget)
+	{
+		if (Target)
+		{
+			Target->HideCombatTargetWidget();
+		}
+
+		NewTarget->ShowCombatTargetWidget();
+		Target = NewTarget;
+	}
+}
+
+void URGX_CombatAssistComponent::EndPlay(EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+}
+
+// TODO [REFACTOR]: Autoassist should give extra movement to the attack being done and not be a teleport
+void URGX_CombatAssistComponent::PerformAttackAutoAssist()
+{
+	if (Target == nullptr)
 		return;
 
-	const FVector PlayerToEnemyVector = NearestEnemyLocation - PlayerLocation;
+	AActor* PlayerActor = GetOwner();
+	const FVector PlayerLocation = PlayerActor->GetActorLocation();
+
+	const FVector PlayerToEnemyVector = Target->GetActorLocation() - PlayerLocation;
 	FRotator Rotation = UKismetMathLibrary::MakeRotFromX(PlayerToEnemyVector);
 	Rotation.Pitch = 0.0f;
 	Rotation.Roll = 0.0f;
 
 	PlayerActor->SetActorRotation(Rotation);
 
-	if (CurrentClosestDistance > AutoAssistOffsetToEnemy == false)
+	const float DistanceToEnemy = FVector::Dist(PlayerLocation, Target->GetActorLocation());
+
+	if (DistanceToEnemy > AutoAssistOffsetToEnemy == false)
 		return;
 
 	FVector AssistDirection = FVector(PlayerToEnemyVector.X, PlayerToEnemyVector.Y, 0.0f);
 	AssistDirection.Normalize();
 
-	AutoAssistMove = CurrentClosestDistance - AutoAssistOffsetToEnemy;
+	AutoAssistMove = DistanceToEnemy - AutoAssistOffsetToEnemy;
 
 	//UE_LOG(LogTemp, Warning, TEXT("AutoAssistMove: %f\n"), AutoAssistMove);
 	//const FVector FinalLocation = PlayerLocation + AssistDirection * (CurrentClosestDistance - AutoAssistOffsetToEnemy);

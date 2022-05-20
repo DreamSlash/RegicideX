@@ -56,15 +56,19 @@ public:
 
 
 protected:
+
+	UPROPERTY(VisibleAnywhere)
+	UWidgetComponent* CombatTargetWidgetComponent = nullptr;
+
 	/** Ability System Component to be used */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	UMCV_AbilitySystemComponent* AbilitySystemComponent;
+	UMCV_AbilitySystemComponent* AbilitySystemComponent = nullptr;
 
 	UPROPERTY(EditAnywhere)
-	URGX_HealthAttributeSet* HealthAttributeSet;
+	URGX_HealthAttributeSet* HealthAttributeSet = nullptr;
 
 	UPROPERTY(EditAnywhere)
-	URGX_CombatAttributeSet* CombatAttributeSet;
+	URGX_CombatAttributeSet* CombatAttributeSet = nullptr;
 
 	// Debug
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -119,6 +123,11 @@ public:
 	virtual void AddGameplayTag(const FGameplayTag& TagToAdd) override;
 
 	virtual void RemoveGameplayTag(const FGameplayTag& TagToRemove) override;
+
+	/** Combat assist widget functions */
+	void ShowCombatTargetWidget();
+	void HideCombatTargetWidget();
+	// ----------------------------------
 
 	void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 

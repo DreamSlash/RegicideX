@@ -16,9 +16,13 @@ ARGX_EnemyBase::ARGX_EnemyBase()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	CombatTargetWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("CombatTargetWidgetComponent"));
+	CombatTargetWidgetComponent->AttachTo(RootComponent);
+
 	AbilitySystemComponent = CreateDefaultSubobject<UMCV_AbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+
 	HealthAttributeSet = CreateDefaultSubobject<URGX_HealthAttributeSet>(TEXT("HealthAttributeSet"));
-	
+
 	DebugAttributesWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("DebugAttributesWidgetComponent"));
 	DebugAttributesWidgetComponent->SetupAttachment(RootComponent);
 }
@@ -125,6 +129,16 @@ void ARGX_EnemyBase::AddGameplayTag(const FGameplayTag& TagToAdd)
 void ARGX_EnemyBase::RemoveGameplayTag(const FGameplayTag& TagToRemove)
 {
 	AbilitySystemComponent->RemoveLooseGameplayTag(TagToRemove);
+}
+
+void ARGX_EnemyBase::ShowCombatTargetWidget()
+{
+	CombatTargetWidgetComponent->SetVisibility(true);
+}
+
+void ARGX_EnemyBase::HideCombatTargetWidget()
+{
+	CombatTargetWidgetComponent->SetVisibility(false);
 }
 
 void ARGX_EnemyBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
