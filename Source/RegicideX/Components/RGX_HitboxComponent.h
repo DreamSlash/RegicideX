@@ -27,7 +27,7 @@ struct FRGX_HitboxGameplayEvent
 };
 
 UCLASS(BlueprintType, Blueprintable, meta = (BlueprintSpawnableComponent))
-class URGX_HitboxComponent : public UCapsuleComponent
+class URGX_HitboxComponent : public USceneComponent
 {
 	GENERATED_BODY()
 
@@ -75,6 +75,12 @@ protected:
 	void OnComponentOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 protected:
+
+	UPROPERTY()
+	TArray<AActor*> ActorsHit;
+
+	UPROPERTY()
+	TArray<UShapeComponent*> Shapes;
 
 	UPROPERTY(EditDefaultsOnly, Category = HitboxComponent)
 	TSubclassOf<UGameplayEffect> DefaultEffectToApply;

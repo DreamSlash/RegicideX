@@ -14,7 +14,25 @@ URGX_HitboxComponent::URGX_HitboxComponent()
 void URGX_HitboxComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	OnComponentBeginOverlap.AddDynamic(this, &URGX_HitboxComponent::OnComponentOverlap);
+
+	// Get references to all children colliders (colliders that represent the hitbox)
+	TArray<USceneComponent*> Children;
+	GetChildrenComponents(false, Children);
+	for (USceneComponent* Child : Children)
+	{
+		UShapeComponent* ShapeComponent = Cast<UShapeComponent>(Child);
+
+		if (ShapeComponent)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Collider Added to Hitbox\n"));
+			Shapes.Add(ShapeComponent);
+		}
+	}
+
+	for (UShapeComponent* shape : Shapes)
+	{
+		shape->OnComponentBeginOverlap.AddDynamic(this, &URGX_HitboxComponent::OnComponentOverlap);
+	}
 
 	if (bStartActive)
 	{
@@ -47,7 +65,11 @@ void URGX_HitboxComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 void URGX_HitboxComponent::EndPlay(EEndPlayReason::Type EndPlayReason)
 {
 	Super::EndPlay(EndPlayReason);
-	OnComponentBeginOverlap.RemoveDynamic(this, &URGX_HitboxComponent::OnComponentOverlap);
+
+	for (UShapeComponent* shape : Shapes)
+	{
+		shape->OnComponentBeginOverlap.RemoveDynamic(this, &URGX_HitboxComponent::OnComponentOverlap);
+	}
 }
 
 void URGX_HitboxComponent::ActivateHitbox()
@@ -61,31 +83,45 @@ void URGX_HitboxComponent::ActivateHitbox()
 	}
 
 	//UE_LOG(LogTemp, Warning, TEXT("Activate Hitbox\n"));
-	SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	SetCollisionProfileName("Dodgeable");
+	for (UShapeComponent* Shape : Shapes)
+	{
+		Shape->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		Shape->SetCollisionProfileName("Dodgeable");
+	}
 }
 
 void URGX_HitboxComponent::DeactivateHitbox()
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Deactivate Hitbox\n"));
-	SetCollisionProfileName("Dodgeable");
-	SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	for (UShapeComponent* Shape : Shapes)
+	{
+		Shape->SetCollisionProfileName("Dodgeable");
+		Shape->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
+
+	ActorsHit.Empty();
 }
 
 void URGX_HitboxComponent::ActivateEffect()
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Activate Effect\n"));
 	bEffectActivated = true;
-	SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	SetCollisionProfileName("Dodgeable");
+	for (UShapeComponent* Shape : Shapes)
+	{
+		Shape->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+		Shape->SetCollisionProfileName("Dodgeable");
+	}
 }
 
 void URGX_HitboxComponent::DeactivateEffect()
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Deactivate Effect\n"));
 	bEffectActivated = false;
-	SetCollisionProfileName("Dodgeable");
-	SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	for (UShapeComponent* Shape : Shapes)
+	{
+		Shape->SetCollisionProfileName("Dodgeable");
+		Shape->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	}
 }
 
 void URGX_HitboxComponent::SetAbilityEffectsInfo(const FRGX_AbilityEffectsInfo& NewAbilityEffectsInfo)
@@ -102,6 +138,7 @@ void URGX_HitboxComponent::RemoveAbilityEffectsInfo()
 	AbilityEffectsInfo.GameplayEventsToOwner.Empty();
 }
 
+// TODO [REFACTOR]: This functions should take into account the multiple shapes this class can have
 bool URGX_HitboxComponent::IsGoingToOverlapActor(AActor* Actor)
 {
 	// if it is static we do not check if will overlap in the future, because it does not move
@@ -256,6 +293,16 @@ void URGX_HitboxComponent::OnComponentOverlap(UPrimitiveComponent* OverlappedCom
 	if (bEffectActivated == false)
 		return;
 
+	for (AActor* Hit : ActorsHit)
+	{
+		// An actor cannot be hit more than once by the same hitbox activation
+		if (OtherActor == Hit)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Hit Same Actor\n"));
+			return;
+		}
+	}
+
 	//UE_LOG(LogTemp, Warning, TEXT("Overlap\n"));
 	USceneComponent* Parent = GetAttachParent();
 	AActor* OwnerActor = Parent->GetAttachmentRootActor();
@@ -265,36 +312,13 @@ void URGX_HitboxComponent::OnComponentOverlap(UPrimitiveComponent* OverlappedCom
 		OwnerActor = GetOwner();
 	}
 
-	/*
-	if (OwnerActor)
-	{
-		FString ActorName = OwnerActor->GetName();
-		UE_LOG(LogTemp, Warning, TEXT("%s"), *ActorName);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("NO ATTACHED PARENT\n"));
-	}
-	*/
-
 	const IGenericTeamAgentInterface* TeamAgentA = Cast<const IGenericTeamAgentInterface>(OwnerActor);
-
-	/*
-	if (TeamAgentA)
-	{
-		uint8 teamID = TeamAgentA->GetGenericTeamId().GetId();
-		UE_LOG(LogTemp, Warning, TEXT("TEAM ID: %d\n"), teamID);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("TeamAgentA is nullptr\n"));
-	}
-	*/
 	
 	ETeamAttitude::Type Attitude = FGenericTeamId::GetAttitude(OwnerActor, OtherActor);
 	if (Attitude == TeamToApply)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Hitbox Overlap"));
+		ActorsHit.Add(OtherActor);
 		ApplyEffects(OtherActor);
 	}
 }
