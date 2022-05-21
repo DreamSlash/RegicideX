@@ -39,16 +39,29 @@ public:
 
 protected:
 
-	/** Attack Auto Assist */
-	UPROPERTY(EditAnywhere)
-	float AutoAssistRadius = 300.0f;
+	void UpdateTarget();
 
+	TArray<AActor*> GetClosestEnemiesInRange(const float Range) const;
+	ARGX_EnemyBase* GetFrontEnemy(const TArray<AActor*>& Enemies);
+	void SetNewTarget(ARGX_EnemyBase* NewTarget);
+
+protected:
+
+	/** Auto Assist Targetting */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float AutoAssistCloseRadius = 300.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float AutoAssistMaxRadius = 1000.0f;
+	// --------------------------
+
+	/** Auto Assit Attack */
 	UPROPERTY(EditAnywhere)
 	float AutoAssistDot = 0.5f;
 
 	UPROPERTY(EditAnywhere)
 	float AutoAssistOffsetToEnemy = 200.0f;
-
+	// ---------------------
 	ARGX_EnemyBase* Target = nullptr;
 	// ----------------------
 

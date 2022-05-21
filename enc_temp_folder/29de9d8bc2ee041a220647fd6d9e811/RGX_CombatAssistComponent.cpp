@@ -155,36 +155,21 @@ ARGX_EnemyBase* URGX_CombatAssistComponent::GetFrontEnemy(const TArray<AActor*>&
 		EnemyDirection.Z = 0.0f;
 		EnemyDirection.Normalize();
 
-		const float OrientationToEnemy = -atan2f(EnemyDirection.Y, EnemyDirection.X);
-		const float EnemyDeg = FMath::RadiansToDegrees(OrientationToEnemy);
+		const float OrientationToEnemy = atan2f(EnemyDirection.Y, EnemyDirection.X);
 
 		const FVector ForwardPoint = PlayerForward;
-		const float OrientationToForward = -atan2f(ForwardPoint.Y, ForwardPoint.X);
-		const float ForwardDeg = FMath::RadiansToDegrees(OrientationToForward);
+		const float OrientationToForward = atan2f(ForwardPoint.Y, ForwardPoint.X);
 
-		float Angle = FMath::RadiansToDegrees(OrientationToForward) - FMath::RadiansToDegrees(OrientationToEnemy);
-
-		const float OrientationSum = FMath::Abs(FMath::RadiansToDegrees(OrientationToForward)) + FMath::Abs(FMath::RadiansToDegrees(OrientationToEnemy));
-
-		if (OrientationSum > 180.0f)
-		{ 
-			float fAngle = ForwardDeg > 0 ? ForwardDeg : 360.0f + ForwardDeg;
-			float eAngle = EnemyDeg > 0 ? EnemyDeg : 360.0f + EnemyDeg;
-
-			Angle = fAngle - eAngle;
-
-			UE_LOG(LogTemp, Warning, TEXT("Manuela\n"));
-		}
-
+		const float Angle = OrientationToEnemy - OrientationToForward;
 		const float AbsAngle = FMath::Abs(Angle);
 
 		UE_LOG(LogTemp, Warning, TEXT("Angle To Enemy: %f\n"), FMath::RadiansToDegrees(OrientationToEnemy));
 		UE_LOG(LogTemp, Warning, TEXT("Angle To Forward: %f\n"), FMath::RadiansToDegrees(OrientationToForward));
-		UE_LOG(LogTemp, Warning, TEXT("Angle: %f\n"), Angle);
+		UE_LOG(LogTemp, Warning, TEXT("Angle: %f\n"), FMath::RadiansToDegrees(Angle));
 
 		if (AbsAngle < SmallestAngle)
 		{
-			SmallestAngle = AbsAngle;
+			SmallestAngle = Angle;
 			FrontEnemy = Cast<ARGX_EnemyBase>(Actor);
 		}
 	}
