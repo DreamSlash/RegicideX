@@ -5,8 +5,6 @@
 #include "../Actors/Enemies/RGX_EnemyBase.h"
 #include "GameFramework/Actor.h"
 #include "Math/UnrealMathUtility.h"
-#include "GameFramework/Character.h"
-#include "GameFramework/CharacterMovementComponent.h"
 
 URGX_CombatAssistComponent::URGX_CombatAssistComponent()
 {
@@ -99,7 +97,7 @@ void URGX_CombatAssistComponent::UpdateTarget()
 
 	ARGX_EnemyBase* NewTarget = nullptr;
 
-	TArray<AActor*> PotentialTargets = GetClosestEnemiesInRange(AutoAssistCloseRadius, true);
+	TArray<AActor*> PotentialTargets = GetClosestEnemiesInRange(AutoAssistCloseRadius);
 	NewTarget = GetFrontEnemy(PotentialTargets);
 
 	for (AActor* Actor : PotentialTargets)
@@ -119,7 +117,7 @@ void URGX_CombatAssistComponent::UpdateTarget()
 		return;
 	}
 
-	PotentialTargets = GetClosestEnemiesInRange(AutoAssistMaxRadius, true);
+	PotentialTargets = GetClosestEnemiesInRange(AutoAssistMaxRadius);
 	NewTarget = GetFrontEnemy(PotentialTargets);
 
 	if (NewTarget)
@@ -135,7 +133,7 @@ void URGX_CombatAssistComponent::UpdateTarget()
 	return;
 }
 
-TArray<AActor*> URGX_CombatAssistComponent::GetClosestEnemiesInRange(const float Range, const bool bSameFallingState) const
+TArray<AActor*> URGX_CombatAssistComponent::GetClosestEnemiesInRange(const float Range) const
 {
 	// Check nearby potential targets
 	// TODO: Do not check this every frame.
@@ -153,24 +151,7 @@ TArray<AActor*> URGX_CombatAssistComponent::GetClosestEnemiesInRange(const float
 	// Check for nearby enemies
 	UKismetSystemLibrary::SphereOverlapActors(GetWorld(), PlayerLocation, Range, TraceObjectTypes, SeekClass, IgnoreActors, OutActors);
 
-	if (bSameFallingState == false)
-		return OutActors;
-
-	// Discard enemies that are in a different falling state that the player
-	const ACharacter* PlayerCharacter = Cast<ACharacter>(PlayerActor);
-	const bool bIsPlayerInAir = PlayerCharacter->GetCharacterMovement()->IsFalling();
-
-	TArray<AActor*> ClosestEnemies;
-	for (AActor* OutActor : OutActors)
-	{
-		ACharacter* OutCharacter = Cast<ACharacter>(OutActor);
-		if (OutCharacter->GetCharacterMovement()->IsFalling() == bIsPlayerInAir)
-		{
-			ClosestEnemies.Add(OutActor);
-		}
-	}
-
-	return ClosestEnemies;
+	return OutActors;
 }
 
 ARGX_EnemyBase* URGX_CombatAssistComponent::GetFrontEnemy(const TArray<AActor*>& Enemies)

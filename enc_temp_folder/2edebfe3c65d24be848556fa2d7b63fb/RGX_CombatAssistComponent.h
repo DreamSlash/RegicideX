@@ -57,7 +57,7 @@ protected:
 
 	void UpdateTarget();
 
-	TArray<AActor*> GetClosestEnemiesInRange(const float Range, const bool bSameFallingState) const;
+	TArray<AActor*> GetClosestEnemiesInRange(const float Range) const;
 	ARGX_EnemyBase* GetFrontEnemy(const TArray<AActor*>& Enemies);
 	void SetNewTarget(ARGX_EnemyBase* NewTarget);
 
