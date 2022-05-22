@@ -370,18 +370,11 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 		HeavyInputCurrentHoldTime += DeltaTime;
 	}
 
-	//UE_LOG(LogTemp, Warning, TEXT("Heavy Input Current Hold Time: %f\n"), HeavyInputCurrentHoldTime);
+	UE_LOG(LogTemp, Warning, TEXT("Heavy Input Current Hold Time: %f\n"), HeavyInputCurrentHoldTime);
 
-	if (bHeavyInputFlag && HeavyInputCurrentHoldTime > FallAttackHoldTime == true)
+	if (bHeavyInputPressedInAir && HeavyInputCurrentHoldTime > FallAttackHoldTime == true)
 	{
-		if (bHeavyInputPressedInAir == true)
-		{
-			PerformFallAttack();
-		}
-		else
-		{
-			PerformLaunchAttack();
-		}
+		PerformFallAttack();
 	}
 
 	// Leaning

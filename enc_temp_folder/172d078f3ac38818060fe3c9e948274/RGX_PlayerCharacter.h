@@ -140,7 +140,7 @@ protected:
 
 	/** Input Variables */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	float FallAttackHoldTime = 0.15f;
+	float FallAttackHoldTime = 0.3f;
 	//bool bFallAttackFlag = false;
 
 	float HeavyInputCurrentHoldTime = 0.0f;
