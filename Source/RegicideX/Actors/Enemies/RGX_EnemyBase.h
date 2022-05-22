@@ -129,6 +129,8 @@ public:
 	void HideCombatTargetWidget();
 	// ----------------------------------
 
+	bool IsInFrustum();
+
 	void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 };

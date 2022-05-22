@@ -17,7 +17,7 @@ ARGX_EnemyBase::ARGX_EnemyBase()
 	PrimaryActorTick.bCanEverTick = true;
 
 	CombatTargetWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("CombatTargetWidgetComponent"));
-	CombatTargetWidgetComponent->AttachTo(RootComponent);
+	CombatTargetWidgetComponent->SetupAttachment(RootComponent);
 
 	AbilitySystemComponent = CreateDefaultSubobject<UMCV_AbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 
@@ -139,6 +139,30 @@ void ARGX_EnemyBase::ShowCombatTargetWidget()
 void ARGX_EnemyBase::HideCombatTargetWidget()
 {
 	CombatTargetWidgetComponent->SetVisibility(false);
+}
+
+bool ARGX_EnemyBase::IsInFrustum()
+{
+	ULocalPlayer* LocalPlayer = GetWorld()->GetFirstLocalPlayerFromController();
+	if (LocalPlayer != nullptr && LocalPlayer->ViewportClient != nullptr && LocalPlayer->ViewportClient->Viewport)
+	{
+		FSceneViewFamilyContext ViewFamily(FSceneViewFamily::ConstructionValues(
+			LocalPlayer->ViewportClient->Viewport,
+			GetWorld()->Scene,
+			LocalPlayer->ViewportClient->EngineShowFlags)
+			.SetRealtimeUpdate(true));
+
+		FVector ViewLocation;
+		FRotator ViewRotation;
+		FSceneView* SceneView = LocalPlayer->CalcSceneView(&ViewFamily, ViewLocation, ViewRotation, LocalPlayer->ViewportClient->Viewport);
+		if (SceneView != nullptr)
+		{
+			return SceneView->ViewFrustum.IntersectSphere(
+				GetActorLocation(), GetSimpleCollisionRadius());
+		}
+	}
+
+	return false;
 }
 
 void ARGX_EnemyBase::EndPlay(const EEndPlayReason::Type EndPlayReason)

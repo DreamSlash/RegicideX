@@ -7,6 +7,22 @@
 class AActor;
 class ARGX_EnemyBase;
 
+USTRUCT()
+struct FRGX_ActorAngle
+{
+	GENERATED_BODY();
+
+public:
+
+	AActor* Actor = nullptr;
+	float Angle;
+};
+
+FORCEINLINE bool operator< (const FRGX_ActorAngle& lhs, const FRGX_ActorAngle& rhs)
+{
+	return lhs.Angle < rhs.Angle;
+}
+
 UCLASS(meta = (BlueprintSpawnableComponent))
 class REGICIDEX_API URGX_CombatAssistComponent : public UActorComponent
 {
@@ -53,6 +69,13 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float AutoAssistMaxRadius = 1000.0f;
+
+	/* Enemies at that angle from player's forward will be checked against the camera frustum to discard
+	the ones outside */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float CheckCameraAngle = 30.0f;
+
+	uint32 NumEnemiesInsideFrustum = 0;
 	// --------------------------
 
 	/** Auto Assit Attack */

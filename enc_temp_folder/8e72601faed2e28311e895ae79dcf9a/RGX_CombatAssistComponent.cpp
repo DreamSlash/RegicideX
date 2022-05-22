@@ -215,21 +215,7 @@ ARGX_EnemyBase* URGX_CombatAssistComponent::GetFrontEnemy(const TArray<AActor*>&
 	if (FrontEnemies.Num() == 1)
 		return FrontEnemy;
 
-	if (FrontEnemy->IsInFrustum() == true)
-		return FrontEnemy;
-
 	FrontEnemies.Sort();
-
-	for (int32 i = 1; i < FrontEnemies.Num(); ++i)
-	{
-		//UE_LOG(LogTemp, Warning, TEXT("Actor Angle: %f\n"), ActorAngle.Angle);
-		ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(FrontEnemies[i].Actor);
-
-		if (Enemy->IsInFrustum() == true && FrontEnemies[i].Angle < CheckCameraAngle == true)
-		{
-			return Enemy;
-		}
-	}
 
 	return FrontEnemy;
 }
