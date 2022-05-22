@@ -140,6 +140,7 @@ TArray<AActor*> URGX_CombatAssistComponent::GetClosestEnemiesInRange(const float
 
 	return OutActors;
 }
+
 ARGX_EnemyBase* URGX_CombatAssistComponent::GetFrontEnemy(const TArray<AActor*>& Enemies)
 {
 	const AActor* PlayerActor = GetOwner();
@@ -172,8 +173,6 @@ ARGX_EnemyBase* URGX_CombatAssistComponent::GetFrontEnemy(const TArray<AActor*>&
 			float eAngle = EnemyDeg > 0 ? EnemyDeg : 360.0f + EnemyDeg;
 
 			Angle = fAngle - eAngle;
-
-			UE_LOG(LogTemp, Warning, TEXT("Manuela\n"));
 		}
 
 		const float AbsAngle = FMath::Abs(Angle);
@@ -191,29 +190,7 @@ ARGX_EnemyBase* URGX_CombatAssistComponent::GetFrontEnemy(const TArray<AActor*>&
 
 	return FrontEnemy;
 }
-/*
-float CurrentClosestDistance = INFINITY;
 
-// Check the closest enemy inside a cone in front of the player
-for (AActor* Actor : OutActors)
-{
-	ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(Actor);
-
-	const bool bIsDead = Enemy->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.Dead")));
-
-	if (bIsDead == true)
-		continue;
-
-	const FVector EnemyLocation = Enemy->GetActorLocation();
-	const float Distance = FVector::Dist(PlayerLocation, EnemyLocation);
-
-	if (Distance < CurrentClosestDistance)
-	{
-		CurrentClosestDistance = Distance;
-		ClosestEnemy = Enemy;
-	}
-}
-*/
 void URGX_CombatAssistComponent::SetNewTarget(ARGX_EnemyBase* NewTarget)
 {
 	if (Target)
@@ -250,6 +227,11 @@ void URGX_CombatAssistComponent::PerformAttackAutoAssist()
 	AssistDirection.Normalize();
 
 	AutoAssistMove = DistanceToEnemy - AutoAssistOffsetToEnemy;
+
+	if (AutoAssistMove > MaxAutoassistMove)
+	{
+		AutoAssistMove = MaxAutoassistMove;
+	}
 
 	UE_LOG(LogTemp, Warning, TEXT("AutoAssistMove: %f\n"), AutoAssistMove);
 	//const FVector FinalLocation = PlayerLocation + AssistDirection * (CurrentClosestDistance - AutoAssistOffsetToEnemy);

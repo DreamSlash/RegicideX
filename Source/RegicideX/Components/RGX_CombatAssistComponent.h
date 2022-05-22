@@ -61,6 +61,9 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	float AutoAssistOffsetToEnemy = 200.0f;
+
+	UPROPERTY(EditAnywhere)
+	float MaxAutoassistMove = 200.0f;
 	// ---------------------
 	ARGX_EnemyBase* Target = nullptr;
 	// ----------------------
