@@ -28,8 +28,7 @@ void URGX_GA_PeasantDie::ActivateAbility(
 	if (Controller)
 	{
 		Controller->StopMovement();
-		Controller->UnPossess();
-		Controller->Destroy();
+		Controller->SetFocus(nullptr);	// Stop focusing the player
 	}
 
 	// Add Status.Dead
@@ -71,7 +70,7 @@ void URGX_GA_PeasantDie::EndAbility(
 
 	ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(ActorInfo->OwnerActor);
 	Peasant->GetMesh()->bPauseAnims = true;
-	Peasant->ToBeDestroyed = false;
+	Peasant->ToBeDestroyed = true;
 }
 
 void URGX_GA_PeasantDie::OnEndMontage()

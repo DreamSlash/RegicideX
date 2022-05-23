@@ -15,8 +15,7 @@ void ARGX_Peasant::BeginPlay()
 {
 	
 	Super::BeginPlay();
-	//TargetActor = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	// 
+
 	// TODO Spawner call addPeasant
 	for (TActorIterator<ARGX_GroupManager> MngItr(GetWorld()); MngItr; ++MngItr)
 	{
@@ -33,17 +32,16 @@ void ARGX_Peasant::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (ToBeDestroyed)
-		manager->RemovePeasant(this);
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+	ToBeDestroyed = ASC->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.Dead")));
 
 	// TODO Managed by Manager
 	GetCharacterMovement()->MaxWalkSpeed = bInCombat ? 400.0f : 100.0f;
+}
 
-	//if (bInCombat && !manager->AttackingPeasant)
-	//{
-	//	manager->AttackingPeasant = this;
-	//	bAttacking = true;
-	//}
+void ARGX_Peasant::DestroyPeasant()
+{
+	this->Destroy();
 }
 
 void ARGX_Peasant::ResetAttacking()
@@ -56,7 +54,7 @@ void ARGX_Peasant::ResetAttacking()
 }
 
 // TODO Make it in EnemyBase --> Make it 2D??
-float ARGX_Peasant::GetDistanceToTarget()
+float ARGX_Peasant::GetDistanceToTarget() const
 {
 	if (!TargetActor)
 		return 0.0f;

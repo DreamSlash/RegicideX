@@ -40,9 +40,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	bool bAttacking = false;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FVector IdlePosition;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	int IdleAction;
 
@@ -55,13 +52,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void ResetAttacking();
 
-	float GetDistanceToTarget();
+	float GetDistanceToTarget() const;
 
 	UPROPERTY(EditDefaultsOnly)
 	UAnimMontage* IdleMontage = nullptr;
 
 	// Bool to signal if actor is going to get destroyed.
 	bool ToBeDestroyed = false;
+	FTimerHandle CorpseTimerHandle;
+	void DestroyPeasant();
+
 protected:
 
 	UPROPERTY()
@@ -69,4 +69,6 @@ protected:
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+
+private:
 };
