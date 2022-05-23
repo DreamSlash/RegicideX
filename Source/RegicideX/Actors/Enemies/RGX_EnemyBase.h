@@ -33,7 +33,7 @@ struct FAttackInfo {
 
 class UMCV_AbilitySystemComponent;
 class URGX_HealthAttributeSet;
-class URGX_CombatAttributeSet;
+class URGX_CombatAttributeSet; 
 class UWidgetComponent;
 
 UCLASS()

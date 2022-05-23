@@ -7,3 +7,11 @@ ARGX_MeleeAngel::ARGX_MeleeAngel()
 {
 
 }
+
+void ARGX_MeleeAngel::Tick(float DeltaTime)
+{
+
+	Super::Tick(DeltaTime);
+	RotateToTarget(DeltaTime);
+
+}
