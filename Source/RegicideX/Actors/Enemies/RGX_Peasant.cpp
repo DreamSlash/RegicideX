@@ -39,8 +39,16 @@ void ARGX_Peasant::Tick(float DeltaTime)
 	GetCharacterMovement()->MaxWalkSpeed = bInCombat ? 400.0f : 100.0f;
 }
 
+void ARGX_Peasant::HandleDeath()
+{
+	UE_LOG(LogTemp, Display, TEXT("Handling Peasant death ..."));
+	GetWorld()->GetTimerManager().SetTimer(CorpseTimerHandle, this, &ARGX_Peasant::DestroyPeasant, 2.0f, false);
+	DestroyPeasant();
+}
+
 void ARGX_Peasant::DestroyPeasant()
 {
+	// Handle particles and stuff before dying ...
 	this->Destroy();
 }
 
