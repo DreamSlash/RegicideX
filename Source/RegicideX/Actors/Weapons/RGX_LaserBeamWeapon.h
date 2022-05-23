@@ -21,6 +21,8 @@ class REGICIDEX_API ARGX_LaserBeamWeapon : public AActor
 	bool FollowTarget = true;
 	bool bHittingTarget = false;
 
+	float SpeedMult = 1.0f;
+
 public:	
 	// Sets default values for this actor's properties
 	ARGX_LaserBeamWeapon();
