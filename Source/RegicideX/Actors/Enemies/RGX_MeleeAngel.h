@@ -19,5 +19,13 @@ class REGICIDEX_API ARGX_MeleeAngel : public ARGX_EnemyBase
 public:
 	ARGX_MeleeAngel();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bLevitating = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bFlying = false;
+
+	void RotateToTarget(float DeltaTime) override;
+
 	void Tick(float DeltaTime) override;
 };
