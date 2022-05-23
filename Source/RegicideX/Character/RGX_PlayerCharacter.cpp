@@ -371,7 +371,6 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 	}
 
 	//UE_LOG(LogTemp, Warning, TEXT("Heavy Input Current Hold Time: %f\n"), HeavyInputCurrentHoldTime);
-
 	if (bHeavyInputFlag && HeavyInputCurrentHoldTime > FallAttackHoldTime == true)
 	{
 		if (bHeavyInputPressedInAir == true)
