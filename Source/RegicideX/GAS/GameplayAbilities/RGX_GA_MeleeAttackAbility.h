@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "RGX_GA_PlayHitboxMontageAbility.h"
-#include "../RGX_GameplayAbility.h"
+#include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GA_PlayHitboxMontageAbility.h"
+#include "RegicideX/GAS/GameplayAbilities/RGX_GameplayAbility.h"
 #include "RGX_GA_MeleeAttackAbility.generated.h"
 
 /**

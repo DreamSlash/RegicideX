@@ -5,10 +5,10 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
-#include "../../Components/RGX_HitboxesManagerComponent.h"
-#include "../../Components/RGX_CombatAssistComponent.h"
-#include "../../Character/RGX_PlayerCharacter.h"
-#include "../../Components/RGX_HitboxComponent.h"
+#include "RegicideX/Components/RGX_HitboxesManagerComponent.h"
+#include "RegicideX/Components/RGX_CombatAssistComponent.h"
+#include "RegicideX/Character/RGX_PlayerCharacter.h"
+#include "RegicideX/Components/RGX_HitboxComponent.h"
 
 URGX_PlayHitboxMontageAbility::URGX_PlayHitboxMontageAbility()
 {
@@ -21,11 +21,7 @@ bool URGX_PlayHitboxMontageAbility::CanActivateAbility(const FGameplayAbilitySpe
 	if (bResult == false)
 		return false;
 
-	const ACharacter* Character = Cast<ACharacter>(ActorInfo->AvatarActor);
-	if (Character == nullptr)
-		return false;
-
-	const URGX_HitboxesManagerComponent* HitboxManagerComponent = Character->FindComponentByClass<URGX_HitboxesManagerComponent>();
+	const URGX_HitboxesManagerComponent* HitboxManagerComponent = ActorInfo->AvatarActor->FindComponentByClass<URGX_HitboxesManagerComponent>();
 	if (HitboxManagerComponent == nullptr)
 		return false;
 
@@ -36,9 +32,7 @@ void URGX_PlayHitboxMontageAbility::ActivateAbility(const FGameplayAbilitySpecHa
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData); // Parent already calls CommitAbility function
 
-	ACharacter* Character = Cast<ACharacter>(ActorInfo->AvatarActor);
-	URGX_HitboxesManagerComponent* HitboxManagerComponent = Character->FindComponentByClass<URGX_HitboxesManagerComponent>();
-	UCharacterMovementComponent* CharacterMovementComponent = Character->FindComponentByClass<UCharacterMovementComponent>();
+	URGX_HitboxesManagerComponent* HitboxManagerComponent = ActorInfo->AvatarActor->FindComponentByClass<URGX_HitboxesManagerComponent>();
 
 	URGX_HitboxComponent* Hitbox = HitboxManagerComponent->GetHitboxByTag(HitboxTag);
 	if (Hitbox)

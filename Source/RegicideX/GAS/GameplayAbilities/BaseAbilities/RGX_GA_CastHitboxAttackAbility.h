@@ -3,21 +3,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "../RGX_GameplayAbility.h"
-#include "../RGX_PayloadObjects.h"
-#include "RGX_GA_PlayHitboxMontageAbility.generated.h"
+#include "RegicideX/GAS/GameplayAbilities/RGX_GameplayAbility.h"
+#include "RegicideX/GAS/RGX_PayloadObjects.h"
+#include "RGX_GA_CastSkillAbility.h"
+#include "RGX_GA_CastHitboxAttackAbility.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class REGICIDEX_API URGX_PlayHitboxMontageAbility : public URGX_GameplayAbility
+class REGICIDEX_API URGX_CastHitboxAttackAbility : public URGX_CastSkillAbility
 {
 	GENERATED_BODY()
 
 public:
-
-	URGX_PlayHitboxMontageAbility();
+	URGX_CastHitboxAttackAbility();
 
 protected:
 	bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags = nullptr, const FGameplayTagContainer* TargetTags = nullptr, OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const;
@@ -27,19 +27,24 @@ protected:
 	void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 protected:
-	/* If it is overriden, Base version sould be called at the end of the overrided version */
+	void OnSuccessfulAbilityMontage(FGameplayTag EventTag, FGameplayEventData EventData) override;
+
+	void OnFailedAbilityMontage(FGameplayTag EventTag, FGameplayEventData EventData) override;
+
+	void OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData) override;
+
 	UFUNCTION()
-	virtual void OnMontageFinished();
+	virtual void OnFinalMontageFinished();
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UAnimMontage* MontageToPlay;
+	UPROPERTY(EditAnywhere)
+	class UAnimMontage* FinalMontageToPlay = nullptr;
 
 	UPROPERTY(EditAnywhere)
-	FName StartSectionName;
+	FName FinalMontageStartSectionName;
 
 	UPROPERTY(EditAnywhere)
-	float PlayRatio = 1.0f;
+	float FinalMontagePlayRate = 1.0f;
 
 	UPROPERTY(EditAnywhere)
 	FGameplayTag HitboxTag;

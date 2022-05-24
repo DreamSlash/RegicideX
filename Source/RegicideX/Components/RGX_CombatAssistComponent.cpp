@@ -111,7 +111,7 @@ void URGX_CombatAssistComponent::UpdateTarget()
 		}
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Num enemies in frustum: %d\n"), NumEnemiesInsideFrustum);
+	//UE_LOG(LogTemp, Warning, TEXT("Num enemies in frustum: %d\n"), NumEnemiesInsideFrustum);
 
 	if (NewTarget)
 	{
