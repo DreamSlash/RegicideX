@@ -25,6 +25,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		bool bFlying = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bCharged = false;
+
 	void RotateToTarget(float DeltaTime) override;
 
 	void Tick(float DeltaTime) override;
