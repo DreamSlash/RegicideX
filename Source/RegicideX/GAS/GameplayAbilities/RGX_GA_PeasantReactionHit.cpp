@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "RGX_GA_PeasantReactionHit.h"
+#include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Animation/AnimMontage.h"
 #include "AIController.h"
@@ -50,6 +50,12 @@ void URGX_GA_PeasantReactionHit::EndAbility(
 	bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+
+	//Check if ASC is alive, and remove TakeDamage tag
+	if (UAbilitySystemComponent* ASC = ActorInfo->AbilitySystemComponent.Get())
+	{
+		ASC->RemoveLooseGameplayTag(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Combat.TakeDamage")));
+	}
 
 	ACharacter* Character = Cast<ACharacter>(ActorInfo->OwnerActor);
 	if (Character)

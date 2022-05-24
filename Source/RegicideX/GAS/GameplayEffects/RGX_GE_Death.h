@@ -11,12 +11,3 @@ class REGICIDEX_API URGX_DeathEffect : public UGameplayEffect
 
 	URGX_DeathEffect();
 };
-
-
-UCLASS()
-class REGICIDEX_API URGX_HitEffect : public UGameplayEffect
-{
-	GENERATED_BODY()
-
-		URGX_HitEffect();
-};

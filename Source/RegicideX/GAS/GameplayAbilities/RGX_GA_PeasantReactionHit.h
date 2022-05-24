@@ -6,9 +6,6 @@
 #include "Abilities/MCV_GameplayAbility.h"
 #include "RGX_GA_PeasantReactionHit.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class REGICIDEX_API URGX_GA_PeasantReactionHit : public UMCV_GameplayAbility
 {
