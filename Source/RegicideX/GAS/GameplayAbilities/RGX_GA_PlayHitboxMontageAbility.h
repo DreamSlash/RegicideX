@@ -4,14 +4,55 @@
 
 #include "CoreMinimal.h"
 #include "../RGX_GameplayAbility.h"
+#include "../RGX_PayloadObjects.h"
 #include "RGX_GA_PlayHitboxMontageAbility.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class REGICIDEX_API URGX_GA_PlayHitboxMontageAbility : public URGX_GameplayAbility
+class REGICIDEX_API URGX_PlayHitboxMontageAbility : public URGX_GameplayAbility
 {
 	GENERATED_BODY()
-	
+
+public:
+
+	URGX_PlayHitboxMontageAbility();
+
+protected:
+	bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags = nullptr, const FGameplayTagContainer* TargetTags = nullptr, OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const;
+
+	void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+
+	void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+
+protected:
+	/* If it is overriden, Base version sould be called at the end of the overrided version */
+	UFUNCTION()
+	virtual void OnMontageFinished();
+
+protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UAnimMontage* MontageToPlay;
+
+	UPROPERTY(EditAnywhere)
+	FName StartSectionName;
+
+	UPROPERTY(EditAnywhere)
+	float PlayRatio = 1.0f;
+
+	UPROPERTY(EditAnywhere)
+	FGameplayTag HitboxTag;
+
+	UPROPERTY(EditDefaultsOnly)
+	TArray<TSubclassOf<UGameplayEffect>> EffectsToApplyToTarget;
+
+	UPROPERTY(EditDefaultsOnly)
+	TArray<TSubclassOf<UGameplayEffect>> EffectsToApplyToOwner;
+
+	UPROPERTY(EditDefaultsOnly)
+	TArray<URGX_RGXEventDataAsset*> EventsToApplyToTarget;
+
+	UPROPERTY(EditDefaultsOnly)
+	TArray<URGX_RGXEventDataAsset*> EventsToApplyToOwner;
 };
