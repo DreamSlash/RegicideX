@@ -20,31 +20,35 @@ class REGICIDEX_API ARGX_RoundGameMode : public AGameModeBase
 
 	UPROPERTY()
 	TArray<AActor*> EnemySpawners;
+
+	UPROPERTY()
+	AActor* TargetActor = nullptr;
 	
 public:
 	
-	
-
 	// @todo: Map DataTables On BeginPlay/StartPlay
 	/*
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TMap<FString, int> WaveSpawnsMap;
 	*/
 
+	// @todo: Replace with Asset Manager
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	UDataTable* DTEnemies;
+	const UDataTable* DTEnemies = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	UDataTable* DTRounds;
-
-	UFUNCTION(BlueprintCallable)
-	TArray<AActor*> GetEnemySpawners() const;
-
-	UFUNCTION(BlueprintCallable)
-	void SetEnemySpawners(const TArray<AActor*>& EnemySpawnersList);
+	const UDataTable* DTRounds = nullptr;
 	
 	ARGX_RoundGameMode();
 	virtual ~ARGX_RoundGameMode() = default;
+
+	/** Get list of enemy spawners **/
+	UFUNCTION(BlueprintCallable)
+	TArray<AActor*> GetEnemySpawners() const;
+
+	/** Set Enemy Spawner list. For test purposes only **/
+	UFUNCTION(BlueprintCallable)
+	void SetEnemySpawners(const TArray<AActor*>& EnemySpawnersList);
 
 	/** Return score **/
 	UFUNCTION(BlueprintPure)
@@ -71,7 +75,7 @@ public:
 
 	/** Increments the round count and handles all the round logic **/
 	UFUNCTION(BlueprintCallable)
-	void NextRound();
+	void StartNextRound();
 
 	/** Spawns enemies in the defined spawn points depending on the round. Returns the amount of enemies spawned. **/
 	UFUNCTION(BlueprintCallable)
@@ -81,16 +85,17 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SpawnEnemy(UDataAsset* EnemyInfo);
 
+	/** Populates the list of enemy spawners by getting them from the current map.
+	 * Called at Begin Play **/
 	UFUNCTION(BlueprintCallable)
 	void PopulateSpawnerList();
 
-	UPROPERTY()
-		AActor* TargetActor = nullptr;
+
 
 private:
+	/** Sets TargetActor to Player 0 Character and calls Spawn Enemies. Called at Begin Play**/
 	void StartGameSpawn();
-
-private:
+	
 	FTimerHandle FirstSpawnTimerHandle;
 	
 	/*
