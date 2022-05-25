@@ -31,7 +31,7 @@ void URGX_DodgeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 		Character->DisableMovementInput();
 		CombatAssistComponent->EnableMovementVector();
-		CombatAssistComponent->AddMovementVector(MoveDirection, DodgeSpeed);
+		CombatAssistComponent->AddMovementVector(MoveDirection, DodgeSpeed, false);
 
 		FName SectionToPlay;
 

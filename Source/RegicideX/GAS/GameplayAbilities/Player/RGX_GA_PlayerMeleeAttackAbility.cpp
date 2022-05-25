@@ -32,7 +32,7 @@ void URGX_PlayerMeleeAttackAbility::ActivateAbility(const FGameplayAbilitySpecHa
 			//Character->LaunchCharacter(FVector(0.0f, 0.0f, ZAirForce), false, true);
 		}
 
-		CombatAssistComponent->AddMovementVector(Character->GetActorForwardVector(), MoveVectorLength);
+		CombatAssistComponent->AddMovementVector(Character->GetActorForwardVector(), MoveVectorLength, true);
 
 
 		URGX_HitboxComponent* Hitbox = HitboxManagerComponent->GetHitboxByTag(HitboxTag);

@@ -25,7 +25,7 @@ void URGX_CombatAssistComponent::TickComponent(float DeltaTime, ELevelTick TickT
 	NumEnemiesInsideFrustum = 0;
 
 	// Extra movement vector (from animation attacks, etc...)
-	if (bMoveVectorEnabled && bAddMoveVector)
+	if (bMoveVectorEnabled && bAddMoveVector && bIsAttacking)
 	{
 		AActor* Owner = GetOwner();
 
@@ -69,6 +69,13 @@ void URGX_CombatAssistComponent::TickComponent(float DeltaTime, ELevelTick TickT
 			const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * MoveVectorSpeed * DeltaTime;
 			Owner->SetActorLocation(NewLocation, true);
 		}
+	}
+	else
+	{
+		AActor* Owner = GetOwner();
+		FVector FinalVelocity = MoveVectorDirection * MoveVectorSpeed;
+		const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * MoveVectorSpeed * DeltaTime;
+		Owner->SetActorLocation(NewLocation, true);
 	}
 
 	AttackMoveDurationLeft -= DeltaTime;
@@ -311,16 +318,17 @@ void URGX_CombatAssistComponent::DisableMovementVector()
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Disable Move Vector\n"));
 	bMoveVectorEnabled = false;
-	Target = nullptr; // [TODO]: This is hardcoded.
+	bIsAttacking = false;
 }
 
-void URGX_CombatAssistComponent::AddMovementVector(FVector Direction, float Speed)
+void URGX_CombatAssistComponent::AddMovementVector(const FVector Direction, const float Speed, const bool bNewIsAttacking)
 {
 	FVector VelocityVector = Direction * Speed;
 	//UE_LOG(LogTemp, Warning, TEXT("Add Move Vector: %f, %f, %f\n"), VelocityVector.X, VelocityVector.Y, VelocityVector.Z);
 	MoveVectorDirection = Direction;
 	MoveVectorSpeed = Speed;
 	bAddMoveVector = true;
+	bIsAttacking = bNewIsAttacking;
 }
 
 void URGX_CombatAssistComponent::RemoveMovementVector()

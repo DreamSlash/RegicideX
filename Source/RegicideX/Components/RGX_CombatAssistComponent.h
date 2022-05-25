@@ -45,7 +45,7 @@ public:
 	void DisableMovementVector();
 
 	UFUNCTION(BlueprintCallable)
-	void AddMovementVector(FVector Direction, float Speed);
+	void AddMovementVector(const FVector Direction, const float Speed, const bool bNewIsAttacking);
 
 	UFUNCTION(BlueprintCallable)
 	void RemoveMovementVector();
@@ -101,6 +101,8 @@ protected:
 	float MoveVectorSpeed = 0.0f;
 
 	float AutoAssistMove = 0.0f;
+
+	bool bIsAttacking = false;
 
 	UPROPERTY()
 	bool bAddMoveVector = false;
