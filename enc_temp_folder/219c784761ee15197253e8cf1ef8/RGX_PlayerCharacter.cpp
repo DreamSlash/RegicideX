@@ -555,8 +555,6 @@ void ARGX_PlayerCharacter::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
 
-	InputHandlerComponent->ResetAirState();
-
 	UE_LOG(LogTemp, Warning, TEXT("Add Can Air Combo\n"))
 	AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
 	RemoveGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.HasAirDashed")));
