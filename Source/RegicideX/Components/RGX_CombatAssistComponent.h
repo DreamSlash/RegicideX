@@ -58,7 +58,7 @@ protected:
 	void UpdateTarget();
 
 	TArray<AActor*> GetClosestEnemiesInRange(const float Range, const bool bSameFallingState) const;
-	ARGX_EnemyBase* GetFrontEnemy(const TArray<AActor*>& Enemies);
+	ARGX_EnemyBase* GetFrontEnemy(const TArray<AActor*>& Enemies, const float AngleDiscardThreshHold = 180.0f);
 	void SetNewTarget(ARGX_EnemyBase* NewTarget);
 
 protected:
@@ -69,6 +69,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float AutoAssistMaxRadius = 1000.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float MaxRadiusAngleDiscard = 90.0f;
 
 	/* Enemies at that angle from player's forward will be checked against the camera frustum to discard
 	the ones outside */

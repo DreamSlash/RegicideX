@@ -127,7 +127,7 @@ void URGX_CombatAssistComponent::UpdateTarget()
 	}
 
 	PotentialTargets = GetClosestEnemiesInRange(AutoAssistMaxRadius, true);
-	NewTarget = GetFrontEnemy(PotentialTargets);
+	NewTarget = GetFrontEnemy(PotentialTargets, MaxRadiusAngleDiscard);
 
 	if (NewTarget)
 	{
@@ -180,7 +180,7 @@ TArray<AActor*> URGX_CombatAssistComponent::GetClosestEnemiesInRange(const float
 	return ClosestEnemies;
 }
 
-ARGX_EnemyBase* URGX_CombatAssistComponent::GetFrontEnemy(const TArray<AActor*>& Enemies)
+ARGX_EnemyBase* URGX_CombatAssistComponent::GetFrontEnemy(const TArray<AActor*>& Enemies, const float AngleDiscardThreshHold)
 {
 	if (Enemies.Num() == 0)
 	{
@@ -222,6 +222,9 @@ ARGX_EnemyBase* URGX_CombatAssistComponent::GetFrontEnemy(const TArray<AActor*>&
 
 		const float AbsAngle = FMath::Abs(Angle);
 
+		if (AbsAngle > AngleDiscardThreshHold)
+			continue;
+
 		//UE_LOG(LogTemp, Warning, TEXT("Angle To Enemy: %f\n"), FMath::RadiansToDegrees(OrientationToEnemy));
 		//UE_LOG(LogTemp, Warning, TEXT("Angle To Forward: %f\n"), FMath::RadiansToDegrees(OrientationToForward));
 		//UE_LOG(LogTemp, Warning, TEXT("Angle: %f\n"), Angle);
@@ -237,6 +240,9 @@ ARGX_EnemyBase* URGX_CombatAssistComponent::GetFrontEnemy(const TArray<AActor*>&
 		ActorAngle.Angle = AbsAngle;
 		FrontEnemies.Add(ActorAngle);
 	}
+
+	if (FrontEnemies.Num() == 0)
+		return nullptr;
 
 	if (FrontEnemies.Num() == 1)
 		return FrontEnemy;
