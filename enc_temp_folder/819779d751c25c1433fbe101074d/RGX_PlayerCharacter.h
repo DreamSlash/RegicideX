@@ -205,7 +205,6 @@ protected:
 	void ManageHeavyAttackInputRelease();
 
 	void ManagePowerSkillInput();
-	void TryToInteract();
 	// ----------------------------------
 
 	void PerformFallAttack();

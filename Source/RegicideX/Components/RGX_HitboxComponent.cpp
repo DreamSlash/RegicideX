@@ -3,7 +3,7 @@
 #include "AbilitySystemComponent.h"
 #include "Components/ChildActorComponent.h"
 #include "GenericTeamAgentInterface.h"
-#include "../GAS/RGX_PayloadObjects.h"
+#include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 URGX_HitboxComponent::URGX_HitboxComponent()
