@@ -90,6 +90,8 @@ public:
 private:
 	void StartGameSpawn();
 
+	void CleanCorpses();
+
 private:
 	FTimerHandle FirstSpawnTimerHandle;
 	

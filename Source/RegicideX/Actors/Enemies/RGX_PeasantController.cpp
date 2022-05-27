@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "RGX_PeasantController.h"
 
@@ -25,24 +23,24 @@ void ARGX_PeasantController::OnPossess(APawn* pawn)
 	Super::OnPossess(pawn);
 	ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(pawn);
 
-	if (Peasant && Peasant->BTree)
+	if (Peasant)
 	{
-		//UBlackboardComponent* BBComponent = GetBlackboardComponent();
-		if (BBComponent->InitializeBlackboard(*Peasant->BTree->BlackboardAsset))
+		if (Peasant->BTree)
 		{
-			//UBehaviorTreeComponent* BTComponent = GetBrainComponent()->
-			TargetActorID = BBComponent->GetKeyID("TargetActor");
-			DistanceToPlayerID = BBComponent->GetKeyID("DistanceToPlayer");
-			OnAirID = BBComponent->GetKeyID("bOnAir");
-			WasHitID = BBComponent->GetKeyID("bWasHit");
-			InCombatID = BBComponent->GetKeyID("bInCombat");
-			AttackingID = BBComponent->GetKeyID("bAttacking");
-			IdleActionID = BBComponent->GetKeyID("IdleAction");
-			IdlePositionID = BBComponent->GetKeyID("IdlePosition");
+			if (BBComponent->InitializeBlackboard(*Peasant->BTree->BlackboardAsset))
+			{
+				TargetActorID = BBComponent->GetKeyID("TargetActor");
+				DistanceToPlayerID = BBComponent->GetKeyID("DistanceToPlayer");
+				InCombatID = BBComponent->GetKeyID("bInCombat");
+				AttackingID = BBComponent->GetKeyID("bAttacking");
+				IdleActionID = BBComponent->GetKeyID("IdleAction");
+				ToDestroyID = BBComponent->GetKeyID("bToDestroy");
+				OnAirID = BBComponent->GetKeyID("bOnAir");
 
-			// Execute behavior tree after initialization.
-			BTComponent->StartTree(*Peasant->BTree, EBTExecutionMode::Looped);
-		}		
+				// Execute behavior tree after initialization.
+				BTComponent->StartTree(*Peasant->BTree, EBTExecutionMode::Looped);
+			}		
+		}
 	}
 }
 
@@ -50,23 +48,26 @@ void ARGX_PeasantController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(GetPawn());
+	const ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(GetPawn());
+
+	if (Peasant->TargetActor && bIsInFocus == false)
+	{
+		SetFocus(Peasant->TargetActor);
+		bIsInFocus = true;
+	}
 
 	if (Peasant)
 	{
-		//UBlackboardComponent* BBComponent = GetBlackboardComponent();
 		// Update values for the BB of the BT.
 		if(Peasant->TargetActor)
 			BBComponent->SetValueAsObject("TargetActor", Peasant->TargetActor);
 
+		// TODO Do not do it every tick
 		BBComponent->SetValueAsFloat("DistanceToPlayer", Peasant->GetDistanceToTarget());
-		BBComponent->SetValueAsBool("bWasHit", Peasant->bWasHit);
-		BBComponent->SetValueAsBool("bOnAir", Peasant->bOnAir);
 		BBComponent->SetValueAsBool("bInCombat", Peasant->bInCombat);
 		BBComponent->SetValueAsBool("bAttacking", Peasant->bAttacking);
-		BBComponent->SetValueAsVector("IdlePosition", Peasant->IdlePosition);
+		BBComponent->SetValueAsBool("bOnAir", Peasant->bOnAir);
+		BBComponent->SetValueAsBool("bToDestroy", Peasant->ToBeDestroyed);
 		BBComponent->SetValueAsInt("IdleAction", Peasant->IdleAction);
-
-		//UMCV_AbilitySystemComponent* ASC = Peasant->GetComponentByClass(TSubclassOf<UMCV_AbilitySystemComponent>());
 	}
 }

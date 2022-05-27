@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "RGX_GA_PeasantReactionHit.h"
+#include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Animation/AnimMontage.h"
 #include "AIController.h"
@@ -39,26 +39,6 @@ void URGX_GA_PeasantReactionHit::ActivateAbility(
 			PlayMontageTask->OnInterrupted.AddDynamic(this, &URGX_GA_PeasantReactionHit::OnEndMontage);
 			PlayMontageTask->ReadyForActivation();
 		}
-
-
-		//UAnimInstance* AnimInstance = ActorInfo->GetAnimInstance();
-		//if (AnimInstance)
-		//{
-		//	float duration = AnimInstance->Montage_Play(MontageToPlay);
-		//	FTimerDelegate TimerCallback;
-
-		//	MyHandle = Handle; MyAinfo = ActorInfo; MyActivationInfo = ActivationInfo;
-		//	TimerCallback.BindWeakLambda(this, [this]
-		//		{
-		//			EndAbility(MyHandle, MyAinfo, MyActivationInfo, false, false);
-		//		});
-
-		//	FTimerHandle MontageTimerHandle;
-		//	//en vez de esto puedes usar el delegate de onmontage ended pero queria hacer que funcionase rapido
-		//	//IMPORTANTE: en cuanto hagas play del montage, debes parar el Behaviour tree ya que puede que no te hagan el montage pq 
-		//	//haran lo que les diga el peasant manager y se seguiran moviendo hasta que se destruyan
-		//	GetWorld()->GetTimerManager().SetTimer(MontageTimerHandle, TimerCallback, duration - 0.5, false);
-		//}
 	}
 }
 
@@ -70,6 +50,12 @@ void URGX_GA_PeasantReactionHit::EndAbility(
 	bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+
+	//Check if ASC is alive, and remove TakeDamage tag
+	if (UAbilitySystemComponent* ASC = ActorInfo->AbilitySystemComponent.Get())
+	{
+		ASC->RemoveLooseGameplayTag(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Combat.TakeDamage")));
+	}
 
 	ACharacter* Character = Cast<ACharacter>(ActorInfo->OwnerActor);
 	if (Character)
