@@ -55,5 +55,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = "0.0", UIMin = "0.0"))
 	float AlignDelay = 5.0f;
 
+	/* Automatic rotation speed in degrees */
+	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = "0.0", UIMin = "0.0"))
+	float AutomaticRotationSpeed = 10.0f;
+
 	float LastManualRotationTime;
 };

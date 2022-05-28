@@ -69,7 +69,20 @@ void ARGX_PlayerCameraManager::ProcessViewRotation(float DeltaTime, FRotator& Ou
 		if (MovementDeltaSqr < 0.000001f == false)
 		{
 			float HeadingAngle = GetAngleFrom2DDirection(Movement / FMath::Sqrt(MovementDeltaSqr));
-			OutViewRotation.Yaw = HeadingAngle;
+			float RotationChange = AutomaticRotationSpeed * DeltaTime;
+			//OutViewRotation.Yaw = HeadingAngle;
+
+			OutViewRotation.Yaw = FMath::Lerp(OutViewRotation.Yaw, HeadingAngle, RotationChange);
+			/*
+			if (FMath::Abs(HeadingAngle - OutViewRotation.Yaw) <= RotationChange)
+			{
+				OutViewRotation.Yaw = HeadingAngle;
+			}
+			else
+			{
+				OutViewRotation.Yaw = FMath::Sign(HeadingAngle - OutViewRotation.Yaw) * RotationChange;
+			}
+			*/
 		}
 	}
 
