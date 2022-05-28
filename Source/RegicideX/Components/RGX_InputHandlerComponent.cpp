@@ -110,15 +110,15 @@ bool URGX_InputHandlerComponent::ProcessInput(FRGX_InputToken& InputToken, float
 {
 	bool bResult = true;
 
-	UE_LOG(LogTemp, Warning, TEXT("Input: %d\n"), (uint16)InputToken.InputID);
-	UE_LOG(LogTemp, Warning, TEXT("Input State: %d\n"), InputPressedState);
+	//UE_LOG(LogTemp, Warning, TEXT("Input: %d\n"), (uint16)InputToken.InputID);
+	//UE_LOG(LogTemp, Warning, TEXT("Input State: %d\n"), InputPressedState);
 
 	if (InputToInfoMap[(uint16)InputToken.InputID].bConsumed == true)
 		return false;
 
 	if (IsInputPressed(InputToken.InputID))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Input %d Pressed\n"), (uint16)InputToken.InputID);
+		//UE_LOG(LogTemp, Warning, TEXT("Input %d Pressed\n"), (uint16)InputToken.InputID);
 		if (ProcessInputToken(InputToken, DeltaTime) == false)
 		{
 			bResult = false;

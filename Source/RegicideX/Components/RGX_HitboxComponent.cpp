@@ -104,7 +104,7 @@ void URGX_HitboxComponent::DeactivateHitbox()
 
 void URGX_HitboxComponent::ActivateEffect()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Activate Effect\n"));
+	UE_LOG(LogTemp, Warning, TEXT("Activate Effect\n"));
 	bEffectActivated = true;
 	for (UShapeComponent* Shape : Shapes)
 	{
@@ -115,7 +115,7 @@ void URGX_HitboxComponent::ActivateEffect()
 
 void URGX_HitboxComponent::DeactivateEffect()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Deactivate Effect\n"));
+	UE_LOG(LogTemp, Warning, TEXT("Deactivate Effect\n"));
 	bEffectActivated = false;
 	for (UShapeComponent* Shape : Shapes)
 	{
