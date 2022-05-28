@@ -20,6 +20,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
+#include "RegicideX/RGX_PlayerCameraManager.h"
 
 ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 {
@@ -531,12 +532,28 @@ void ARGX_PlayerCharacter::TurnAtRate(float Rate)
 {
 	YawChange = Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds();
 	AddControllerYawInput(YawChange);
+
+	// TODO: Pedazo guarrada
+	if (FMath::Abs(Rate) > 0.001f)
+	{
+		ARGX_PlayerCameraManager* PlayerCameraManager =
+			Cast<ARGX_PlayerCameraManager>(UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0));
+		PlayerCameraManager->NotifyInput();
+	}
 }
 
 void ARGX_PlayerCharacter::LookUpAtRate(float Rate)
 {
 	PitchChange = Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds();
 	AddControllerPitchInput(PitchChange);
+
+	// TODO: Pedazo guarrada
+	if (FMath::Abs(Rate) > 0.001f)
+	{
+		ARGX_PlayerCameraManager* PlayerCameraManager =
+			Cast<ARGX_PlayerCameraManager>(UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0));
+		PlayerCameraManager->NotifyInput();
+	}
 }
 
 FRGX_LeanInfo ARGX_PlayerCharacter::CalculateLeanAmount()

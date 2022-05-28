@@ -534,12 +534,14 @@ void ARGX_PlayerCharacter::TurnAtRate(float Rate)
 	AddControllerYawInput(YawChange);
 
 	// TODO: Pedazo guarrada
+	/*
 	if (FMath::Abs(Rate) > 0.001f)
 	{
 		ARGX_PlayerCameraManager* PlayerCameraManager =
 			Cast<ARGX_PlayerCameraManager>(UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0));
 		PlayerCameraManager->NotifyInput();
 	}
+	*/
 }
 
 void ARGX_PlayerCharacter::LookUpAtRate(float Rate)
@@ -547,6 +549,7 @@ void ARGX_PlayerCharacter::LookUpAtRate(float Rate)
 	PitchChange = Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds();
 	AddControllerPitchInput(PitchChange);
 
+	/*
 	// TODO: Pedazo guarrada
 	if (FMath::Abs(Rate) > 0.001f)
 	{
@@ -554,6 +557,7 @@ void ARGX_PlayerCharacter::LookUpAtRate(float Rate)
 			Cast<ARGX_PlayerCameraManager>(UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0));
 		PlayerCameraManager->NotifyInput();
 	}
+	*/
 }
 
 FRGX_LeanInfo ARGX_PlayerCharacter::CalculateLeanAmount()

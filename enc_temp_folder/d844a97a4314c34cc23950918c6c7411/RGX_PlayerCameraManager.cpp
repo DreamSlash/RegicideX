@@ -23,6 +23,12 @@ void ARGX_PlayerCameraManager::BeginPlay()
 	}
 }
 
+float ARGX_PlayerCameraManager::GetAngleFrom2DDirection(FVector2D Direction)
+{
+	float Angle = FMath::Acos(Direction.Y);
+	return Direction.X < 0.0f ? 360.0f - Angle : Angle;
+}
+
 
 void ARGX_PlayerCameraManager::UpdateCamera(float DeltaTime)
 {
@@ -32,6 +38,16 @@ void ARGX_PlayerCameraManager::UpdateCamera(float DeltaTime)
 void ARGX_PlayerCameraManager::DoUpdateCamera(float DeltaTime)
 {
 	Super::DoUpdateCamera(DeltaTime);
+}
+
+void ARGX_PlayerCameraManager::NotifyInput()
+{
+	LastManualRotationTime = GetWorld()->TimeSeconds;
+}
+
+void ARGX_PlayerCameraManager::ProcessViewRotation(float DeltaTime, FRotator& OutViewRotation, FRotator& OutDeltaRot)
+{
+	Super::ProcessViewRotation(DeltaTime, OutViewRotation, OutDeltaRot);
 }
 
 void ARGX_PlayerCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime)
@@ -65,6 +81,10 @@ void ARGX_PlayerCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, flo
 		}
 	}
 	
+	// TODO: Refactor i que no sembli copiat
+
+	PreviousFocusLocation = FocusLocation;
+
 	FVector TargetOffset = SpringArmComponent->TargetOffset;
 	FTViewTarget TargetView = OutVT;
 
@@ -74,20 +94,40 @@ void ARGX_PlayerCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, flo
 	{
 		float Distance = FVector::Distance(TargetLocation, FocusLocation);
 		UE_LOG(LogTemp, Warning, TEXT("Camera Distance to Target: %f\n"), Distance);
+
+		float t = 1.0f;
+		if (Distance > 0.01f && FocusCentering > 0.0f)
+		{
+			t = FMath::Pow(1 - FocusCentering, DeltaTime);
+		}
+
 		if (Distance > FocusRadius)
 		{
 			//UE_LOG(LogTemp, Warning, TEXT("Manuela\n"));
-			FocusLocation = FMath::Lerp(TargetLocation, FocusLocation, FocusRadius / Distance);
-			TargetOffset = FocusLocation - TargetLocation;
+			t = FMath::Min(t, FocusRadius / Distance);
 		}
-		else
-		{
-			TargetOffset = FocusLocation - TargetLocation;
-		}
+
+		FocusLocation = FMath::Lerp(TargetLocation, FocusLocation, t);
+		TargetOffset = FocusLocation - TargetLocation;
 	}
 	else
 	{
 		FocusLocation = TargetLocation;
+	}
+
+	// Automatic alignment if no input is received from the player in align delay time
+	if (GetWorld()->TimeSeconds - LastManualRotationTime < AlignDelay == true)
+	{
+		FVector2D Movement = FVector2D(
+			FocusLocation.X - PreviousFocusLocation.X,
+			FocusLocation.Y - PreviousFocusLocation.Y);
+
+		float MovementDeltaSqr = Movement.SizeSquared();
+		if (MovementDeltaSqr < 0.000001f == false)
+		{
+			float HeadingAngle = GetAngleFrom2DDirection(Movement / FMath::Sqrt(MovementDeltaSqr));
+			//TargetOffset.Y = 
+		}
 	}
 
 	SpringArmComponent->TargetOffset = TargetOffset;

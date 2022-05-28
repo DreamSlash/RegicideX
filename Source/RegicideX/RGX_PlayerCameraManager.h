@@ -29,6 +29,8 @@ public:
 
 	void NotifyInput(); // function called by the player when generating a camera input
 
+	void ProcessViewRotation(float DeltaTime, FRotator& OutViewRotation, FRotator& OutDeltaRot);
+
 protected:
 	void UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime);
 
@@ -38,7 +40,11 @@ protected:
 	void BeginPlay() override;
 
 protected:
+	float GetAngleFrom2DDirection(FVector2D Direction);
+
+protected:
 	FVector FocusLocation;
+	FVector PreviousFocusLocation;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float FocusRadius = 100.0f;

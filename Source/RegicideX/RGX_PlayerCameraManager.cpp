@@ -23,6 +23,12 @@ void ARGX_PlayerCameraManager::BeginPlay()
 	}
 }
 
+float ARGX_PlayerCameraManager::GetAngleFrom2DDirection(FVector2D Direction)
+{
+	float Angle = FMath::Acos(Direction.Y);
+	return Direction.X < 0.0f ? 360.0f - Angle : Angle;
+}
+
 
 void ARGX_PlayerCameraManager::UpdateCamera(float DeltaTime)
 {
@@ -36,7 +42,20 @@ void ARGX_PlayerCameraManager::DoUpdateCamera(float DeltaTime)
 
 void ARGX_PlayerCameraManager::NotifyInput()
 {
-	//LastManualRotationTime = 
+	LastManualRotationTime = GetWorld()->TimeSeconds;
+	UE_LOG(LogTemp, Warning, TEXT("Camera Input\n"));
+}
+
+void ARGX_PlayerCameraManager::ProcessViewRotation(float DeltaTime, FRotator& OutViewRotation, FRotator& OutDeltaRot)
+{
+	const float DeltaRotMagnitude = FMath::Abs(OutDeltaRot.Euler().Size());
+	if (DeltaRotMagnitude > 0.0001f == true)
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("Camera Rotator: %f, %f, %f\n"), OutDeltaRot.Roll, OutDeltaRot.Pitch, OutDeltaRot.Yaw);
+		NotifyInput();
+	}
+
+	Super::ProcessViewRotation(DeltaTime, OutViewRotation, OutDeltaRot);
 }
 
 void ARGX_PlayerCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime)
@@ -70,6 +89,10 @@ void ARGX_PlayerCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, flo
 		}
 	}
 	
+	// TODO: Refactor i que no sembli copiat
+
+	PreviousFocusLocation = FocusLocation;
+
 	FVector TargetOffset = SpringArmComponent->TargetOffset;
 	FTViewTarget TargetView = OutVT;
 
@@ -98,6 +121,21 @@ void ARGX_PlayerCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, flo
 	else
 	{
 		FocusLocation = TargetLocation;
+	}
+
+	// Automatic alignment if no input is received from the player in align delay time
+	if (GetWorld()->TimeSeconds - LastManualRotationTime < AlignDelay == true)
+	{
+		FVector2D Movement = FVector2D(
+			FocusLocation.X - PreviousFocusLocation.X,
+			FocusLocation.Y - PreviousFocusLocation.Y);
+
+		float MovementDeltaSqr = Movement.SizeSquared();
+		if (MovementDeltaSqr < 0.000001f == false)
+		{
+			float HeadingAngle = GetAngleFrom2DDirection(Movement / FMath::Sqrt(MovementDeltaSqr));
+			//TargetOffset.Y = 
+		}
 	}
 
 	SpringArmComponent->TargetOffset = TargetOffset;
