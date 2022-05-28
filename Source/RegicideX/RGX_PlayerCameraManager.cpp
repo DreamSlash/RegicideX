@@ -25,8 +25,10 @@ void ARGX_PlayerCameraManager::BeginPlay()
 
 float ARGX_PlayerCameraManager::GetAngleFrom2DDirection(FVector2D Direction)
 {
-	float Angle = FMath::Acos(Direction.Y);
-	return Direction.X < 0.0f ? 360.0f - Angle : Angle;
+	float Angle = FMath::RadiansToDegrees(FMath::Acos(Direction.Y));
+	Angle = Direction.X < 0.0f ? 360.0f - Angle : Angle;
+	UE_LOG(LogTemp, Warning, TEXT("Angle: %f\n"), Angle);
+	return Angle;
 }
 
 
@@ -53,6 +55,22 @@ void ARGX_PlayerCameraManager::ProcessViewRotation(float DeltaTime, FRotator& Ou
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("Camera Rotator: %f, %f, %f\n"), OutDeltaRot.Roll, OutDeltaRot.Pitch, OutDeltaRot.Yaw);
 		NotifyInput();
+	}
+
+	// Automatic alignment if no input is received from the player in align delay time
+	if (GetWorld()->TimeSeconds - LastManualRotationTime < AlignDelay == false)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Automatic Alignment\n"));
+		FVector2D Movement = FVector2D(
+			FocusLocation.Y - PreviousFocusLocation.Y,
+			FocusLocation.X - PreviousFocusLocation.X);
+
+		float MovementDeltaSqr = Movement.SizeSquared();
+		if (MovementDeltaSqr < 0.000001f == false)
+		{
+			float HeadingAngle = GetAngleFrom2DDirection(Movement / FMath::Sqrt(MovementDeltaSqr));
+			OutViewRotation.Yaw = HeadingAngle;
+		}
 	}
 
 	Super::ProcessViewRotation(DeltaTime, OutViewRotation, OutDeltaRot);
@@ -101,7 +119,7 @@ void ARGX_PlayerCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, flo
 	if (FocusRadius > 0.0f)
 	{
 		float Distance = FVector::Distance(TargetLocation, FocusLocation);
-		UE_LOG(LogTemp, Warning, TEXT("Camera Distance to Target: %f\n"), Distance);
+		//UE_LOG(LogTemp, Warning, TEXT("Camera Distance to Target: %f\n"), Distance);
 
 		float t = 1.0f;
 		if (Distance > 0.01f && FocusCentering > 0.0f)
@@ -122,21 +140,6 @@ void ARGX_PlayerCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, flo
 	{
 		FocusLocation = TargetLocation;
 	}
-
-	// Automatic alignment if no input is received from the player in align delay time
-	if (GetWorld()->TimeSeconds - LastManualRotationTime < AlignDelay == true)
-	{
-		FVector2D Movement = FVector2D(
-			FocusLocation.X - PreviousFocusLocation.X,
-			FocusLocation.Y - PreviousFocusLocation.Y);
-
-		float MovementDeltaSqr = Movement.SizeSquared();
-		if (MovementDeltaSqr < 0.000001f == false)
-		{
-			float HeadingAngle = GetAngleFrom2DDirection(Movement / FMath::Sqrt(MovementDeltaSqr));
-			//TargetOffset.Y = 
-		}
-	}
-
+	
 	SpringArmComponent->TargetOffset = TargetOffset;
 }

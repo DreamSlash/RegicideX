@@ -55,9 +55,5 @@ protected:
 	UPROPERTY(EditDefaultsOnly, meta = (ClampMin = "0.0", UIMin = "0.0"))
 	float AlignDelay = 5.0f;
 
-	// Automatic Input for when player is not controlling the camera or
-	// we want the camera to act in a certain way.
-	FRotator AutomaticOrbitAngles = FRotator(0.0f);
-
 	float LastManualRotationTime;
 };
