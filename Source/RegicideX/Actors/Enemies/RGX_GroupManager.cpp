@@ -68,7 +68,7 @@ void ARGX_GroupManager::RemovePeasant(ARGX_Peasant* PeasantToRemove)
 	else
 		PeasantToPosition.Remove(PeasantToRemove);
 
-	PeasantToRemove->Destroy();
+	//PeasantToRemove->Destroy();
 	CurrentNumberOfPeasants--;
 	RecalcPeasants();
 }
@@ -138,7 +138,7 @@ void ARGX_GroupManager::OnPeasantAdded()
 
 		PeasantToPosition.Add(Peasant, PositionsAroundTarget[AuxiliarIdx]);
 		PositionsAroundTarget.RemoveSingle(PositionsAroundTarget[AuxiliarIdx]);
-		Peasant->IdlePosition = *PeasantToPosition.Find(Peasant);
+		//Peasant->IdlePosition = *PeasantToPosition.Find(Peasant);
 	}
 
 	PeasantArray.Empty();

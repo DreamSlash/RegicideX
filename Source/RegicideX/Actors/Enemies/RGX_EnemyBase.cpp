@@ -5,9 +5,7 @@
 #include "Components/MCV_AbilitySystemComponent.h"
 #include "Components/WidgetComponent.h"
 #include "RegicideX/GAS/AttributeSets/RGX_HealthAttributeSet.h"
-
 #include "Kismet/KismetMathLibrary.h"
-
 #include "RegicideX/GameplayFramework/RGX_RoundGameMode.h"
 
 // Sets default values
@@ -169,7 +167,7 @@ void ARGX_EnemyBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	if (ARGX_RoundGameMode* MyGameMode = Cast<ARGX_RoundGameMode>(GetWorld()->GetAuthGameMode()))
 	{
-		MyGameMode->OnEnemyDeath(0);
+		//MyGameMode->OnEnemyDeath(0);
 	}
 	Super::EndPlay(EndPlayReason);
 }
