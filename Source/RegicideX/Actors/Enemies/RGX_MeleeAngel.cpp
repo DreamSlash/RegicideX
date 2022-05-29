@@ -23,9 +23,8 @@ void ARGX_MeleeAngel::RotateToTarget(float DeltaTime)
 	}
 }
 
+
 void ARGX_MeleeAngel::Tick(float DeltaTime)
 {
-
 	Super::Tick(DeltaTime);
-
 }

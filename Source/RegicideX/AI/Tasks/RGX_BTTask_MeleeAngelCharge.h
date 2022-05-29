@@ -18,14 +18,17 @@ class REGICIDEX_API URGX_BTTask_MeleeAngelCharge : public UBTTaskNode
 	
 	float TaskTime = 0.0;
 
-	float AccelerationMultiplier = 200.0; float MoveSpeed = 100.0f;
-
+	float MoveSpeed = 2.0f;
 	ARGX_MeleeAngel* MeleeAngelPawn = nullptr;
+	FVector GoalLocation;
 
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float MaxTime = 5.0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float AccelerationMultiplier = 1.0;
 
 	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 

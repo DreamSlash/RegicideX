@@ -5,6 +5,7 @@
 #include "RegicideX/Actors/Enemies/RGX_MeleeAngel.h"
 
 #include "AIController.h"
+#include "Kismet/KismetMathLibrary.h"
 
 EBTNodeResult::Type URGX_BTTask_MeleeAngelCharge::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
@@ -16,14 +17,18 @@ EBTNodeResult::Type URGX_BTTask_MeleeAngelCharge::ExecuteTask(UBehaviorTreeCompo
 	MeleeAngelPawn->bFlying = true;
 
 	MoveSpeed = MeleeAngelPawn->MoveSpeed;
+	GoalLocation = MeleeAngelPawn->TargetActor->GetActorLocation();
+
+	const FRotator RotOffset = UKismetMathLibrary::FindLookAtRotation(MeleeAngelPawn->GetActorLocation(), GoalLocation);
+	MeleeAngelPawn->SetActorRotation(RotOffset);
 
 	bNotifyTick = true;
+
 	return EBTNodeResult::InProgress;
 }
 
 void URGX_BTTask_MeleeAngelCharge::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
-
 	TaskTime += DeltaSeconds;
 	if (TaskTime >= MaxTime || MeleeAngelPawn->bCharged)
 	{
@@ -33,10 +38,8 @@ void URGX_BTTask_MeleeAngelCharge::TickTask(UBehaviorTreeComponent& OwnerComp, u
 		MeleeAngelPawn->MoveSpeed = MoveSpeed;
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
-	MeleeAngelPawn->MoveSpeed += DeltaSeconds * AccelerationMultiplier;
-	MeleeAngelPawn->RotateToTarget(DeltaSeconds);
+	MeleeAngelPawn->MoveSpeed += TaskTime * AccelerationMultiplier;
 	MeleeAngelPawn->MoveToTarget(DeltaSeconds, FVector());
-
 }
 
 

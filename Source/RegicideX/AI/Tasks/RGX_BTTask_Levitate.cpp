@@ -57,8 +57,9 @@ void URGX_BTTask_Levitate::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* No
 	}
 
 	float DistToGoal = FVector::Dist(MeleeAngelPawn->GetActorLocation(), GoalLocation);
-	UE_LOG(LogTemp, Warning, TEXT("DistToGoal: %f"), DistToGoal);
+	/*UE_LOG(LogTemp, Warning, TEXT("DistToGoal: %f"), DistToGoal);*/
 	if(DistToGoal <= 2.0 ) return;
 	const FVector NewLocation = FMath::Lerp(MeleeAngelPawn->GetActorLocation(), GoalLocation, DeltaSeconds * LevitateSpeed);
+	MeleeAngelPawn->RotateToTarget(DeltaSeconds);
 	MeleeAngelPawn->SetActorLocation(NewLocation);
 }
