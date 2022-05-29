@@ -19,8 +19,10 @@ void URGX_GA_PeasantReactionHit::ActivateAbility(
 	AAIController* Controller = Cast<AAIController>(Character->GetController());
 
 	// If reacting to hit, should not move
-	if (Controller)
+	if (Controller) {
 		Controller->GetBrainComponent()->StopLogic(FString("Animation playing"));
+		Controller->SetFocus(nullptr);
+	}
 
 	// Launch Peasant a small bit backwards
 	ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(Character);
@@ -61,8 +63,12 @@ void URGX_GA_PeasantReactionHit::EndAbility(
 	if (Character)
 	{
 		AAIController* Controller = Cast<AAIController>(Character->GetController());
-		if (Controller)
+		ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(Character);
+		if (Controller) {
 			Controller->GetBrainComponent()->StartLogic();
+			if(Peasant->TargetActor)
+				Controller->SetFocus(Peasant->TargetActor);
+		}
 	}
 }
 

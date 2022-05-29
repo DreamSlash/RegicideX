@@ -35,9 +35,14 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 		float speed = 10.0f;
 
+private:
+	FTimerHandle DestroyTimeHandle;
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	void HandleDeath();
 
 public:	
 	// Called every frame

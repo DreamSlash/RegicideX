@@ -46,12 +46,18 @@ void URGX_HealthAttributeSet::PostGameplayEffectExecute(const struct FGameplayEf
 				{
 					UGameplayEffect* DeathEffect = URGX_DeathEffect::StaticClass()->GetDefaultObject<UGameplayEffect>();
 					ASC->ApplyGameplayEffectToSelf(DeathEffect, 1, ASC->MakeEffectContext());
+
+					FGameplayEventData EventData;
+					ASC->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("Status.Dead")), &EventData);
 				}
 			}
 			else
 			{
 				UGameplayEffect* HitEffect = URGX_HitEffect::StaticClass()->GetDefaultObject<UGameplayEffect>();
 				ASC->ApplyGameplayEffectToSelf(HitEffect, 1, ASC->MakeEffectContext());
+
+				FGameplayEventData EventData;
+				ASC->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Combat.TakeDamage")), &EventData);
 			}
 		}
 	}

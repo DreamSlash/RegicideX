@@ -31,12 +31,9 @@ void URGX_GA_PeasantDie::ActivateAbility(
 		Controller->SetFocus(nullptr);	// Stop focusing the player
 	}
 
-	// Add Status.Dead
-	UAbilitySystemComponent* ASC = GetAbilitySystemComponentFromActorInfo();
-	ASC->AddLooseGameplayTag(FGameplayTag::RequestGameplayTag("Status.Dead"));
-
 	// Disable Collision
-	Character->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	Character->GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
+	//Character->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	if (ARGX_RoundGameMode* MyGameMode = Cast<ARGX_RoundGameMode>(GetWorld()->GetAuthGameMode()))
 	{

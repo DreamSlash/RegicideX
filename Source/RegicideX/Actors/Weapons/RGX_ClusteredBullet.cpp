@@ -22,6 +22,12 @@ void ARGX_ClusteredBullet::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	GetWorld()->GetTimerManager().SetTimer(DestroyTimeHandle, this, &ARGX_ClusteredBullet::HandleDeath, 5.0f, false);
+}
+
+void ARGX_ClusteredBullet::HandleDeath()
+{
+	this->Destroy();
 }
 
 // Called every frame
