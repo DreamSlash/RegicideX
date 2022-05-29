@@ -57,6 +57,7 @@ void ARGX_PlayerCameraManager::ProcessViewRotation(float DeltaTime, FRotator& Ou
 		NotifyInput();
 	}
 
+	// TODO: Should not autorotate when colliding with obstacles
 	// Automatic alignment if no input is received from the player in align delay time
 	if (GetWorld()->TimeSeconds - LastManualRotationTime < AlignDelay == false)
 	{
@@ -70,19 +71,8 @@ void ARGX_PlayerCameraManager::ProcessViewRotation(float DeltaTime, FRotator& Ou
 		{
 			float HeadingAngle = GetAngleFrom2DDirection(Movement / FMath::Sqrt(MovementDeltaSqr));
 			float RotationChange = AutomaticRotationSpeed * DeltaTime;
-			//OutViewRotation.Yaw = HeadingAngle;
 
 			OutViewRotation.Yaw = FMath::Lerp(OutViewRotation.Yaw, HeadingAngle, RotationChange);
-			/*
-			if (FMath::Abs(HeadingAngle - OutViewRotation.Yaw) <= RotationChange)
-			{
-				OutViewRotation.Yaw = HeadingAngle;
-			}
-			else
-			{
-				OutViewRotation.Yaw = FMath::Sign(HeadingAngle - OutViewRotation.Yaw) * RotationChange;
-			}
-			*/
 		}
 	}
 
