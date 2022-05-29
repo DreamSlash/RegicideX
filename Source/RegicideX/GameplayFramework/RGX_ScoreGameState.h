@@ -42,7 +42,7 @@ public:
 
 	/** Manages the game state changes for round change. **/
 	UFUNCTION(BlueprintCallable)
-		int NextRound();
+		int StartNextRound();
 
 	UFUNCTION(BlueprintPure)
 		int GetScore() const;
@@ -59,6 +59,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void SetNumEnemies(const int NewNumEnemies);
 
+	UFUNCTION(BlueprintCallable)
+		void IncreaseScore();
 
 };
 

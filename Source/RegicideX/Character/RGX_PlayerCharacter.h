@@ -5,9 +5,9 @@
 #include "GameplayTags.h"
 #include "AbilitySystemInterface.h"
 #include "Components/MCV_AbilitySystemComponent.h"
-#include "../Components/RGX_CombatAssistComponent.h"
-#include "../Interfaces/RGX_GameplayTagInterface.h"
-#include "../Enums/RGX_InputEnums.h"
+#include "RegicideX/Components/RGX_CombatAssistComponent.h"
+#include "RegicideX/Interfaces/RGX_GameplayTagInterface.h"
+#include "RegicideX/Enums/RGX_InputEnums.h"
 #include "GenericTeamAgentInterface.h"
 
 #include "RGX_PlayerCharacter.generated.h"
@@ -17,9 +17,11 @@ class UCameraComponent;
 class URGX_AbilitySystemComponent;
 class URGX_ComboSystemComponent;
 class URGX_CombatAssistComponent;
+class URGX_InputHandlerComponent;
 class URGX_HealthAttributeSet;
 class URGX_MovementAttributeSet;
 class URGX_CombatAttributeSet;
+class URGX_InteractComponent;
 
 USTRUCT()
 struct FRGX_LeanInfo
@@ -56,6 +58,14 @@ class REGICIDEX_API ARGX_PlayerCharacter : public ACharacter, public IAbilitySys
 	/** Combat Assist Component to manage player movement while doing combat actions */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combat, meta = (AllowPrivateAccess = "true"))
 	URGX_CombatAssistComponent* CombatAssistComponent = nullptr;
+	
+	/** Input Handler component to manage player inputs */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	URGX_InputHandlerComponent* InputHandlerComponent = nullptr;
+
+	/** Interact Component to manage actions with interactable actors in the world */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Interaction, meta = (AllowPrivateAccess = "true"))
+	URGX_InteractComponent* InteractComponent = nullptr;
 
 	// Attributes ---------------
 	UPROPERTY()
@@ -138,6 +148,18 @@ protected:
 	UPROPERTY()
 	bool bTimeScale = false;
 
+	/** Input Variables */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float FallAttackHoldTime = 0.15f;
+	//bool bFallAttackFlag = false;
+
+	float HeavyInputCurrentHoldTime = 0.0f;
+
+	UPROPERTY()
+	bool bHeavyInputFlag = false;
+	bool bHeavyInputPressedInAir = false;
+	// -------------------
+
 protected:
 	/** Called for forwards/backwards input */
 	void MoveForward(float Value);
@@ -177,12 +199,17 @@ protected:
 	// Combat input functions that redirect the managing of the input to the combat system passing 
 	// the input pressed as the argument.
 	void ManageLightAttackInput();
+	void ManageLightAttackInputRelease();
 
 	void ManageHeavyAttackInput();
+	void ManageHeavyAttackInputRelease();
 
 	void ManagePowerSkillInput();
+	void TryToInteract();
 	// ----------------------------------
 
+	void PerformFallAttack();
+	void PerformLaunchAttack();
 	void ChangePowerSkill();
 
 	// Debug
@@ -210,4 +237,8 @@ public:
 	/** Utility methods */
 	UFUNCTION(BlueprintCallable)
 	bool IsBeingAttacked();
+
+	/* Input Handler calls this to let the player handle the action */
+	UFUNCTION()
+	void HandleAction(const ERGX_PlayerActions Action);
 };

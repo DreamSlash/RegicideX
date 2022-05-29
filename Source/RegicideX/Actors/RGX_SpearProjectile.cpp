@@ -20,9 +20,7 @@ ARGX_SpearProjectile::ARGX_SpearProjectile()
 	StaticMeshComponent->SetupAttachment(RootComponent);
 
 	HitboxComponent = CreateDefaultSubobject<URGX_HitboxComponent>(TEXT("Hitbox"));
-	HitboxComponent->SetCollisionProfileName(UCollisionProfile::BlockAllDynamic_ProfileName);
-	HitboxComponent->SetSimulatePhysics(true);
-	HitboxComponent->OnComponentHit.AddUniqueDynamic(this, &ARGX_SpearProjectile::OnComponentHit);
+	//HitboxComponent->OnComponentHit.AddUniqueDynamic(this, &ARGX_SpearProjectile::OnComponentHit);
 	HitboxComponent->SetupAttachment(StaticMeshComponent);
 
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
