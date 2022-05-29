@@ -14,7 +14,7 @@ EBTNodeResult::Type URGX_BTTask_Levitate::ExecuteTask(UBehaviorTreeComponent& Ow
 
 	APawn* ControlledPawn = AIController->GetPawn();
 	MeleeAngelPawn = Cast<ARGX_MeleeAngel>(ControlledPawn);
-
+	MeleeAngelPawn->bSimGravityDisabled = true;
 	const FVector RaySrc = MeleeAngelPawn->GetActorLocation() + MeleeAngelPawn->GetActorUpVector() * 160.0f;
 	const FVector RayEnd = MeleeAngelPawn->GetActorLocation() + MeleeAngelPawn->GetActorUpVector() * MaxLHeight;
 	FHitResult RayTraceResult;
