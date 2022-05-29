@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "RGX_GA_PeasantReactionHit.h"
+#include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Animation/AnimMontage.h"
 #include "AIController.h"
@@ -19,8 +19,10 @@ void URGX_GA_PeasantReactionHit::ActivateAbility(
 	AAIController* Controller = Cast<AAIController>(Character->GetController());
 
 	// If reacting to hit, should not move
-	if (Controller)
+	if (Controller) {
 		Controller->GetBrainComponent()->StopLogic(FString("Animation playing"));
+		Controller->SetFocus(nullptr);
+	}
 
 	// Launch Peasant a small bit backwards
 	ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(Character);
@@ -39,26 +41,6 @@ void URGX_GA_PeasantReactionHit::ActivateAbility(
 			PlayMontageTask->OnInterrupted.AddDynamic(this, &URGX_GA_PeasantReactionHit::OnEndMontage);
 			PlayMontageTask->ReadyForActivation();
 		}
-
-
-		//UAnimInstance* AnimInstance = ActorInfo->GetAnimInstance();
-		//if (AnimInstance)
-		//{
-		//	float duration = AnimInstance->Montage_Play(MontageToPlay);
-		//	FTimerDelegate TimerCallback;
-
-		//	MyHandle = Handle; MyAinfo = ActorInfo; MyActivationInfo = ActivationInfo;
-		//	TimerCallback.BindWeakLambda(this, [this]
-		//		{
-		//			EndAbility(MyHandle, MyAinfo, MyActivationInfo, false, false);
-		//		});
-
-		//	FTimerHandle MontageTimerHandle;
-		//	//en vez de esto puedes usar el delegate de onmontage ended pero queria hacer que funcionase rapido
-		//	//IMPORTANTE: en cuanto hagas play del montage, debes parar el Behaviour tree ya que puede que no te hagan el montage pq 
-		//	//haran lo que les diga el peasant manager y se seguiran moviendo hasta que se destruyan
-		//	GetWorld()->GetTimerManager().SetTimer(MontageTimerHandle, TimerCallback, duration - 0.5, false);
-		//}
 	}
 }
 
@@ -71,12 +53,22 @@ void URGX_GA_PeasantReactionHit::EndAbility(
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 
+	//Check if ASC is alive, and remove TakeDamage tag
+	if (UAbilitySystemComponent* ASC = ActorInfo->AbilitySystemComponent.Get())
+	{
+		ASC->RemoveLooseGameplayTag(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Combat.TakeDamage")));
+	}
+
 	ACharacter* Character = Cast<ACharacter>(ActorInfo->OwnerActor);
 	if (Character)
 	{
 		AAIController* Controller = Cast<AAIController>(Character->GetController());
-		if (Controller)
+		ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(Character);
+		if (Controller) {
 			Controller->GetBrainComponent()->StartLogic();
+			if(Peasant->TargetActor)
+				Controller->SetFocus(Peasant->TargetActor);
+		}
 	}
 }
 

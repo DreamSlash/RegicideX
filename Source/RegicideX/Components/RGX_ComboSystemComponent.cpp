@@ -1,6 +1,8 @@
 #include "RGX_ComboSystemComponent.h"
 #include "AbilitySystemGlobals.h"
 #include "AbilitySystemComponent.h"
+#include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 URGX_ComboSystemComponent::URGX_ComboSystemComponent()
 {
@@ -17,11 +19,16 @@ void URGX_ComboSystemComponent::EndPlay(EEndPlayReason::Type EndPlayReason)
 	Super::EndPlay(EndPlayReason);
 }
 
-FGameplayTag URGX_ComboSystemComponent::ManageInputToken(ERGXPlayerInputID PlayerInput)
+FGameplayTag URGX_ComboSystemComponent::ManageInputToken(ERGX_ComboTokenID PlayerInput, bool bIsOnAir, bool bCanAirCombo)
 {
 	if (!IsAttacking())
 	{
-		InitiateCombo(PlayerInput);
+		if (bIsOnAir == true && bCanAirCombo == false)
+		{
+			return FGameplayTag::RequestGameplayTag(FName("Combo.None"));
+		}
+
+		InitiateCombo(PlayerInput, bIsOnAir);
 		return CurrentAttack;
 	}
 
@@ -50,7 +57,7 @@ bool URGX_ComboSystemComponent::IsAttacking()
 	return CurrentAttack != FGameplayTag::RequestGameplayTag("Combo.None");
 }
 
-void URGX_ComboSystemComponent::SetNextComboAttack(ERGXPlayerInputID PlayerInput)
+void URGX_ComboSystemComponent::SetNextComboAttack(ERGX_ComboTokenID PlayerInput)
 {
 	if (bEnableComboFlag)
 	{
@@ -60,14 +67,27 @@ void URGX_ComboSystemComponent::SetNextComboAttack(ERGXPlayerInputID PlayerInput
 	}
 }
 
-void URGX_ComboSystemComponent::InitiateCombo(ERGXPlayerInputID PlayerInput)
+void URGX_ComboSystemComponent::InitiateCombo(ERGX_ComboTokenID PlayerInput, bool bIsOnAir)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Initiate Combo\n"));
-	NextAttack = FindNextAttack(PlayerInput);
-	CurrentAttack = NextAttack; // WARNING: Next attack is not being executed yet
+	// TODO: hardcodeada padre
+	if (bIsOnAir)
+	{
+		FRGX_ComboTransition* transition = ComboMap.Find(FGameplayTag::RequestGameplayTag(FName("Combo.Air.Light")));
+		if (transition)
+		{
+			NextAttack = FGameplayTag::RequestGameplayTag(FName("Combo.Air.Light"));
+			CurrentAttack = NextAttack;
+		}
+	}
+	else
+	{
+		NextAttack = FindNextAttack(PlayerInput);
+		CurrentAttack = NextAttack; // WARNING: Next attack is not being executed yet
+	}
 }
 
-FGameplayTag URGX_ComboSystemComponent::FindNextAttack(ERGXPlayerInputID PlayerInput)
+FGameplayTag URGX_ComboSystemComponent::FindNextAttack(ERGX_ComboTokenID PlayerInput)
 {
 	FRGX_ComboTransition* transition = ComboMap.Find(CurrentAttack);
 
@@ -89,10 +109,10 @@ void URGX_ComboSystemComponent::OnCombo()
 	bComboFlag = false;
 	bEnableComboFlag = false;
 
-	if (NextComboInput != ERGXPlayerInputID::None)
+	if (NextComboInput != ERGX_ComboTokenID::None)
 	{
 		NextAttack = FindNextAttack(NextComboInput);
-		NextComboInput = ERGXPlayerInputID::None;
+		NextComboInput = ERGX_ComboTokenID::None;
 		CurrentAttack = NextAttack; // WARNING: Next attack is not being executed yet
 		//UE_LOG(LogTemp, Warning, TEXT("Combo\n"));
 	}
@@ -123,7 +143,12 @@ void URGX_ComboSystemComponent::OnEndCombo()
 	NextAttack = FGameplayTag::RequestGameplayTag("Combo.None");
 	bComboFlag = false;
 	bEnableComboFlag = false;
-	NextComboInput = ERGXPlayerInputID::None;
+	NextComboInput = ERGX_ComboTokenID::None;
+
+	AActor* Owner = GetOwner();
+	UCharacterMovementComponent* CharacterMovementComponent = Owner->FindComponentByClass<UCharacterMovementComponent>();
+
+	CharacterMovementComponent->GravityScale = 3.0f; //TODO: hardcoded
 }
 
 void URGX_ComboSystemComponent::DrawDebugInfo()

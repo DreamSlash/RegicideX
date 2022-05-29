@@ -32,7 +32,7 @@ URGX_HitboxComponent* URGX_HitboxesManagerComponent::GetHitboxByTag(FGameplayTag
 		ComponentToReturn = *FoundComponent;
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Get Hitbox by tag: %s\n"), *IdentifierTag.ToString());
+	//UE_LOG(LogTemp, Warning, TEXT("Get Hitbox by tag: %s\n"), *IdentifierTag.ToString());
 
 	return ComponentToReturn;
 }

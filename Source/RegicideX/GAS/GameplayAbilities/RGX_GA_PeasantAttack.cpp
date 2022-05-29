@@ -23,7 +23,6 @@ void URGX_GA_PeasantAttack::ActivateAbility(
 
 	if (MontageToPlay && Character)
 	{
-		bool bPlayedMontageSuccessfully = false;
 		if (UAnimInstance* AnimInstance = ActorInfo->GetAnimInstance())
 		{
 			UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, MontageToPlay);

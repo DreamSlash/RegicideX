@@ -5,6 +5,23 @@
 #include "RGX_CombatAssistComponent.generated.h"
 
 class AActor;
+class ARGX_EnemyBase;
+
+USTRUCT()
+struct FRGX_ActorAngle
+{
+	GENERATED_BODY();
+
+public:
+
+	AActor* Actor = nullptr;
+	float Angle;
+};
+
+FORCEINLINE bool operator< (const FRGX_ActorAngle& lhs, const FRGX_ActorAngle& rhs)
+{
+	return lhs.Angle < rhs.Angle;
+}
 
 UCLASS(meta = (BlueprintSpawnableComponent))
 class REGICIDEX_API URGX_CombatAssistComponent : public UActorComponent
@@ -28,7 +45,7 @@ public:
 	void DisableMovementVector();
 
 	UFUNCTION(BlueprintCallable)
-	void AddMovementVector(FVector Direction, float Speed);
+	void AddMovementVector(const FVector Direction, const float Speed, const bool bNewIsAttacking);
 
 	UFUNCTION(BlueprintCallable)
 	void RemoveMovementVector();
@@ -38,17 +55,43 @@ public:
 
 protected:
 
-	/** Attack Auto Assist */
-	UPROPERTY(EditAnywhere)
-	float AutoAssistRadius = 300.0f;
+	void UpdateTarget();
 
+	TArray<AActor*> GetClosestEnemiesInRange(const float Range, const bool bSameFallingState) const;
+	ARGX_EnemyBase* GetFrontEnemy(const TArray<AActor*>& Enemies, const float AngleDiscardThreshHold = 180.0f);
+	void SetNewTarget(ARGX_EnemyBase* NewTarget);
+
+protected:
+
+	/** Auto Assist Targetting */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float AutoAssistCloseRadius = 300.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float AutoAssistMaxRadius = 1000.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float MaxRadiusAngleDiscard = 90.0f;
+
+	/* Enemies at that angle from player's forward will be checked against the camera frustum to discard
+	the ones outside */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float CheckCameraAngle = 30.0f;
+
+	uint32 NumEnemiesInsideFrustum = 0;
+	// --------------------------
+
+	/** Auto Assit Attack */
 	UPROPERTY(EditAnywhere)
 	float AutoAssistDot = 0.5f;
 
 	UPROPERTY(EditAnywhere)
 	float AutoAssistOffsetToEnemy = 200.0f;
 
-	AActor* Target = nullptr;
+	UPROPERTY(EditAnywhere)
+	float MaxAutoassistMove = 200.0f;
+	// ---------------------
+	ARGX_EnemyBase* Target = nullptr;
 	// ----------------------
 
 	/** Attack Movement */
@@ -61,6 +104,8 @@ protected:
 	float MoveVectorSpeed = 0.0f;
 
 	float AutoAssistMove = 0.0f;
+
+	bool bIsAttacking = false;
 
 	UPROPERTY()
 	bool bAddMoveVector = false;

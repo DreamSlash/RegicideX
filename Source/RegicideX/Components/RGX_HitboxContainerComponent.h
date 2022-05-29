@@ -17,8 +17,8 @@ class URGX_HitboxContainerComponent : public USceneComponent
 public:
 	URGX_HitboxContainerComponent();
 
-	virtual void BeginPlay() override;
-	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
+	void BeginPlay() override;
+	void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
 	UFUNCTION(BlueprintCallable)
 	void ActivateHitbox();

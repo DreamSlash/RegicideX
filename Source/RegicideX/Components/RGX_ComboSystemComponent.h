@@ -3,7 +3,7 @@
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
 #include "GameplayTags.h"
-#include "../Enums/RGX_InputEnums.h"
+#include "RegicideX/Enums/RGX_InputEnums.h"
 #include "RGX_ComboSystemComponent.generated.h"
 
 USTRUCT()
@@ -13,7 +13,7 @@ struct FRGX_ComboTransition
 
 	// Possible inputs to continue with the combo
 	UPROPERTY(EditAnywhere)
-	TArray<ERGXPlayerInputID> NextPotentialInputs;
+	TArray<ERGX_ComboTokenID> NextPotentialInputs;
 
 	// Possible attack transitions
 	UPROPERTY(EditAnywhere)
@@ -31,7 +31,7 @@ public:
 	void BeginPlay() override;
 	void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
-	FGameplayTag ManageInputToken(ERGXPlayerInputID PlayerInput);
+	FGameplayTag ManageInputToken(ERGX_ComboTokenID PlayerInput, bool bIsOnAir, bool bCanAirCombo);
 	FGameplayTag GetNextAttack();
 	void CleanStatus(int32 ActivatedAbilities);
 
@@ -49,25 +49,28 @@ protected:
 	FGameplayTag NextAttack = FGameplayTag::RequestGameplayTag("Combo.None");
 
 	UPROPERTY()
-	ERGXPlayerInputID NextComboInput;
+	ERGX_ComboTokenID NextComboInput;
 
 	UPROPERTY()
 	bool bEnableComboFlag = false;
 
 	UPROPERTY()
 	bool bComboFlag = false;
+
+	UPROPERTY()
+	bool bAirComboFlag = false;
 	// ------------------------
 
 protected:
 
 	UFUNCTION()
-	void SetNextComboAttack(ERGXPlayerInputID PlayerInput);
+	void SetNextComboAttack(ERGX_ComboTokenID PlayerInput);
 
 	UFUNCTION()
-	void InitiateCombo(ERGXPlayerInputID PlayerInput);
+	void InitiateCombo(ERGX_ComboTokenID PlayerInput, bool bIsOnAir);
 
 	UFUNCTION()
-	FGameplayTag FindNextAttack(ERGXPlayerInputID PlayerInput);
+	FGameplayTag FindNextAttack(ERGX_ComboTokenID PlayerInput);
 
 public:
 

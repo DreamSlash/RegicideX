@@ -16,7 +16,7 @@ void URGX_GA_PeasantWanderTask::ActivateAbility(
 	ARGX_Peasant* Self = Cast<ARGX_Peasant>(ActorInfo->AvatarActor);
 
 	FVector2D Offset = FVector2D(FMath::RandRange(-100.0f, 100.0f), FMath::RandRange(-100.0f, 100.0f));
-	FVector WanderingPoint = FVector(Self->IdlePosition.X + Offset.X, Self->IdlePosition.Y + Offset.Y, Self->IdlePosition.Z);
+	//FVector WanderingPoint = FVector(Self->IdlePosition.X + Offset.X, Self->IdlePosition.Y + Offset.Y, Self->IdlePosition.Z);
 
 }
 
