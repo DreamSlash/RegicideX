@@ -5,6 +5,7 @@
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 ARGX_PlayerCameraManager::ARGX_PlayerCameraManager()
 {
@@ -27,7 +28,7 @@ float ARGX_PlayerCameraManager::GetAngleFrom2DDirection(FVector2D Direction)
 {
 	float Angle = FMath::RadiansToDegrees(FMath::Acos(Direction.Y));
 	Angle = Direction.X < 0.0f ? 360.0f - Angle : Angle;
-	UE_LOG(LogTemp, Warning, TEXT("Angle: %f\n"), Angle);
+	//UE_LOG(LogTemp, Warning, TEXT("Angle: %f\n"), Angle);
 	return Angle;
 }
 
@@ -69,7 +70,7 @@ void ARGX_PlayerCameraManager::ProcessViewRotation(float DeltaTime, FRotator& Ou
 
 	if (GoingToTargetAngle == true)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Going to target angle\n"));
+		//UE_LOG(LogTemp, Warning, TEXT("Going to target angle\n"));
 		const float RotationChange = TargetAngleFromEventSpeed * DeltaTime;
 
 		FRotator TargetRotation = TargetAngleFromEvent;
@@ -97,7 +98,7 @@ void ARGX_PlayerCameraManager::ProcessViewRotation(float DeltaTime, FRotator& Ou
 	// Automatic alignment if no input is received from the player in align delay time
 	else if (GetWorld()->TimeSeconds - LastManualRotationTime < AlignDelay == false)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Automatic Alignment\n"));
+		//UE_LOG(LogTemp, Warning, TEXT("Automatic Alignment\n"));
 		FVector2D Movement = FVector2D(
 			FocusLocation.Y - PreviousFocusLocation.Y,
 			FocusLocation.X - PreviousFocusLocation.X);
@@ -148,13 +149,83 @@ void ARGX_PlayerCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, flo
 	
 	// TODO: Refactor i que no sembli copiat
 
+	FVector CameraLocation;
+	FRotator CameraRotation;
+	GetCameraViewPoint(CameraLocation, CameraRotation);
+
+	FVector CameraForward = CameraRotation.Vector();
+	CameraForward.Z = 0.0f;
+	CameraForward.Normalize();
+
+	FVector CameraRight = -FVector::CrossProduct(CameraForward, FVector::UpVector);
+	CameraRight.Z = 0.0f;
+	CameraRight.Normalize();
+
+	//UE_LOG(LogTemp, Warning, TEXT("Camera Forward: %f, %f, %f\n"), CameraForward.X, CameraForward.Y, CameraForward.Z);
+	//UE_LOG(LogTemp, Warning, TEXT("Camera Right: %f, %f, %f\n"), CameraRight.X, CameraRight.Y, CameraRight.Z);
+
+	FVector FTargetLocation = OutVT.Target->GetActorLocation();
+	FVector TargetToFocus = FocusLocation - FTargetLocation;
+	float TargetToFocusDistance = TargetToFocus.Size();
+	TargetToFocus.Normalize();
+
+	FVector2D Projection;
+	Projection.X = FVector::DotProduct(TargetToFocus, CameraForward);
+	Projection.Y = FVector::DotProduct(TargetToFocus, CameraRight);
+	Projection.Normalize();
+
+	//UE_LOG(LogTemp, Warning, TEXT("Focus Projection: %f, %f, %f\n"), Projection.X, Projection.Y, Projection.Z);
+
+	const FVector2D RelativeDistance = -Projection * TargetToFocusDistance;
+	UE_LOG(LogTemp, Warning, TEXT("Relative Distance: %f, %f\n"), RelativeDistance.X, RelativeDistance.Y);
+
 	PreviousFocusLocation = FocusLocation;
 
-	FVector TargetOffset = SpringArmComponent->TargetOffset;
+	FVector SocketOffset = SpringArmComponent->SocketOffset;
 	FTViewTarget TargetView = OutVT;
-
+	
 	const FVector TargetLocation = TargetView.Target->GetActorLocation();
 	
+	if (HorizontalFocusRadius > 0.0f)
+	{
+		float t = 1.0f;
+		if (FMath::Abs(RelativeDistance.Y) > 0.01f && FocusCentering > 0.0f)
+		{
+			t = FMath::Pow(1 - FocusCentering, DeltaTime);
+		}
+
+		if (FMath::Abs(RelativeDistance.Y) > HorizontalFocusRadius)
+		{
+			t = FMath::Min(t, HorizontalFocusRadius / FMath::Abs(RelativeDistance.Y));
+		}
+
+		FVector Delta = TargetLocation - FocusLocation;
+		Delta.Z = 0.0f;
+		Delta = -Delta;
+
+		UKismetSystemLibrary::DrawDebugLine(GetWorld(), TargetLocation, FocusLocation, FLinearColor::Green, 1.0f, 2.0f);
+
+		float AmountForward = FVector::DotProduct(Delta, CameraForward);
+		float AmountRight = FVector::DotProduct(Delta, CameraRight);
+
+		AmountForward *= 0.05;
+		AmountRight *= 0.97;
+
+		SocketOffset.X = AmountForward;
+		SocketOffset.Y = AmountRight;
+		
+		FocusLocation = TargetLocation + AmountRight * CameraRight + AmountForward * CameraForward;
+
+		//FocusLocation = FMath::Lerp(TargetLocation, FocusLocation, t);
+		UKismetSystemLibrary::DrawDebugLine(GetWorld(), FocusLocation, FocusLocation * FVector::UpVector * 100.0f, FLinearColor::Red, 1.0f, 2.0f);
+		//SocketOffset.Y = -RelativeDistance.Y;
+	}
+	else
+	{
+		FocusLocation = TargetLocation;
+	}
+	
+	/*
 	if (FocusRadius > 0.0f)
 	{
 		float Distance = FVector::Distance(TargetLocation, FocusLocation);
@@ -173,12 +244,13 @@ void ARGX_PlayerCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, flo
 		}
 
 		FocusLocation = FMath::Lerp(TargetLocation, FocusLocation, t);
-		TargetOffset = FocusLocation - TargetLocation;
+		TargetOffset.Y = RelativeDistance.Y;
 	}
 	else
 	{
 		FocusLocation = TargetLocation;
 	}
-	
-	SpringArmComponent->TargetOffset = TargetOffset;
+	*/
+
+	SpringArmComponent->SocketOffset = SocketOffset;
 }

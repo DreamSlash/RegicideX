@@ -48,8 +48,20 @@ protected:
 	FVector FocusLocation;
 	FVector PreviousFocusLocation;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerCameraManager)
+	float SocketOffsetY = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = PlayerCameraManager)
+	float TargetOffsetY = 0.0f;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	float FocusRadius = 100.0f;
+	float FocusRadius = 300.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float HorizontalFocusRadius = 300.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float VerticalFocusRadius = 100.0f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
 	float FocusCentering = 0.5f;
