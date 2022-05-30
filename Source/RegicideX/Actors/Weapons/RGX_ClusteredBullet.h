@@ -33,7 +33,10 @@ public:
 		USceneComponent* RootScene;
 
 	UPROPERTY(EditDefaultsOnly)
-		float speed = 10.0f;
+		float Speed = 10.0f;
+
+	UPROPERTY(EditDefaultsOnly)
+		float LifeSpan = 10.0f;
 
 	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	//	UMCV_AbilitySystemComponent* AbilitySystemComponent = nullptr;

@@ -117,6 +117,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = HitboxComponent)
 	TEnumAsByte<ERGX_DestroyOnOverlapType> DestroyOnOverlap = ERGX_DestroyOnOverlapType::None;
 
+	//UPROPERTY(EditDefaultsOnly, Category = HitboxComponent)
+	//bool bCanReceiveEffects = true;
+
 	UChildActorComponent* ChildActorComponent = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = HitboxComponent)

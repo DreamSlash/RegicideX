@@ -26,21 +26,16 @@ void URGX_GA_PeasantReactionHit::ActivateAbility(
 	}
 
 	// Launch Peasant a small bit backwards
-	ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(Character);
-	//FVector InstigatorLocation	= TriggerEventData->Instigator->GetActorLocation();
+	ARGX_Peasant* Peasant		= Cast<ARGX_Peasant>(Character);
 	FVector PeasantLocation		= Peasant->GetActorLocation();
 	FVector TargetActorForward	= Peasant->TargetActor->GetActorForwardVector();
-
-	//FVector VectorToInstigator = InstigatorLocation - PeasantLocation;
-	//FRotator Rotation = VectorToInstigator.Rotation();
-	//Peasant->SetActorRotation(Rotation);
 
 	UCharacterMovementComponent* PeasantMovementComponent = Peasant->GetCharacterMovement();
 
 	if (PeasantMovementComponent->IsFalling())
 	{
 		PeasantMovementComponent->GravityScale = 0.0f;
-		Character->LaunchCharacter(FVector(0.0, 0.0, -1.0), true, true);
+		Character->LaunchCharacter(FVector(0.0, 0.0, -1.0), true, true); // ¿ Don't know why it is needed to make enemy stay on air ?
 	}
 	else {
 		Character->LaunchCharacter(TargetActorForward * 1000.0f, true, false);

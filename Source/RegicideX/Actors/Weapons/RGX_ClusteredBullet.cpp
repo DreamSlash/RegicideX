@@ -22,7 +22,8 @@ void ARGX_ClusteredBullet::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	GetWorld()->GetTimerManager().SetTimer(DestroyTimeHandle, this, &ARGX_ClusteredBullet::HandleDeath, 10.0f, false);
+	if(LifeSpan > 0.0f)
+		GetWorld()->GetTimerManager().SetTimer(DestroyTimeHandle, this, &ARGX_ClusteredBullet::HandleDeath, LifeSpan, false);
 }
 
 void ARGX_ClusteredBullet::HandleDeath()
@@ -34,7 +35,7 @@ void ARGX_ClusteredBullet::HandleDeath()
 void ARGX_ClusteredBullet::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	SetActorLocation(GetActorLocation() + GetActorForwardVector() * speed);
+	SetActorLocation(GetActorLocation() + GetActorForwardVector() * Speed);
 }
 
 void ARGX_ClusteredBullet::SetGenericTeamId(const FGenericTeamId& TeamID)
