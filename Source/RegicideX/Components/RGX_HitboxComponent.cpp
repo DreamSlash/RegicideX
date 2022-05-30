@@ -289,7 +289,13 @@ void URGX_HitboxComponent::ApplyEffects(AActor* OtherActor)
 	}
 }
 
-void URGX_HitboxComponent::OnComponentOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+void URGX_HitboxComponent::OnComponentOverlap(
+	UPrimitiveComponent* OverlappedComponent, 
+	AActor* OtherActor, 
+	UPrimitiveComponent* OtherComp, 
+	int32 OtherBodyIndex, 
+	bool bFromSweep, 
+	const FHitResult& SweepResult)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("On Component Overlap Hitbox\n"));
 	if (bEffectActivated == false)
@@ -313,14 +319,40 @@ void URGX_HitboxComponent::OnComponentOverlap(UPrimitiveComponent* OverlappedCom
 	{
 		OwnerActor = GetOwner();
 	}
-
-	const IGenericTeamAgentInterface* TeamAgentA = Cast<const IGenericTeamAgentInterface>(OwnerActor);
 	
+
+	UE_LOG(LogTemp, Warning, TEXT("Other component name is %s."), *OtherComp->GetName());
+	URGX_HitboxComponent* HitboxComponent = Cast<URGX_HitboxComponent>(OtherComp->GetAttachParent());
+
 	ETeamAttitude::Type Attitude = FGenericTeamId::GetAttitude(OwnerActor, OtherActor);
-	if (Attitude == TeamToApply)
+	if (Attitude == TeamToApply && HitboxComponent == nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Hitbox Overlap"));
 		ActorsHit.Add(OtherActor);
 		ApplyEffects(OtherActor);
 	}
+
+	switch (DestroyOnOverlap)
+	{
+	case ERGX_DestroyOnOverlapType::Overlap:
+		DestroyOwnerOnOverlap();
+		break;
+	case ERGX_DestroyOnOverlapType::Hostile:
+		if (Attitude == ETeamAttitude::Type::Hostile) {
+			DestroyOwnerOnOverlap();
+		}
+		break;
+	case ERGX_DestroyOnOverlapType::Dynamic:
+		if (OtherActor->IsRootComponentMovable()) {
+			DestroyOwnerOnOverlap();
+		}
+		break;
+	default:
+		break;
+	}
+}
+
+void URGX_HitboxComponent::DestroyOwnerOnOverlap()
+{
+	GetOwner()->Destroy();
 }
