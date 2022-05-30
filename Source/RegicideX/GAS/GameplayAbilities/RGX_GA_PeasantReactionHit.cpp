@@ -7,6 +7,7 @@
 #include "AIController.h"
 #include "BrainComponent.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "RegicideX/Actors/Enemies/RGX_Peasant.h"
 
 void URGX_GA_PeasantReactionHit::ActivateAbility(
@@ -26,22 +27,26 @@ void URGX_GA_PeasantReactionHit::ActivateAbility(
 
 	// Launch Peasant a small bit backwards
 	ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(Character);
-	FVector TargetActorForward = Peasant->TargetActor->GetActorForwardVector();
-	Character->LaunchCharacter(TargetActorForward * 1000.0f, true, false);
+	//FVector InstigatorLocation	= TriggerEventData->Instigator->GetActorLocation();
+	FVector PeasantLocation		= Peasant->GetActorLocation();
+	FVector TargetActorForward	= Peasant->TargetActor->GetActorForwardVector();
 
-	if (MontageToPlay)
+	//FVector VectorToInstigator = InstigatorLocation - PeasantLocation;
+	//FRotator Rotation = VectorToInstigator.Rotation();
+	//Peasant->SetActorRotation(Rotation);
+
+	UCharacterMovementComponent* PeasantMovementComponent = Peasant->GetCharacterMovement();
+
+	if (PeasantMovementComponent->IsFalling())
 	{
-		bool bPlayedMontageSuccessfully = false;
-		if (UAnimInstance* AnimInstance = ActorInfo->GetAnimInstance())
-		{
-			UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, MontageToPlay);
-			PlayMontageTask->OnBlendOut.AddDynamic(this, &URGX_GA_PeasantReactionHit::OnEndMontage);
-			PlayMontageTask->OnCancelled.AddDynamic(this, &URGX_GA_PeasantReactionHit::OnEndMontage);
-			PlayMontageTask->OnCompleted.AddDynamic(this, &URGX_GA_PeasantReactionHit::OnEndMontage);
-			PlayMontageTask->OnInterrupted.AddDynamic(this, &URGX_GA_PeasantReactionHit::OnEndMontage);
-			PlayMontageTask->ReadyForActivation();
-		}
+		PeasantMovementComponent->GravityScale = 0.0f;
+		Character->LaunchCharacter(FVector(0.0, 0.0, -1.0), true, true);
 	}
+	else {
+		Character->LaunchCharacter(TargetActorForward * 1000.0f, true, false);
+	}
+
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
 void URGX_GA_PeasantReactionHit::EndAbility(
@@ -53,15 +58,10 @@ void URGX_GA_PeasantReactionHit::EndAbility(
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 
-	//Check if ASC is alive, and remove TakeDamage tag
-	if (UAbilitySystemComponent* ASC = ActorInfo->AbilitySystemComponent.Get())
-	{
-		ASC->RemoveLooseGameplayTag(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Combat.TakeDamage")));
-	}
-
 	ACharacter* Character = Cast<ACharacter>(ActorInfo->OwnerActor);
 	if (Character)
 	{
+		// Restart brain logic
 		AAIController* Controller = Cast<AAIController>(Character->GetController());
 		ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(Character);
 		if (Controller) {
@@ -69,6 +69,10 @@ void URGX_GA_PeasantReactionHit::EndAbility(
 			if(Peasant->TargetActor)
 				Controller->SetFocus(Peasant->TargetActor);
 		}
+
+		// Get gravity scale back
+		UCharacterMovementComponent* PeasantMovementComponent = Peasant->GetCharacterMovement();
+		PeasantMovementComponent->GravityScale = 3.0f;
 	}
 }
 

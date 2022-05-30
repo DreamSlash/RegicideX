@@ -323,4 +323,28 @@ void URGX_HitboxComponent::OnComponentOverlap(UPrimitiveComponent* OverlappedCom
 		ActorsHit.Add(OtherActor);
 		ApplyEffects(OtherActor);
 	}
+
+	switch (DestroyOnOverlap)
+	{
+	case ERGX_DestroyOnOverlapType::Overlap:
+		DestroyOwnerOnOverlap();
+		break;
+	case ERGX_DestroyOnOverlapType::Hostile:
+		if (Attitude == ETeamAttitude::Type::Hostile) {
+			DestroyOwnerOnOverlap();
+		}
+		break;
+	case ERGX_DestroyOnOverlapType::Dynamic:
+		if (OtherActor->IsRootComponentMovable()) {
+			DestroyOwnerOnOverlap();
+		}
+		break;
+	default:
+		break;
+	}
+}
+
+void URGX_HitboxComponent::DestroyOwnerOnOverlap()
+{
+	GetOwner()->Destroy();
 }

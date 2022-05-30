@@ -35,6 +35,9 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 		float speed = 10.0f;
 
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	//	UMCV_AbilitySystemComponent* AbilitySystemComponent = nullptr;
+
 private:
 	FTimerHandle DestroyTimeHandle;
 
