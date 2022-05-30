@@ -71,72 +71,48 @@ void ARGX_RoundGameMode::OnEnemyDeath(const int Type)
 
 void ARGX_RoundGameMode::StartNextRound()
 {
+
 	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, TEXT("Next Round"));
 	ARGX_ScoreGameState* GameStateTemp = GetGameState<ARGX_ScoreGameState>(); 
 	GameStateTemp->StartNextRound();
+
+	// Spawn enemies 4 seconds after round started.
 	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &ARGX_RoundGameMode::SpawnEnemies, 4.0f, false);
-	//GameStateTemp->SetNumEnemies(SpawnEnemies());
 }
 
 void ARGX_RoundGameMode::SpawnEnemies()
 {
 	int SpawnedEnemies = 0;
 	ARGX_ScoreGameState* GameStateTemp = GetGameState<ARGX_ScoreGameState>();
-	// @todo: Refactor to use Asset Manager instead of Enemy Datatable
-	if(UAssetManager* Manager = UAssetManager::GetIfValid())
+	if(DTRounds == nullptr || DTEnemies == nullptr)
 	{
-		if(DTRounds == nullptr || DTEnemies == nullptr)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Error"));
-			GameStateTemp->SetNumEnemies(SpawnedEnemies);
-		}
-
-		/*
-		FPrimaryAssetId AssetId = GetPrimaryAssetId();
-		
-		const FName AssetType = FName("EnemyInfo");
-		const FPrimaryAssetType* EnemyType = new FPrimaryAssetType(AssetType);
-
-		TArray<FPrimaryAssetId> EnemyList;
-		Manager->GetPrimaryAssetIdList(*EnemyType,EnemyList);
-
-		for (const FPrimaryAssetId& EnemyId : EnemyList)
-		{
-			FAssetData AssetDataToParse;
-			Manager->GetPrimaryAssetData(EnemyId, AssetDataToParse);
-
-			// WIP
-		}*/
-		
-
-
-		// @todo: Investigate call round row by index and not by name
-		FString RoundName = RoundName.FromInt(GetGameState<ARGX_ScoreGameState>()->GetRound());
-		RoundName = "Round" + RoundName;
-		const FName FRoundName = FName(RoundName);
-		const FRGX_RoundDataTable* RoundInfo = DTRounds->FindRow<FRGX_RoundDataTable>(FRoundName, "");
-
-		const TArray<FName> EnemyNames = DTEnemies->GetRowNames();
-		const int NumEnemies = EnemyNames.Num();
-
-		// For each enemy type
-		for (int i = 0; i < NumEnemies; ++i)
-		{
-			GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Purple, EnemyNames[i].ToString());
-
-			// For each enemy to spawn
-			for(int j = 0; j < RoundInfo->EnemiesToSpawn[i]; ++j)
-			{
-				GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Enemy Spawn Call"));
-				SpawnEnemy(DTEnemies->FindRow<FRGX_EnemiesDataTable>(EnemyNames[i], "")->EnemyInfo);
-				++SpawnedEnemies;
-			}
-		}
-		
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Error"));
 		GameStateTemp->SetNumEnemies(SpawnedEnemies);
 	}
-	
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Error"));
+
+	// @todo: Investigate call round row by index and not by name
+	FString RoundName = RoundName.FromInt(GetGameState<ARGX_ScoreGameState>()->GetRound());
+	RoundName = "Round" + RoundName;
+	const FName FRoundName = FName(RoundName);
+	const FRGX_RoundDataTable* RoundInfo = DTRounds->FindRow<FRGX_RoundDataTable>(FRoundName, "");
+
+	const TArray<FName> EnemyNames = DTEnemies->GetRowNames();
+	const int NumEnemies = EnemyNames.Num();
+
+	// For each enemy type
+	for (int i = 0; i < NumEnemies; ++i)
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Purple, EnemyNames[i].ToString());
+
+		// For each enemy to spawn
+		for(int j = 0; j < RoundInfo->EnemiesToSpawn[i]; ++j)
+		{
+			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Enemy Spawn Call"));
+			SpawnEnemy(DTEnemies->FindRow<FRGX_EnemiesDataTable>(EnemyNames[i], "")->EnemyInfo);
+			++SpawnedEnemies;
+		}
+	}
+		
 	GameStateTemp->SetNumEnemies(SpawnedEnemies);
 }
 
@@ -194,7 +170,6 @@ void ARGX_RoundGameMode::StartGameSpawn()
 	}
 
 	SpawnEnemies();
-	//GetGameState<ARGX_ScoreGameState>()->SetNumEnemies(SpawnEnemies());
 }
 
 void ARGX_RoundGameMode::CleanCorpses()
