@@ -34,7 +34,6 @@ int ARGX_RoundGameMode::GetScore() const
 void ARGX_RoundGameMode::SetScore(const int NewScore)
 {
 	GetGameState<ARGX_ScoreGameState>()->SetScore(NewScore);
-
 }
 
 int ARGX_RoundGameMode::GetRound() const
@@ -55,7 +54,7 @@ void ARGX_RoundGameMode::BeginPlay()
 	GetGameState<ARGX_ScoreGameState>()->SetStateDefaults();
 	PopulateSpawnerList();
 	// @todo: call enter cinematic
-	GetWorld()->GetTimerManager().SetTimer(FirstSpawnTimerHandle, this, &ARGX_RoundGameMode::StartGameSpawn, 4.0f, false);
+	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &ARGX_RoundGameMode::StartGameSpawn, 4.0f, false);
 }
 
 void ARGX_RoundGameMode::OnEnemyDeath(const int Type)
@@ -75,18 +74,21 @@ void ARGX_RoundGameMode::StartNextRound()
 	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, TEXT("Next Round"));
 	ARGX_ScoreGameState* GameStateTemp = GetGameState<ARGX_ScoreGameState>(); 
 	GameStateTemp->StartNextRound();
-	GameStateTemp->SetNumEnemies(SpawnEnemies());
+	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &ARGX_RoundGameMode::SpawnEnemies, 4.0f, false);
+	//GameStateTemp->SetNumEnemies(SpawnEnemies());
 }
 
-int ARGX_RoundGameMode::SpawnEnemies()
+void ARGX_RoundGameMode::SpawnEnemies()
 {
+	int SpawnedEnemies = 0;
+	ARGX_ScoreGameState* GameStateTemp = GetGameState<ARGX_ScoreGameState>();
 	// @todo: Refactor to use Asset Manager instead of Enemy Datatable
 	if(UAssetManager* Manager = UAssetManager::GetIfValid())
 	{
 		if(DTRounds == nullptr || DTEnemies == nullptr)
 		{
 			GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Error"));
-			return 0;
+			GameStateTemp->SetNumEnemies(SpawnedEnemies);
 		}
 
 		/*
@@ -106,7 +108,7 @@ int ARGX_RoundGameMode::SpawnEnemies()
 			// WIP
 		}*/
 		
-		int SpawnedEnemies = 0;
+
 
 		// @todo: Investigate call round row by index and not by name
 		FString RoundName = RoundName.FromInt(GetGameState<ARGX_ScoreGameState>()->GetRound());
@@ -131,11 +133,11 @@ int ARGX_RoundGameMode::SpawnEnemies()
 			}
 		}
 		
-		return SpawnedEnemies;
+		GameStateTemp->SetNumEnemies(SpawnedEnemies);
 	}
 	
 	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Error"));
-	return 0;
+	GameStateTemp->SetNumEnemies(SpawnedEnemies);
 }
 
 void ARGX_RoundGameMode::SpawnEnemy(UDataAsset* EnemyInfo)
@@ -191,7 +193,8 @@ void ARGX_RoundGameMode::StartGameSpawn()
 		TargetActor = Target;
 	}
 
-	GetGameState<ARGX_ScoreGameState>()->SetNumEnemies(SpawnEnemies());
+	SpawnEnemies();
+	//GetGameState<ARGX_ScoreGameState>()->SetNumEnemies(SpawnEnemies());
 }
 
 void ARGX_RoundGameMode::CleanCorpses()
