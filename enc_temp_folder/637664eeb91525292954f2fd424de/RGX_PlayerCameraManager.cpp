@@ -45,17 +45,7 @@ void ARGX_PlayerCameraManager::DoUpdateCamera(float DeltaTime)
 void ARGX_PlayerCameraManager::NotifyInput()
 {
 	LastManualRotationTime = GetWorld()->TimeSeconds;
-	//UE_LOG(LogTemp, Warning, TEXT("Camera Input\n"));
-}
-
-void ARGX_PlayerCameraManager::SetTargetAngle(const FRotator TargetAngle, const float RotationSpeed, const bool bOverrideRoll, const bool bOverridePitch, const bool bOverrideYaw)
-{
-	GoingToTargetAngle = true;
-	TargetAngleFromEvent = TargetAngle;
-	TargetAngleFromEventSpeed = RotationSpeed;
-	bTargetAngleOverrideRoll = bOverrideRoll;
-	bTargetAngleOverridePitch = bOverridePitch;
-	bTargetAngleOverrideYaw = bOverrideYaw;
+	UE_LOG(LogTemp, Warning, TEXT("Camera Input\n"));
 }
 
 void ARGX_PlayerCameraManager::ProcessViewRotation(float DeltaTime, FRotator& OutViewRotation, FRotator& OutDeltaRot)
@@ -67,35 +57,9 @@ void ARGX_PlayerCameraManager::ProcessViewRotation(float DeltaTime, FRotator& Ou
 		NotifyInput();
 	}
 
-	if (GoingToTargetAngle == true)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Going to target angle\n"));
-		const float RotationChange = TargetAngleFromEventSpeed * DeltaTime;
-
-		FRotator TargetRotation = TargetAngleFromEvent;
-		TargetRotation.Roll = bTargetAngleOverrideRoll ? TargetRotation.Roll : OutViewRotation.Roll;
-		TargetRotation.Pitch = bTargetAngleOverridePitch ? TargetRotation.Pitch : OutViewRotation.Pitch;
-		TargetRotation.Yaw = bTargetAngleOverrideYaw ? TargetRotation.Yaw : OutViewRotation.Yaw;
-
-		OutViewRotation = FMath::Lerp(OutViewRotation.Quaternion(), TargetRotation.Quaternion(), RotationChange).Rotator();
-
-
-		const bool bHasArrived = (TargetRotation - OutViewRotation).IsNearlyZero(3.0f);
-
-		if (bHasArrived == true)
-		{
-			//UE_LOG(LogTemp, Warning, TEXT("Has Arrived\n"));
-			GoingToTargetAngle = false;
-			TargetAngleFromEvent = FRotator(0.0f);
-			TargetAngleFromEventSpeed = 0.0f;
-			bTargetAngleOverrideRoll = false;
-			bTargetAngleOverridePitch = false;
-			bTargetAngleOverrideYaw = false;
-		}
-	}
 	// TODO: Should not autorotate when colliding with obstacles
 	// Automatic alignment if no input is received from the player in align delay time
-	else if (GetWorld()->TimeSeconds - LastManualRotationTime < AlignDelay == false)
+	if (GetWorld()->TimeSeconds - LastManualRotationTime < AlignDelay == false)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Automatic Alignment\n"));
 		FVector2D Movement = FVector2D(

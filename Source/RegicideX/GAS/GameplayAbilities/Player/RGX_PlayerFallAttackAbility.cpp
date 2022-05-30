@@ -2,6 +2,7 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "RegicideX/Character/RGX_PlayerCharacter.h"
+#include "RegicideX/Character/RGX_PlayerCharacterController.h"
 #include "RegicideX/Components/RGX_CombatAssistComponent.h"
 #include "RegicideX/Components/RGX_HitboxesManagerComponent.h"
 #include "RegicideX/Components/RGX_HitboxComponent.h"
@@ -35,6 +36,10 @@ void URGX_PlayerFallAttackAbility::ActivateAbility(const FGameplayAbilitySpecHan
 
 	ARGX_PlayerCharacter* PlayerCharacter = Cast<ARGX_PlayerCharacter>(ActorInfo->AvatarActor);
 	PlayerCharacter->DisableMovementInput();
+
+	ARGX_PlayerCharacterController* PlayerController = Cast<ARGX_PlayerCharacterController>(ActorInfo->PlayerController);
+	PlayerController->OnStartFallAttack();
+
 	UE_LOG(LogTemp, Warning, TEXT("Activate Fall Attack\n"));
 }
 
@@ -42,6 +47,9 @@ void URGX_PlayerFallAttackAbility::EndAbility(const FGameplayAbilitySpecHandle H
 {
 	ARGX_PlayerCharacter* PlayerCharacter = Cast<ARGX_PlayerCharacter>(CurrentActorInfo->AvatarActor);
 	PlayerCharacter->EnableMovementInput();
+
+	ARGX_PlayerCharacterController* PlayerController = Cast<ARGX_PlayerCharacterController>(ActorInfo->PlayerController);
+	PlayerController->OnEndFallAttack();
 
 	URGX_HitboxesManagerComponent* HitboxManagerComponent = PlayerCharacter->FindComponentByClass<URGX_HitboxesManagerComponent>();
 	URGX_HitboxComponent* Hitbox = HitboxManagerComponent->GetHitboxByTag(HitboxTag);
