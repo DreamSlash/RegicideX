@@ -20,7 +20,7 @@ void ARGX_PlayerCameraManager::BeginPlay()
 	SpringArmComponent = GetOwningPlayerController()->GetCharacter()->FindComponentByClass<USpringArmComponent>();
 	if (SpringArmComponent == nullptr)
 	{
-		UE_LOG(LogTemp, Error, TEXT("Spring Arm Component in PlayerCameraManager is NULLPTR\n"));
+		//UE_LOG(LogTemp, Error, TEXT("Spring Arm Component in PlayerCameraManager is NULLPTR\n"));
 	}
 }
 
