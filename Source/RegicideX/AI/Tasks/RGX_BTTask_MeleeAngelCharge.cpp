@@ -58,7 +58,8 @@ void URGX_BTTask_MeleeAngelCharge::TickTask(UBehaviorTreeComponent& OwnerComp, u
 {
 	TaskTime += DeltaSeconds;
 	float dist = FVector::Distance(MeleeAngelPawn->GetActorLocation(), GoalLocation);
-	if (TaskTime >= MaxTime || MeleeAngelPawn->bCharged || dist <= 10.0f)
+	UE_LOG(LogTemp, Warning, TEXT("Dist to goal pos: %f"), dist);
+	if (TaskTime >= MaxTime || MeleeAngelPawn->bCharged || dist <= 30.0f)
 	{
 		TaskTime = 0.0f;
 		MeleeAngelPawn->bSimGravityDisabled = true;
