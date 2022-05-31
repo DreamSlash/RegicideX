@@ -35,6 +35,7 @@ class UMCV_AbilitySystemComponent;
 class URGX_HealthAttributeSet;
 class URGX_CombatAttributeSet;
 class UWidgetComponent;
+class URGX_HitboxesManagerComponent;
 
 UCLASS()
 class REGICIDEX_API ARGX_EnemyBase : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface, public IGenericTeamAgentInterface
@@ -73,6 +74,9 @@ protected:
 	// Debug
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UWidgetComponent* DebugAttributesWidgetComponent = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	URGX_HitboxesManagerComponent* HitboxesManager = nullptr;
 
 public:
 
