@@ -9,15 +9,12 @@
 
 #include "RGX_RoundGameMode.generated.h"
 
-
-/**
- * 
- */
 UCLASS()
 class REGICIDEX_API ARGX_RoundGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
 
+private:
 	UPROPERTY()
 	TArray<AActor*> EnemySpawners;
 
@@ -79,7 +76,7 @@ public:
 
 	/** Spawns enemies in the defined spawn points depending on the round. Returns the amount of enemies spawned. **/
 	UFUNCTION(BlueprintCallable)
-	int SpawnEnemies();
+	void SpawnEnemies();
 
 	/** Spawns enemy of the defined class **/
 	UFUNCTION(BlueprintCallable)
@@ -90,15 +87,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void PopulateSpawnerList();
 
-
-
+	// ¿ Should corpses be managed by themselves instead or being cleaned by game mode ?
 	void CleanCorpses();
 
 private:
 	/** Sets TargetActor to Player 0 Character and calls Spawn Enemies. Called at Begin Play**/
 	void StartGameSpawn();
 	
-	FTimerHandle FirstSpawnTimerHandle;
+	FTimerHandle SpawnTimerHandle;
 	
 	/*
 	UFUNCTION(BlueprintCallable)

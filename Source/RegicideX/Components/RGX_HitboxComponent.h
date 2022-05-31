@@ -26,6 +26,15 @@ struct FRGX_HitboxGameplayEvent
 	bool bActivated = false;
 };
 
+UENUM(BlueprintType)
+enum class ERGX_DestroyOnOverlapType : uint8
+{
+	None				UMETA(DisplayName = "None"),	// Never destroyed
+	Overlap				UMETA(DisplayName = "Overlap"),	// Destroy when overlapping anything
+	Hostile				UMETA(DisplayName = "Hostile"),	// Destroy when overlapping enemies
+	Dynamic				UMETA(DisplayName = "Dynamic")	// Destroy when overlapping any dynamics
+};
+
 UCLASS(BlueprintType, Blueprintable, meta = (BlueprintSpawnableComponent))
 class URGX_HitboxComponent : public USceneComponent
 {
@@ -74,6 +83,8 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void OnComponentOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+	void DestroyOwnerOnOverlap();
+
 protected:
 
 	UPROPERTY()
@@ -102,6 +113,12 @@ protected:
 
 	UPROPERTY()
 	bool bEffectActivated = false;
+
+	UPROPERTY(EditDefaultsOnly, Category = HitboxComponent)
+	TEnumAsByte<ERGX_DestroyOnOverlapType> DestroyOnOverlap = ERGX_DestroyOnOverlapType::None;
+
+	//UPROPERTY(EditDefaultsOnly, Category = HitboxComponent)
+	//bool bCanReceiveEffects = true;
 
 	UChildActorComponent* ChildActorComponent = nullptr;
 
