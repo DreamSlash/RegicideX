@@ -3,7 +3,6 @@
 
 #include "RGX_MageAngel.h"
 
-#include "RGX_GroupManager.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 ARGX_MageAngel::ARGX_MageAngel()

@@ -3,7 +3,6 @@
 
 #include "RGX_EnemySpawner.h"
 #include "BehaviorTree/BehaviorTree.h"
-#include "RGX_GroupManager.h"
 #include "RGX_Peasant.h"
 #include "Kismet/GameplayStatics.h"
 #include "Math/UnrealMathUtility.h"
@@ -35,10 +34,6 @@ ARGX_EnemyBase* ARGX_EnemySpawner::Spawn(const TSubclassOf<ARGX_EnemyBase> Enemy
 
 	const FVector Location = FMath::RandPointInBox(SpawnBox) + FVector(150.0f, 150.0f, 300.0f);
 	const FRotator Rotation(0.0f, 0.0f, 0.0f);
-
-	//ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(EnemyBP);
-	//if (Peasant)
-	//	Manager->AddPeasant(Peasant);
 
 	ARGX_EnemyBase* SpawnedEnemy = GetWorld()->SpawnActor<ARGX_EnemyBase>(EnemyBP, Location, Rotation);
 	return SpawnedEnemy;

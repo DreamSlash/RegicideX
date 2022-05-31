@@ -6,7 +6,6 @@
 #include "AIController.h"
 #include "BrainComponent.h"
 #include "RegicideX/Actors/Enemies/RGX_Peasant.h"
-#include "RegicideX/Actors/Enemies/RGX_GroupManager.h"
 #include "GameFramework/Character.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 
@@ -43,10 +42,6 @@ void URGX_GA_PeasantAttack::EndAbility(
 	bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-
-	ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(ActorInfo->OwnerActor);
-	if (Peasant)
-		Peasant->manager->SwitchFighter();
 }
 
 void URGX_GA_PeasantAttack::OnEndMontage()

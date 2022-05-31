@@ -9,7 +9,6 @@
 #include "BrainComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "RegicideX/Actors/Enemies/RGX_Peasant.h"
-#include "RegicideX/Actors/Enemies/RGX_GroupManager.h"
 #include "RegicideX/GameplayFramework/RGX_RoundGameMode.h"
 #include "GameFramework/Character.h"
 
