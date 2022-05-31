@@ -75,13 +75,13 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UWidgetComponent* DebugAttributesWidgetComponent = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	URGX_HitboxesManagerComponent* HitboxesManager = nullptr;
-
 public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FGenericTeamId CharacterTeam;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	URGX_HitboxesManagerComponent* HitboxesManager = nullptr;
 
 public:
 	// Sets default values for this character's properties

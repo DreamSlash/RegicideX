@@ -7,6 +7,8 @@
 #include "AIController.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "RegicideX/Components/RGX_HitboxComponent.h"
+#include "RegicideX/Components/RGX_HitboxesManagerComponent.h"
 
 EBTNodeResult::Type URGX_BTTask_MeleeAngelCharge::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
@@ -15,6 +17,10 @@ EBTNodeResult::Type URGX_BTTask_MeleeAngelCharge::ExecuteTask(UBehaviorTreeCompo
 	APawn* ControlledPawn = AIController->GetPawn();
 
 	MeleeAngelPawn = Cast<ARGX_MeleeAngel>(ControlledPawn);
+
+	URGX_HitboxComponent* Hitbox = MeleeAngelPawn->HitboxesManager->GetHitboxByTag(HitboxTag);
+
+	Hitbox->ActivateHitbox();
 
 	MeleeAngelPawn->bFlying = true;
 
