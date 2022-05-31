@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GenericTeamAgentInterface.h"
 #include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GA_CastSkillAbility.h"
 #include "RGX_GA_ClusteredProjectiles.generated.h"
 
@@ -23,6 +24,7 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<ARGX_ClusteredBullet> BulletBP;
 
+
 protected:
 	void ActivateAbility(
 		const FGameplayAbilitySpecHandle Handle, 
@@ -34,7 +36,8 @@ protected:
 			FGameplayTag EventTag, 
 			FGameplayEventData EventData);
 
+	UPROPERTY()
+	FGenericTeamId TeamIdToApply;
+
 	FTransform Transform;
-	FVector Location;
-	FQuat Rotation;
 };

@@ -91,10 +91,11 @@ protected:
 
 	// FGenericTeamId interface
 	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
-	virtual FGenericTeamId GetGenericTeamId() const override;
 	// End of FGenericTeamId interface
 
 public:
+	virtual FGenericTeamId GetGenericTeamId() const override;
+
 	/** Movement methods */
 	virtual void RotateToTarget(float DeltaTime);
 

@@ -325,7 +325,13 @@ void URGX_HitboxComponent::OnComponentOverlap(
 	URGX_HitboxComponent* HitboxComponent = Cast<URGX_HitboxComponent>(OtherComp->GetAttachParent());
 
 	ETeamAttitude::Type Attitude = FGenericTeamId::GetAttitude(OwnerActor, OtherActor);
-	if (Attitude == TeamToApply && HitboxComponent == nullptr)
+	const FGameplayTagContainer BlockingTags = TagsToBlockTheHit;
+	IGameplayTagAssetInterface* TagInterface = Cast<IGameplayTagAssetInterface>(OtherActor);
+	bool CanApplyEffect = false;
+	if (TagInterface)
+		if (TagInterface->HasAllMatchingGameplayTags(BlockingTags))
+			CanApplyEffect = true;
+	if (Attitude == TeamToApply && HitboxComponent == nullptr && CanApplyEffect)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Hitbox Overlap"));
 		ActorsHit.Add(OtherActor);
@@ -338,14 +344,16 @@ void URGX_HitboxComponent::OnComponentOverlap(
 		DestroyOwnerOnOverlap();
 		break;
 	case ERGX_DestroyOnOverlapType::Hostile:
-		if (Attitude == ETeamAttitude::Type::Hostile) {
+		if (Attitude == ETeamAttitude::Type::Hostile)
 			DestroyOwnerOnOverlap();
-		}
 		break;
 	case ERGX_DestroyOnOverlapType::Dynamic:
-		if (OtherActor->IsRootComponentMovable()) {
+		if (OtherActor->IsRootComponentMovable())
 			DestroyOwnerOnOverlap();
-		}
+		break;
+	case ERGX_DestroyOnOverlapType::EffectApplied:
+		if (CanApplyEffect)
+			DestroyOwnerOnOverlap();
 		break;
 	default:
 		break;
@@ -355,4 +363,17 @@ void URGX_HitboxComponent::OnComponentOverlap(
 void URGX_HitboxComponent::DestroyOwnerOnOverlap()
 {
 	GetOwner()->Destroy();
+}
+
+bool URGX_HitboxComponent::CheckIfEffectIsApplied(AActor* TargetActor)
+{
+	// If TargetActor met the requirements to avoid the effect, return false.
+	IGameplayTagAssetInterface* TagInterface = Cast<IGameplayTagAssetInterface>(TargetActor);
+	if (TagInterface)
+	{
+		const FGameplayTagContainer& BlockingTags = TagsToBlockTheHit;
+		if (TagInterface->HasAllMatchingGameplayTags(BlockingTags))
+			return false;
+	}
+	return true;
 }

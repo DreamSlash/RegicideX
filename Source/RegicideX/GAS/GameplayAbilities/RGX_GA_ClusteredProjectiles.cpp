@@ -19,6 +19,7 @@ void URGX_GA_ClusteredProjectiles::ActivateAbility(
 	const FVector Forward		= SpawnPoint->GetForwardVector();
 	const FVector Up			= SpawnPoint->GetUpVector();
 	Transform					= SpawnPoint->GetComponentTransform();
+	TeamIdToApply				= DistancePeasant->GetGenericTeamId();
 	
 	for (int i = 0; i < NumberProjectilesToFire; ++i)
 	{
@@ -38,7 +39,8 @@ void URGX_GA_ClusteredProjectiles::OnReceivedEvent(
 	for (const auto& Point : PointsToSpawn)
 	{
 		Transform.SetTranslation(Point);
-		GetWorld()->SpawnActor<ARGX_ClusteredBullet>(BulletBP, Transform);
+		ARGX_ClusteredBullet* Bullet = GetWorld()->SpawnActor<ARGX_ClusteredBullet>(BulletBP, Transform);
+		Bullet->SetGenericTeamId(TeamIdToApply);
 	}
 	PointsToSpawn.Empty();
 }
