@@ -31,6 +31,9 @@ public:
 		float AccelerationMultiplier = 1.0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bDebug = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		FGameplayTag HitboxTag;
 
 	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;

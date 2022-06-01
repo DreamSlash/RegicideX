@@ -20,7 +20,7 @@ EBTNodeResult::Type URGX_BTTask_MeleeAngelCharge::ExecuteTask(UBehaviorTreeCompo
 
 	URGX_HitboxComponent* Hitbox = MeleeAngelPawn->HitboxesManager->GetHitboxByTag(HitboxTag);
 
-	Hitbox->ActivateHitbox();
+	Hitbox->ActivateEffect();
 
 	MeleeAngelPawn->bFlying = true;
 
@@ -44,17 +44,12 @@ EBTNodeResult::Type URGX_BTTask_MeleeAngelCharge::ExecuteTask(UBehaviorTreeCompo
 		}
 	}
 
-	UKismetSystemLibrary::DrawDebugLine(
-		GetWorld(),
-		RaySrc,
-		RayEnd,
-		FColor(255, 0, 0),
-		5.0,
-		5.0f
-	);
-
-	UKismetSystemLibrary::DrawDebugPoint(GetWorld(), GoalLocation, 100.0f, FColor(255, 255, 255), 5.0f);
-
+	if (bDebug)
+	{
+		UKismetSystemLibrary::DrawDebugLine( GetWorld(), RaySrc, RayEnd, FColor(255, 0, 0), 5.0, 5.0f);
+		UKismetSystemLibrary::DrawDebugPoint(GetWorld(), GoalLocation, 100.0f, FColor(255, 255, 255), 5.0f);
+	}
+	
 	bNotifyTick = true;
 
 	return EBTNodeResult::InProgress;
