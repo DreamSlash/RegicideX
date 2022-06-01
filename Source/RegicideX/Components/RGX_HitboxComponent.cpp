@@ -328,9 +328,13 @@ void URGX_HitboxComponent::OnComponentOverlap(
 	const FGameplayTagContainer BlockingTags = TagsToBlockTheHit;
 	IGameplayTagAssetInterface* TagInterface = Cast<IGameplayTagAssetInterface>(OtherActor);
 	bool CanApplyEffect = false;
-	if (TagInterface)
-		if (TagInterface->HasAllMatchingGameplayTags(BlockingTags))
+	if (TagInterface )
+	{
+		// Check and may rethink this ... If BlockingTags is empty, this returns true
+		if (TagInterface->HasAllMatchingGameplayTags(BlockingTags) == false || BlockingTags.IsEmpty())
 			CanApplyEffect = true;
+	}
+
 	if (Attitude == TeamToApply && HitboxComponent == nullptr && CanApplyEffect)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Hitbox Overlap"));
@@ -352,7 +356,7 @@ void URGX_HitboxComponent::OnComponentOverlap(
 			DestroyOwnerOnOverlap();
 		break;
 	case ERGX_DestroyOnOverlapType::EffectApplied:
-		if (CanApplyEffect)
+		if (CanApplyEffect && Attitude == ETeamAttitude::Type::Hostile)
 			DestroyOwnerOnOverlap();
 		break;
 	default:
