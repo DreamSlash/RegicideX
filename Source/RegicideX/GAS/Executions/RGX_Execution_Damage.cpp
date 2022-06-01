@@ -1,8 +1,7 @@
 #include "RGX_Execution_Damage.h"
-#include "../AttributeSets/RGX_HealthAttributeSet.h"
-#include "../AttributeSets/RGX_CombatAttributeSet.h"
+#include "RegicideX/GAS/AttributeSets/RGX_HealthAttributeSet.h"
+#include "RegicideX/GAS/AttributeSets/RGX_CombatAttributeSet.h"
 
-#pragma optimize( "", off )
 struct RGX_DamageStatics
 {
 	DECLARE_ATTRIBUTE_CAPTUREDEF(Health)
@@ -59,4 +58,3 @@ void UExecution_Damage::Execute_Implementation(const FGameplayEffectCustomExecut
 
 	OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(RGX_DamageStatics().HealthProperty, EGameplayModOp::Additive, -FinalDamage));
 }
-#pragma optimize( "", on )

@@ -8,7 +8,7 @@
 #include "GameplayEffect.h"
 #include "GenericTeamAgentInterface.h"
 #include "Abilities/GameplayAbilityTypes.h"
-#include "../GAS/RGX_PayloadObjects.h"
+#include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RGX_HitboxComponent.generated.h"
 
 USTRUCT()
@@ -139,4 +139,8 @@ protected:
 
 private:
 	bool CheckIfEffectIsApplied(AActor* TargetActor);
+
+	void ResetCustomTimeDilation();
+
+	FTimerHandle PunchTimerHandle;
 };

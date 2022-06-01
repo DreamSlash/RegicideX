@@ -2,9 +2,12 @@
 #include "AbilitySystemGlobals.h"
 #include "AbilitySystemComponent.h"
 #include "Components/ChildActorComponent.h"
+#include "RegicideX/GameplayFramework/RGX_RoundGameMode.h"
 #include "GenericTeamAgentInterface.h"
 #include "RegicideX/GAS/RGX_PayloadObjects.h"
+#include "RegicideX/Character/RGX_PlayerCharacter.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 URGX_HitboxComponent::URGX_HitboxComponent()
 {
@@ -338,6 +341,17 @@ void URGX_HitboxComponent::OnComponentOverlap(
 	if (Attitude == TeamToApply && HitboxComponent == nullptr && CanApplyEffect)
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("Hitbox Overlap"));
+		ARGX_PlayerCharacter* player = Cast<ARGX_PlayerCharacter>(OwnerActor);
+		if (player)
+		{
+			//OwnerActor->CustomTimeDilation = 0.05f;
+			//OtherActor->CustomTimeDilation = 0.05f;
+			//AGameStateBase* GameState = GetWorld()->GetGameState();
+			//FTimerDelegate PunchDelegate = FTimerDelegate::CreateUObject(this, &URGX_HitboxComponent::ResetCustomTimeDilation, OwnerActor, OtherActor);
+			//GetWorld()->GetTimerManager().SetTimer(PunchTimerHandle, PunchDelegate, 0.15, false);
+			UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.05f);
+			GetWorld()->GetTimerManager().SetTimer(PunchTimerHandle, this, &URGX_HitboxComponent::ResetCustomTimeDilation, 0.06666 * 0.05f, false);
+		}
 		ActorsHit.Add(OtherActor);
 		ApplyEffects(OtherActor);
 	}
@@ -380,4 +394,11 @@ bool URGX_HitboxComponent::CheckIfEffectIsApplied(AActor* TargetActor)
 			return false;
 	}
 	return true;
+}
+
+void URGX_HitboxComponent::ResetCustomTimeDilation()
+{
+	//Owner->CustomTimeDilation = 1.0f;
+	//Other->CustomTimeDilation = 1.0f;
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
 }
