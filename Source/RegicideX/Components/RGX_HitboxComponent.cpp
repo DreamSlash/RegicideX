@@ -306,7 +306,7 @@ void URGX_HitboxComponent::OnComponentOverlap(
 		// An actor cannot be hit more than once by the same hitbox activation
 		if (OtherActor == Hit)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Hit Same Actor\n"));
+			//UE_LOG(LogTemp, Warning, TEXT("Hit Same Actor\n"));
 			return;
 		}
 	}
@@ -321,7 +321,7 @@ void URGX_HitboxComponent::OnComponentOverlap(
 	}
 	
 
-	UE_LOG(LogTemp, Warning, TEXT("Other component name is %s."), *OtherComp->GetName());
+	//UE_LOG(LogTemp, Warning, TEXT("Other component name is %s."), *OtherComp->GetName());
 	URGX_HitboxComponent* HitboxComponent = Cast<URGX_HitboxComponent>(OtherComp->GetAttachParent());
 
 	ETeamAttitude::Type Attitude = FGenericTeamId::GetAttitude(OwnerActor, OtherActor);
@@ -337,7 +337,7 @@ void URGX_HitboxComponent::OnComponentOverlap(
 
 	if (Attitude == TeamToApply && HitboxComponent == nullptr && CanApplyEffect)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Hitbox Overlap"));
+		//UE_LOG(LogTemp, Warning, TEXT("Hitbox Overlap"));
 		ActorsHit.Add(OtherActor);
 		ApplyEffects(OtherActor);
 	}
