@@ -340,17 +340,15 @@ void URGX_HitboxComponent::OnComponentOverlap(
 
 	if (Attitude == TeamToApply && HitboxComponent == nullptr && CanApplyEffect)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("Hitbox Overlap"));
+		// Stopping for two frame. If probably should be done only for the owner and target actors and not for all actors.
 		ARGX_PlayerCharacter* player = Cast<ARGX_PlayerCharacter>(OwnerActor);
 		if (player)
 		{
-			//OwnerActor->CustomTimeDilation = 0.05f;
-			//OtherActor->CustomTimeDilation = 0.05f;
-			//AGameStateBase* GameState = GetWorld()->GetGameState();
-			//FTimerDelegate PunchDelegate = FTimerDelegate::CreateUObject(this, &URGX_HitboxComponent::ResetCustomTimeDilation, OwnerActor, OtherActor);
-			//GetWorld()->GetTimerManager().SetTimer(PunchTimerHandle, PunchDelegate, 0.15, false);
-			UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.05f);
-			GetWorld()->GetTimerManager().SetTimer(PunchTimerHandle, this, &URGX_HitboxComponent::ResetCustomTimeDilation, 0.06666 * 0.05f, false);
+			TArray<AActor*> AllOtherActors;
+			UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), AllOtherActors);
+			for (const auto& Actor : AllOtherActors)
+				Actor->CustomTimeDilation = 0.0f;
+			GetWorld()->GetTimerManager().SetTimer(PunchTimerHandle, this, &URGX_HitboxComponent::ResetCustomTimeDilation, 0.06666, false);
 		}
 		ActorsHit.Add(OtherActor);
 		ApplyEffects(OtherActor);
@@ -398,7 +396,8 @@ bool URGX_HitboxComponent::CheckIfEffectIsApplied(AActor* TargetActor)
 
 void URGX_HitboxComponent::ResetCustomTimeDilation()
 {
-	//Owner->CustomTimeDilation = 1.0f;
-	//Other->CustomTimeDilation = 1.0f;
-	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
+	TArray<AActor*> AllOtherActors;
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), AActor::StaticClass(), AllOtherActors);
+	for (const auto& Actor : AllOtherActors)
+		Actor->CustomTimeDilation = 1.0f;
 }
