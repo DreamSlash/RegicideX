@@ -85,10 +85,10 @@ void URGX_ExecutionAbility::OnReceivedEvent(FGameplayTag EventTag, FGameplayEven
 	UAbilitySystemComponent* ACS = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(TargetActor);
 	if (ACS)
 	{
-		FGameplayEventData EventData;
-		EventData.Instigator = CurrentActorInfo->AvatarActor.Get();
-		EventData.Target = TargetActor;
-		ACS->HandleGameplayEvent(EventTag, &EventData);
+		FGameplayEventData EventDataPayload;
+		EventDataPayload.Instigator = CurrentActorInfo->AvatarActor.Get();
+		EventDataPayload.Target = TargetActor;
+		ACS->HandleGameplayEvent(EventTag, &EventDataPayload);
 	}
 
 	// Error: Hardcoded because otherwise the montage delegates are never called.

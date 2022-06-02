@@ -5,7 +5,7 @@
 #include "../AttributeSets/RGX_HealthAttributeSet.h"
 #include "../AttributeSets/RGX_CombatAttributeSet.h"
 
-#pragma optimize( "", off )
+//#pragma optimize( "", off )
 struct RGX_HealthStatics
 {
 	DECLARE_ATTRIBUTE_CAPTUREDEF(Health)
