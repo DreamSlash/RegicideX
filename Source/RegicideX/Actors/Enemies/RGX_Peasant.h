@@ -16,33 +16,17 @@ class REGICIDEX_API ARGX_Peasant : public ARGX_EnemyBase
 	GENERATED_BODY()
 public:
 
-	// Setting default values
 	ARGX_Peasant();
 
 	UPROPERTY(EditAnywhere)
-	UBehaviorTree* BTree;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	ARGX_GroupManager* manager;
+	UBehaviorTree* BTree = nullptr;
 
 	// String to show the status in the Text RenderComponent
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FString TextStatusString;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool bWasHit = false;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool bOnAir = false;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool bInCombat = false;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	bool bAttacking = false;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FVector IdlePosition;
+	bool bInCombat = true;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	int IdleAction;
@@ -53,24 +37,21 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	float MaxSpeed = 400.0f;
 
-	void Idle();
+	float GetDistanceToTarget() const;
 
-	UFUNCTION(BlueprintCallable)
-	void ResetAttacking();
-
-	float GetDistanceToTarget();
-
-	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* IdleMontage = nullptr;
-
-	// This is a parche
+	// Bool to signal if actor is going to get destroyed.
 	bool ToBeDestroyed = false;
+	FTimerHandle CorpseTimerHandle;
+	void HandleDeath() override;
+	void DestroyPeasant();
+
 protected:
 
 	UPROPERTY()
 	FVector WanderingPoint;
 
-
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+
+private:
 };

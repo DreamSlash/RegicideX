@@ -4,7 +4,6 @@
 #include "Components/MCV_AbilitySystemComponent.h"
 #include "EngineUtils.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "RGX_GroupManager.h"
 #include "Kismet/GameplayStatics.h"
 
 ARGX_Peasant::ARGX_Peasant()
@@ -15,14 +14,6 @@ void ARGX_Peasant::BeginPlay()
 {
 	
 	Super::BeginPlay();
-	TargetActor = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	for (TActorIterator<ARGX_GroupManager> MngItr(GetWorld()); MngItr; ++MngItr)
-	{
-		manager = *MngItr;
-		break;
-	}
-	if(manager)
-		manager->AddPeasant(this);
 
 	AddGameplayTag(FGameplayTag::RequestGameplayTag(TEXT("Status.Alive")));
 }
@@ -31,34 +22,27 @@ void ARGX_Peasant::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (ToBeDestroyed)
-		manager->RemovePeasant(this);
+	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
+	ToBeDestroyed = ASC->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.Dead")));
 
+	// TODO Managed by Manager
 	GetCharacterMovement()->MaxWalkSpeed = bInCombat ? 400.0f : 100.0f;
-
-	if (bInCombat && !manager->AttackingPeasant)
-	{
-		manager->AttackingPeasant = this;
-		bAttacking = true;
-	}
 }
 
-void ARGX_Peasant::Idle()
+void ARGX_Peasant::HandleDeath()
 {
-	// TODO Rotate to target
-	TextStatusString = "Idle";
+	UE_LOG(LogTemp, Display, TEXT("Handling Peasant death ..."));
+	GetWorld()->GetTimerManager().SetTimer(CorpseTimerHandle, this, &ARGX_Peasant::DestroyPeasant, 2.0f, false);
 }
 
-void ARGX_Peasant::ResetAttacking()
+void ARGX_Peasant::DestroyPeasant()
 {
-	if (manager)
-	{
-		bAttacking = false;
-		manager->AttackingPeasant = nullptr;
-	}
+	// Handle particles and stuff before dying ...
+	this->Destroy();
 }
 
-float ARGX_Peasant::GetDistanceToTarget()
+// TODO Make it in EnemyBase --> Make it 2D??
+float ARGX_Peasant::GetDistanceToTarget() const
 {
 	if (!TargetActor)
 		return 0.0f;

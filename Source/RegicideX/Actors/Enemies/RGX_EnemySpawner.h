@@ -21,11 +21,9 @@ public:
 	FTimerHandle SpawnTimerHandle;
 
 	UPROPERTY(EditAnywhere)
-	ARGX_GroupManager* Manager;
-
-	UPROPERTY(EditAnywhere)
 	FBox SpawnBox;
 
+	/** Spawns enemy based on the blueprint EnemyBP **/
 	UFUNCTION(BlueprintCallable)
 	ARGX_EnemyBase* Spawn(TSubclassOf<ARGX_EnemyBase> EnemyBP);
 

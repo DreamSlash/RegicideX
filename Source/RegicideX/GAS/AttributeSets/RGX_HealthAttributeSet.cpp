@@ -1,7 +1,8 @@
 #include "RGX_HealthAttributeSet.h"
 #include "GameplayEffect.h"
 #include "GameplayEffectExtension.h"
-#include "../GameplayEffects/RGX_GE_Death.h"
+#include "RegicideX/GAS/GameplayEffects/RGX_GE_Death.h"
+#include "RegicideX/GAS/GameplayEffects/RGX_GE_HitEffect.h"
 
 void URGX_HealthAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
@@ -39,9 +40,6 @@ void URGX_HealthAttributeSet::PostGameplayEffectExecute(const struct FGameplayEf
 			float CurrentHealth = GetHealth();
 			if (CurrentHealth <= 0)
 			{
-				// Handle pre-death
-				FGameplayEventData GonnaDieEventData;
-				ASC->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.GoingToDie")), &GonnaDieEventData);
 				// If current health is still 0, we die
 				CurrentHealth = GetHealth();
 				if (CurrentHealth <= 0)
@@ -52,6 +50,14 @@ void URGX_HealthAttributeSet::PostGameplayEffectExecute(const struct FGameplayEf
 					FGameplayEventData EventData;
 					ASC->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.HasDied")), &EventData);
 				}
+			}
+			else
+			{
+				UGameplayEffect* HitEffect = URGX_HitEffect::StaticClass()->GetDefaultObject<UGameplayEffect>();
+				ASC->ApplyGameplayEffectToSelf(HitEffect, 1, ASC->MakeEffectContext());
+
+				FGameplayEventData EventData;
+				ASC->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Combat.TakeDamage")), &EventData);
 			}
 		}
 	}

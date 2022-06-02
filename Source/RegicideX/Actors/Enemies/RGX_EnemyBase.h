@@ -35,6 +35,7 @@ class UMCV_AbilitySystemComponent;
 class URGX_HealthAttributeSet;
 class URGX_CombatAttributeSet;
 class UWidgetComponent;
+class URGX_HitboxesManagerComponent;
 
 UCLASS()
 class REGICIDEX_API ARGX_EnemyBase : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface, public IGenericTeamAgentInterface
@@ -56,19 +57,26 @@ public:
 
 
 protected:
+
+	UPROPERTY(VisibleAnywhere)
+	UWidgetComponent* CombatTargetWidgetComponent = nullptr;
+
 	/** Ability System Component to be used */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	UMCV_AbilitySystemComponent* AbilitySystemComponent;
+	UMCV_AbilitySystemComponent* AbilitySystemComponent = nullptr;
 
 	UPROPERTY(EditAnywhere)
-	URGX_HealthAttributeSet* HealthAttributeSet;
+	URGX_HealthAttributeSet* HealthAttributeSet = nullptr;
 
 	UPROPERTY(EditAnywhere)
-	URGX_CombatAttributeSet* CombatAttributeSet;
+	URGX_CombatAttributeSet* CombatAttributeSet = nullptr;
 
 	// Debug
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UWidgetComponent* DebugAttributesWidgetComponent = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	URGX_HitboxesManagerComponent* HitboxesManager = nullptr;
 
 public:
 
@@ -87,10 +95,11 @@ protected:
 
 	// FGenericTeamId interface
 	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
-	virtual FGenericTeamId GetGenericTeamId() const override;
 	// End of FGenericTeamId interface
 
 public:
+	virtual FGenericTeamId GetGenericTeamId() const override;
+
 	/** Movement methods */
 	virtual void RotateToTarget(float DeltaTime);
 
@@ -119,6 +128,13 @@ public:
 	virtual void AddGameplayTag(const FGameplayTag& TagToAdd) override;
 
 	virtual void RemoveGameplayTag(const FGameplayTag& TagToRemove) override;
+
+	/** Combat assist widget functions */
+	void ShowCombatTargetWidget();
+	void HideCombatTargetWidget();
+	// ----------------------------------
+
+	bool IsInFrustum();
 
 	void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 

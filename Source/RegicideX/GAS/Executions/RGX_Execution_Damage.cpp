@@ -1,6 +1,6 @@
 #include "RGX_Execution_Damage.h"
-#include "../AttributeSets/RGX_HealthAttributeSet.h"
-#include "../AttributeSets/RGX_CombatAttributeSet.h"
+#include "RegicideX/GAS/AttributeSets/RGX_HealthAttributeSet.h"
+#include "RegicideX/GAS/AttributeSets/RGX_CombatAttributeSet.h"
 
 struct RGX_DamageStatics
 {
@@ -34,6 +34,7 @@ void UExecution_Damage::Execute_Implementation(const FGameplayEffectCustomExecut
 	const FGameplayEffectSpec& Spec = ExecutionParams.GetOwningSpec();
 	const FGameplayTagContainer* SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
 	const FGameplayTagContainer* TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
+	bool dmg = TargetTags->HasTag(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Combat.TakeDamage"))) == true;
 
 	if (TargetTags->HasTag(FGameplayTag::RequestGameplayTag(FName("Status.Invulnerable"))) == true)
 	{
@@ -54,9 +55,6 @@ void UExecution_Damage::Execute_Implementation(const FGameplayEffectCustomExecut
 
 	float FinalDamage = 0.0f;
 	FinalDamage = AttackPower * FMath::Max(0.0f, (1.0f - DamageMitigation));
-
-	FGameplayEventData EventPayload;
-	ExecutionParams.GetTargetAbilitySystemComponent()->HandleGameplayEvent(FGameplayTag::RequestGameplayTag("GameplayEvent.Combat.TakeDamage"), &EventPayload);
 
 	OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(RGX_DamageStatics().HealthProperty, EGameplayModOp::Additive, -FinalDamage));
 }

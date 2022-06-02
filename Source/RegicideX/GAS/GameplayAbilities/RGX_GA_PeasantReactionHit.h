@@ -3,24 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Abilities/MCV_GameplayAbility.h"
+#include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GA_PlayMontageAbility.h"
 #include "RGX_GA_PeasantReactionHit.generated.h"
 
-/**
- * 
- */
 UCLASS()
-class REGICIDEX_API URGX_GA_PeasantReactionHit : public UMCV_GameplayAbility
+class REGICIDEX_API URGX_GA_PeasantReactionHit : public URGX_PlayMontageAbility
 {
 	GENERATED_BODY()
-
-public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UAnimMontage* MontageToPlay = nullptr;
-
-	FGameplayAbilitySpecHandle MyHandle;
-	const FGameplayAbilityActorInfo* MyAinfo;
-	FGameplayAbilityActivationInfo MyActivationInfo;
 
 private:
 	virtual void ActivateAbility(

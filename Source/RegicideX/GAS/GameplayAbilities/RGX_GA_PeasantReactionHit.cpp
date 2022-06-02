@@ -1,12 +1,13 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "RGX_GA_PeasantReactionHit.h"
+#include "AbilitySystemComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "Animation/AnimMontage.h"
 #include "AIController.h"
 #include "BrainComponent.h"
 #include "GameFramework/Character.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "RegicideX/Actors/Enemies/RGX_Peasant.h"
 
 void URGX_GA_PeasantReactionHit::ActivateAbility(
@@ -19,47 +20,28 @@ void URGX_GA_PeasantReactionHit::ActivateAbility(
 	AAIController* Controller = Cast<AAIController>(Character->GetController());
 
 	// If reacting to hit, should not move
-	if (Controller)
+	if (Controller) {
 		Controller->GetBrainComponent()->StopLogic(FString("Animation playing"));
+		Controller->SetFocus(nullptr);
+	}
 
 	// Launch Peasant a small bit backwards
-	ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(Character);
-	FVector TargetActorForward = Peasant->TargetActor->GetActorForwardVector();
-	Character->LaunchCharacter(TargetActorForward * 1000.0f, true, false);
+	ARGX_Peasant* Peasant		= Cast<ARGX_Peasant>(Character);
+	FVector PeasantLocation		= Peasant->GetActorLocation();
+	FVector TargetActorForward	= Peasant->TargetActor->GetActorForwardVector();
 
-	if (MontageToPlay)
+	UCharacterMovementComponent* PeasantMovementComponent = Peasant->GetCharacterMovement();
+
+	if (PeasantMovementComponent->IsFalling())
 	{
-		bool bPlayedMontageSuccessfully = false;
-		if (UAnimInstance* AnimInstance = ActorInfo->GetAnimInstance())
-		{
-			UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, MontageToPlay);
-			PlayMontageTask->OnBlendOut.AddDynamic(this, &URGX_GA_PeasantReactionHit::OnEndMontage);
-			PlayMontageTask->OnCancelled.AddDynamic(this, &URGX_GA_PeasantReactionHit::OnEndMontage);
-			PlayMontageTask->OnCompleted.AddDynamic(this, &URGX_GA_PeasantReactionHit::OnEndMontage);
-			PlayMontageTask->OnInterrupted.AddDynamic(this, &URGX_GA_PeasantReactionHit::OnEndMontage);
-			PlayMontageTask->ReadyForActivation();
-		}
-
-
-		//UAnimInstance* AnimInstance = ActorInfo->GetAnimInstance();
-		//if (AnimInstance)
-		//{
-		//	float duration = AnimInstance->Montage_Play(MontageToPlay);
-		//	FTimerDelegate TimerCallback;
-
-		//	MyHandle = Handle; MyAinfo = ActorInfo; MyActivationInfo = ActivationInfo;
-		//	TimerCallback.BindWeakLambda(this, [this]
-		//		{
-		//			EndAbility(MyHandle, MyAinfo, MyActivationInfo, false, false);
-		//		});
-
-		//	FTimerHandle MontageTimerHandle;
-		//	//en vez de esto puedes usar el delegate de onmontage ended pero queria hacer que funcionase rapido
-		//	//IMPORTANTE: en cuanto hagas play del montage, debes parar el Behaviour tree ya que puede que no te hagan el montage pq 
-		//	//haran lo que les diga el peasant manager y se seguiran moviendo hasta que se destruyan
-		//	GetWorld()->GetTimerManager().SetTimer(MontageTimerHandle, TimerCallback, duration - 0.5, false);
-		//}
+		PeasantMovementComponent->GravityScale = 0.0f;
+		Character->LaunchCharacter(FVector(0.0, 0.0, -1.0), true, true); // ¿ Don't know why it is needed to make enemy stay on air ?
 	}
+	else {
+		Character->LaunchCharacter(TargetActorForward * 1000.0f, true, false);
+	}
+
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
 void URGX_GA_PeasantReactionHit::EndAbility(
@@ -74,9 +56,18 @@ void URGX_GA_PeasantReactionHit::EndAbility(
 	ACharacter* Character = Cast<ACharacter>(ActorInfo->OwnerActor);
 	if (Character)
 	{
+		// Restart brain logic
 		AAIController* Controller = Cast<AAIController>(Character->GetController());
-		if (Controller)
+		ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(Character);
+		if (Controller) {
 			Controller->GetBrainComponent()->StartLogic();
+			if(Peasant->TargetActor)
+				Controller->SetFocus(Peasant->TargetActor);
+		}
+
+		// Get gravity scale back
+		UCharacterMovementComponent* PeasantMovementComponent = Peasant->GetCharacterMovement();
+		PeasantMovementComponent->GravityScale = 3.0f;
 	}
 }
 

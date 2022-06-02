@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -18,10 +16,12 @@ public:
 	ARGX_PeasantController();
 
 	UPROPERTY(transient)
-	UBlackboardComponent* BBComponent;
+	UBlackboardComponent* BBComponent = nullptr;
 
 	UPROPERTY(transient)
-	UBehaviorTreeComponent* BTComponent;
+	UBehaviorTreeComponent* BTComponent = nullptr;
+
+	bool bIsInFocus = false;
 
 	virtual void OnPossess(APawn* pawn) override;
 	virtual void Tick(float DeltaTime) override;
@@ -29,12 +29,7 @@ public:
 	// Blackboard key ids
 	uint8 TargetActorID;
 	uint8 DistanceToPlayerID;
-	uint8 WasHitID;
-	uint8 OnAirID;
 	uint8 InCombatID;
-	uint8 AttackingID;
-	uint8 IdlePositionID;
 	uint8 IdleActionID;
-
-protected:
+	uint8 ToDestroyID;
 };
