@@ -37,6 +37,7 @@ class URGX_HealthAttributeSet;
 class URGX_CombatAttributeSet;
 class USphereComponent;
 class UWidgetComponent;
+class URGX_HitboxesManagerComponent;
 
 UCLASS()
 class REGICIDEX_API ARGX_EnemyBase : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface, public IGenericTeamAgentInterface, public IRGX_InteractInterface
@@ -80,6 +81,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UWidgetComponent* DebugAttributesWidgetComponent = nullptr;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	URGX_HitboxesManagerComponent* HitboxesManager = nullptr;
+
 public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -97,10 +101,11 @@ protected:
 
 	// FGenericTeamId interface
 	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
-	virtual FGenericTeamId GetGenericTeamId() const override;
 	// End of FGenericTeamId interface
 
 public:
+	virtual FGenericTeamId GetGenericTeamId() const override;
+
 	/** Movement methods */
 	virtual void RotateToTarget(float DeltaTime);
 

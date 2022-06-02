@@ -127,27 +127,7 @@ void ARGX_PlayerCameraManager::UpdateViewTarget(FTViewTarget& OutVT, float Delta
 
 void ARGX_PlayerCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, float DeltaTime)
 {
-	//Super::UpdateViewTargetInternal(OutVT, DeltaTime);
-
-	if (OutVT.Target)
-	{
-		FVector OutLocation;
-		FRotator OutRotation;
-		float OutFOV;
-
-		if (BlueprintUpdateCamera(OutVT.Target, OutLocation, OutRotation, OutFOV))
-		{
-			OutVT.POV.Location = OutLocation;
-			OutVT.POV.Rotation = OutRotation;
-			OutVT.POV.FOV = OutFOV;
-		}
-		else
-		{
-			OutVT.Target->CalcCamera(DeltaTime, OutVT.POV);
-		}
-	}
-	
-	// TODO: Refactor i que no sembli copiat
+	Super::UpdateViewTargetInternal(OutVT, DeltaTime);
 
 	FVector CameraLocation;
 	FRotator CameraRotation;
@@ -161,9 +141,6 @@ void ARGX_PlayerCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, flo
 	CameraRight.Z = 0.0f;
 	CameraRight.Normalize();
 
-	//UE_LOG(LogTemp, Warning, TEXT("Camera Forward: %f, %f, %f\n"), CameraForward.X, CameraForward.Y, CameraForward.Z);
-	//UE_LOG(LogTemp, Warning, TEXT("Camera Right: %f, %f, %f\n"), CameraRight.X, CameraRight.Y, CameraRight.Z);
-
 	FVector FTargetLocation = OutVT.Target->GetActorLocation();
 	FVector TargetToFocus = FocusLocation - FTargetLocation;
 	float TargetToFocusDistance = TargetToFocus.Size();
@@ -174,9 +151,8 @@ void ARGX_PlayerCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, flo
 	Projection.Y = FVector::DotProduct(TargetToFocus, CameraRight);
 	Projection.Normalize();
 
-	//UE_LOG(LogTemp, Warning, TEXT("Focus Projection: %f, %f, %f\n"), Projection.X, Projection.Y, Projection.Z);
-
 	const FVector2D RelativeDistance = -Projection * TargetToFocusDistance;
+
 	//UE_LOG(LogTemp, Warning, TEXT("Relative Distance: %f, %f\n"), RelativeDistance.X, RelativeDistance.Y);
 
 	PreviousFocusLocation = FocusLocation;
@@ -245,6 +221,8 @@ void ARGX_PlayerCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, flo
 
 		FocusLocation = FMath::Lerp(TargetLocation, FocusLocation, t);
 		TargetOffset.Y = RelativeDistance.Y;
+
+		//UKismetSystemLibrary::DrawDebugLine(GetWorld(), FocusLocation, FocusLocation * FVector::UpVector * 100.0f, FLinearColor::Red, 1.0f, 2.0f);
 	}
 	else
 	{

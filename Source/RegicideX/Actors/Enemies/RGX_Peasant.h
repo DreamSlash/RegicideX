@@ -21,24 +21,12 @@ public:
 	UPROPERTY(EditAnywhere)
 	UBehaviorTree* BTree = nullptr;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	ARGX_GroupManager* manager = nullptr;
-
 	// String to show the status in the Text RenderComponent
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FString TextStatusString;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool bWasHit = false;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool bOnAir = false;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool bInCombat = false;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	bool bAttacking = false;
+	bool bInCombat = true;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	int IdleAction;
@@ -49,13 +37,7 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	float MaxSpeed = 400.0f;
 
-	UFUNCTION(BlueprintCallable)
-	void ResetAttacking();
-
 	float GetDistanceToTarget() const;
-
-	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* IdleMontage = nullptr;
 
 	// Bool to signal if actor is going to get destroyed.
 	bool ToBeDestroyed = false;

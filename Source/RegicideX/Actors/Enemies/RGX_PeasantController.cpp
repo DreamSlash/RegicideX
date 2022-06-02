@@ -32,10 +32,8 @@ void ARGX_PeasantController::OnPossess(APawn* pawn)
 				TargetActorID = BBComponent->GetKeyID("TargetActor");
 				DistanceToPlayerID = BBComponent->GetKeyID("DistanceToPlayer");
 				InCombatID = BBComponent->GetKeyID("bInCombat");
-				AttackingID = BBComponent->GetKeyID("bAttacking");
 				IdleActionID = BBComponent->GetKeyID("IdleAction");
 				ToDestroyID = BBComponent->GetKeyID("bToDestroy");
-				OnAirID = BBComponent->GetKeyID("bOnAir");
 
 				// Execute behavior tree after initialization.
 				BTComponent->StartTree(*Peasant->BTree, EBTExecutionMode::Looped);
@@ -65,8 +63,6 @@ void ARGX_PeasantController::Tick(float DeltaTime)
 		// TODO Do not do it every tick
 		BBComponent->SetValueAsFloat("DistanceToPlayer", Peasant->GetDistanceToTarget());
 		BBComponent->SetValueAsBool("bInCombat", Peasant->bInCombat);
-		BBComponent->SetValueAsBool("bAttacking", Peasant->bAttacking);
-		BBComponent->SetValueAsBool("bOnAir", Peasant->bOnAir);
 		BBComponent->SetValueAsBool("bToDestroy", Peasant->ToBeDestroyed);
 		BBComponent->SetValueAsInt("IdleAction", Peasant->IdleAction);
 	}

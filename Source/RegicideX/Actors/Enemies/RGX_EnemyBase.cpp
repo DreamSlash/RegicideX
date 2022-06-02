@@ -9,6 +9,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "RegicideX/GameplayFramework/RGX_RoundGameMode.h"
 #include "AbilitySystemGlobals.h"
+#include "RegicideX/Components/RGX_HitboxesManagerComponent.h"
 
 // Sets default values
 ARGX_EnemyBase::ARGX_EnemyBase()
@@ -27,6 +28,8 @@ ARGX_EnemyBase::ARGX_EnemyBase()
 
 	DebugAttributesWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("DebugAttributesWidgetComponent"));
 	DebugAttributesWidgetComponent->SetupAttachment(RootComponent);
+
+	HitboxesManager = CreateDefaultSubobject<URGX_HitboxesManagerComponent>(TEXT("HitboxesManager"));
 }
 
 // Called when the game starts or when spawned

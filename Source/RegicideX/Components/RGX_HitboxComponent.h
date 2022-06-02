@@ -8,7 +8,7 @@
 #include "GameplayEffect.h"
 #include "GenericTeamAgentInterface.h"
 #include "Abilities/GameplayAbilityTypes.h"
-#include "../GAS/RGX_PayloadObjects.h"
+#include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RGX_HitboxComponent.generated.h"
 
 USTRUCT()
@@ -32,7 +32,8 @@ enum class ERGX_DestroyOnOverlapType : uint8
 	None				UMETA(DisplayName = "None"),	// Never destroyed
 	Overlap				UMETA(DisplayName = "Overlap"),	// Destroy when overlapping anything
 	Hostile				UMETA(DisplayName = "Hostile"),	// Destroy when overlapping enemies
-	Dynamic				UMETA(DisplayName = "Dynamic")	// Destroy when overlapping any dynamics
+	Dynamic				UMETA(DisplayName = "Dynamic"),	// Destroy when overlapping any dynamics
+	EffectApplied		UMETA(DisplayName = "EffectApplied")	// Destroy when overlapping and bind effect is applied.
 };
 
 UCLASS(BlueprintType, Blueprintable, meta = (BlueprintSpawnableComponent))
@@ -114,11 +115,13 @@ protected:
 	UPROPERTY()
 	bool bEffectActivated = false;
 
+	/** "This tags do not allow the hitbox effect to get applied to the actor if owned by him." */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = HitboxComponent)
+	FGameplayTagContainer TagsToBlockTheHit;
+
+	/** "This enum property defines if the component is destroyed OnOverlap by the type.*/
 	UPROPERTY(EditDefaultsOnly, Category = HitboxComponent)
 	TEnumAsByte<ERGX_DestroyOnOverlapType> DestroyOnOverlap = ERGX_DestroyOnOverlapType::None;
-
-	//UPROPERTY(EditDefaultsOnly, Category = HitboxComponent)
-	//bool bCanReceiveEffects = true;
 
 	UChildActorComponent* ChildActorComponent = nullptr;
 
@@ -133,4 +136,11 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = HitboxComponent)
 	TEnumAsByte<EObjectTypeQuery> TargetObjectType;
+
+private:
+	bool CheckIfEffectIsApplied(AActor* TargetActor);
+
+	void ResetCustomTimeDilation();
+
+	FTimerHandle PunchTimerHandle;
 };

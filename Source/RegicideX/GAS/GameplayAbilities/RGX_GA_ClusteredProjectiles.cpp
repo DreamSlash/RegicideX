@@ -2,6 +2,7 @@
 
 
 #include "RGX_GA_ClusteredProjectiles.h"
+#include "AIController.h"
 #include "RegicideX\Actors\Enemies\RGX_DistancePeasant.h"
 #include "RegicideX\Actors\Weapons\RGX_ClusteredBullet.h"
 
@@ -11,6 +12,15 @@ void URGX_GA_ClusteredProjectiles::ActivateAbility(
 	const FGameplayAbilityActivationInfo ActivationInfo, 
 	const FGameplayEventData* TriggerEventData)
 {
+
+	// Stop focusing while shooting
+	ACharacter* Character = Cast<ACharacter>(ActorInfo->OwnerActor);
+	AAIController* Controller = Cast<AAIController>(Character->GetController());
+	if (Controller)
+	{
+		Controller->SetFocus(nullptr);	// Stop focusing the player
+	}
+
 	ARGX_DistancePeasant* DistancePeasant = Cast<ARGX_DistancePeasant>(ActorInfo->AvatarActor);
 	USceneComponent* SpawnPoint = DistancePeasant->ClusterSpawnPoint;
 	
@@ -19,6 +29,7 @@ void URGX_GA_ClusteredProjectiles::ActivateAbility(
 	const FVector Forward		= SpawnPoint->GetForwardVector();
 	const FVector Up			= SpawnPoint->GetUpVector();
 	Transform					= SpawnPoint->GetComponentTransform();
+	TeamIdToApply				= DistancePeasant->GetGenericTeamId();
 	
 	for (int i = 0; i < NumberProjectilesToFire; ++i)
 	{
@@ -38,7 +49,27 @@ void URGX_GA_ClusteredProjectiles::OnReceivedEvent(
 	for (const auto& Point : PointsToSpawn)
 	{
 		Transform.SetTranslation(Point);
-		GetWorld()->SpawnActor<ARGX_ClusteredBullet>(BulletBP, Transform);
+		ARGX_ClusteredBullet* Bullet = GetWorld()->SpawnActor<ARGX_ClusteredBullet>(BulletBP, Transform);
+		Bullet->SetGenericTeamId(TeamIdToApply);
 	}
 	PointsToSpawn.Empty();
+}
+
+void URGX_GA_ClusteredProjectiles::EndAbility(
+	const FGameplayAbilitySpecHandle Handle, 
+	const FGameplayAbilityActorInfo* ActorInfo, 
+	const FGameplayAbilityActivationInfo ActivationInfo, 
+	bool bReplicateEndAbility, 
+	bool bWasCancelled)
+{
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+
+	// Stop focusing while shooting
+	ACharacter* Character = Cast<ACharacter>(ActorInfo->OwnerActor);
+	AAIController* Controller = Cast<AAIController>(Character->GetController());
+	ARGX_EnemyBase* Self = Cast<ARGX_EnemyBase>(Character);
+	if (Controller)
+	{
+		Controller->SetFocus(Self->TargetActor);	// Stop focusing the player
+	}
 }
