@@ -2,7 +2,7 @@
 
 
 #include "RGX_RoundGameMode.h"
-
+#include "GameFramework/Actor.h"
 #include "RGX_ScoreGameState.h"
 #include "Engine/AssetManager.h"
 #include "RegicideX/Data/RGX_EnemyDataAsset.h"
@@ -170,7 +170,7 @@ void ARGX_RoundGameMode::PopulateSpawnerList()
 
 	for (int i = 0; i<EnemySpawners.Num();i++)
 	{
-		GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::White, EnemySpawners[i]->GetActorLabel());
+		//GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::White, EnemySpawners[i]->GetActorLabel());
 		UE_LOG(LogTemp, Warning, TEXT("Spawner Detected"));
 	}
 }
