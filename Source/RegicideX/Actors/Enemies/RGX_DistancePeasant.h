@@ -17,11 +17,11 @@ class REGICIDEX_API ARGX_DistancePeasant : public ARGX_Peasant
 public:
 	ARGX_DistancePeasant();
 
-	UPROPERTY(EditDefaultsOnly)
-		int NumberProjectilesToFire = 10;
+	//UPROPERTY(EditDefaultsOnly)
+	//	int NumberProjectilesToFire = 10;
 
-	UPROPERTY(EditDefaultsOnly)
-		TArray<FVector> PointsToSpawn;
+	//UPROPERTY(EditDefaultsOnly)
+	//	TArray<FVector> PointsToSpawn;
 
 	UPROPERTY(EditDefaultsOnly)
 		USceneComponent* ClusterSpawnPoint;
