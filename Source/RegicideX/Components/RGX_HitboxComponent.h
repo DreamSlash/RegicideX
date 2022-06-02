@@ -143,6 +143,6 @@ private:
 	void ResetCustomTimeDilation();
 
 	AActor* Owner = nullptr;
-	AActor* Other = nullptr;
+	TArray<AActor*> ActorsWithTimeDilation;
 	FTimerHandle PunchTimerHandle;
 };

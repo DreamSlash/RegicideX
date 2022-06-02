@@ -344,10 +344,13 @@ void URGX_HitboxComponent::OnComponentOverlap(
 		ARGX_PlayerCharacter* player = Cast<ARGX_PlayerCharacter>(OwnerActor);
 		if (player)
 		{
-			Owner = OwnerActor;
-			Other = OtherActor;
-			Owner->CustomTimeDilation = 0.0f;
-			Other->CustomTimeDilation = 0.0f;
+			if (Owner == nullptr) {
+				Owner = OwnerActor;
+				Owner->CustomTimeDilation = 0.0f;
+			}
+
+			OtherActor->CustomTimeDilation = 0.0f;
+			ActorsWithTimeDilation.Add(OtherActor);
 			GetWorld()->GetTimerManager().SetTimer(PunchTimerHandle, this, &URGX_HitboxComponent::ResetCustomTimeDilation, 0.06666, false);
 		}
 		ActorsHit.Add(OtherActor);
@@ -396,8 +399,13 @@ bool URGX_HitboxComponent::CheckIfEffectIsApplied(AActor* TargetActor)
 
 void URGX_HitboxComponent::ResetCustomTimeDilation()
 {
+	if (Owner == nullptr && ActorsWithTimeDilation.Num() == 0)
+		return;
+
 	Owner->CustomTimeDilation = 1.0f;
-	Other->CustomTimeDilation = 1.0f;
 	Owner = nullptr;
-	Other = nullptr;
+	for (const auto& Enemy : ActorsWithTimeDilation) {
+		Enemy->CustomTimeDilation = 1.0f;
+	}
+	ActorsWithTimeDilation.Empty();
 }
