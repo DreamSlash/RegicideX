@@ -5,11 +5,13 @@
 
 #include "Kismet/KismetMathLibrary.h"
 
+#include "RegicideX/Components/RGX_MovementAssistComponent.h"
+
 ARGX_MeleeAngel::ARGX_MeleeAngel()
 {
+	MovementAssistComponent = CreateDefaultSubobject<URGX_MovementAssistComponent>(TEXT("MovementAssistComponent"));
 
 }
-
 
 void ARGX_MeleeAngel::RotateToTarget(float DeltaTime)
 {
@@ -21,6 +23,7 @@ void ARGX_MeleeAngel::RotateToTarget(float DeltaTime)
 		FRotator NewRotation = FMath::Lerp(this->GetActorRotation(), RotOffset, DeltaTime * InterpSpeed);
 		this->SetActorRotation(NewRotation);
 	}
+
 }
 
 
