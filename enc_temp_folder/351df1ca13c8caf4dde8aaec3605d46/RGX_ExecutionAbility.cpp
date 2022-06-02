@@ -4,7 +4,6 @@
 #include "RegicideX/GAS/GameplayAbilities/Player/RGX_ExecutionAbility.h"
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 #include "RegicideX/Character/RGX_PlayerCharacter.h"
-#include "RegicideX/Character/RGX_PlayerCharacterController.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "AbilitySystemGlobals.h"
 
@@ -39,10 +38,6 @@ void URGX_ExecutionAbility::ActivateAbility(const FGameplayAbilitySpecHandle Han
 
 	UE_LOG(LogTemp, Warning, TEXT("Execution Ability\n"));
 
-	ARGX_PlayerCharacter* PlayerCharacter = Cast<ARGX_PlayerCharacter>(ActorInfo->AvatarActor);
-	ARGX_PlayerCharacterController* PlayerController = Cast<ARGX_PlayerCharacterController>(PlayerCharacter->GetController());
-	PlayerCharacter->DisableInput(PlayerController);
-
 	const FVector PlayerLocation = ActorInfo->AvatarActor->GetActorLocation();
 	const FVector EnemyLocation = Enemy->GetActorLocation();
 
@@ -61,11 +56,6 @@ void URGX_ExecutionAbility::ActivateAbility(const FGameplayAbilitySpecHandle Han
 
 void URGX_ExecutionAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-
-	ARGX_PlayerCharacter* PlayerCharacter = Cast<ARGX_PlayerCharacter>(ActorInfo->AvatarActor);
-	ARGX_PlayerCharacterController* PlayerController = Cast<ARGX_PlayerCharacterController>(PlayerCharacter->GetController());
-	PlayerCharacter->EnableInput(PlayerController);
-
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
