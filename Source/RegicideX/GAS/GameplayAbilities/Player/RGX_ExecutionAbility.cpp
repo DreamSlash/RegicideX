@@ -59,6 +59,16 @@ void URGX_ExecutionAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, 
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
+void URGX_ExecutionAbility::OnSuccessfulAbilityMontage(FGameplayTag EventTag, FGameplayEventData EventData)
+{
+	Super::OnSuccessfulAbilityMontage(EventTag, EventData);
+}
+
+void URGX_ExecutionAbility::OnFailedAbilityMontage(FGameplayTag EventTag, FGameplayEventData EventData)
+{
+	Super::OnFailedAbilityMontage(EventTag, EventData);
+}
+
 void URGX_ExecutionAbility::OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Tag: %s\n"), *EventTag.ToString());
@@ -69,5 +79,11 @@ void URGX_ExecutionAbility::OnReceivedEvent(FGameplayTag EventTag, FGameplayEven
 		EventData.Instigator = CurrentActorInfo->AvatarActor.Get();
 		EventData.Target = TargetActor;
 		ACS->HandleGameplayEvent(EventTag, &EventData);
+	}
+
+	// Error: Hardcoded because otherwise the montage delegates are never called.
+	if (EventTag == FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Action.Execution.Repost")))
+	{
+		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
 	}
 }

@@ -25,6 +25,8 @@ protected:
 	void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 protected:
+	void OnSuccessfulAbilityMontage(FGameplayTag EventTag, FGameplayEventData EventData) override;
+	void OnFailedAbilityMontage(FGameplayTag EventTag, FGameplayEventData EventData) override;
 	void OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData) override;
 
 protected:
