@@ -177,7 +177,7 @@ void ARGX_PlayerCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, flo
 	//UE_LOG(LogTemp, Warning, TEXT("Focus Projection: %f, %f, %f\n"), Projection.X, Projection.Y, Projection.Z);
 
 	const FVector2D RelativeDistance = -Projection * TargetToFocusDistance;
-	UE_LOG(LogTemp, Warning, TEXT("Relative Distance: %f, %f\n"), RelativeDistance.X, RelativeDistance.Y);
+	//UE_LOG(LogTemp, Warning, TEXT("Relative Distance: %f, %f\n"), RelativeDistance.X, RelativeDistance.Y);
 
 	PreviousFocusLocation = FocusLocation;
 
@@ -203,7 +203,7 @@ void ARGX_PlayerCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, flo
 		Delta.Z = 0.0f;
 		Delta = -Delta;
 
-		UKismetSystemLibrary::DrawDebugLine(GetWorld(), TargetLocation, FocusLocation, FLinearColor::Green, 1.0f, 2.0f);
+		//UKismetSystemLibrary::DrawDebugLine(GetWorld(), TargetLocation, FocusLocation, FLinearColor::Green, 1.0f, 2.0f);
 
 		float AmountForward = FVector::DotProduct(Delta, CameraForward);
 		float AmountRight = FVector::DotProduct(Delta, CameraRight);
@@ -217,7 +217,7 @@ void ARGX_PlayerCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, flo
 		FocusLocation = TargetLocation + AmountRight * CameraRight + AmountForward * CameraForward;
 
 		//FocusLocation = FMath::Lerp(TargetLocation, FocusLocation, t);
-		UKismetSystemLibrary::DrawDebugLine(GetWorld(), FocusLocation, FocusLocation * FVector::UpVector * 100.0f, FLinearColor::Red, 1.0f, 2.0f);
+		//UKismetSystemLibrary::DrawDebugLine(GetWorld(), FocusLocation, FocusLocation * FVector::UpVector * 100.0f, FLinearColor::Red, 1.0f, 2.0f);
 		//SocketOffset.Y = -RelativeDistance.Y;
 	}
 	else

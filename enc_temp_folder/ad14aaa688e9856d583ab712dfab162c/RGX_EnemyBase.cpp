@@ -167,7 +167,7 @@ void ARGX_EnemyBase::Interact(AActor* ActorInteracting)
 		FGameplayEventData EventData;
 		EventData.Instigator = ActorInteracting;
 		EventData.Target = this;
-		ACS->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Action.Execution.Ability")), &EventData);
+		ACS->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Action.Execution")), &EventData);
 	}
 }
 

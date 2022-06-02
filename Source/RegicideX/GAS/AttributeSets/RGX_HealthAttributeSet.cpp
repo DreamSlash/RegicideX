@@ -48,7 +48,7 @@ void URGX_HealthAttributeSet::PostGameplayEffectExecute(const struct FGameplayEf
 					ASC->ApplyGameplayEffectToSelf(DeathEffect, 1, ASC->MakeEffectContext());
 
 					FGameplayEventData EventData;
-					ASC->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("Status.Dead")), &EventData);
+					ASC->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.HasDied")), &EventData);
 				}
 			}
 			else
@@ -56,8 +56,18 @@ void URGX_HealthAttributeSet::PostGameplayEffectExecute(const struct FGameplayEf
 				UGameplayEffect* HitEffect = URGX_HitEffect::StaticClass()->GetDefaultObject<UGameplayEffect>();
 				ASC->ApplyGameplayEffectToSelf(HitEffect, 1, ASC->MakeEffectContext());
 
-				FGameplayEventData EventData;
-				ASC->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Combat.TakeDamage")), &EventData);
+				{
+					FGameplayEventData EventData;
+					EventData.Instigator = Data.EffectSpec.GetEffectContext().GetInstigator();
+					ASC->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Combat.TakeDamage")), &EventData);
+				}
+			
+
+				if (CurrentHealth < GetMaxHealth() * 0.25f)
+				{
+					FGameplayEventData EventData;
+					ASC->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Enemy.Weakened")), &EventData);
+				}
 			}
 		}
 	}

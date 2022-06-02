@@ -104,7 +104,7 @@ void URGX_HitboxComponent::DeactivateHitbox()
 
 void URGX_HitboxComponent::ActivateEffect()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Activate Effect\n"));
+	//UE_LOG(LogTemp, Warning, TEXT("Activate Effect\n"));
 	bEffectActivated = true;
 	for (UShapeComponent* Shape : Shapes)
 	{
@@ -115,7 +115,7 @@ void URGX_HitboxComponent::ActivateEffect()
 
 void URGX_HitboxComponent::DeactivateEffect()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Deactivate Effect\n"));
+	//UE_LOG(LogTemp, Warning, TEXT("Deactivate Effect\n"));
 	bEffectActivated = false;
 	for (UShapeComponent* Shape : Shapes)
 	{
@@ -212,7 +212,7 @@ bool URGX_HitboxComponent::HasChildActor()
 
 void URGX_HitboxComponent::ApplyEffects(AActor* OtherActor)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Apply putos efectos\n"));
+	//UE_LOG(LogTemp, Warning, TEXT("Apply putos efectos\n"));
 	if (DefaultEffectToApply || AbilityEffectsInfo.GameplayEffectsToTarget.Num() > 0 || AbilityEffectsInfo.GameplayEventsToTarget.Num() > 0
 		|| AbilityEffectsInfo.GameplayEffectsToOwner.Num() > 0 || AbilityEffectsInfo.GameplayEventsToOwner.Num() > 0)
 	{
@@ -253,7 +253,7 @@ void URGX_HitboxComponent::ApplyEffects(AActor* OtherActor)
 			}
 
 			// Effects and Events to apply that come from an ability activation
-			for (TSubclassOf<UGameplayEffect> Effect : AbilityEffectsInfo.GameplayEffectsToTarget)
+			for (TSubclassOf<UGameplayEffect> Effect : AbilityEffectsInfo.GameplayEffectsToTarget) // TODO: BUGARDO
 			{
 				ApplierASC->ApplyGameplayEffectToTarget(Effect->GetDefaultObject<UGameplayEffect>(), TargetASC, 1, ApplierASC->MakeEffectContext());
 			}
@@ -321,13 +321,13 @@ void URGX_HitboxComponent::OnComponentOverlap(
 	}
 	
 
-	UE_LOG(LogTemp, Warning, TEXT("Other component name is %s."), *OtherComp->GetName());
+	//UE_LOG(LogTemp, Warning, TEXT("Other component name is %s."), *OtherComp->GetName());
 	URGX_HitboxComponent* HitboxComponent = Cast<URGX_HitboxComponent>(OtherComp->GetAttachParent());
 
 	ETeamAttitude::Type Attitude = FGenericTeamId::GetAttitude(OwnerActor, OtherActor);
 	if (Attitude == TeamToApply && HitboxComponent == nullptr)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Hitbox Overlap"));
+		//UE_LOG(LogTemp, Warning, TEXT("Hitbox Overlap"));
 		ActorsHit.Add(OtherActor);
 		ApplyEffects(OtherActor);
 	}
