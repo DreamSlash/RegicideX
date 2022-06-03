@@ -35,7 +35,6 @@ void URGX_PlayMontageAndWaitForEvent::OnMontageBlendingOut(UAnimMontage* Montage
 			{
 				Character->SetAnimRootMotionTranslationScale(1.f);
 			}
-
 		}
 	}
 
@@ -208,7 +207,6 @@ void URGX_PlayMontageAndWaitForEvent::OnDestroy(bool AbilityEnded)
 	}
 
 	Super::OnDestroy(AbilityEnded);
-
 }
 
 bool URGX_PlayMontageAndWaitForEvent::StopPlayingMontage()

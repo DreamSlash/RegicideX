@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GA_CastSkillAbility.h"
+#include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RGX_GA_SuicidalExplosionAbility.generated.h"
 
 /**
@@ -34,4 +35,10 @@ protected:
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float ExplosionRadius = 200.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	URGX_LaunchEventDataAsset* LaunchEventData;
+
+	UPROPERTY(EditAnywhere)
+	class UParticleSystem* ExplosionVFX;
 };
