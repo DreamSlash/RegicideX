@@ -142,5 +142,7 @@ private:
 
 	void ResetCustomTimeDilation();
 
+	AActor* Owner = nullptr;
+	AActor* Other = nullptr;
 	FTimerHandle PunchTimerHandle;
 };
