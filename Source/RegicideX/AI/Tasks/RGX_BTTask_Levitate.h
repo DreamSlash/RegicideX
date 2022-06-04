@@ -22,9 +22,8 @@ class REGICIDEX_API URGX_BTTask_Levitate : public UBTTaskNode
 
 	FVector GoalLocation;
 
-
-
 public:
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float MaxTime = 5.0;
 

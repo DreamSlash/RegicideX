@@ -31,6 +31,9 @@ public:
 		bool bCharged = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		bool bSweeping = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		URGX_MovementAssistComponent* MovementAssistComponent;
 
 	void RotateToTarget(float DeltaTime) override;

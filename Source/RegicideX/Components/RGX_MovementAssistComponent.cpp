@@ -49,6 +49,7 @@ bool URGX_MovementAssistComponent::CheckDistanceToGoalPoint()
 void URGX_MovementAssistComponent::SetMagnitudeAndSpeed(float Magnitude, float Speed)
 {
 	ForwardMagnitude = Magnitude;
+
 	MovementSpeed = Speed;
 	AActor* Owner = GetOwner();
 	const FVector FrontVector = Owner->GetActorForwardVector();

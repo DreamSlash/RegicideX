@@ -31,14 +31,14 @@ EBTNodeResult::Type URGX_BTTask_Levitate::ExecuteTask(UBehaviorTreeComponent& Ow
 
 	}
 
-	/*UKismetSystemLibrary::DrawDebugLine(
+	UKismetSystemLibrary::DrawDebugLine(
 		GetWorld(),
 		RaySrc,
 		RayEnd,
 		FColor(255, 0, 0),
 		10.0,
 		5.0f
-	);*/
+	);
 
 	MeleeAngelPawn->bLevitating = true;
 
