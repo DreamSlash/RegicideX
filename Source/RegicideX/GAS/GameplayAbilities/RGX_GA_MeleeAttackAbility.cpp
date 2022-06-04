@@ -5,14 +5,13 @@
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
-#include "../../Components/RGX_HitboxesManagerComponent.h"
-#include "../../Components/RGX_CombatAssistComponent.h"
-#include "../../Character/RGX_PlayerCharacter.h"
-#include "../../Components/RGX_HitboxComponent.h"
+#include "RegicideX/Components/RGX_HitboxesManagerComponent.h"
+#include "RegicideX/Components/RGX_CombatAssistComponent.h"
+#include "RegicideX/Character/RGX_PlayerCharacter.h"
+#include "RegicideX/Components/RGX_HitboxComponent.h"
 
 URGX_MeleeAttackAbility::URGX_MeleeAttackAbility()
 {
-
 }
 
 void URGX_MeleeAttackAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)

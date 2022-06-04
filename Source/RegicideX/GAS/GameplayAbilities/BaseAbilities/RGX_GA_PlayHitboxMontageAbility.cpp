@@ -28,7 +28,11 @@ bool URGX_PlayHitboxMontageAbility::CanActivateAbility(const FGameplayAbilitySpe
 	return true;
 }
 
-void URGX_PlayHitboxMontageAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
+void URGX_PlayHitboxMontageAbility::ActivateAbility(
+	const FGameplayAbilitySpecHandle Handle, 
+	const FGameplayAbilityActorInfo* ActorInfo, 
+	const FGameplayAbilityActivationInfo ActivationInfo, 
+	const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData); // Parent already calls CommitAbility function
 

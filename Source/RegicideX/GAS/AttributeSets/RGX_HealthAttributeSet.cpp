@@ -48,7 +48,7 @@ void URGX_HealthAttributeSet::PostGameplayEffectExecute(const struct FGameplayEf
 					ASC->ApplyGameplayEffectToSelf(DeathEffect, 1, ASC->MakeEffectContext());
 
 					FGameplayEventData EventData;
-					ASC->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("Status.Dead")), &EventData);
+					ASC->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.HasDied")), &EventData);
 				}
 			}
 			else

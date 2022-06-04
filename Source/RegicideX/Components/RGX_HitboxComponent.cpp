@@ -2,9 +2,12 @@
 #include "AbilitySystemGlobals.h"
 #include "AbilitySystemComponent.h"
 #include "Components/ChildActorComponent.h"
+#include "RegicideX/GameplayFramework/RGX_RoundGameMode.h"
 #include "GenericTeamAgentInterface.h"
 #include "RegicideX/GAS/RGX_PayloadObjects.h"
+#include "RegicideX/Character/RGX_PlayerCharacter.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 URGX_HitboxComponent::URGX_HitboxComponent()
 {
@@ -306,7 +309,7 @@ void URGX_HitboxComponent::OnComponentOverlap(
 		// An actor cannot be hit more than once by the same hitbox activation
 		if (OtherActor == Hit)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Hit Same Actor\n"));
+			//UE_LOG(LogTemp, Warning, TEXT("Hit Same Actor\n"));
 			return;
 		}
 	}
@@ -321,13 +324,35 @@ void URGX_HitboxComponent::OnComponentOverlap(
 	}
 	
 
-	UE_LOG(LogTemp, Warning, TEXT("Other component name is %s."), *OtherComp->GetName());
+	//UE_LOG(LogTemp, Warning, TEXT("Other component name is %s."), *OtherComp->GetName());
 	URGX_HitboxComponent* HitboxComponent = Cast<URGX_HitboxComponent>(OtherComp->GetAttachParent());
 
 	ETeamAttitude::Type Attitude = FGenericTeamId::GetAttitude(OwnerActor, OtherActor);
-	if (Attitude == TeamToApply && HitboxComponent == nullptr)
+	const FGameplayTagContainer BlockingTags = TagsToBlockTheHit;
+	IGameplayTagAssetInterface* TagInterface = Cast<IGameplayTagAssetInterface>(OtherActor);
+	bool CanApplyEffect = false;
+	if (TagInterface )
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Hitbox Overlap"));
+		// Check and may rethink this ... If BlockingTags is empty, this returns true
+		if (TagInterface->HasAllMatchingGameplayTags(BlockingTags) == false || BlockingTags.IsEmpty())
+			CanApplyEffect = true;
+	}
+
+	if (Attitude == TeamToApply && HitboxComponent == nullptr && CanApplyEffect)
+	{
+		// Stopping for two frame. If probably should be done only for the owner and target actors and not for all actors.
+		ARGX_PlayerCharacter* player = Cast<ARGX_PlayerCharacter>(OwnerActor);
+		if (player)
+		{
+			if (Owner == nullptr) {
+				Owner = OwnerActor;
+				Owner->CustomTimeDilation = 0.0f;
+			}
+
+			OtherActor->CustomTimeDilation = 0.0f;
+			ActorsWithTimeDilation.Add(OtherActor);
+			GetWorld()->GetTimerManager().SetTimer(PunchTimerHandle, this, &URGX_HitboxComponent::ResetCustomTimeDilation, 0.06666, false);
+		}
 		ActorsHit.Add(OtherActor);
 		ApplyEffects(OtherActor);
 	}
@@ -338,14 +363,16 @@ void URGX_HitboxComponent::OnComponentOverlap(
 		DestroyOwnerOnOverlap();
 		break;
 	case ERGX_DestroyOnOverlapType::Hostile:
-		if (Attitude == ETeamAttitude::Type::Hostile) {
+		if (Attitude == ETeamAttitude::Type::Hostile)
 			DestroyOwnerOnOverlap();
-		}
 		break;
 	case ERGX_DestroyOnOverlapType::Dynamic:
-		if (OtherActor->IsRootComponentMovable()) {
+		if (OtherActor->IsRootComponentMovable())
 			DestroyOwnerOnOverlap();
-		}
+		break;
+	case ERGX_DestroyOnOverlapType::EffectApplied:
+		if (CanApplyEffect && Attitude == ETeamAttitude::Type::Hostile)
+			DestroyOwnerOnOverlap();
 		break;
 	default:
 		break;
@@ -355,4 +382,30 @@ void URGX_HitboxComponent::OnComponentOverlap(
 void URGX_HitboxComponent::DestroyOwnerOnOverlap()
 {
 	GetOwner()->Destroy();
+}
+
+bool URGX_HitboxComponent::CheckIfEffectIsApplied(AActor* TargetActor)
+{
+	// If TargetActor met the requirements to avoid the effect, return false.
+	IGameplayTagAssetInterface* TagInterface = Cast<IGameplayTagAssetInterface>(TargetActor);
+	if (TagInterface)
+	{
+		const FGameplayTagContainer& BlockingTags = TagsToBlockTheHit;
+		if (TagInterface->HasAllMatchingGameplayTags(BlockingTags))
+			return false;
+	}
+	return true;
+}
+
+void URGX_HitboxComponent::ResetCustomTimeDilation()
+{
+	if (Owner == nullptr && ActorsWithTimeDilation.Num() == 0)
+		return;
+
+	Owner->CustomTimeDilation = 1.0f;
+	Owner = nullptr;
+	for (const auto& Enemy : ActorsWithTimeDilation) {
+		Enemy->CustomTimeDilation = 1.0f;
+	}
+	ActorsWithTimeDilation.Empty();
 }

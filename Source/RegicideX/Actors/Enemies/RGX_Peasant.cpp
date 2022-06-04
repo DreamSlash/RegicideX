@@ -4,7 +4,6 @@
 #include "Components/MCV_AbilitySystemComponent.h"
 #include "EngineUtils.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "RGX_GroupManager.h"
 #include "Kismet/GameplayStatics.h"
 
 ARGX_Peasant::ARGX_Peasant()
@@ -15,15 +14,6 @@ void ARGX_Peasant::BeginPlay()
 {
 	
 	Super::BeginPlay();
-
-	// TODO Spawner call addPeasant
-	for (TActorIterator<ARGX_GroupManager> MngItr(GetWorld()); MngItr; ++MngItr)
-	{
-		manager = *MngItr;
-		break;
-	}
-	if(manager)
-		manager->AddPeasant(this);
 
 	AddGameplayTag(FGameplayTag::RequestGameplayTag(TEXT("Status.Alive")));
 }
@@ -49,15 +39,6 @@ void ARGX_Peasant::DestroyPeasant()
 {
 	// Handle particles and stuff before dying ...
 	this->Destroy();
-}
-
-void ARGX_Peasant::ResetAttacking()
-{
-	if (manager)
-	{
-		bAttacking = false;
-		manager->AttackingPeasant = nullptr;
-	}
 }
 
 // TODO Make it in EnemyBase --> Make it 2D??

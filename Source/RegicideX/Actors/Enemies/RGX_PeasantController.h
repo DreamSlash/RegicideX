@@ -30,8 +30,6 @@ public:
 	uint8 TargetActorID;
 	uint8 DistanceToPlayerID;
 	uint8 InCombatID;
-	uint8 AttackingID;
 	uint8 IdleActionID;
-	uint8 OnAirID;
 	uint8 ToDestroyID;
 };
