@@ -36,6 +36,9 @@ void UExecution_Damage::Execute_Implementation(const FGameplayEffectCustomExecut
 	const FGameplayTagContainer* TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
 	bool dmg = TargetTags->HasTag(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Combat.TakeDamage"))) == true;
 
+	//const FGameplayEffectContextHandle ContextHandle = Spec.GetContext();
+	//const UGameplayAbility* AbilityUsed = ContextHandle.GetAbility();
+
 	if (TargetTags->HasTag(FGameplayTag::RequestGameplayTag(FName("Status.Invulnerable"))) == true)
 	{
 		return;

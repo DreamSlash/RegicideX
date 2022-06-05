@@ -18,6 +18,8 @@ void UMCV_AbilitySystemComponent::InitAbilityActorInfo(AActor* InOwnerActor, AAc
 	}
 
 	GrantDefaultAbilitiesAndAttributes();
+
+	bIsInitialized = true;
 }
 
 void UMCV_AbilitySystemComponent::BeginDestroy()

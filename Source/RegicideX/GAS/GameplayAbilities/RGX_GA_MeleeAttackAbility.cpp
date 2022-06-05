@@ -27,7 +27,10 @@ void URGX_MeleeAttackAbility::ActivateAbility(const FGameplayAbilitySpecHandle H
 			CombatAssistComponent->PerformAttackAutoAssist();
 		}
 	}
-	
+
+	// TODO: Use this line to create a context with the ability spec so the effects can access its information, like ability level or a struct with custom information
+	const FGameplayEffectContextHandle ContextHandle = MakeEffectContext(GetCurrentAbilitySpecHandle(), ActorInfo);
+
 	if (CombatAssistComponent)
 	{
 		CombatAssistComponent->AddMovementVector(ActorInfo->AvatarActor->GetActorForwardVector(), MoveVectorLength, true);

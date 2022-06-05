@@ -122,4 +122,7 @@ protected:
 	// List of added attributes
 	UPROPERTY(transient)
 	TArray<UAttributeSet*> AddedAttributes;
+
+public:
+	bool bIsInitialized = false;
 };

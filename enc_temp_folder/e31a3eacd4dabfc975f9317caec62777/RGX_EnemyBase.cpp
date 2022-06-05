@@ -121,16 +121,16 @@ void ARGX_EnemyBase::HandleDamage(float DamageAmount, AActor* DamageCauser)
 void ARGX_EnemyBase::HandleHealthChanged(float DeltaValue)
 {
 	UMCV_AbilitySystemComponent* ACS = Cast<UMCV_AbilitySystemComponent>(AbilitySystemComponent);
-	URGX_EnemyHealthBar* HealthBar = Cast<URGX_EnemyHealthBar>(HealthDisplayWidgetComponent->GetWidget());
-	if (HealthBar)
-	{
-		HealthBar->MaxHealth = ACS->GetNumericAttribute(HealthAttributeSet->GetMaxHealthAttribute());
-		HealthBar->CurrentHealth = ACS->GetNumericAttribute(HealthAttributeSet->GetHealthAttribute());
-	}
-
 	// Only call BP event if ACS is initialized
 	if (ACS->bIsInitialized == true)
 	{
+		URGX_EnemyHealthBar* HealthBar = Cast<URGX_EnemyHealthBar>(HealthDisplayWidgetComponent->GetWidget());
+		if (HealthBar)
+		{
+			HealthBar->MaxHealth = ACS->GetNumericAttribute(HealthAttributeSet->GetMaxHealthAttribute());
+			HealthBar->CurrentHealth = ACS->GetNumericAttribute(HealthAttributeSet->GetHealthAttribute());
+		}
+
 		OnHandleHealthChanged(DeltaValue);
 	}
 }
