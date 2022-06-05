@@ -110,6 +110,9 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	float MaxWalkSpeed = 600.0f;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool bIsFallingDown = false;
+
 	void BeginPlay() override;
 
 	void Tick(float DeltaTime) override;
@@ -143,6 +146,7 @@ protected:
 	/** Move variables */
 	UPROPERTY()
 	bool bIgnoreInputMoveVector = false;
+
 	// -----------------------
 
 	UPROPERTY()
@@ -183,6 +187,9 @@ protected:
 	FRGX_LeanInfo CalculateLeanAmount();
 
 	void Landed(const FHitResult& Hit) override;
+
+	UFUNCTION(BlueprintCallable)
+	void OnCapsuleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 protected:
 	// --- APawn interface ---
