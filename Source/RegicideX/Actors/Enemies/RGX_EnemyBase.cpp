@@ -43,6 +43,9 @@ void ARGX_EnemyBase::BeginPlay()
 	InteractionShapeComponent->SetCollisionProfileName("InteractableObject");
 
 	DisableInteraction();
+
+	// For initializing health bar
+	HandleHealthChanged(0.0f);
 }
 
 void ARGX_EnemyBase::PossessedBy(AController* NewController)
