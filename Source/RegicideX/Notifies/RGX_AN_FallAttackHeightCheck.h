@@ -14,4 +14,5 @@ class REGICIDEX_API URGX_AN_FallAttackHeightCheck : public UAnimNotify
 {
 	GENERATED_BODY()
 	
+	void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation);
 };
