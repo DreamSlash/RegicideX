@@ -14,4 +14,7 @@ class REGICIDEX_API URGX_ANS_AttackMove : public UAnimNotifyState
 {
 	GENERATED_BODY()
 	
+	void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration) override;
+	void NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime) override;
+	void NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
 };
