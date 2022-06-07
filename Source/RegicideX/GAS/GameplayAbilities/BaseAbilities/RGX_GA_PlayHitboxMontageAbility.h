@@ -5,8 +5,10 @@
 #include "CoreMinimal.h"
 #include "RegicideX/GAS/GameplayAbilities/RGX_GameplayAbility.h"
 #include "RegicideX/GAS/RGX_PayloadObjects.h"
+#include "RegicideX/GAS/RGX_GameplayEffectContext.h"
 #include "RGX_GA_PlayHitboxMontageAbility.generated.h"
 
+//struct FRGX_GameplayEffectContext;
 /**
  * 
  */
@@ -18,6 +20,8 @@ class REGICIDEX_API URGX_PlayHitboxMontageAbility : public URGX_GameplayAbility
 public:
 
 	URGX_PlayHitboxMontageAbility();
+	virtual ~URGX_PlayHitboxMontageAbility() {}
+
 
 protected:
 	bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags = nullptr, const FGameplayTagContainer* TargetTags = nullptr, OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const;
@@ -30,6 +34,9 @@ protected:
 	/* If it is overriden, Base version sould be called at the end of the overrided version */
 	UFUNCTION()
 	virtual void OnMontageFinished();
+
+	UFUNCTION()
+	virtual void PopulateGameplayEffect(FRGX_GameplayEffectContext& GameplayEffectContext);
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

@@ -55,3 +55,8 @@ void URGX_MeleeAttackAbility::EndAbility(const FGameplayAbilitySpecHandle Handle
 
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
+
+void URGX_MeleeAttackAbility::PopulateGameplayEffect(FRGX_GameplayEffectContext& GameplayEffectContext)
+{
+	GameplayEffectContext.DamageAmount = 122.0f;
+}
