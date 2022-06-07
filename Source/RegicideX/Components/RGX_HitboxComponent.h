@@ -71,12 +71,6 @@ public:
 	UFUNCTION()
 	bool IsGoingToOverlapActor(AActor* Actor);
 
-	UFUNCTION(BlueprintCallable)
-	void SetChildActorAndSocket(UChildActorComponent* NewChildActorComponent, const FName NewSocketName);
-
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	bool HasChildActor();
-
 protected:
 
 	void ApplyEffects(AActor* OtherActor);
@@ -122,8 +116,6 @@ protected:
 	/** "This enum property defines if the component is destroyed OnOverlap by the type.*/
 	UPROPERTY(EditDefaultsOnly, Category = HitboxComponent)
 	TEnumAsByte<ERGX_DestroyOnOverlapType> DestroyOnOverlap = ERGX_DestroyOnOverlapType::None;
-
-	UChildActorComponent* ChildActorComponent = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = HitboxComponent)
 	FName SocketName;

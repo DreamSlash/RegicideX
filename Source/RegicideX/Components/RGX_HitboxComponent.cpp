@@ -58,11 +58,6 @@ void URGX_HitboxComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	const ECollisionEnabled::Type CollisionType = GetCollisionEnabled();
 	if (CollisionType == ECollisionEnabled::NoCollision)
 		return;
-
-	if (ChildActorComponent == nullptr)
-		return;
-
-	LastSocketPosition = ChildActorComponent->GetSocketLocation(SocketName);
 }
 
 void URGX_HitboxComponent::EndPlay(EEndPlayReason::Type EndPlayReason)
@@ -166,14 +161,6 @@ bool URGX_HitboxComponent::IsGoingToOverlapActor(AActor* Actor)
 
 		StartLocation = OwnerActor->GetActorLocation();
 	}
-	else
-	{
-		const FVector SocketLocation = ChildActorComponent->GetSocketLocation(SocketName);
-		Direction = LastSocketPosition - ChildActorComponent->GetSocketLocation(SocketName);
-		Direction.Normalize();
-
-		StartLocation = OwnerActor->GetActorLocation() + GetRelativeLocation();
-	}
 
 	FVector EndLocation = StartLocation * Direction * 1000.0f;
 
@@ -200,17 +187,6 @@ bool URGX_HitboxComponent::IsGoingToOverlapActor(AActor* Actor)
 	}
 
 	return false;
-}
-
-void URGX_HitboxComponent::SetChildActorAndSocket(UChildActorComponent* NewChildActorComponent, const FName NewSocketName)
-{
-	ChildActorComponent = NewChildActorComponent;
-	SocketName = NewSocketName;
-}
-
-bool URGX_HitboxComponent::HasChildActor()
-{
-	return ChildActorComponent != nullptr;
 }
 
 void URGX_HitboxComponent::ApplyEffects(AActor* OtherActor)

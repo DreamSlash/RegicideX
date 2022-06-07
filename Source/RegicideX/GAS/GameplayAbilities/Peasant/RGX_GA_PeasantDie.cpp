@@ -64,7 +64,6 @@ void URGX_GA_PeasantDie::EndAbility(
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 
 	ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(ActorInfo->OwnerActor);
-	Peasant->GetMesh()->bPauseAnims = true;
 	Peasant->HandleDeath();
 }
 
