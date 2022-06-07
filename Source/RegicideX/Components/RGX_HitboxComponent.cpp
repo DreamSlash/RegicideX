@@ -256,14 +256,16 @@ void URGX_HitboxComponent::ApplyEffects(AActor* OtherActor)
 			}
 
 			// Effects and Events to apply that come from an ability activation
+			float AbilityLevel = AbilityEffectsInfo.EffectContextHandle.GetAbilityLevel();
+
 			for (TSubclassOf<UGameplayEffect> Effect : AbilityEffectsInfo.GameplayEffectsToTarget) // TODO: BUGARDO
 			{
-				ApplierASC->ApplyGameplayEffectToTarget(Effect->GetDefaultObject<UGameplayEffect>(), TargetASC, 1, ApplierASC->MakeEffectContext());
+				ApplierASC->ApplyGameplayEffectToTarget(Effect->GetDefaultObject<UGameplayEffect>(), TargetASC, AbilityLevel, AbilityEffectsInfo.EffectContextHandle);
 			}
 
 			for (TSubclassOf<UGameplayEffect> Effect : AbilityEffectsInfo.GameplayEffectsToOwner)
 			{
-				ApplierASC->ApplyGameplayEffectToSelf(Effect->GetDefaultObject<UGameplayEffect>(), 1, ApplierASC->MakeEffectContext());
+				ApplierASC->ApplyGameplayEffectToSelf(Effect->GetDefaultObject<UGameplayEffect>(), AbilityLevel, AbilityEffectsInfo.EffectContextHandle);
 
 			}
 
