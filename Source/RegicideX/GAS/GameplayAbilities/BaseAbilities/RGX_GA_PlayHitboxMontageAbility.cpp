@@ -41,7 +41,13 @@ void URGX_PlayHitboxMontageAbility::ActivateAbility(
 	URGX_HitboxComponent* Hitbox = HitboxManagerComponent->GetHitboxByTag(HitboxTag);
 	if (Hitbox)
 	{
+		// TODO: Use this line to create a context with the ability spec so the effects can access its information, like ability level or a struct with custom information
+		FGameplayEffectContextHandle ContextHandle = MakeEffectContext(GetCurrentAbilitySpecHandle(), ActorInfo);
+		FRGX_GameplayEffectContext* Context = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
+		PopulateGameplayEffectContext(*Context);
+
 		FRGX_AbilityEffectsInfo AbilityEffectsInfo;
+		AbilityEffectsInfo.EffectContextHandle = ContextHandle;
 		AbilityEffectsInfo.GameplayEffectsToTarget = EffectsToApplyToTarget;
 		AbilityEffectsInfo.GameplayEffectsToOwner = EffectsToApplyToOwner;
 		AbilityEffectsInfo.GameplayEventsToTarget = EventsToApplyToTarget;
@@ -79,4 +85,9 @@ void URGX_PlayHitboxMontageAbility::EndAbility(const FGameplayAbilitySpecHandle 
 void URGX_PlayHitboxMontageAbility::OnMontageFinished()
 {
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
+}
+
+void URGX_PlayHitboxMontageAbility::PopulateGameplayEffectContext(FRGX_GameplayEffectContext& GameplayEffectContext)
+{
+
 }

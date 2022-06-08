@@ -153,6 +153,8 @@ void ARGX_PlayerCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, flo
 
 	const FVector2D RelativeDistance = -Projection * TargetToFocusDistance;
 
+	//UE_LOG(LogTemp, Warning, TEXT("Relative Distance: %f, %f\n"), RelativeDistance.X, RelativeDistance.Y);
+
 	PreviousFocusLocation = FocusLocation;
 
 	FVector SocketOffset = SpringArmComponent->SocketOffset;
@@ -177,6 +179,8 @@ void ARGX_PlayerCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, flo
 		Delta.Z = 0.0f;
 		Delta = -Delta;
 
+		//UKismetSystemLibrary::DrawDebugLine(GetWorld(), TargetLocation, FocusLocation, FLinearColor::Green, 1.0f, 2.0f);
+
 		float AmountForward = FVector::DotProduct(Delta, CameraForward);
 		float AmountRight = FVector::DotProduct(Delta, CameraRight);
 
@@ -188,12 +192,43 @@ void ARGX_PlayerCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, flo
 		
 		FocusLocation = TargetLocation + AmountRight * CameraRight + AmountForward * CameraForward;
 
+		//FocusLocation = FMath::Lerp(TargetLocation, FocusLocation, t);
+		//UKismetSystemLibrary::DrawDebugLine(GetWorld(), FocusLocation, FocusLocation * FVector::UpVector * 100.0f, FLinearColor::Red, 1.0f, 2.0f);
+		//SocketOffset.Y = -RelativeDistance.Y;
+	}
+	else
+	{
+		FocusLocation = TargetLocation;
+	}
+	
+	/*
+	if (FocusRadius > 0.0f)
+	{
+		float Distance = FVector::Distance(TargetLocation, FocusLocation);
+		//UE_LOG(LogTemp, Warning, TEXT("Camera Distance to Target: %f\n"), Distance);
+
+		float t = 1.0f;
+		if (Distance > 0.01f && FocusCentering > 0.0f)
+		{
+			t = FMath::Pow(1 - FocusCentering, DeltaTime);
+		}
+
+		if (Distance > FocusRadius)
+		{
+			//UE_LOG(LogTemp, Warning, TEXT("Manuela\n"));
+			t = FMath::Min(t, FocusRadius / Distance);
+		}
+
+		FocusLocation = FMath::Lerp(TargetLocation, FocusLocation, t);
+		TargetOffset.Y = RelativeDistance.Y;
+
 		//UKismetSystemLibrary::DrawDebugLine(GetWorld(), FocusLocation, FocusLocation * FVector::UpVector * 100.0f, FLinearColor::Red, 1.0f, 2.0f);
 	}
 	else
 	{
 		FocusLocation = TargetLocation;
 	}
+	*/
 
 	SpringArmComponent->SocketOffset = SocketOffset;
 }

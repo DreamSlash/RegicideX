@@ -88,3 +88,7 @@ void URGX_CastHitboxAttackAbility::OnFinalMontageFinished()
 	UE_LOG(LogTemp, Warning, TEXT("Remove Ability Effects\n"));
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
 }
+
+void URGX_CastHitboxAttackAbility::PopulateGameplayEffectContext(FRGX_GameplayEffectContext& GameplayEffectContext)
+{
+}

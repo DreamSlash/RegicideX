@@ -26,7 +26,7 @@ void ARGX_Peasant::Tick(float DeltaTime)
 	ToBeDestroyed = ASC->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.Dead")));
 
 	// TODO Managed by Manager
-	GetCharacterMovement()->MaxWalkSpeed = bInCombat ? 400.0f : 100.0f;
+	GetCharacterMovement()->MaxWalkSpeed = bInCombat ? MaxSpeed : WanderSpeed;
 }
 
 void ARGX_Peasant::HandleDeath()

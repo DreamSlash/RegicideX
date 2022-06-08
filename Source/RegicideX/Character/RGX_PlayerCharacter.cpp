@@ -21,6 +21,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "RegicideX/RGX_PlayerCameraManager.h"
+#include "RegicideX/GAS/RGX_GameplayEffectContext.h"
 
 ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 {
@@ -318,6 +319,21 @@ void ARGX_PlayerCharacter::ChangePowerSkill()
 	UE_LOG(LogTemp, Warning, TEXT("Power Skill Selected: %s\n"), *SkillName);
 }
 
+void ARGX_PlayerCharacter::LevelUp(const float NewLevel)
+{
+	Level = NewLevel;
+
+	FGameplayEffectContextHandle ContextHandle = AbilitySystemComponent->MakeEffectContext();
+	FRGX_GameplayEffectContext* FRGXContext = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
+
+	FString ContextString;
+	FRealCurve* MaxHealth = MaxHealthLevelCurve->FindCurve(FName("MaxHealth"), ContextString);
+	FRealCurve* AttackPower = AttackPowerLevelCurve->FindCurve(FName("AttackPower"), ContextString);
+	FRGXContext->NewMaxHealth = MaxHealth->Eval(Level);
+	FRGXContext->NewAttackPower = AttackPower->Eval(Level);
+	AbilitySystemComponent->ApplyGameplayEffectToSelf(LevelUpEffect.GetDefaultObject(), 1.0f, ContextHandle);
+}
+
 void ARGX_PlayerCharacter::PrintDebugInformation()
 {
 	TArray<FGameplayAttribute> attributes;
@@ -402,60 +418,34 @@ void ARGX_PlayerCharacter::BeginPlay()
 		CurrentSkillTag = PowerSkills[0];
 		AddGameplayTag(CurrentSkillTag);
 	}
+
+	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ARGX_PlayerCharacter::OnCapsuleHit);
+
+	LevelUp(Level);
 }
 
 void ARGX_PlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	// Timers
-	/*
-	if (bHeavyInputFlag == true)
+	if (GetVelocity().Z < 0)
 	{
-		HeavyInputCurrentHoldTime += DeltaTime;
+		bIsFallingDown = true;
+	}
+	/*
+	if (bIsFallingDown == true)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Is Falling Down: TRUE\n"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Is Falling Down: FALSE\n"));
 	}
 	*/
-	/*
-	//UE_LOG(LogTemp, Warning, TEXT("Heavy Input Current Hold Time: %f\n"), HeavyInputCurrentHoldTime);
-	if (bHeavyInputFlag && HeavyInputCurrentHoldTime > FallAttackHoldTime == true)
-	{
-		if (bHeavyInputPressedInAir == true)
-		{
-			PerformFallAttack();
-		}
-		else
-		{
-			PerformLaunchAttack();
-		}
-	}
-	*/
-
 	// Leaning
 	const FRGX_LeanInfo LeanInfo = CalculateLeanAmount();
 	LeanAmount = UKismetMathLibrary::FInterpTo(LeanAmount, LeanInfo.LeanAmount, DeltaTime, LeanInfo.InterSpeed);
 	// ------------------
-
-	//UE_LOG(LogTemp, Warning, TEXT("Gravity Scale: %f\n"), GetCharacterMovement()->GravityScale);
-
-	/*
-	if (IsBeingAttacked())
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Being Attacked\n"));
-	}
-	*/
-
-	/*
-	bool bCanAirCombo = HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
-
-	if (bCanAirCombo == true)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Can Air Combo\n"));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Cannot Air Combo\n"));
-	}
-	*/
 
 	UKismetSystemLibrary::DrawDebugCircle(GetWorld(), GetActorLocation(), 100.0f, 24, FLinearColor::Green, 0.0f, 0.0f, FVector(0.0f, 1.0f, 0.0f), FVector(1.0f, 0.0f, 0.0f));
 }
@@ -532,32 +522,12 @@ void ARGX_PlayerCharacter::TurnAtRate(float Rate)
 {
 	YawChange = Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds();
 	AddControllerYawInput(YawChange);
-
-	// TODO: Pedazo guarrada
-	/*
-	if (FMath::Abs(Rate) > 0.001f)
-	{
-		ARGX_PlayerCameraManager* PlayerCameraManager =
-			Cast<ARGX_PlayerCameraManager>(UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0));
-		PlayerCameraManager->NotifyInput();
-	}
-	*/
 }
 
 void ARGX_PlayerCharacter::LookUpAtRate(float Rate)
 {
 	PitchChange = Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds();
 	AddControllerPitchInput(PitchChange);
-
-	/*
-	// TODO: Pedazo guarrada
-	if (FMath::Abs(Rate) > 0.001f)
-	{
-		ARGX_PlayerCameraManager* PlayerCameraManager =
-			Cast<ARGX_PlayerCameraManager>(UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0));
-		PlayerCameraManager->NotifyInput();
-	}
-	*/
 }
 
 FRGX_LeanInfo ARGX_PlayerCharacter::CalculateLeanAmount()
@@ -585,11 +555,35 @@ void ARGX_PlayerCharacter::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
 
-	InputHandlerComponent->ResetAirState();
+	ECollisionChannel CollisionChannel = Hit.GetComponent()->GetCollisionObjectType();
+	if (CollisionChannel == ECollisionChannel::ECC_WorldStatic)
+	{
+		InputHandlerComponent->ResetAirState();
 
-	UE_LOG(LogTemp, Warning, TEXT("Add Can Air Combo\n"))
-	AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
-	RemoveGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.HasAirDashed")));
+		AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
+		RemoveGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.HasAirDashed")));
+		bIsFallingDown = false;
+	}
+}
+
+void ARGX_PlayerCharacter::OnCapsuleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
+{
+	//UE_LOG(LogTemp, Warning, TEXT("On Capsule Overlap\n"));
+
+	if (bIsFallingDown == true)
+	{
+		const FVector Normal = Hit.Normal;
+		const FVector PlayerLaunchForce = Normal * FVector(1.0f, 1.0f, -1.0f) * 100.0f;
+		const FVector OtherActorLaunchForce = Normal * -1.0f * 2000.0f;
+
+		LaunchCharacter(PlayerLaunchForce, true, true);
+
+		ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(OtherActor);
+		if (Enemy)
+		{
+			Enemy->LaunchCharacter(OtherActorLaunchForce, true, true);
+		}
+	}
 }
 
 void ARGX_PlayerCharacter::OnJump_Implementation()

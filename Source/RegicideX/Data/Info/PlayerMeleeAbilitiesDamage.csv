@@ -1,0 +1,17 @@
+,1,10,20
+LightAttack1_Damage,50,100,150
+LightAttack1_Scaling,0.5,0.6,0.7
+LightAttack2_Damage,60,110,160
+LightAttack2_Scaling,0.5,0.6,0.7
+LightAttack3_Damage,60,110,160
+LightAttack3_Scaling,0.5,0.6,0.7
+AirLightAttack1_Damage,60,110,160
+AirLightAttack1_Scaling,0.5,0.6,0.7
+AirLightAttack2_Damage,70,120,170
+AirLightAttack2_Scaling,0.5,0.6,0.7
+AirLightAttack3_Damage,70,120,170
+AirLightAttack3_Scaling,0.5,0.6,0.7
+LaunchAttack_Damage,50,100,150
+LaunchAttack_Scaling,1,1,1
+FallAttack_Damage,100,150,200
+FallAttack_Scaling,1,1,1

@@ -22,6 +22,7 @@ class URGX_HealthAttributeSet;
 class URGX_MovementAttributeSet;
 class URGX_CombatAttributeSet;
 class URGX_InteractComponent;
+class UGameplayEffect;
 
 USTRUCT()
 struct FRGX_LeanInfo
@@ -101,6 +102,10 @@ public:
 	FGameplayTag CurrentSkillTag;
 	//--------------------------
 
+	/* Level used to determine attributes and gameplay abilities stats */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0.0", UIMin = "0.0"))
+	int Level = 1;
+
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EObjectTypeQuery> DodgeableObjectType;
 
@@ -109,6 +114,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 	float MaxWalkSpeed = 600.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool bIsFallingDown = false;
 
 	void BeginPlay() override;
 
@@ -143,6 +151,7 @@ protected:
 	/** Move variables */
 	UPROPERTY()
 	bool bIgnoreInputMoveVector = false;
+
 	// -----------------------
 
 	UPROPERTY()
@@ -159,6 +168,17 @@ protected:
 	bool bHeavyInputFlag = false;
 	bool bHeavyInputPressedInAir = false;
 	// -------------------
+
+	/* Level Up variables */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UGameplayEffect> LevelUpEffect;
+
+	UPROPERTY(EditAnywhere)
+	UCurveTable* MaxHealthLevelCurve = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	UCurveTable* AttackPowerLevelCurve = nullptr;
+	// -----------------------------------------
 
 protected:
 	/** Called for forwards/backwards input */
@@ -183,6 +203,9 @@ protected:
 	FRGX_LeanInfo CalculateLeanAmount();
 
 	void Landed(const FHitResult& Hit) override;
+
+	UFUNCTION(BlueprintCallable)
+	void OnCapsuleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
 protected:
 	// --- APawn interface ---
@@ -211,6 +234,10 @@ protected:
 	void PerformFallAttack();
 	void PerformLaunchAttack();
 	void ChangePowerSkill();
+
+	/* Level and experience*/
+	void LevelUp(const float NewLevel);
+	// ----------------------
 
 	// Debug
 	void PrintDebugInformation();

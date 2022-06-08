@@ -78,3 +78,24 @@ void URGX_PlayerFallAttackAbility::OnFinalMontageFinished()
 {
 	Super::OnFinalMontageFinished();
 }
+
+void URGX_PlayerFallAttackAbility::PopulateGameplayEffectContext(FRGX_GameplayEffectContext& GameplayEffectContext)
+{
+	float AbilityLevel;
+	ARGX_PlayerCharacter* PlayerCharacter = Cast<ARGX_PlayerCharacter>(CurrentActorInfo->AvatarActor);
+	if (PlayerCharacter)
+	{
+		AbilityLevel = static_cast<float>(PlayerCharacter->Level);
+	}
+	else
+	{
+		AbilityLevel = GetAbilityLevel();
+	}
+
+	FString ContextString;
+	FRealCurve* DamageCurve = DamageLevelCurve->FindCurve(DamageCurveName, ContextString);
+	FRealCurve* ScalingCurve = DamageLevelCurve->FindCurve(AttributeScalingCurveName, ContextString);
+	GameplayEffectContext.DamageAmount = DamageCurve->Eval(AbilityLevel);
+	GameplayEffectContext.ScalingAttributeFactor = ScalingCurve->Eval(AbilityLevel);
+}
+
