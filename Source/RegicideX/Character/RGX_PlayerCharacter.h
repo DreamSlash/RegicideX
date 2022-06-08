@@ -22,6 +22,7 @@ class URGX_HealthAttributeSet;
 class URGX_MovementAttributeSet;
 class URGX_CombatAttributeSet;
 class URGX_InteractComponent;
+class UGameplayEffect;
 
 USTRUCT()
 struct FRGX_LeanInfo
@@ -101,6 +102,10 @@ public:
 	FGameplayTag CurrentSkillTag;
 	//--------------------------
 
+	/* Level used to determine attributes and gameplay abilities stats */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0.0", UIMin = "0.0"))
+	int Level = 1;
+
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EObjectTypeQuery> DodgeableObjectType;
 
@@ -164,6 +169,17 @@ protected:
 	bool bHeavyInputPressedInAir = false;
 	// -------------------
 
+	/* Level Up variables */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UGameplayEffect> LevelUpEffect;
+
+	UPROPERTY(EditAnywhere)
+	UCurveTable* MaxHealthLevelCurve = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	UCurveTable* AttackPowerLevelCurve = nullptr;
+	// -----------------------------------------
+
 protected:
 	/** Called for forwards/backwards input */
 	void MoveForward(float Value);
@@ -218,6 +234,10 @@ protected:
 	void PerformFallAttack();
 	void PerformLaunchAttack();
 	void ChangePowerSkill();
+
+	/* Level and experience*/
+	void LevelUp(const float NewLevel);
+	// ----------------------
 
 	// Debug
 	void PrintDebugInformation();

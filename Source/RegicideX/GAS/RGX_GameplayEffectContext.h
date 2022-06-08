@@ -32,8 +32,13 @@ public:
 	bool NetSerialize(FArchive& Ar, class UPackageMap* Map, bool& bOutSuccess) override;
 
 public:
+	/* For damage/healing effects*/
 	float DamageAmount;
 	float ScalingAttributeFactor;
+
+	/* For level up effect */
+	float NewMaxHealth;
+	float NewAttackPower;
 };
 
 template<>
