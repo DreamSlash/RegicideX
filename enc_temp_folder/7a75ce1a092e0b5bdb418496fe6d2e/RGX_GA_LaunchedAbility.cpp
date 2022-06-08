@@ -6,7 +6,7 @@ void URGX_LaunchedAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 {	
 	const URGX_LaunchEventDataAsset* LaunchPayload = Cast<URGX_LaunchEventDataAsset>(TriggerEventData->OptionalObject);
 
-	//UE_LOG(LogTemp, Warning, TEXT("Launch Ability\n"));
+	UE_LOG(LogTemp, Warning, TEXT("Launch Ability\n"));
 
 	if (LaunchPayload == false)
 	{
@@ -17,14 +17,14 @@ void URGX_LaunchedAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	FVector ForceOrigin = TriggerEventData->Instigator->GetActorLocation();
 	float HorizontalForce = LaunchPayload->LaunchHorizontalForce;
 	float VerticalForce = LaunchPayload->LaunchVerticalForce;
-	//UE_LOG(LogTemp, Warning, TEXT("Vertical Force: %f\n"), VerticalForce);
+	UE_LOG(LogTemp, Warning, TEXT("Vertical Force: %f\n"), VerticalForce);
 	FVector LaunchHorizontalDirection = ActorLocation - ForceOrigin;
 	LaunchHorizontalDirection.Z = 0.0f;
 	LaunchHorizontalDirection.Normalize();
 
 	FVector LaunchForce = LaunchHorizontalDirection * HorizontalForce + FVector(0.0f, 0.0f, 1.0f) * VerticalForce;
 
-	//UE_LOG(LogTemp, Warning, TEXT("Launch force: %f, %f, %f\n"), LaunchForce.X, LaunchForce.Y, LaunchForce.Z);
+	UE_LOG(LogTemp, Warning, TEXT("Launch force: %f, %f, %f\n"), LaunchForce.X, LaunchForce.Y, LaunchForce.Z);
 
 	ACharacter* Character = Cast<ACharacter>(ActorInfo->AvatarActor);
 	if (Character)

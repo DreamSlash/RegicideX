@@ -77,7 +77,7 @@ void URGX_PlayHitboxMontageAbility::EndAbility(const FGameplayAbilitySpecHandle 
 		Hitbox->RemoveAbilityEffectsInfo();
 	}
 
-	//UE_LOG(LogTemp, Warning, TEXT("Remove Ability Effects\n"));
+	UE_LOG(LogTemp, Warning, TEXT("Remove Ability Effects\n"));
 
 	Super::EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicateEndAbility, bWasCancelled);
 }

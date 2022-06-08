@@ -167,8 +167,6 @@ protected:
 	UPROPERTY()
 	bool bHeavyInputFlag = false;
 	bool bHeavyInputPressedInAir = false;
-
-	bool bCanAirCombo = true;
 	// -------------------
 
 	/* Level Up variables */
