@@ -33,7 +33,6 @@ public:
 
 public:
 	float DamageAmount;
-	float ScalingAttributeFactor;
 };
 
 template<>
