@@ -26,6 +26,7 @@ void URGX_GA_PeasantDie::ActivateAbility(
 	// If dead, should not move
 	if (Controller)
 	{
+		Controller->GetBrainComponent()->StopLogic("Actor dead");
 		Controller->StopMovement();
 		Controller->SetFocus(nullptr);	// Stop focusing the player
 	}
