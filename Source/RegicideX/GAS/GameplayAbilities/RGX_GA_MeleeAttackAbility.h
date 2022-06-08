@@ -5,7 +5,6 @@
 #include "CoreMinimal.h"
 #include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GA_PlayHitboxMontageAbility.h"
 #include "RegicideX/GAS/GameplayAbilities/RGX_GameplayAbility.h"
-#include "Engine/CurveTable.h"
 #include "RGX_GA_MeleeAttackAbility.generated.h"
 
 /**
@@ -25,12 +24,9 @@ protected:
 	void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 protected:
-	void PopulateGameplayEffect(FRGX_GameplayEffectContext& GameplayEffectContext) override;
+	void PopulateGameplayEffectContext(FRGX_GameplayEffectContext& GameplayEffectContext) override;
 
 protected:
-	UPROPERTY(EditAnywhere)
-	UCurveTable* DamageLevelCurve = nullptr;
-
 	UPROPERTY(EditAnywhere)
 	float MoveVectorLength = 0.0f;
 };

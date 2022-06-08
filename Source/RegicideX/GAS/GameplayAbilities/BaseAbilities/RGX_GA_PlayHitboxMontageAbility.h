@@ -36,9 +36,18 @@ protected:
 	virtual void OnMontageFinished();
 
 	UFUNCTION()
-	virtual void PopulateGameplayEffect(FRGX_GameplayEffectContext& GameplayEffectContext);
+	virtual void PopulateGameplayEffectContext(FRGX_GameplayEffectContext& GameplayEffectContext);
 
 protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FName DamageCurveName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FName AttributeScalingCurveName;
+
+	UPROPERTY(EditAnywhere)
+	UCurveTable* DamageLevelCurve = nullptr;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UAnimMontage* MontageToPlay;
 
