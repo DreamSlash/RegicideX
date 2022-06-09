@@ -170,10 +170,6 @@ void ARGX_PlayerCharacter::ManageLightAttackInputRelease()
 void ARGX_PlayerCharacter::ManageHeavyAttackInput()
 {
 	InputHandlerComponent->HandleInput(ERGX_PlayerInputID::HeavyAttackInput, false, GetCharacterMovement()->IsFalling());
-
-	bHeavyInputFlag = true;
-	bHeavyInputPressedInAir = GetCharacterMovement()->IsFalling() ? true : false;
-
 	/*
 	bool bCanAirCombo = HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
 	FGameplayTag NextAttack = ComboSystemComponent->ManageInputToken(ERGXPlayerInputID::HeavyAttackInput, GetCharacterMovement()->IsFalling(), bCanAirCombo);
@@ -206,9 +202,6 @@ void ARGX_PlayerCharacter::ManageHeavyAttackInputRelease()
 		UE_LOG(LogTemp, Warning, TEXT("Triggered Abilities: %d\n"), TriggeredAbilities);
 	}
 	*/
-
-	HeavyInputCurrentHoldTime = 0.0f;
-	bHeavyInputFlag = false;
 }
 
 void ARGX_PlayerCharacter::ManagePowerSkillInput()
@@ -301,9 +294,6 @@ void ARGX_PlayerCharacter::PerformFallAttack()
 	FGameplayEventData EventData;
 	int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("Combo.Air.Takedown")), &EventData);
 
-	bHeavyInputFlag = false;
-	bHeavyInputPressedInAir = false;
-
 	//UE_LOG(LogTemp, Warning, TEXT("Triggered Abilities: %d\n"), TriggeredAbilities);
 }
 
@@ -312,9 +302,6 @@ void ARGX_PlayerCharacter::PerformLaunchAttack()
 	// Launch Attack
 	FGameplayEventData EventData;
 	int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("Combo.Launch")), &EventData);
-
-	bHeavyInputFlag = false;
-	bHeavyInputPressedInAir = false;
 
 	//UE_LOG(LogTemp, Warning, TEXT("Triggered Abilities: %d\n"), TriggeredAbilities);
 }
