@@ -53,7 +53,6 @@ void URGX_GA_PeasantDie::ActivateAbility(
 			PlayMontageTask->ReadyForActivation();
 		}
 	}
-
 }
 
 void URGX_GA_PeasantDie::EndAbility(
