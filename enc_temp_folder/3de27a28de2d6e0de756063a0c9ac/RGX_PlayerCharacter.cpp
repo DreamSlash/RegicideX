@@ -451,9 +451,6 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 	{
 		bIsFallingDown = true;
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Character Speed: %f\n"), GetCharacterMovement()->GetMaxSpeed());
-
 	/*
 	if (bIsFallingDown == true)
 	{
