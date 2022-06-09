@@ -28,6 +28,7 @@ void URGX_GA_PeasantDie::ActivateAbility(
 	{
 		Controller->StopMovement();
 		Controller->SetFocus(nullptr);	// Stop focusing the player
+		Controller->GetBrainComponent()->StopLogic(FString("Character dead"));
 	}
 
 	// Disable Collision
