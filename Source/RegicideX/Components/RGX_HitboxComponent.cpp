@@ -132,6 +132,7 @@ void URGX_HitboxComponent::SetAbilityEffectsInfo(const FRGX_AbilityEffectsInfo& 
 void URGX_HitboxComponent::RemoveAbilityEffectsInfo()
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Remove Ability Effects\n"));
+	AbilityEffectsInfo.EffectContextHandle = FGameplayEffectContextHandle();
 	AbilityEffectsInfo.GameplayEffectsToTarget.Empty();
 	AbilityEffectsInfo.GameplayEventsToTarget.Empty();
 	AbilityEffectsInfo.GameplayEffectsToOwner.Empty();

@@ -157,17 +157,7 @@ protected:
 	UPROPERTY()
 	bool bTimeScale = false;
 
-	/** Input Variables */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	float FallAttackHoldTime = 0.15f;
-	//bool bFallAttackFlag = false;
-
-	float HeavyInputCurrentHoldTime = 0.0f;
-
-	UPROPERTY()
-	bool bHeavyInputFlag = false;
-	bool bHeavyInputPressedInAir = false;
-	// -------------------
+	bool bCanAirCombo = true;
 
 	/* Level Up variables */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)

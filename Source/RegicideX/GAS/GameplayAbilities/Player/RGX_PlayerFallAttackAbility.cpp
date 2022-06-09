@@ -61,12 +61,12 @@ void URGX_PlayerFallAttackAbility::EndAbility(const FGameplayAbilitySpecHandle H
 
 void URGX_PlayerFallAttackAbility::OnSuccessfulAbilityMontage(FGameplayTag EventTag, FGameplayEventData EventData)
 {
-	Super::OnSuccessfulAbilityMontage(EventTag, EventData);
+	//Super::OnSuccessfulAbilityMontage(EventTag, EventData);
 }
 
 void URGX_PlayerFallAttackAbility::OnFailedAbilityMontage(FGameplayTag EventTag, FGameplayEventData EventData)
 {
-	Super::OnFailedAbilityMontage(EventTag, EventData);
+	//Super::OnFailedAbilityMontage(EventTag, EventData);
 }
 
 void URGX_PlayerFallAttackAbility::OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData)
@@ -98,4 +98,3 @@ void URGX_PlayerFallAttackAbility::PopulateGameplayEffectContext(FRGX_GameplayEf
 	GameplayEffectContext.DamageAmount = DamageCurve->Eval(AbilityLevel);
 	GameplayEffectContext.ScalingAttributeFactor = ScalingCurve->Eval(AbilityLevel);
 }
-

@@ -190,6 +190,7 @@ void ARGX_PlayerCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, flo
 		SocketOffset.X = AmountForward;
 		SocketOffset.Y = AmountRight;
 		
+		// TODO: Not frame rate independent
 		FocusLocation = TargetLocation + AmountRight * CameraRight + AmountForward * CameraForward;
 
 		//FocusLocation = FMath::Lerp(TargetLocation, FocusLocation, t);
