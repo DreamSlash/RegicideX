@@ -29,6 +29,7 @@ void URGX_GA_PeasantDie::ActivateAbility(
 		Controller->GetBrainComponent()->StopLogic("Actor dead");
 		Controller->StopMovement();
 		Controller->SetFocus(nullptr);	// Stop focusing the player
+		Controller->GetBrainComponent()->StopLogic(FString("Character dead"));
 	}
 
 	// Disable Collision
@@ -65,7 +66,6 @@ void URGX_GA_PeasantDie::EndAbility(
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 
 	ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(ActorInfo->OwnerActor);
-	Peasant->GetMesh()->bPauseAnims = true;
 	Peasant->HandleDeath();
 }
 
