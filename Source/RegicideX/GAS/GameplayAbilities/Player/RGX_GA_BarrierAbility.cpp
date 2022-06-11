@@ -72,10 +72,10 @@ void URGX_BarrierAbility::OnReceivedEvent(FGameplayTag EventTag, FGameplayEventD
 
 		UKismetSystemLibrary::DrawDebugArrow(GetWorld(), LineStart, LineEnd, 10.0f, ArrowColor, 3.0f, 2.0f);
 
-		FGameplayEventData EventData;
-		EventData.Instigator = CurrentActorInfo->AvatarActor.Get();
-		EventData.OptionalObject = LaunchEventData;
+		FGameplayEventData EventPayload;
+		EventPayload.Instigator = CurrentActorInfo->AvatarActor.Get();
+		EventPayload.OptionalObject = LaunchEventData;
 
-		Enemy->GetAbilitySystemComponent()->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Launched")), &EventData);
+		Enemy->GetAbilitySystemComponent()->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Launched")), &EventPayload);
 	}
 }

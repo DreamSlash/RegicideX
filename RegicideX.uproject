@@ -13,7 +13,8 @@
 				"AIModule",
 				"MCVGASFramework",
 				"GameplayAbilities",
-				"AIModule"
+				"AIModule",
+				"UMG"
 			]
 		}
 	]

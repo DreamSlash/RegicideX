@@ -2,7 +2,8 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
-#include "../Actors/Enemies/RGX_EnemyBase.h"
+#include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
+#include "AbilitySystemComponent.h"
 #include "GameFramework/Actor.h"
 #include "Math/UnrealMathUtility.h"
 #include "GameFramework/Character.h"
@@ -170,8 +171,10 @@ TArray<AActor*> URGX_CombatAssistComponent::GetClosestEnemiesInRange(const float
 	TArray<AActor*> ClosestEnemies;
 	for (AActor* OutActor : OutActors)
 	{
-		ACharacter* OutCharacter = Cast<ACharacter>(OutActor);
-		if (OutCharacter->GetCharacterMovement()->IsFalling() == bIsPlayerInAir)
+		ARGX_EnemyBase* OutEnemy = Cast<ARGX_EnemyBase>(OutActor);
+		UAbilitySystemComponent* EnemyACS = OutEnemy->FindComponentByClass<UAbilitySystemComponent>();
+		bool bIsDead = OutEnemy->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.Dead")));
+		if (OutEnemy->GetCharacterMovement()->IsFalling() == bIsPlayerInAir && bIsDead == false)
 		{
 			ClosestEnemies.Add(OutActor);
 		}

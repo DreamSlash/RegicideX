@@ -32,12 +32,28 @@ void URGX_InteractComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 	bool bHitAnything = UKismetSystemLibrary::SphereOverlapActors(
 		GetWorld(), OverlapLocation, Radius, TraceObjectTypes, nullptr, IgnoreActors, OutActors);
 	::DrawDebugSphere(GetWorld(), OverlapLocation, Radius, 24.0f, FColor::Red);
-	// TODO: Order by priority?
-	TWeakObjectPtr<AActor> NewActor = bHitAnything ? OutActors[0] : nullptr;
+
+	TWeakObjectPtr<AActor> NewActor = nullptr;
+	IRGX_InteractInterface* NewInteract = nullptr;
+
+	for (AActor* HitActor : OutActors)
+	{
+		IRGX_InteractInterface* Interactable = Cast<IRGX_InteractInterface>(HitActor);
+		if (Interactable)
+		{
+			bool bCanInteract = Interactable->CanBeInteractedWith(Owner);
+			if (bCanInteract == true)
+			{
+				NewActor = HitActor;
+				NewInteract = Interactable;
+				break;
+			}
+		}
+	}
 
 	if (bHitAnything == true)
 	{
-		UE_LOG(LogInteract, Display, TEXT("Interacting with actor.\n"));
+		//UE_LOG(LogInteract, Display, TEXT("Interacting with actor.\n"));
 	}
 
 	// Did we change anything?
@@ -45,9 +61,6 @@ void URGX_InteractComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 	{
 		return;
 	}
-
-	// Check if the Actor implements the InteractInterface. No problem if NewActor is null
-	IRGX_InteractInterface* NewInteract = Cast<IRGX_InteractInterface>(NewActor);
 
 	// Notify the old actor, we no longer want to interact with him
 	if (CurrentActor.IsValid())
@@ -71,7 +84,7 @@ void URGX_InteractComponent::TryToInteract()
 	IRGX_InteractInterface* CurrentInteract = Cast<IRGX_InteractInterface>(CurrentActor);
 	if (CurrentInteract)
 	{
-		UE_LOG(LogInteract, Display, TEXT("Interacting with actor %s"), *CurrentActor->GetName());
+		//UE_LOG(LogInteract, Display, TEXT("Interacting with actor %s"), *CurrentActor->GetName());
 		CurrentInteract->Interact(GetOwner());
 	}
 }

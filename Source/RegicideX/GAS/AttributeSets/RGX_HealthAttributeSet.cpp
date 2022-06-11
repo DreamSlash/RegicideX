@@ -3,6 +3,8 @@
 #include "GameplayEffectExtension.h"
 #include "RegicideX/GAS/GameplayEffects/RGX_GE_Death.h"
 #include "RegicideX/GAS/GameplayEffects/RGX_GE_HitEffect.h"
+#include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
+#include "RegicideX/Character/RGX_PlayerCharacter.h"
 
 void URGX_HealthAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
 {
@@ -31,6 +33,8 @@ void URGX_HealthAttributeSet::PostGameplayEffectExecute(const struct FGameplayEf
 	Super::PostGameplayEffectExecute(Data);
 
 	UAbilitySystemComponent* ASC = GetOwningAbilitySystemComponent();
+	FGameplayEffectContextHandle Context = Data.EffectSpec.GetContext();
+	UAbilitySystemComponent* Source = Context.GetOriginalInstigatorAbilitySystemComponent();
 
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
@@ -49,6 +53,13 @@ void URGX_HealthAttributeSet::PostGameplayEffectExecute(const struct FGameplayEf
 
 					FGameplayEventData EventData;
 					ASC->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.HasDied")), &EventData);
+
+					AActor* Owner = ASC->GetOwner();
+					ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(Owner);
+					if (Enemy)
+					{
+						Enemy->HandleDeath();
+					}
 				}
 			}
 			else
@@ -56,8 +67,54 @@ void URGX_HealthAttributeSet::PostGameplayEffectExecute(const struct FGameplayEf
 				UGameplayEffect* HitEffect = URGX_HitEffect::StaticClass()->GetDefaultObject<UGameplayEffect>();
 				ASC->ApplyGameplayEffectToSelf(HitEffect, 1, ASC->MakeEffectContext());
 
-				FGameplayEventData EventData;
-				ASC->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Combat.TakeDamage")), &EventData);
+				{
+					FGameplayEventData EventData;
+					EventData.Instigator = Data.EffectSpec.GetEffectContext().GetInstigator();
+					ASC->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Combat.TakeDamage")), &EventData);
+				}
+			
+
+				if (CurrentHealth < GetMaxHealth() * 0.25f)
+				{
+					FGameplayEventData EventData;
+					ASC->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Enemy.Weakened")), &EventData);
+				}
+			}
+
+			// TODO: Create common class for all characters in game
+
+			ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(Data.Target.AvatarActor);
+			//ARGX_PlayerCharacter* PlayerCharacter = Cast<ARGX_PlayerCharacter>(Data.Target.AvatarActor);
+
+			if (Enemy)
+			{
+				// Compute the delta between old and new, if it is available
+				float DeltaValue = 0;
+				if (Data.EvaluatedData.ModifierOp == EGameplayModOp::Type::Additive)
+				{
+					// If this was additive, store the raw delta value to be passed along later
+					DeltaValue = Data.EvaluatedData.Magnitude;
+				}
+
+				if (DeltaValue != 0)
+				{
+					Enemy->HandleHealthChanged(DeltaValue);
+				}
+
+				if (DeltaValue < 0)
+				{
+					UE_LOG(LogTemp, Warning, TEXT("Delta Health: %f\n"), DeltaValue);
+					ARGX_EnemyBase* InstigatorEnemy = Cast<ARGX_EnemyBase>(Source->AvatarActor);
+					if (InstigatorEnemy)
+					{
+						Enemy->HandleDamage(FMath::Abs(DeltaValue), InstigatorEnemy);
+					}
+					else
+					{
+						ARGX_PlayerCharacter* InstigatorPlayer = Cast<ARGX_PlayerCharacter>(Data.Target.AvatarActor);
+						Enemy->HandleDamage(FMath::Abs(DeltaValue), InstigatorPlayer);
+					}
+				}
 			}
 		}
 	}

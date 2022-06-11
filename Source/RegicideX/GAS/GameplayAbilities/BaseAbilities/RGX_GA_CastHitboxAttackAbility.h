@@ -6,6 +6,7 @@
 #include "RegicideX/GAS/GameplayAbilities/RGX_GameplayAbility.h"
 #include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RGX_GA_CastSkillAbility.h"
+#include "RegicideX/GAS/RGX_GameplayEffectContext.h"
 #include "RGX_GA_CastHitboxAttackAbility.generated.h"
 
 /**
@@ -36,7 +37,19 @@ protected:
 	UFUNCTION()
 	virtual void OnFinalMontageFinished();
 
+	UFUNCTION()
+	virtual void PopulateGameplayEffectContext(FRGX_GameplayEffectContext& GameplayEffectContext);
+
 protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FName DamageCurveName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FName AttributeScalingCurveName;
+
+	UPROPERTY(EditAnywhere)
+	UCurveTable* DamageLevelCurve = nullptr;
+
 	UPROPERTY(EditAnywhere)
 	class UAnimMontage* FinalMontageToPlay = nullptr;
 

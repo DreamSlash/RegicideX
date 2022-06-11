@@ -26,8 +26,10 @@ void URGX_GA_PeasantDie::ActivateAbility(
 	// If dead, should not move
 	if (Controller)
 	{
+		Controller->GetBrainComponent()->StopLogic("Actor dead");
 		Controller->StopMovement();
 		Controller->SetFocus(nullptr);	// Stop focusing the player
+		Controller->GetBrainComponent()->StopLogic(FString("Character dead"));
 	}
 
 	// Disable Collision
@@ -51,7 +53,6 @@ void URGX_GA_PeasantDie::ActivateAbility(
 			PlayMontageTask->ReadyForActivation();
 		}
 	}
-
 }
 
 void URGX_GA_PeasantDie::EndAbility(
@@ -62,13 +63,17 @@ void URGX_GA_PeasantDie::EndAbility(
 	bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-
-	ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(ActorInfo->OwnerActor);
-	Peasant->GetMesh()->bPauseAnims = true;
-	Peasant->HandleDeath();
+	ActorInfo->AvatarActor->Destroy();
 }
 
 void URGX_GA_PeasantDie::OnEndMontage()
+{
+	ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(CurrentActorInfo->OwnerActor);
+	Peasant->GetMesh()->bPauseAnims = true;
+	GetWorld()->GetTimerManager().SetTimer(CorpseTimerHandle, this, &URGX_GA_PeasantDie::PreEndAbility, 2.0f, false);
+}
+
+void URGX_GA_PeasantDie::PreEndAbility()
 {
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
 }

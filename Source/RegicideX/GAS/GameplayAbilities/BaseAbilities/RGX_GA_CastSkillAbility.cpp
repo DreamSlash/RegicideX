@@ -28,6 +28,7 @@ void URGX_CastSkillAbility::ActivateAbility(const FGameplayAbilitySpecHandle Han
 
 	URGX_PlayMontageAndWaitForEvent* PlayMontageAndWaitForEventTask = URGX_PlayMontageAndWaitForEvent::PlayMontageAndWaitForEvent(
 		this, NAME_None, MontageToPlay, WaitForEventTags, MontagePlayRate, MontageStartSectionName, true);
+	PlayMontageAndWaitForEventTask->OnInterrupted.AddDynamic(this, &URGX_CastSkillAbility::OnFailedAbilityMontage);
 	PlayMontageAndWaitForEventTask->OnBlendOut.AddDynamic(this, &URGX_CastSkillAbility::OnSuccessfulAbilityMontage);
 	PlayMontageAndWaitForEventTask->OnCancelled.AddDynamic(this, &URGX_CastSkillAbility::OnFailedAbilityMontage);
 	PlayMontageAndWaitForEventTask->OnCompleted.AddDynamic(this, &URGX_CastSkillAbility::OnSuccessfulAbilityMontage);
