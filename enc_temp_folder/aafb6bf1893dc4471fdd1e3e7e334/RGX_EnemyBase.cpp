@@ -43,7 +43,6 @@ void ARGX_EnemyBase::BeginPlay()
 	InteractionShapeComponent->SetCollisionProfileName("InteractableObject");
 
 	DisableInteraction();
-	HideCombatTargetWidget();
 
 	// For initializing health bar
 	HandleHealthChanged(0.0f);
