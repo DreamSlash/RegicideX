@@ -17,6 +17,7 @@ public:
 	virtual void Interact(AActor* ActorInteracting) { }
 	virtual void StartCanInteract(AActor* ActorInteracting) { }
 	virtual void StopCanInteract(AActor* ActorInteracting) { }
+	virtual bool CanBeInteractedWith(AActor* ActorInteracting) { return true; }
 };
 
 DECLARE_LOG_CATEGORY_EXTERN(LogInteract, Log, All);
