@@ -18,9 +18,6 @@ public:
 	FGameplayAbilitySpecHandle MyHandle;
 	const FGameplayAbilityActorInfo* MyAinfo;
 	FGameplayAbilityActivationInfo MyActivationInfo;
-
-protected:
-	FTimerHandle CorpseTimerHandle;
 	
 private:
 	virtual void ActivateAbility(
@@ -38,7 +35,4 @@ private:
 
 	UFUNCTION()
 	void OnEndMontage();
-
-	UFUNCTION()
-	void PreEndAbility();
 };

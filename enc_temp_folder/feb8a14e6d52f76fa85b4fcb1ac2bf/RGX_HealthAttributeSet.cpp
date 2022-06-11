@@ -53,13 +53,6 @@ void URGX_HealthAttributeSet::PostGameplayEffectExecute(const struct FGameplayEf
 
 					FGameplayEventData EventData;
 					ASC->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.HasDied")), &EventData);
-
-					AActor* Owner = ASC->GetOwner();
-					ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(Owner);
-					if (Enemy)
-					{
-						Enemy->HandleDeath();
-					}
 				}
 			}
 			else

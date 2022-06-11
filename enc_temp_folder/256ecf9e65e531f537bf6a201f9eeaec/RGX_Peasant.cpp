@@ -33,6 +33,8 @@ void ARGX_Peasant::HandleDeath()
 {
 	UE_LOG(LogTemp, Display, TEXT("Handling Peasant death ..."));
 	Super::HandleDeath();
+
+	GetWorld()->GetTimerManager().SetTimer(CorpseTimerHandle, this, &ARGX_Peasant::DestroyPeasant, 2.0f, false);
 }
 
 void ARGX_Peasant::DestroyPeasant()

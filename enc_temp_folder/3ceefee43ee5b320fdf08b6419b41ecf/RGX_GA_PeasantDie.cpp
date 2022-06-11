@@ -63,17 +63,13 @@ void URGX_GA_PeasantDie::EndAbility(
 	bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-	ActorInfo->AvatarActor->Destroy();
+
+	ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(ActorInfo->OwnerActor);
+	Peasant->GetMesh()->bPauseAnims = true;
+	Peasant->HandleDeath();
 }
 
 void URGX_GA_PeasantDie::OnEndMontage()
-{
-	ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(CurrentActorInfo->OwnerActor);
-	Peasant->GetMesh()->bPauseAnims = true;
-	GetWorld()->GetTimerManager().SetTimer(CorpseTimerHandle, this, &URGX_GA_PeasantDie::PreEndAbility, 2.0f, false);
-}
-
-void URGX_GA_PeasantDie::PreEndAbility()
 {
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
 }

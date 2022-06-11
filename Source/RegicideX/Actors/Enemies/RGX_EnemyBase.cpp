@@ -138,6 +138,7 @@ void ARGX_EnemyBase::HandleHealthChanged(float DeltaValue)
 void ARGX_EnemyBase::HandleDeath()
 {
 	OnHandleDeath();
+	HealthDisplayWidgetComponent->SetVisibility(false);
 }
 
 void ARGX_EnemyBase::SetGenericTeamId(const FGenericTeamId& TeamID)
