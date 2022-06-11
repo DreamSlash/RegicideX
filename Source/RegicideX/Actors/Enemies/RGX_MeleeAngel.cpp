@@ -7,6 +7,8 @@
 
 #include "RegicideX/Components/RGX_MovementAssistComponent.h"
 
+#include "GameFramework/CharacterMovementComponent.h"
+
 ARGX_MeleeAngel::ARGX_MeleeAngel()
 {
 	MovementAssistComponent = CreateDefaultSubobject<URGX_MovementAssistComponent>(TEXT("MovementAssistComponent"));
@@ -24,6 +26,11 @@ void ARGX_MeleeAngel::RotateToTarget(float DeltaTime)
 		this->SetActorRotation(NewRotation);
 	}
 
+}
+
+void ARGX_MeleeAngel::SetGravityScale(float value)
+{
+	GetCharacterMovement()->GravityScale = value;
 }
 
 

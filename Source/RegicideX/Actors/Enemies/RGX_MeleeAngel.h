@@ -38,5 +38,7 @@ public:
 
 	void RotateToTarget(float DeltaTime) override;
 
+	void SetGravityScale(float value);
+
 	void Tick(float DeltaTime) override;
 };

@@ -10,14 +10,17 @@
 
 EBTNodeResult::Type URGX_BTTask_Levitate::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	AAIController* AIController = OwnerComp.GetAIOwner();
 
+	AAIController* AIController = OwnerComp.GetAIOwner();
 	APawn* ControlledPawn = AIController->GetPawn();
 	MeleeAngelPawn = Cast<ARGX_MeleeAngel>(ControlledPawn);
-	MeleeAngelPawn->bSimGravityDisabled = true;
 	const FVector RaySrc = MeleeAngelPawn->GetActorLocation() + MeleeAngelPawn->GetActorUpVector() * 160.0f;
 	const FVector RayEnd = MeleeAngelPawn->GetActorLocation() + MeleeAngelPawn->GetActorUpVector() * MaxLHeight;
 	FHitResult RayTraceResult;
+
+	MeleeAngelPawn->LaunchCharacter(FVector(0.0, 0.0, 10.0), true, false);
+
+	MeleeAngelPawn->SetGravityScale(0.0);
 
 	GoalLocation = MeleeAngelPawn->GetActorLocation() + FVector(0.0, 0.0, MaxLHeight);
 
@@ -31,14 +34,14 @@ EBTNodeResult::Type URGX_BTTask_Levitate::ExecuteTask(UBehaviorTreeComponent& Ow
 
 	}
 
-	UKismetSystemLibrary::DrawDebugLine(
+	/*UKismetSystemLibrary::DrawDebugLine(
 		GetWorld(),
 		RaySrc,
 		RayEnd,
 		FColor(255, 0, 0),
 		10.0,
 		5.0f
-	);
+	);*/
 
 	MeleeAngelPawn->bLevitating = true;
 

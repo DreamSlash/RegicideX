@@ -63,13 +63,15 @@ void URGX_BTTask_MeleeAngelCharge::TickTask(UBehaviorTreeComponent& OwnerComp, u
 	if (TaskTime >= MaxTime || MeleeAngelPawn->bCharged || dist <= 30.0f)
 	{
 		TaskTime = 0.0f;
-		MeleeAngelPawn->bSimGravityDisabled = true;
+		MeleeAngelPawn->SetGravityScale(1.0);
 		MeleeAngelPawn->bFlying = false;
 		MeleeAngelPawn->bCharged = false;
 		MeleeAngelPawn->MoveSpeed = MoveSpeed;
 		FRotator Rotation = MeleeAngelPawn->GetActorRotation();
 		Rotation.Pitch = 0.0;
 		MeleeAngelPawn->SetActorRotation(Rotation);
+		URGX_HitboxComponent* Hitbox = MeleeAngelPawn->HitboxesManager->GetHitboxByTag(HitboxTag);
+		Hitbox->DeactivateEffect();
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 	MeleeAngelPawn->MoveSpeed += TaskTime * AccelerationMultiplier;
