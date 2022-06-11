@@ -34,7 +34,7 @@ public:
 	FGenericTeamId CharacterTeam;
 
 	UPROPERTY(EditDefaultsOnly)
-	float BaseDamage = 10.0f;
+	float BaseDamage = 20.0f;
 
 	UPROPERTY(EditDefaultsOnly)
 	float TargetMaxRange = 500.0f;

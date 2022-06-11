@@ -29,7 +29,6 @@ ARGX_SpearProjectile::ARGX_SpearProjectile()
 void ARGX_SpearProjectile::BeginPlay()
 {
 	Super::BeginPlay();
-	// Manuela
 }
 
 void ARGX_SpearProjectile::Tick(float DeltaTime)
