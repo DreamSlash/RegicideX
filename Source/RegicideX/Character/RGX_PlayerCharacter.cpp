@@ -338,6 +338,7 @@ void ARGX_PlayerCharacter::LevelUp(const float NewLevel)
 	FRGXContext->NewMaxHealth = MaxHealth->Eval(Level);
 	FRGXContext->NewAttackPower = AttackPower->Eval(Level);
 	AbilitySystemComponent->ApplyGameplayEffectToSelf(LevelUpEffect.GetDefaultObject(), 1.0f, ContextHandle);
+	AbilitySystemComponent->ApplyGameplayEffectToSelf(FullHealthEffect.GetDefaultObject(), 1.0, ContextHandle);
 }
 
 void ARGX_PlayerCharacter::PrintDebugInformation()
@@ -428,6 +429,7 @@ void ARGX_PlayerCharacter::BeginPlay()
 	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ARGX_PlayerCharacter::OnCapsuleHit);
 
 	LevelUp(Level);
+	//AbilitySystemComponent->ApplyGameplayEffectToSelf()
 }
 
 void ARGX_PlayerCharacter::Tick(float DeltaTime)

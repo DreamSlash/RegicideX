@@ -26,13 +26,14 @@ void URGX_GA_PeasantDie::ActivateAbility(
 	// If dead, should not move
 	if (Controller)
 	{
+		Controller->GetBrainComponent()->StopLogic("Actor dead");
 		Controller->StopMovement();
 		Controller->SetFocus(nullptr);	// Stop focusing the player
+		Controller->GetBrainComponent()->StopLogic(FString("Character dead"));
 	}
 
 	// Disable Collision
 	Character->GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
-	//Character->GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
 	if (ARGX_RoundGameMode* MyGameMode = Cast<ARGX_RoundGameMode>(GetWorld()->GetAuthGameMode()))
 	{
@@ -52,7 +53,6 @@ void URGX_GA_PeasantDie::ActivateAbility(
 			PlayMontageTask->ReadyForActivation();
 		}
 	}
-
 }
 
 void URGX_GA_PeasantDie::EndAbility(
@@ -65,7 +65,6 @@ void URGX_GA_PeasantDie::EndAbility(
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 
 	ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(ActorInfo->OwnerActor);
-	Peasant->GetMesh()->bPauseAnims = true;
 	Peasant->HandleDeath();
 }
 

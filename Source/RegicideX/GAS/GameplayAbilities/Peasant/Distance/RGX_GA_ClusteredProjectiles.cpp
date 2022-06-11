@@ -3,7 +3,8 @@
 
 #include "RGX_GA_ClusteredProjectiles.h"
 #include "AIController.h"
-#include "RegicideX\Actors\Enemies\RGX_DistancePeasant.h"
+#include "DrawDebugHelpers.h"
+#include "RegicideX\Actors\Enemies\RGX_Peasant.h"
 #include "RegicideX\Actors\Weapons\RGX_ClusteredBullet.h"
 
 void URGX_GA_ClusteredProjectiles::ActivateAbility(
@@ -14,22 +15,21 @@ void URGX_GA_ClusteredProjectiles::ActivateAbility(
 {
 
 	// Stop focusing while shooting
-	ACharacter* Character = Cast<ACharacter>(ActorInfo->OwnerActor);
-	AAIController* Controller = Cast<AAIController>(Character->GetController());
+	//ACharacter* Character = Cast<ACharacter>(ActorInfo->OwnerActor);
+	ARGX_Peasant* Peasant		= Cast<ARGX_Peasant>(ActorInfo->AvatarActor);
+	AAIController* Controller = Cast<AAIController>(Peasant->GetController());
 	if (Controller)
 	{
 		Controller->SetFocus(nullptr);	// Stop focusing the player
 	}
 
-	ARGX_DistancePeasant* DistancePeasant = Cast<ARGX_DistancePeasant>(ActorInfo->AvatarActor);
-	USceneComponent* SpawnPoint = DistancePeasant->ClusterSpawnPoint;
-	
-	const FVector Center		= SpawnPoint->GetComponentLocation();
-	const FVector Right			= SpawnPoint->GetRightVector();
-	const FVector Forward		= SpawnPoint->GetForwardVector();
-	const FVector Up			= SpawnPoint->GetUpVector();
-	Transform					= SpawnPoint->GetComponentTransform();
-	TeamIdToApply				= DistancePeasant->GetGenericTeamId();
+	const FVector Forward		= Peasant->GetActorForwardVector();
+	const FVector Right			= Peasant->GetActorRightVector();
+	const FVector Up			= Peasant->GetActorUpVector();
+	const FVector Center		= Peasant->GetActorLocation();
+	Transform					= FTransform(Forward.Rotation(), Center, FVector(1.0));
+
+	TeamIdToApply				= Peasant->GetGenericTeamId();
 	
 	for (int i = 0; i < NumberProjectilesToFire; ++i)
 	{

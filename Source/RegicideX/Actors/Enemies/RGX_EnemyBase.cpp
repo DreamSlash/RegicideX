@@ -112,10 +112,6 @@ void ARGX_EnemyBase::HandleDamage(FAttackInfo info)
 {
 }
 
-void ARGX_EnemyBase::HandleDeath()
-{
-}
-
 void ARGX_EnemyBase::HandleDamage(float DamageAmount, AActor* DamageCauser)
 {
 	OnHandleDamage(DamageAmount, DamageCauser);
@@ -136,6 +132,11 @@ void ARGX_EnemyBase::HandleHealthChanged(float DeltaValue)
 	{
 		OnHandleHealthChanged(DeltaValue);
 	}
+}
+
+void ARGX_EnemyBase::HandleDeath()
+{
+	OnHandleDeath();
 }
 
 void ARGX_EnemyBase::SetGenericTeamId(const FGenericTeamId& TeamID)

@@ -130,17 +130,18 @@ public:
 
 	virtual void HandleDamage(FAttackInfo info); //TODO: what is this
 
-	virtual void HandleDeath();
-
 	/** Events called from attribute set changes to decouple the logic. They call BP events. */
 	virtual void HandleDamage(float DamageAmount, AActor* DamageCauser);
 	virtual void HandleHealthChanged(float DeltaValue);
+	virtual void HandleDeath();
 
 	/* BP events */
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnHandleDamage(float DamageAmount, AActor* DamageCauser);
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnHandleHealthChanged(float DeltaValue);
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnHandleDeath();
 
 	/** GameplayTagAssetInterface methods */
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;

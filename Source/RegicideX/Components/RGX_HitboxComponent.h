@@ -71,12 +71,6 @@ public:
 	UFUNCTION()
 	bool IsGoingToOverlapActor(AActor* Actor);
 
-	UFUNCTION(BlueprintCallable)
-	void SetChildActorAndSocket(UChildActorComponent* NewChildActorComponent, const FName NewSocketName);
-
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-	bool HasChildActor();
-
 protected:
 
 	void ApplyEffects(AActor* OtherActor);
@@ -123,8 +117,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = HitboxComponent)
 	TEnumAsByte<ERGX_DestroyOnOverlapType> DestroyOnOverlap = ERGX_DestroyOnOverlapType::None;
 
-	UChildActorComponent* ChildActorComponent = nullptr;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = HitboxComponent)
 	FName SocketName;
 
@@ -143,6 +135,6 @@ private:
 	void ResetCustomTimeDilation();
 
 	AActor* Owner = nullptr;
-	AActor* Other = nullptr;
+	TArray<AActor*> ActorsWithTimeDilation;
 	FTimerHandle PunchTimerHandle;
 };

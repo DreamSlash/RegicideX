@@ -163,6 +163,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UGameplayEffect> LevelUpEffect;
 
+	/* Full Health Recovery effect */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UGameplayEffect> FullHealthEffect;
+
 	UPROPERTY(EditAnywhere)
 	UCurveTable* MaxHealthLevelCurve = nullptr;
 

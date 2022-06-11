@@ -58,11 +58,6 @@ void URGX_HitboxComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	const ECollisionEnabled::Type CollisionType = GetCollisionEnabled();
 	if (CollisionType == ECollisionEnabled::NoCollision)
 		return;
-
-	if (ChildActorComponent == nullptr)
-		return;
-
-	LastSocketPosition = ChildActorComponent->GetSocketLocation(SocketName);
 }
 
 void URGX_HitboxComponent::EndPlay(EEndPlayReason::Type EndPlayReason)
@@ -167,14 +162,6 @@ bool URGX_HitboxComponent::IsGoingToOverlapActor(AActor* Actor)
 
 		StartLocation = OwnerActor->GetActorLocation();
 	}
-	else
-	{
-		const FVector SocketLocation = ChildActorComponent->GetSocketLocation(SocketName);
-		Direction = LastSocketPosition - ChildActorComponent->GetSocketLocation(SocketName);
-		Direction.Normalize();
-
-		StartLocation = OwnerActor->GetActorLocation() + GetRelativeLocation();
-	}
 
 	FVector EndLocation = StartLocation * Direction * 1000.0f;
 
@@ -201,17 +188,6 @@ bool URGX_HitboxComponent::IsGoingToOverlapActor(AActor* Actor)
 	}
 
 	return false;
-}
-
-void URGX_HitboxComponent::SetChildActorAndSocket(UChildActorComponent* NewChildActorComponent, const FName NewSocketName)
-{
-	ChildActorComponent = NewChildActorComponent;
-	SocketName = NewSocketName;
-}
-
-bool URGX_HitboxComponent::HasChildActor()
-{
-	return ChildActorComponent != nullptr;
 }
 
 void URGX_HitboxComponent::ApplyEffects(AActor* OtherActor)
@@ -351,10 +327,13 @@ void URGX_HitboxComponent::OnComponentOverlap(
 		ARGX_PlayerCharacter* player = Cast<ARGX_PlayerCharacter>(OwnerActor);
 		if (player)
 		{
-			Owner = OwnerActor;
-			Other = OtherActor;
-			Owner->CustomTimeDilation = 0.0f;
-			Other->CustomTimeDilation = 0.0f;
+			if (Owner == nullptr) {
+				Owner = OwnerActor;
+				Owner->CustomTimeDilation = 0.0f;
+			}
+
+			OtherActor->CustomTimeDilation = 0.0f;
+			ActorsWithTimeDilation.Add(OtherActor);
 			GetWorld()->GetTimerManager().SetTimer(PunchTimerHandle, this, &URGX_HitboxComponent::ResetCustomTimeDilation, 0.06666, false);
 		}
 
@@ -404,8 +383,13 @@ bool URGX_HitboxComponent::CheckIfEffectIsApplied(AActor* TargetActor)
 
 void URGX_HitboxComponent::ResetCustomTimeDilation()
 {
+	if (Owner == nullptr && ActorsWithTimeDilation.Num() == 0)
+		return;
+
 	Owner->CustomTimeDilation = 1.0f;
-	Other->CustomTimeDilation = 1.0f;
 	Owner = nullptr;
-	Other = nullptr;
+	for (const auto& Enemy : ActorsWithTimeDilation) {
+		Enemy->CustomTimeDilation = 1.0f;
+	}
+	ActorsWithTimeDilation.Empty();
 }
