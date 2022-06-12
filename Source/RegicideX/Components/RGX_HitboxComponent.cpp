@@ -139,6 +139,11 @@ void URGX_HitboxComponent::RemoveAbilityEffectsInfo()
 	AbilityEffectsInfo.GameplayEventsToOwner.Empty();
 }
 
+void URGX_HitboxComponent::SetGameplayEffectContextHandle(FGameplayEffectContextHandle Handle)
+{
+	DefaultGameplayEffectContextHandle = Handle;
+}
+
 // TODO [REFACTOR]: This functions should take into account the multiple shapes this class can have
 bool URGX_HitboxComponent::IsGoingToOverlapActor(AActor* Actor)
 {
@@ -219,7 +224,17 @@ void URGX_HitboxComponent::ApplyEffects(AActor* OtherActor)
 			// Default Effect to apply
 			if (DefaultEffectToApply)
 			{
-				ApplierASC->ApplyGameplayEffectToTarget(DefaultEffectToApply->GetDefaultObject<UGameplayEffect>(), TargetASC, 1, ApplierASC->MakeEffectContext());
+				FGameplayEffectContextHandle ContextHandle;
+				if (DefaultGameplayEffectContextHandle.Get())
+				{
+					ContextHandle = DefaultGameplayEffectContextHandle;
+				}
+				else
+				{
+					ContextHandle = ApplierASC->MakeEffectContext();
+				}
+
+				ApplierASC->ApplyGameplayEffectToTarget(DefaultEffectToApply->GetDefaultObject<UGameplayEffect>(), TargetASC, 1, ContextHandle);
 			}
 			
 			// Default Events to apply

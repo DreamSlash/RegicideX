@@ -54,7 +54,12 @@ void URGX_CastHitboxAttackAbility::OnReceivedEvent(FGameplayTag EventTag, FGamep
 	URGX_HitboxComponent* Hitbox = HitboxManagerComponent->GetHitboxByTag(HitboxTag);
 	if (Hitbox)
 	{
+		FGameplayEffectContextHandle ContextHandle = MakeEffectContext(GetCurrentAbilitySpecHandle(), CurrentActorInfo);
+		FRGX_GameplayEffectContext* Context = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
+		PopulateGameplayEffectContext(*Context);
+
 		FRGX_AbilityEffectsInfo AbilityEffectsInfo;
+		AbilityEffectsInfo.EffectContextHandle = ContextHandle;
 		AbilityEffectsInfo.GameplayEffectsToTarget = EffectsToApplyToTarget;
 		AbilityEffectsInfo.GameplayEffectsToOwner = EffectsToApplyToOwner;
 		AbilityEffectsInfo.GameplayEventsToTarget = EventsToApplyToTarget;

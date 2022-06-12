@@ -85,13 +85,13 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UWidgetComponent* DebugAttributesWidgetComponent = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	URGX_HitboxesManagerComponent* HitboxesManager = nullptr;
-
 public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FGenericTeamId CharacterTeam;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	URGX_HitboxesManagerComponent* HitboxesManager = nullptr;
 
 public:
 	// Sets default values for this character's properties
@@ -124,23 +124,24 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override; 
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 	virtual void HandleDamage(FAttackInfo info); //TODO: what is this
 
-	virtual void HandleDeath();
-
 	/** Events called from attribute set changes to decouple the logic. They call BP events. */
 	virtual void HandleDamage(float DamageAmount, AActor* DamageCauser);
 	virtual void HandleHealthChanged(float DeltaValue);
+	virtual void HandleDeath();
 
 	/* BP events */
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnHandleDamage(float DamageAmount, AActor* DamageCauser);
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnHandleHealthChanged(float DeltaValue);
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnHandleDeath();
 
 	/** GameplayTagAssetInterface methods */
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
