@@ -85,6 +85,8 @@ void ARGX_LaserBeamWeapon::CheckDistance()
 
 void ARGX_LaserBeamWeapon::ComputeNewEndpoint(float DeltaTime)
 {
+	SpeedMult += DeltaTime * 0.1;
+
 	const FVector MyLocation = EndPointMesh->K2_GetComponentLocation();
 	const FVector TargetLocation = TargetActor->GetActorLocation();
 
@@ -95,7 +97,7 @@ void ARGX_LaserBeamWeapon::ComputeNewEndpoint(float DeltaTime)
 	}
 
 	const FVector MyForward = EndPointMesh->GetForwardVector();
-	FVector NewLocation = MyLocation + MyForward * RaySpeed * DeltaTime;
+	FVector NewLocation = MyLocation + MyForward * RaySpeed * SpeedMult * DeltaTime;
 
 	CheckRayTraces(NewLocation, DeltaTime);
 

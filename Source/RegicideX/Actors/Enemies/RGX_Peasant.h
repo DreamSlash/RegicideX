@@ -41,7 +41,6 @@ public:
 
 	// Bool to signal if actor is going to get destroyed.
 	bool ToBeDestroyed = false;
-	FTimerHandle CorpseTimerHandle;
 	void HandleDeath() override;
 	void DestroyPeasant();
 

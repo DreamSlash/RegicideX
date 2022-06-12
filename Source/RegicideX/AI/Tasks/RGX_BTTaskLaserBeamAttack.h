@@ -6,9 +6,9 @@
 #include "BehaviorTree/BTTaskNode.h"
 #include "RGX_BTTaskLaserBeamAttack.generated.h"
 
-/**
- * 
- */
+
+
+class ARGX_DistanceAngel;
 class ARGX_LaserBeamWeapon;
 
 UCLASS()
@@ -20,7 +20,7 @@ class REGICIDEX_API URGX_BTTaskLaserBeamAttack : public UBTTaskNode
 
 	ARGX_LaserBeamWeapon* LaserWeapon = nullptr;
 
-	APawn* OwnerActor = nullptr;
+	ARGX_DistanceAngel* OwnerActor = nullptr;
 
 public:
 

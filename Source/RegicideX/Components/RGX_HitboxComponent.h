@@ -66,6 +66,9 @@ public:
 	UFUNCTION()
 	void RemoveAbilityEffectsInfo();
 
+	UFUNCTION()
+	void SetGameplayEffectContextHandle(FGameplayEffectContextHandle Handle);
+
 	/* Check if the collider is going to hit the actor in the next frames taking into account 
 		its velocity and position of both actors*/
 	UFUNCTION()
@@ -93,6 +96,9 @@ protected:
 
 	UPROPERTY()
 	TArray<FRGX_HitboxGameplayEvent> DefaultEventsToApply;
+
+	UPROPERTY()
+	FGameplayEffectContextHandle DefaultGameplayEffectContextHandle;
 
 	UPROPERTY()
 	FRGX_AbilityEffectsInfo AbilityEffectsInfo;

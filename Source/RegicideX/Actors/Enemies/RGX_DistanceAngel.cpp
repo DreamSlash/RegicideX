@@ -7,12 +7,12 @@
 #include "Components/StaticMeshComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Materials/MaterialInstanceDynamic.h"
+#include "Materials/MaterialInterface.h"
 #include "Math/UnrealMathUtility.h"
 
 
-
-ARGX_DistanceAngel::ARGX_DistanceAngel()
-	: ARGX_EnemyBase()
+ARGX_DistanceAngel::ARGX_DistanceAngel() : ARGX_EnemyBase()
 {
 	Ring_1_Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ring1"));
 	Ring_2_Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ring2"));
@@ -35,12 +35,31 @@ void ARGX_DistanceAngel::BeginPlay()
 	Super::BeginPlay();
 	SetLocationHeight(HeightPos);
 	RingOriginalRotatingSpeed = RingRotatingSpeed;
+	MaterialInterface = Ring_1_Mesh->GetMaterial(1);
+	DynamicMaterial = UMaterialInstanceDynamic::Create(MaterialInterface, this);
+	Ring_1_Mesh->SetMaterial(1, DynamicMaterial);
+	Ring_2_Mesh->SetMaterial(1, DynamicMaterial);
+	Ring_3_Mesh->SetMaterial(1, DynamicMaterial);
 }
 
 void ARGX_DistanceAngel::MoveToTarget(float DeltaTime, FVector TargetPos)
 {
 	Super::MoveToTarget(DeltaTime, TargetPos);
 	SetLocationHeight(HeightPos);
+}
+
+
+
+void ARGX_DistanceAngel::RotateToTarget(float DeltaTime)
+{
+	if (TargetActor)
+	{
+		const FVector MyLocation = this->GetActorLocation();
+		const FVector TargetLocation = TargetActor->GetActorLocation();
+		const FRotator RotOffset = UKismetMathLibrary::FindLookAtRotation(MyLocation, TargetLocation);
+		FRotator NewRotation = FMath::Lerp(this->GetActorRotation(), RotOffset, DeltaTime * InterpSpeed);
+		this->SetActorRotation(NewRotation);
+	}
 }
 
 void ARGX_DistanceAngel::RotateRings(float DeltaTime) 
@@ -106,4 +125,9 @@ void ARGX_DistanceAngel::DestroyMyself(float Time)
 	TickMe = false;
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this] {this->Destroy(); }, Time, false);
+}
+
+void ARGX_DistanceAngel::ChangeEyeColor(FLinearColor Color)
+{
+	DynamicMaterial->SetVectorParameterValue("Color", Color);
 }
