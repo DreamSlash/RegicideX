@@ -253,8 +253,11 @@ bool ARGX_PlayerCharacter::IsBeingAttacked()
 	}
 
 	// Check dynamic colliders that potentially will hit us in the next frames
+	//UKismetSystemLibrary::CapsuleOverlapActors(
+		//GetWorld(), PlayerLocation, OutRadius * 1.5f, OutHalfHeight * 1.2f, TraceObjectTypes, nullptr, IgnoreActors, OutActors);
+
 	UKismetSystemLibrary::CapsuleOverlapActors(
-		GetWorld(), PlayerLocation, OutRadius * 1.5f, OutHalfHeight * 1.2f, TraceObjectTypes, nullptr, IgnoreActors, OutActors);
+		GetWorld(), PlayerLocation, OutRadius * 2.4f, OutHalfHeight * 1.2f, TraceObjectTypes, nullptr, IgnoreActors, OutActors);
 
 	for (AActor* HitActor : OutActors)
 	{
