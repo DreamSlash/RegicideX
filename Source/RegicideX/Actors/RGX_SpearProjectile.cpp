@@ -14,14 +14,14 @@ ARGX_SpearProjectile::ARGX_SpearProjectile()
 	PrimaryActorTick.SetTickFunctionEnable(true);
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
+	RootScene = CreateDefaultSubobject<USceneComponent>(TEXT("SceneRoot"));
 	StaticMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("StaticMesh"));
 	StaticMeshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	StaticMeshComponent->SetRelativeLocation(FVector(0.0f));
-	StaticMeshComponent->SetupAttachment(RootComponent);
+	StaticMeshComponent->SetupAttachment(RootScene);
 
 	HitboxComponent = CreateDefaultSubobject<URGX_HitboxComponent>(TEXT("Hitbox"));
-	//HitboxComponent->OnComponentHit.AddUniqueDynamic(this, &ARGX_SpearProjectile::OnComponentHit);
-	HitboxComponent->SetupAttachment(StaticMeshComponent);
+	HitboxComponent->SetupAttachment(RootScene);
 
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 }
