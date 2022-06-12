@@ -157,18 +157,12 @@ bool URGX_HitboxComponent::IsGoingToOverlapActor(AActor* Actor)
 	FVector Direction = FVector(0.0f);
 	FVector StartLocation = FVector(0.0f);
 
-	// means it is not an actor spawned by a child actor
-	if (!OwnerActor)
-	{
-		OwnerActor = GetOwner();
+	Direction = OwnerActor->GetVelocity();
+	Direction.Normalize();
 
-		Direction = OwnerActor->GetVelocity();
-		Direction.Normalize();
+	StartLocation = OwnerActor->GetActorLocation();
 
-		StartLocation = OwnerActor->GetActorLocation();
-	}
-
-	FVector EndLocation = StartLocation * Direction * 1000.0f;
+	FVector EndLocation = StartLocation + Direction * 1000.0f;
 
 	TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjectTypes;
 	TraceObjectTypes.Add(TargetObjectType);
