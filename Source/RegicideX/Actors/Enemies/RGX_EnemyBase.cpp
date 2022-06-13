@@ -116,7 +116,6 @@ void ARGX_EnemyBase::Tick(float DeltaTime)
 void ARGX_EnemyBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
 UAbilitySystemComponent* ARGX_EnemyBase::GetAbilitySystemComponent() const
