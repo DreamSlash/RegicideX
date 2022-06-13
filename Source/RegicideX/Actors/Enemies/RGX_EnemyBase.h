@@ -85,6 +85,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UWidgetComponent* DebugAttributesWidgetComponent = nullptr;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float HealthBarHideDistance = 800.0f;
+
 public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)

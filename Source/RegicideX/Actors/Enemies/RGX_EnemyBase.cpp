@@ -95,6 +95,21 @@ void ARGX_EnemyBase::RotateToTarget(float DeltaTime)
 void ARGX_EnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	const bool bIsDead = HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.Dead")));
+	if (bIsDead == true)
+		return;
+
+	const FVector VectorToTarget = TargetActor->GetActorLocation() - GetActorLocation();
+	const float DistanceToTarget = VectorToTarget.Size();
+	if (DistanceToTarget > HealthBarHideDistance)
+	{
+		HealthDisplayWidgetComponent->SetVisibility(false);
+	}
+	else
+	{
+		HealthDisplayWidgetComponent->SetVisibility(true);
+	}
 }
 
 // Called to bind functionality to input
