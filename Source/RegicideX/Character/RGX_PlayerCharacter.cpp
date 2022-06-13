@@ -257,7 +257,7 @@ bool ARGX_PlayerCharacter::IsBeingAttacked()
 		//GetWorld(), PlayerLocation, OutRadius * 1.5f, OutHalfHeight * 1.2f, TraceObjectTypes, nullptr, IgnoreActors, OutActors);
 
 	UKismetSystemLibrary::CapsuleOverlapActors(
-		GetWorld(), PlayerLocation, OutRadius * 4.0f, OutHalfHeight * 1.2f, TraceObjectTypes, nullptr, IgnoreActors, OutActors);
+		GetWorld(), PlayerLocation, OutRadius * 2.4f, OutHalfHeight * 1.2f, TraceObjectTypes, nullptr, IgnoreActors, OutActors);
 
 	for (AActor* HitActor : OutActors)
 	{

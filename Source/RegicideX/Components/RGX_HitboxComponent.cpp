@@ -154,12 +154,15 @@ bool URGX_HitboxComponent::IsGoingToOverlapActor(AActor* Actor)
 	const USceneComponent* Parent = GetAttachParent();
 	AActor* OwnerActor = Parent->GetAttachmentRootActor();
 
-	const FVector ActorVelocity = Actor->GetVelocity();
-	const FVector HitboxVelocity = OwnerActor->GetVelocity();
-	const FVector VelocityVector = HitboxVelocity - ActorVelocity;
+	FVector Direction = FVector(0.0f);
+	FVector StartLocation = FVector(0.0f);
 
-	const FVector StartLocation = OwnerActor->GetActorLocation();
-	const FVector EndLocation = StartLocation + 0.5f * VelocityVector; // where it will be the collision in 0.5s respect to the Actor being tested
+	Direction = OwnerActor->GetVelocity();
+	Direction.Normalize();
+
+	StartLocation = OwnerActor->GetActorLocation();
+
+	FVector EndLocation = StartLocation + Direction * 1000.0f;
 
 	TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjectTypes;
 	TraceObjectTypes.Add(TargetObjectType);
