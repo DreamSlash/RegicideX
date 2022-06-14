@@ -85,7 +85,7 @@ void ARGX_GroundExplosion::Explode()
 		}
 	}
 
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionVFX, GetActorLocation(), GetActorRotation(), FVector(3.0f, 3.0f, 1.0f));
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionVFX, GetActorLocation());
 
 	Destroy();
 }

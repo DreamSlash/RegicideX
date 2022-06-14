@@ -100,15 +100,18 @@ void ARGX_EnemyBase::Tick(float DeltaTime)
 	if (bIsDead == true)
 		return;
 
-	const FVector VectorToTarget = TargetActor->GetActorLocation() - GetActorLocation();
-	const float DistanceToTarget = VectorToTarget.Size();
-	if (DistanceToTarget > HealthBarHideDistance)
+	if (TargetActor)
 	{
-		HealthDisplayWidgetComponent->SetVisibility(false);
-	}
-	else
-	{
-		HealthDisplayWidgetComponent->SetVisibility(true);
+		const FVector VectorToTarget = TargetActor->GetActorLocation() - GetActorLocation();
+		const float DistanceToTarget = VectorToTarget.Size();
+		if (DistanceToTarget > HealthBarHideDistance)
+		{
+			HealthDisplayWidgetComponent->SetVisibility(false);
+		}
+		else
+		{
+			HealthDisplayWidgetComponent->SetVisibility(true);
+		}
 	}
 }
 
