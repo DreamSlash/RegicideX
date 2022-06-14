@@ -18,7 +18,7 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 		int NumberProjectilesToFire = 15;
 
-	UPROPERTY(EditDefaultsOnly)
+	//UPROPERTY(EditDefaultsOnly)
 		TArray<FVector> PointsToSpawn;
 
 	UPROPERTY(EditDefaultsOnly)

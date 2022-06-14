@@ -14,5 +14,6 @@ public class RegicideX : ModuleRules
 
 		PublicDependencyModuleNames.Add("GameplayAbilities");
 		PublicDependencyModuleNames.Add("MCVGASFramework");
+		PublicDependencyModuleNames.Add("Niagara");
 	}
 }

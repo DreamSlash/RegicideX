@@ -18,16 +18,12 @@ class REGICIDEX_API URGX_BTTask_ActivateAbility : public UBTTaskNode
 
 	URGX_BTTask_ActivateAbility();
 
-	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
 protected:
-
-
-
 	UPROPERTY(EditAnywhere)
-		TSubclassOf<UGameplayAbility> AbilityToActivte;
+	TSubclassOf<UGameplayAbility> AbilityToActivte;
 
 	UFUNCTION()
-		void OnAbilityEnded(UGameplayAbility* EndedAbility);
-	
+	void OnAbilityEnded(UGameplayAbility* EndedAbility);
 };

@@ -68,11 +68,6 @@ void URGX_HitboxComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	const ECollisionEnabled::Type CollisionType = GetCollisionEnabled();
 	if (CollisionType == ECollisionEnabled::NoCollision)
 		return;
-
-	if (ChildActorComponent == nullptr)
-		return;
-
-	LastSocketPosition = ChildActorComponent->GetSocketLocation(SocketName);
 }
 
 void URGX_HitboxComponent::EndPlay(EEndPlayReason::Type EndPlayReason)
@@ -151,10 +146,16 @@ void URGX_HitboxComponent::SetAbilityEffectsInfo(const FRGX_AbilityEffectsInfo& 
 void URGX_HitboxComponent::RemoveAbilityEffectsInfo()
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Remove Ability Effects\n"));
+	AbilityEffectsInfo.EffectContextHandle = FGameplayEffectContextHandle();
 	AbilityEffectsInfo.GameplayEffectsToTarget.Empty();
 	AbilityEffectsInfo.GameplayEventsToTarget.Empty();
 	AbilityEffectsInfo.GameplayEffectsToOwner.Empty();
 	AbilityEffectsInfo.GameplayEventsToOwner.Empty();
+}
+
+void URGX_HitboxComponent::SetGameplayEffectContextHandle(FGameplayEffectContextHandle Handle)
+{
+	DefaultGameplayEffectContextHandle = Handle;
 }
 
 // TODO [REFACTOR]: This functions should take into account the multiple shapes this class can have
@@ -167,29 +168,12 @@ bool URGX_HitboxComponent::IsGoingToOverlapActor(AActor* Actor)
 	const USceneComponent* Parent = GetAttachParent();
 	AActor* OwnerActor = Parent->GetAttachmentRootActor();
 
-	FVector Direction = FVector(0.0f);
-	FVector StartLocation = FVector(0.0f);
+	const FVector ActorVelocity = Actor->GetVelocity();
+	const FVector HitboxVelocity = OwnerActor->GetVelocity();
+	const FVector VelocityVector = HitboxVelocity - ActorVelocity;
 
-	// means it is not an actor spawned by a child actor
-	if (!OwnerActor)
-	{
-		OwnerActor = GetOwner();
-
-		Direction = OwnerActor->GetVelocity();
-		Direction.Normalize();
-
-		StartLocation = OwnerActor->GetActorLocation();
-	}
-	else
-	{
-		const FVector SocketLocation = ChildActorComponent->GetSocketLocation(SocketName);
-		Direction = LastSocketPosition - ChildActorComponent->GetSocketLocation(SocketName);
-		Direction.Normalize();
-
-		StartLocation = OwnerActor->GetActorLocation() + GetRelativeLocation();
-	}
-
-	FVector EndLocation = StartLocation * Direction * 1000.0f;
+	const FVector StartLocation = OwnerActor->GetActorLocation();
+	const FVector EndLocation = StartLocation + 0.5f * VelocityVector; // where it will be the collision in 0.5s respect to the Actor being tested
 
 	TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjectTypes;
 	TraceObjectTypes.Add(TargetObjectType);
@@ -216,20 +200,9 @@ bool URGX_HitboxComponent::IsGoingToOverlapActor(AActor* Actor)
 	return false;
 }
 
-void URGX_HitboxComponent::SetChildActorAndSocket(UChildActorComponent* NewChildActorComponent, const FName NewSocketName)
-{
-	ChildActorComponent = NewChildActorComponent;
-	SocketName = NewSocketName;
-}
-
-bool URGX_HitboxComponent::HasChildActor()
-{
-	return ChildActorComponent != nullptr;
-}
-
 void URGX_HitboxComponent::ApplyEffects(AActor* OtherActor)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Apply putos efectos\n"));
+	//UE_LOG(LogTemp, Warning, TEXT("Apply putos efectos\n"));
 	if (DefaultEffectToApply || AbilityEffectsInfo.GameplayEffectsToTarget.Num() > 0 || AbilityEffectsInfo.GameplayEventsToTarget.Num() > 0
 		|| AbilityEffectsInfo.GameplayEffectsToOwner.Num() > 0 || AbilityEffectsInfo.GameplayEventsToOwner.Num() > 0)
 	{
@@ -256,7 +229,17 @@ void URGX_HitboxComponent::ApplyEffects(AActor* OtherActor)
 			// Default Effect to apply
 			if (DefaultEffectToApply)
 			{
-				ApplierASC->ApplyGameplayEffectToTarget(DefaultEffectToApply->GetDefaultObject<UGameplayEffect>(), TargetASC, 1, ApplierASC->MakeEffectContext());
+				FGameplayEffectContextHandle ContextHandle;
+				if (DefaultGameplayEffectContextHandle.Get())
+				{
+					ContextHandle = DefaultGameplayEffectContextHandle;
+				}
+				else
+				{
+					ContextHandle = ApplierASC->MakeEffectContext();
+				}
+
+				ApplierASC->ApplyGameplayEffectToTarget(DefaultEffectToApply->GetDefaultObject<UGameplayEffect>(), TargetASC, 1, ContextHandle);
 			}
 			
 			// Default Events to apply
@@ -270,14 +253,18 @@ void URGX_HitboxComponent::ApplyEffects(AActor* OtherActor)
 			}
 
 			// Effects and Events to apply that come from an ability activation
-			for (TSubclassOf<UGameplayEffect> Effect : AbilityEffectsInfo.GameplayEffectsToTarget)
+			float AbilityLevel = AbilityEffectsInfo.EffectContextHandle.GetAbilityLevel();
+
+			FGameplayEffectContextHandle ContextHandle = AbilityEffectsInfo.EffectContextHandle.Get() ? AbilityEffectsInfo.EffectContextHandle : ApplierASC->MakeEffectContext();
+
+			for (TSubclassOf<UGameplayEffect> Effect : AbilityEffectsInfo.GameplayEffectsToTarget) // TODO: BUGARDO
 			{
-				ApplierASC->ApplyGameplayEffectToTarget(Effect->GetDefaultObject<UGameplayEffect>(), TargetASC, 1, ApplierASC->MakeEffectContext());
+				ApplierASC->ApplyGameplayEffectToTarget(Effect->GetDefaultObject<UGameplayEffect>(), TargetASC, AbilityLevel, ContextHandle);
 			}
 
 			for (TSubclassOf<UGameplayEffect> Effect : AbilityEffectsInfo.GameplayEffectsToOwner)
 			{
-				ApplierASC->ApplyGameplayEffectToSelf(Effect->GetDefaultObject<UGameplayEffect>(), 1, ApplierASC->MakeEffectContext());
+				ApplierASC->ApplyGameplayEffectToSelf(Effect->GetDefaultObject<UGameplayEffect>(), AbilityLevel, ContextHandle);
 
 			}
 
@@ -349,6 +336,8 @@ void URGX_HitboxComponent::OnComponentOverlap(
 	bool CanApplyEffect = false;
 	if (TagInterface )
 	{
+		//UE_LOG(LogTemp, Warning, TEXT("Hitbox Overlap"));
+
 		// Check and may rethink this ... If BlockingTags is empty, this returns true
 		if (TagInterface->HasAllMatchingGameplayTags(BlockingTags) == false || BlockingTags.IsEmpty())
 			CanApplyEffect = true;
@@ -370,6 +359,7 @@ void URGX_HitboxComponent::OnComponentOverlap(
 			OtherActor->CustomTimeDilation = 0.1f;
 			ActorsWithTimeDilation.Add(OtherActor);
 		}
+
 		ActorsHit.Add(OtherActor);
 		ApplyEffects(OtherActor);
 	}

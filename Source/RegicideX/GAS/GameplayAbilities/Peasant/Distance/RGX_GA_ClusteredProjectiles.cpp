@@ -15,20 +15,19 @@ void URGX_GA_ClusteredProjectiles::ActivateAbility(
 {
 
 	// Stop focusing while shooting
-	ACharacter* Character = Cast<ACharacter>(ActorInfo->OwnerActor);
-	AAIController* Controller = Cast<AAIController>(Character->GetController());
+	ARGX_Peasant* Peasant		= Cast<ARGX_Peasant>(ActorInfo->AvatarActor);
+	AAIController* Controller = Cast<AAIController>(Peasant->GetController());
 	if (Controller)
 	{
 		Controller->SetFocus(nullptr);	// Stop focusing the player
 	}
 
-	const FVector Forward		= Character->GetActorForwardVector();
-	const FVector Right			= Character->GetActorRightVector();
-	const FVector Up			= Character->GetActorUpVector();
-	const FVector Center		= Character->GetActorLocation();
+	const FVector Forward		= Peasant->GetActorForwardVector();
+	const FVector Right			= Peasant->GetActorRightVector();
+	const FVector Up			= Peasant->GetActorUpVector();
+	const FVector Center		= Peasant->GetActorLocation();
 	Transform					= FTransform(Forward.Rotation(), Center, FVector(1.0));
 
-	ARGX_Peasant* Peasant		= Cast<ARGX_Peasant>(ActorInfo->AvatarActor);
 	TeamIdToApply				= Peasant->GetGenericTeamId();
 	
 	for (int i = 0; i < NumberProjectilesToFire; ++i)

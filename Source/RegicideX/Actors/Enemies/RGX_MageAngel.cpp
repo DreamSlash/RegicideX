@@ -24,7 +24,7 @@ void ARGX_MageAngel::BeginPlay()
 	SetActorLocation(NewLocation);
 
 	// Remove gravity from Character Movement Component
-	GetCharacterMovement()->GravityScale = 0.0f;
+	//GetCharacterMovement()->GravityScale = 0.0f;
 }
 
 void ARGX_MageAngel::Tick(float DeltaTime)

@@ -10,6 +10,7 @@
 
 class UStaticMeshComponent;
 class URGX_HitboxComponent;
+class UProjectileMovementComponent;
 
 UCLASS()
 class REGICIDEX_API ARGX_ClusteredBullet : public AActor, public IGenericTeamAgentInterface
@@ -21,16 +22,19 @@ public:
 	ARGX_ClusteredBullet();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UStaticMeshComponent* BulletMesh = nullptr;
+	UStaticMeshComponent* BulletMesh = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-		URGX_HitboxComponent* BulletCollider = nullptr;
+	URGX_HitboxComponent* BulletCollider = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UProjectileMovementComponent* ProjectileMovementComponent = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-		FGenericTeamId CharacterTeam;
+	FGenericTeamId CharacterTeam;
 
 	UPROPERTY(EditDefaultsOnly)
-		USceneComponent* RootScene;
+	USceneComponent* RootScene;
 
 	UPROPERTY(EditDefaultsOnly)
 		float Speed = 10.0f;
@@ -48,9 +52,6 @@ protected:
 	void HandleDeath();
 
 public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 	/** Assigns Team Agent to given TeamID */
 	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
 

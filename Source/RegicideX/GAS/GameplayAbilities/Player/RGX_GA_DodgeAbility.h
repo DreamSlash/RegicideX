@@ -4,6 +4,7 @@
 #include "Abilities/MCV_GameplayAbility.h"
 #include "RGX_GA_DodgeAbility.generated.h"
 
+class UGameplayEffect;
 class ACharacter;
 
 UCLASS()
@@ -28,6 +29,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	float DodgeSpeed = 900.0f;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UGameplayEffect> InvulnerabilityEffect;
 
 protected:
 

@@ -7,6 +7,7 @@
 #include "AbilitySystemInterface.h"
 #include "GenericTeamAgentInterface.h"
 #include "RegicideX/Interfaces/RGX_GameplayTagInterface.h"
+#include "RegicideX/Interfaces/RGX_InteractInterface.h"
 #include "RGX_EnemyBase.generated.h"
 
 USTRUCT()
@@ -15,30 +16,31 @@ struct FAttackInfo {
 	GENERATED_BODY()
 
 	UPROPERTY()
-		float BaseDamage;
+	float BaseDamage;
 
 	UPROPERTY()
-		bool Launch;
+	bool Launch;
 
 	UPROPERTY()
-		float DamageMultiplier;
+	float DamageMultiplier;
 
 	UPROPERTY()
-		FVector DamageOrigin;
+	FVector DamageOrigin;
 
 	UPROPERTY()
-		FVector LaunchVector;
+	FVector LaunchVector;
 
 };
 
 class UMCV_AbilitySystemComponent;
 class URGX_HealthAttributeSet;
 class URGX_CombatAttributeSet;
+class USphereComponent;
 class UWidgetComponent;
 class URGX_HitboxesManagerComponent;
 
 UCLASS()
-class REGICIDEX_API ARGX_EnemyBase : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface, public IGenericTeamAgentInterface
+class REGICIDEX_API ARGX_EnemyBase : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface, public IGenericTeamAgentInterface, public IRGX_InteractInterface
 {
 	GENERATED_BODY()
 
@@ -71,17 +73,28 @@ protected:
 	UPROPERTY(EditAnywhere)
 	URGX_CombatAttributeSet* CombatAttributeSet = nullptr;
 
+	/** Collider used for interacting with this actor */
+	UPROPERTY(EditAnywhere)
+	USphereComponent* InteractionShapeComponent = nullptr;
+
+	/** Health Display Widget */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UWidgetComponent* HealthDisplayWidgetComponent = nullptr;
+
 	// Debug
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UWidgetComponent* DebugAttributesWidgetComponent = nullptr;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	URGX_HitboxesManagerComponent* HitboxesManager = nullptr;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float HealthBarHideDistance = 1000.0f;
 
 public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FGenericTeamId CharacterTeam;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	URGX_HitboxesManagerComponent* HitboxesManager = nullptr;
 
 public:
 	// Sets default values for this character's properties
@@ -104,19 +117,34 @@ public:
 	virtual void RotateToTarget(float DeltaTime);
 
 	virtual void MoveToTarget(float DeltaTime, FVector TargetPos);
+	// ---------------------
+
+	void EnableInteraction();
+	void DisableInteraction();
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override; 
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
-	virtual void HandleDamage(FAttackInfo info);
+	virtual void HandleDamage(FAttackInfo info); //TODO: what is this
 
+	/** Events called from attribute set changes to decouple the logic. They call BP events. */
+	virtual void HandleDamage(float DamageAmount, AActor* DamageCauser);
+	virtual void HandleHealthChanged(float DeltaValue);
 	virtual void HandleDeath();
+
+	/* BP events */
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnHandleDamage(float DamageAmount, AActor* DamageCauser);
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnHandleHealthChanged(float DeltaValue);
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnHandleDeath();
 
 	/** GameplayTagAssetInterface methods */
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
@@ -134,8 +162,13 @@ public:
 	void HideCombatTargetWidget();
 	// ----------------------------------
 
+	/** Interact Interface */
+	void Interact(AActor* ActorInteracting) override;
+	void StartCanInteract(AActor* ActorInteracting) override;
+	void StopCanInteract(AActor* ActorInteracting) override;
+	bool CanBeInteractedWith(AActor* ActorInteracting) override;
+
 	bool IsInFrustum();
 
 	void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
 };

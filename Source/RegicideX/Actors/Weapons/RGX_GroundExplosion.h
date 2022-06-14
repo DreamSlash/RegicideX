@@ -12,7 +12,7 @@ class UDecalComponent;
 class UCurveFloat;
 class UGameplayEffect;
 class UMaterialInstanceDynamic;
-class UParticleSystem;
+class UNiagaraSystem;
 
 UCLASS()
 class REGICIDEX_API ARGX_GroundExplosion : public AActor
@@ -46,7 +46,7 @@ protected:
 	TSubclassOf<AActor> TargetActor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UParticleSystem* ParticleSystem = nullptr;
+	UNiagaraSystem* ExplosionVFX = nullptr;
 
 protected:
 	// Called when the game starts or when spawned

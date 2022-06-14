@@ -16,7 +16,7 @@ URGX_MeleeAttackAbility::URGX_MeleeAttackAbility()
 
 void URGX_MeleeAttackAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
-	URGX_CombatAssistComponent* CombatAssistComponent = ActorInfo->AvatarActor->FindComponentByClass<URGX_CombatAssistComponent>();
+	URGX_CombatAssistComponent* CombatAssistComponent = ActorInfo->AvatarActor->FindComponentByClass<URGX_CombatAssistComponent>(); 
 	ARGX_PlayerCharacter* PlayerCharacter = Cast<ARGX_PlayerCharacter>(ActorInfo->AvatarActor);
 	if (PlayerCharacter)
 	{
@@ -27,7 +27,10 @@ void URGX_MeleeAttackAbility::ActivateAbility(const FGameplayAbilitySpecHandle H
 			CombatAssistComponent->PerformAttackAutoAssist();
 		}
 	}
-	
+
+	// TODO: Use this line to create a context with the ability spec so the effects can access its information, like ability level or a struct with custom information
+	const FGameplayEffectContextHandle ContextHandle = MakeEffectContext(GetCurrentAbilitySpecHandle(), ActorInfo);
+
 	if (CombatAssistComponent)
 	{
 		CombatAssistComponent->AddMovementVector(ActorInfo->AvatarActor->GetActorForwardVector(), MoveVectorLength, true);
@@ -51,4 +54,24 @@ void URGX_MeleeAttackAbility::EndAbility(const FGameplayAbilitySpecHandle Handle
 	}
 
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+}
+
+void URGX_MeleeAttackAbility::PopulateGameplayEffectContext(FRGX_GameplayEffectContext& GameplayEffectContext)
+{
+	float AbilityLevel;
+	ARGX_PlayerCharacter* PlayerCharacter = Cast<ARGX_PlayerCharacter>(CurrentActorInfo->AvatarActor);
+	if (PlayerCharacter)
+	{
+		AbilityLevel = static_cast<float>(PlayerCharacter->Level);
+	}
+	else
+	{
+		AbilityLevel = GetAbilityLevel();
+	}
+
+	FString ContextString;
+	FRealCurve* DamageCurve = DamageLevelCurve->FindCurve(DamageCurveName, ContextString);
+	FRealCurve* ScalingCurve = DamageLevelCurve->FindCurve(AttributeScalingCurveName, ContextString);
+	GameplayEffectContext.DamageAmount = DamageCurve->Eval(AbilityLevel);
+	GameplayEffectContext.ScalingAttributeFactor = ScalingCurve->Eval(AbilityLevel);
 }

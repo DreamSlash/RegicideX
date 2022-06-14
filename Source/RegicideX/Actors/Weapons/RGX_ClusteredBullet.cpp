@@ -15,6 +15,8 @@ ARGX_ClusteredBullet::ARGX_ClusteredBullet()
 
 	BulletCollider->SetupAttachment(RootScene);
 	BulletMesh->SetupAttachment(RootScene);
+
+	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
 }
 
 // Called when the game starts or when spawned
@@ -29,13 +31,6 @@ void ARGX_ClusteredBullet::BeginPlay()
 void ARGX_ClusteredBullet::HandleDeath()
 {
 	this->Destroy();
-}
-
-// Called every frame
-void ARGX_ClusteredBullet::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	SetActorLocation(GetActorLocation() + GetActorForwardVector() * Speed);
 }
 
 void ARGX_ClusteredBullet::SetGenericTeamId(const FGenericTeamId& TeamID)

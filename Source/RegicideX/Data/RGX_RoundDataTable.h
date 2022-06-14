@@ -17,7 +17,4 @@ struct FRGX_RoundDataTable : public FTableRowBase
 	TArray<int> EnemiesToSpawn;
 
 	FRGX_RoundDataTable();
-
-	
-	virtual void OnDataTableChanged(const UDataTable* InDataTable, const FName InRowName) override;
 };

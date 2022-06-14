@@ -2,7 +2,7 @@
 
 
 #include "RGX_RoundGameMode.h"
-
+#include "GameFramework/Actor.h"
 #include "RGX_ScoreGameState.h"
 #include "Engine/AssetManager.h"
 #include "GameplayTagContainer.h"

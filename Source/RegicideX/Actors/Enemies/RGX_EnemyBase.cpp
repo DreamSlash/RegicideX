@@ -3,13 +3,14 @@
 
 #include "RGX_EnemyBase.h"
 #include "Components/MCV_AbilitySystemComponent.h"
+#include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "RegicideX/GAS/AttributeSets/RGX_HealthAttributeSet.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "RegicideX/GameplayFramework/RGX_RoundGameMode.h"
+#include "AbilitySystemGlobals.h"
 #include "RegicideX/Components/RGX_HitboxesManagerComponent.h"
-
-
+#include "RegicideX/UI/RGX_EnemyHealthBar.h"
 
 // Sets default values
 ARGX_EnemyBase::ARGX_EnemyBase()
@@ -19,8 +20,12 @@ ARGX_EnemyBase::ARGX_EnemyBase()
 
 	CombatTargetWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("CombatTargetWidgetComponent"));
 	CombatTargetWidgetComponent->SetupAttachment(RootComponent);
+	HealthDisplayWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthDisplayWidgetComponent"));
+	HealthDisplayWidgetComponent->SetupAttachment(RootComponent);
 
 	AbilitySystemComponent = CreateDefaultSubobject<UMCV_AbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	InteractionShapeComponent = CreateDefaultSubobject<USphereComponent>(TEXT("InteractionShapeComponent"));
+	InteractionShapeComponent->SetupAttachment(RootComponent);
 
 	HealthAttributeSet = CreateDefaultSubobject<URGX_HealthAttributeSet>(TEXT("HealthAttributeSet"));
 
@@ -35,7 +40,13 @@ void ARGX_EnemyBase::BeginPlay()
 {
 	Super::BeginPlay();
 
+	InteractionShapeComponent->SetCollisionProfileName("InteractableObject");
 
+	DisableInteraction();
+	HideCombatTargetWidget();
+
+	// For initializing health bar
+	HandleHealthChanged(0.0f);
 }
 
 void ARGX_EnemyBase::PossessedBy(AController* NewController)
@@ -55,6 +66,18 @@ void ARGX_EnemyBase::MoveToTarget(float DeltaTime, FVector TargetPos)
 	}
 }
 
+void ARGX_EnemyBase::EnableInteraction()
+{
+	InteractionShapeComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
+	UE_LOG(LogTemp, Warning, TEXT("Enable Interaction\n"));
+}
+
+void ARGX_EnemyBase::DisableInteraction()
+{
+	InteractionShapeComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	UE_LOG(LogTemp, Warning, TEXT("Disable Interaction\n"));
+}
+
 void ARGX_EnemyBase::RotateToTarget(float DeltaTime)
 {
 	if (TargetActor)
@@ -72,13 +95,30 @@ void ARGX_EnemyBase::RotateToTarget(float DeltaTime)
 void ARGX_EnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	const bool bIsDead = HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.Dead")));
+	if (bIsDead == true)
+		return;
+
+	if (TargetActor)
+	{
+		const FVector VectorToTarget = TargetActor->GetActorLocation() - GetActorLocation();
+		const float DistanceToTarget = VectorToTarget.Size();
+		if (DistanceToTarget > HealthBarHideDistance)
+		{
+			HealthDisplayWidgetComponent->SetVisibility(false);
+		}
+		else
+		{
+			HealthDisplayWidgetComponent->SetVisibility(true);
+		}
+	}
 }
 
 // Called to bind functionality to input
 void ARGX_EnemyBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
 UAbilitySystemComponent* ARGX_EnemyBase::GetAbilitySystemComponent() const
@@ -90,8 +130,32 @@ void ARGX_EnemyBase::HandleDamage(FAttackInfo info)
 {
 }
 
+void ARGX_EnemyBase::HandleDamage(float DamageAmount, AActor* DamageCauser)
+{
+	OnHandleDamage(DamageAmount, DamageCauser);
+}
+
+void ARGX_EnemyBase::HandleHealthChanged(float DeltaValue)
+{
+	UMCV_AbilitySystemComponent* ACS = Cast<UMCV_AbilitySystemComponent>(AbilitySystemComponent);
+	URGX_EnemyHealthBar* HealthBar = Cast<URGX_EnemyHealthBar>(HealthDisplayWidgetComponent->GetWidget());
+	if (HealthBar)
+	{
+		HealthBar->MaxHealth = ACS->GetNumericAttribute(HealthAttributeSet->GetMaxHealthAttribute());
+		HealthBar->CurrentHealth = ACS->GetNumericAttribute(HealthAttributeSet->GetHealthAttribute());
+	}
+
+	// Only call BP event if ACS is initialized
+	if (ACS->bIsInitialized == true)
+	{
+		OnHandleHealthChanged(DeltaValue);
+	}
+}
+
 void ARGX_EnemyBase::HandleDeath()
 {
+	OnHandleDeath();
+	HealthDisplayWidgetComponent->SetVisibility(false);
 }
 
 void ARGX_EnemyBase::SetGenericTeamId(const FGenericTeamId& TeamID)
@@ -142,6 +206,36 @@ void ARGX_EnemyBase::ShowCombatTargetWidget()
 void ARGX_EnemyBase::HideCombatTargetWidget()
 {
 	CombatTargetWidgetComponent->SetVisibility(false);
+}
+
+void ARGX_EnemyBase::Interact(AActor* ActorInteracting)
+{
+	//UE_LOG(LogTemp, Warning, TEXT("Interaction With Enemy\n"));
+	UAbilitySystemComponent* ACS = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(ActorInteracting); 
+
+	if (ACS)
+	{
+		FGameplayEventData EventData;
+		EventData.Instigator = ActorInteracting;
+		EventData.Target = this;
+		ACS->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Action.Execution.Ability")), &EventData);
+	}
+}
+
+void ARGX_EnemyBase::StartCanInteract(AActor* ActorInteracting)
+{
+	// TODO: Show Widget
+}
+
+void ARGX_EnemyBase::StopCanInteract(AActor* ActorInteracting)
+{
+	// TODO: Hide Widget
+}
+
+bool ARGX_EnemyBase::CanBeInteractedWith(AActor* ActorInteracting)
+{
+	//UE_LOG(LogTemp, Warning, TEXT("Can be interacted with\n"));
+	return InteractionShapeComponent->IsCollisionEnabled();
 }
 
 bool ARGX_EnemyBase::IsInFrustum()

@@ -10,7 +10,8 @@
 #include "GameplayTags.h"
 #include "Kismet/GameplayStatics.h"
 #include "Materials/MaterialInstanceDynamic.h"
-#include "Particles/ParticleSystem.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 
 // Sets default values
 ARGX_GroundExplosion::ARGX_GroundExplosion()
@@ -84,7 +85,7 @@ void ARGX_GroundExplosion::Explode()
 		}
 	}
 
-	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), ParticleSystem, GetActorLocation());
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionVFX, GetActorLocation(), GetActorRotation(), FVector(3.0f, 3.0f, 1.0f));
 
 	Destroy();
 }

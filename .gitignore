@@ -52,6 +52,8 @@ Plugins/*/Binaries/*
 
 # Builds
 Build/*
+Builds/*
+Tools/*
 
 # Whitelist PakBlacklist-<BuildConfiguration>.txt files
 !Build/*/
@@ -73,3 +75,5 @@ Plugins/*/Intermediate/*
 
 # Cache files for the editor to use
 DerivedDataCache/*
+
+lfs/*

@@ -4,6 +4,8 @@
 #include "Components/ActorComponent.h"
 #include "RGX_PayloadObjects.generated.h"
 
+struct FGameplayEffectContextHandle;
+
 UCLASS()
 class REGICIDEX_API URGX_LaunchEventPayload : public UObject
 {
@@ -48,6 +50,8 @@ struct FRGX_AbilityEffectsInfo
 	GENERATED_BODY()
 
 public:
+	UPROPERTY()
+	FGameplayEffectContextHandle EffectContextHandle;
 
 	UPROPERTY()
 	TArray<URGX_RGXEventDataAsset*> GameplayEventsToTarget;
