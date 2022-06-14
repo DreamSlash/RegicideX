@@ -593,19 +593,21 @@ void ARGX_PlayerCharacter::OnCapsuleHit(UPrimitiveComponent* HitComponent, AActo
 	{
 		const FVector Normal = Hit.Normal;
 		const FVector PlayerLaunchForce = Normal * FVector(1.0f, 1.0f, -1.0f) * 100.0f;
-		const FVector OtherActorLaunchForce = Normal * -1.0f * 2000.0f;
 
 		LaunchCharacter(PlayerLaunchForce, true, true);
 
 		ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(OtherActor);
-		UAbilitySystemComponent* OtherACS = Enemy->FindComponentByClass<UAbilitySystemComponent>();
-		if (Enemy && OtherACS)
+		if (Enemy)
 		{
-			FGameplayEventData EventData;
-			EventData.Instigator = this;
-			EventData.EventTag = MoveAwayLaunchPayload->EventTag;
-			EventData.OptionalObject = MoveAwayLaunchPayload;
-			OtherACS->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Launched")), &EventData);
+			UAbilitySystemComponent* OtherACS = Enemy->FindComponentByClass<UAbilitySystemComponent>();
+			if (OtherACS)
+			{
+				FGameplayEventData EventData;
+				EventData.Instigator = this;
+				EventData.EventTag = MoveAwayLaunchPayload->EventTag;
+				EventData.OptionalObject = MoveAwayLaunchPayload;
+				OtherACS->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Launched")), &EventData);
+			}
 		}
 	}
 }
