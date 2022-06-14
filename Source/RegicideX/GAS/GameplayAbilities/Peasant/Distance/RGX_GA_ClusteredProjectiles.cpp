@@ -15,7 +15,6 @@ void URGX_GA_ClusteredProjectiles::ActivateAbility(
 {
 
 	// Stop focusing while shooting
-	//ACharacter* Character = Cast<ACharacter>(ActorInfo->OwnerActor);
 	ARGX_Peasant* Peasant		= Cast<ARGX_Peasant>(ActorInfo->AvatarActor);
 	AAIController* Controller = Cast<AAIController>(Peasant->GetController());
 	if (Controller)
