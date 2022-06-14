@@ -83,6 +83,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void OnComponentOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	UFUNCTION()
+	void OnComponentEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
+
 
 	void DestroyOwnerOnOverlap();
 
@@ -137,6 +140,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = HitboxComponent)
 	TEnumAsByte<EObjectTypeQuery> TargetObjectType;
 
+	UPROPERTY(EditDefaultsOnly)
+		TSubclassOf<UCameraShakeBase> CameraShake;
+
 private:
 	bool CheckIfEffectIsApplied(AActor* TargetActor);
 
@@ -146,3 +152,5 @@ private:
 	TArray<AActor*> ActorsWithTimeDilation;
 	FTimerHandle PunchTimerHandle;
 };
+
+DECLARE_LOG_CATEGORY_EXTERN(LogHitbox, Log, All);
