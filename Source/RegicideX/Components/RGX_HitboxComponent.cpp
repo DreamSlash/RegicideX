@@ -329,6 +329,7 @@ void URGX_HitboxComponent::OnComponentOverlap(
 
 	if (Attitude == TeamToApply && HitboxComponent == nullptr && CanApplyEffect)
 	{
+		/*
 		// Stopping for two frame. If probably should be done only for the owner and target actors and not for all actors.
 		ARGX_PlayerCharacter* player = Cast<ARGX_PlayerCharacter>(OwnerActor);
 		if (player)
@@ -342,7 +343,7 @@ void URGX_HitboxComponent::OnComponentOverlap(
 			ActorsWithTimeDilation.Add(OtherActor);
 			GetWorld()->GetTimerManager().SetTimer(PunchTimerHandle, this, &URGX_HitboxComponent::ResetCustomTimeDilation, 0.06666, false);
 		}
-
+		*/
 		ActorsHit.Add(OtherActor);
 		ApplyEffects(OtherActor);
 	}
