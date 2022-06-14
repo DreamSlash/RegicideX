@@ -4,6 +4,9 @@
 #include "RegicideX/Character/RGX_PlayerCharacter.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+#include "AbilitySystemComponent.h"
+#include "AbilitySystemGlobals.h"
+#include "GameplayEffect.h"
 
 void URGX_DodgeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
@@ -61,6 +64,12 @@ void URGX_DodgeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 void URGX_DodgeAbility::FinishDodge()
 {
+	UAbilitySystemComponent* ACS = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(CurrentActorInfo->AvatarActor.Get());
+	if (ACS)
+	{
+		ACS->ApplyGameplayEffectToSelf(InvulnerabilityEffect.GetDefaultObject(), 1.0f, ACS->MakeEffectContext());
+	}
+
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
 }
 

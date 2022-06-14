@@ -5,7 +5,6 @@
 
 #include "AbilitySystemGlobals.h"
 #include "AbilitySystemComponent.h"
-#include "RegicideX/GAS/RGX_GameplayEffectContext.h"
 
 // Sets default values
 ARGX_RingWave::ARGX_RingWave()
@@ -51,12 +50,7 @@ void ARGX_RingWave::DamageActor(UPrimitiveComponent* OverlappedComponent
 	{
 		if (ASC->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("PossessedBy.Player")))
 		{
-			FGameplayEffectContextHandle ContextHandle = ASC->MakeEffectContext();
-			FRGX_GameplayEffectContext* FRGXContext = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
-			FRGXContext->DamageAmount = 30.0f;
-			FRGXContext->ScalingAttributeFactor = 1.0f;
-
-			ASC->ApplyGameplayEffectToSelf(RingWaveEffect->GetDefaultObject<UGameplayEffect>(), 1.0, ContextHandle);
+			ASC->ApplyGameplayEffectToSelf(RingWaveEffect->GetDefaultObject<UGameplayEffect>(), 1.0, ASC->MakeEffectContext());
 			//ASC->ApplyGameplayEffectToSelf(WallEffect->GetDefaultObject<UGameplayEffect>(), 1.0, ASC->MakeEffectContext());
 		}
 	}
