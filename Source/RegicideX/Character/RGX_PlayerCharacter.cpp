@@ -16,12 +16,14 @@
 #include "RegicideX/GAS/AttributeSets/RGX_HealthAttributeSet.h"
 #include "RegicideX/GAS/AttributeSets/RGX_MovementAttributeSet.h"
 #include "RegicideX/GAS/AttributeSets/RGX_CombatAttributeSet.h"
+#include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "RegicideX/RGX_PlayerCameraManager.h"
 #include "RegicideX/GAS/RGX_GameplayEffectContext.h"
+#include "AbilitySystemGlobals.h"
 
 ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 {
@@ -596,9 +598,14 @@ void ARGX_PlayerCharacter::OnCapsuleHit(UPrimitiveComponent* HitComponent, AActo
 		LaunchCharacter(PlayerLaunchForce, true, true);
 
 		ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(OtherActor);
-		if (Enemy)
+		UAbilitySystemComponent* OtherACS = Enemy->FindComponentByClass<UAbilitySystemComponent>();
+		if (Enemy && OtherACS)
 		{
-			Enemy->LaunchCharacter(OtherActorLaunchForce, true, true);
+			FGameplayEventData EventData;
+			EventData.Instigator = this;
+			EventData.EventTag = MoveAwayLaunchPayload->EventTag;
+			EventData.OptionalObject = MoveAwayLaunchPayload;
+			OtherACS->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Launched")), &EventData);
 		}
 	}
 }

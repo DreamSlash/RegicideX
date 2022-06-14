@@ -22,6 +22,7 @@ class URGX_HealthAttributeSet;
 class URGX_MovementAttributeSet;
 class URGX_CombatAttributeSet;
 class URGX_InteractComponent;
+class URGX_LaunchEventDataAsset;
 class UGameplayEffect;
 
 USTRUCT()
@@ -173,6 +174,9 @@ protected:
 	UPROPERTY(EditAnywhere)
 	UCurveTable* AttackPowerLevelCurve = nullptr;
 	// -----------------------------------------
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	URGX_LaunchEventDataAsset* MoveAwayLaunchPayload;
 
 protected:
 	/** Called for forwards/backwards input */
