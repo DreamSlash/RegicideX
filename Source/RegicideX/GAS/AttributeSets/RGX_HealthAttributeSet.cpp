@@ -60,6 +60,13 @@ void URGX_HealthAttributeSet::PostGameplayEffectExecute(const struct FGameplayEf
 					ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(Owner);
 					if (Enemy)
 					{
+						float DeltaValue = 0;
+						if (Data.EvaluatedData.ModifierOp == EGameplayModOp::Type::Additive)
+						{
+							// If this was additive, store the raw delta value to be passed along later
+							DeltaValue = Data.EvaluatedData.Magnitude;
+						}
+						Enemy->HandleHealthChanged(DeltaValue);
 						Enemy->HandleDeath();
 					}
 				}
