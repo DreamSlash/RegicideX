@@ -73,6 +73,12 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float MaxRadiusAngleDiscard = 90.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float TargettingZTopOffset = 200.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float TargettingZBottomOffset = 50.0f;
+	
 	/* Enemies at that angle from player's forward will be checked against the camera frustum to discard
 	the ones outside */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

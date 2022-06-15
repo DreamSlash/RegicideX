@@ -40,6 +40,8 @@ void ARGX_DistanceAngel::BeginPlay()
 	Ring_1_Mesh->SetMaterial(1, DynamicMaterial);
 	Ring_2_Mesh->SetMaterial(1, DynamicMaterial);
 	Ring_3_Mesh->SetMaterial(1, DynamicMaterial);
+
+	bCanBeKnockup = false;
 }
 
 void ARGX_DistanceAngel::MoveToTarget(float DeltaTime, FVector TargetPos)

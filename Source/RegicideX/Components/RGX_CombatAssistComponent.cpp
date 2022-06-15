@@ -174,10 +174,33 @@ TArray<AActor*> URGX_CombatAssistComponent::GetClosestEnemiesInRange(const float
 		ARGX_EnemyBase* OutEnemy = Cast<ARGX_EnemyBase>(OutActor);
 		UAbilitySystemComponent* EnemyACS = OutEnemy->FindComponentByClass<UAbilitySystemComponent>();
 		bool bIsDead = OutEnemy->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.Dead")));
+		if (bIsDead == true)
+			continue;
+
+		// If player and enemy on ground, add enemy to potential targets
+		if (OutEnemy->GetCharacterMovement()->IsFalling() == false &&
+			bIsPlayerInAir == false)
+		{
+			ClosestEnemies.Add(OutActor);
+			continue;
+		}
+
+		// If one or both are in the air, add to potential targets if it is inside some Z offset
+		float PlayerZLocation = PlayerLocation.Z;
+		float EnemyZLocation = OutEnemy->GetActorLocation().Z;
+
+		if (EnemyZLocation > PlayerZLocation - TargettingZBottomOffset &&
+			EnemyZLocation < PlayerZLocation + TargettingZTopOffset)
+		{
+			ClosestEnemies.Add(OutActor);
+		}
+
+		/*
 		if (OutEnemy->GetCharacterMovement()->IsFalling() == bIsPlayerInAir && bIsDead == false)
 		{
 			ClosestEnemies.Add(OutActor);
 		}
+		*/
 	}
 
 	return ClosestEnemies;

@@ -8,7 +8,7 @@
 #include "BrainComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "RegicideX/Actors/Enemies/RGX_Peasant.h"
+#include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 
 void URGX_GA_PeasantReactionHit::ActivateAbility(
 	const FGameplayAbilitySpecHandle Handle, 
@@ -26,19 +26,15 @@ void URGX_GA_PeasantReactionHit::ActivateAbility(
 	}
 
 	// Launch Peasant a small bit backwards
-	ARGX_Peasant* Peasant		= Cast<ARGX_Peasant>(Character);
-	FVector PeasantLocation		= Peasant->GetActorLocation();
-	FVector TargetActorForward	= Peasant->TargetActor->GetActorForwardVector();
+	ARGX_EnemyBase* Enemy		= Cast<ARGX_EnemyBase>(Character);
+	FVector PeasantLocation		= Enemy->GetActorLocation();
 
-	UCharacterMovementComponent* PeasantMovementComponent = Peasant->GetCharacterMovement();
+	UCharacterMovementComponent* EnemyMovementComponent = Enemy->GetCharacterMovement();
 
-	if (PeasantMovementComponent->IsFalling())
+	if (EnemyMovementComponent->IsFalling())
 	{
-		PeasantMovementComponent->GravityScale = 0.0f;
+		EnemyMovementComponent->GravityScale = 0.0f;
 		Character->LaunchCharacter(FVector(0.0, 0.0, -1.0), true, true); // ¿ Don't know why it is needed to make enemy stay on air ?
-	}
-	else {
-		Character->LaunchCharacter(TargetActorForward * 1000.0f, true, false);
 	}
 
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
@@ -58,15 +54,15 @@ void URGX_GA_PeasantReactionHit::EndAbility(
 	{
 		// Restart brain logic
 		AAIController* Controller = Cast<AAIController>(Character->GetController());
-		ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(Character);
+		ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(Character);
 		if (Controller) {
 			Controller->GetBrainComponent()->StartLogic();
-			if(Peasant->TargetActor)
-				Controller->SetFocus(Peasant->TargetActor);
+			if(Enemy->TargetActor)
+				Controller->SetFocus(Enemy->TargetActor);
 		}
 
 		// Get gravity scale back
-		UCharacterMovementComponent* PeasantMovementComponent = Peasant->GetCharacterMovement();
+		UCharacterMovementComponent* PeasantMovementComponent = Enemy->GetCharacterMovement();
 		PeasantMovementComponent->GravityScale = 3.0f;
 	}
 }
