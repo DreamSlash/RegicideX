@@ -3,6 +3,7 @@
 #include "GameFramework/Character.h"
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 
 bool URGX_LaunchedAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const
 {
@@ -36,6 +37,15 @@ void URGX_LaunchedAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	FVector LaunchHorizontalDirection = ActorLocation - ForceOrigin;
 	LaunchHorizontalDirection.Z = 0.0f;
 	LaunchHorizontalDirection.Normalize();
+
+	ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(CurrentActorInfo->AvatarActor);
+	if (Enemy)
+	{
+		if (Enemy->bCanBeKnockup == false)
+		{
+			VerticalForce = 0.0f;
+		}
+	}
 
 	FVector LaunchForce = LaunchHorizontalDirection * HorizontalForce + FVector(0.0f, 0.0f, 1.0f) * VerticalForce;
 

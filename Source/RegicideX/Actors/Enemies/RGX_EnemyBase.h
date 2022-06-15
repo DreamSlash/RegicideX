@@ -96,6 +96,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	URGX_HitboxesManagerComponent* HitboxesManager = nullptr;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	bool bCanBeKnockup = true;
+
 public:
 	// Sets default values for this character's properties
 	ARGX_EnemyBase();
