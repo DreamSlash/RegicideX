@@ -238,7 +238,7 @@ void ARGX_PlayerCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, flo
 		//FocusLocation = FMath::Lerp(TargetLocation, FocusLocation, t);
 		//UKismetSystemLibrary::DrawDebugLine(GetWorld(), TargetLocation + CameraForward * 100.0f, TargetLocation + CameraForward * 100.0f + FVector::UpVector * 100.0f, FLinearColor::Blue, 1.0f, 2.0f);
 		//UKismetSystemLibrary::DrawDebugLine(GetWorld(), TargetLocation + CameraRight * 100.0f, TargetLocation + CameraRight * 100.0f + FVector::UpVector * 100.0f, FLinearColor::Red, 1.0f, 2.0f);
-		UKismetSystemLibrary::DrawDebugLine(GetWorld(), FocusLocation, FocusLocation + FVector::UpVector * 100.0f, FLinearColor::Green, 1.0f, 2.0f);
+		//UKismetSystemLibrary::DrawDebugLine(GetWorld(), FocusLocation, FocusLocation + FVector::UpVector * 100.0f, FLinearColor::Green, 1.0f, 2.0f);
 		//UKismetSystemLibrary::DrawDebugLine(GetWorld(), PreviousFocusLocation, PreviousFocusLocation + FVector::UpVector * 100.0f, FLinearColor::Red, 1.0f, 2.0f);
 		//SocketOffset.Y = -RelativeDistance.Y;
 	}
