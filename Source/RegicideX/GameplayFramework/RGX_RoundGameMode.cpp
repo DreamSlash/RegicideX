@@ -79,6 +79,7 @@ void ARGX_RoundGameMode::IncreaseKillCount()
 {
 	KillCount++;
 	SpawnedEnemies--;
+	UE_LOG(LogTemp, Warning, TEXT("Spawned Enemies: %d"), SpawnedEnemies);
 	CheckCurrentWave();
 }
 
@@ -133,6 +134,7 @@ void ARGX_RoundGameMode::SpawnEnemyGroups()
 			SpawnEnemy(DTEnemies->FindRow<FRGX_EnemiesDataTable>(EnemyWaveNames[i], "")->EnemyInfo);
 		}
 	}
+	UE_LOG(LogTemp, Warning, TEXT("Spanwed Enemies in this Rounds: %d"), SpawnedEnemies);
 }
 
 void ARGX_RoundGameMode::SpawnEnemy(UDataAsset* EnemyInfo)

@@ -104,5 +104,5 @@ void URGX_GA_SuicidalExplosionAbility::OnReceivedEvent(FGameplayTag EventTag, FG
 	UGameplayStatics::SpawnEmitterAtLocation(CurrentActorInfo->AvatarActor->GetWorld(), ExplosionVFX, CurrentActorInfo->AvatarActor->GetTransform());
 
 	FGameplayEventData DeadEventPayload;
-	GetAbilitySystemComponentFromActorInfo()->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.HasDied")), &DeadEventPayload);
+	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectToSelf(InstantDeathEffect->GetDefaultObject<UGameplayEffect>(), 1, GetAbilitySystemComponentFromActorInfo()->MakeEffectContext());
 }

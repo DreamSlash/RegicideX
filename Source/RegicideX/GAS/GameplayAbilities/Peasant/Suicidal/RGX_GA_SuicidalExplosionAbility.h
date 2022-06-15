@@ -41,4 +41,7 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	class UParticleSystem* ExplosionVFX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		TSubclassOf<UGameplayEffect> InstantDeathEffect;
 };
