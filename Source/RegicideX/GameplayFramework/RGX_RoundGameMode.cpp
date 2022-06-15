@@ -55,6 +55,11 @@ void ARGX_RoundGameMode::BeginPlay()
 	GetGameState<ARGX_ScoreGameState>()->SetStateDefaults();
 	StartPlay();
 }
+
+void ARGX_RoundGameMode::EndWavesEvent_Implementation()
+{
+}
+
 void ARGX_RoundGameMode::StartEnemySpawn()
 {
 	if (TargetActor == nullptr)
@@ -100,6 +105,14 @@ void ARGX_RoundGameMode::StartNewWave()
 	FString WaveName = WaveName.FromInt(CurrentWave);
 	WaveName = "Round" + WaveName;
 	const FName FRoundName = FName(WaveName);
+
+	FRGX_RoundDataTable* round = DTRounds->FindRow<FRGX_RoundDataTable>(FRoundName, "");
+
+	if (round == nullptr) {
+		EndWavesEvent();
+		return;
+	}
+
 	RoundInfo = *DTRounds->FindRow<FRGX_RoundDataTable>(FRoundName, "");
 
 	EnemyWaveNames = DTEnemies->GetRowNames();
