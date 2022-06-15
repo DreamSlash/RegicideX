@@ -157,7 +157,10 @@ void ARGX_EnemyBase::HandleDeath()
 {
 	OnHandleDeath();
 	ARGX_RoundGameMode* RoundGameMode = Cast<ARGX_RoundGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
-	RoundGameMode->IncreaseKillCount();
+	if (RoundGameMode)
+	{
+		RoundGameMode->IncreaseKillCount();
+	}
 	//RoundGameMode->WaveManager->OnEnemyDestroyed();
 	HealthDisplayWidgetComponent->SetVisibility(false);
 }
