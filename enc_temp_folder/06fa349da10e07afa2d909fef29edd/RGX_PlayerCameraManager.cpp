@@ -205,7 +205,6 @@ void ARGX_PlayerCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, flo
 	
 	if (HorizontalFocusRadius > 0.0f)
 	{
-		/*
 		float t = 1.0f;
 		if (FMath::Abs(RelativeDistance.Y) > 0.01f && FocusCentering > 0.0f)
 		{
@@ -216,7 +215,6 @@ void ARGX_PlayerCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, flo
 		{
 			t = FMath::Min(t, HorizontalFocusRadius / FMath::Abs(RelativeDistance.Y));
 		}
-		*/
 
 		FVector Delta = TargetLocation - FocusLocation;
 		Delta.Z = 0.0f;
@@ -227,18 +225,16 @@ void ARGX_PlayerCameraManager::UpdateViewTargetInternal(FTViewTarget& OutVT, flo
 		float AmountForward = FVector::DotProduct(Delta, CameraForward);
 		float AmountRight = FVector::DotProduct(Delta, CameraRight);
 
-		// TODO: Make it quadratic
-		AmountForward *= 0.3f;
-		AmountRight *= 0.95f;
+		AmountForward *= 0.01;
+		AmountRight *= 0.99;
 
 		SocketOffset.X = AmountForward;
 		SocketOffset.Y = AmountRight;
 		
 		FocusLocation = TargetLocation + AmountRight * CameraRight + AmountForward * CameraForward;
+
 		//FocusLocation = FMath::Lerp(TargetLocation, FocusLocation, t);
-		//UKismetSystemLibrary::DrawDebugLine(GetWorld(), TargetLocation + CameraForward * 100.0f, TargetLocation + CameraForward * 100.0f + FVector::UpVector * 100.0f, FLinearColor::Blue, 1.0f, 2.0f);
-		//UKismetSystemLibrary::DrawDebugLine(GetWorld(), TargetLocation + CameraRight * 100.0f, TargetLocation + CameraRight * 100.0f + FVector::UpVector * 100.0f, FLinearColor::Red, 1.0f, 2.0f);
-		UKismetSystemLibrary::DrawDebugLine(GetWorld(), FocusLocation, FocusLocation + FVector::UpVector * 100.0f, FLinearColor::Green, 1.0f, 2.0f);
+		//UKismetSystemLibrary::DrawDebugLine(GetWorld(), FocusLocation, FocusLocation + FVector::UpVector * 100.0f, FLinearColor::Green, 1.0f, 2.0f);
 		//UKismetSystemLibrary::DrawDebugLine(GetWorld(), PreviousFocusLocation, PreviousFocusLocation + FVector::UpVector * 100.0f, FLinearColor::Red, 1.0f, 2.0f);
 		//SocketOffset.Y = -RelativeDistance.Y;
 	}
