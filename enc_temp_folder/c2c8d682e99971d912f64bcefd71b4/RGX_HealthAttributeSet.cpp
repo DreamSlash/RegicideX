@@ -36,8 +36,6 @@ void URGX_HealthAttributeSet::PostGameplayEffectExecute(const struct FGameplayEf
 	FGameplayEffectContextHandle Context = Data.EffectSpec.GetContext();
 	UAbilitySystemComponent* Source = Context.GetOriginalInstigatorAbilitySystemComponent();
 
-
-
 	if (Data.EvaluatedData.Attribute == GetHealthAttribute())
 	{
 		bool bIsDead = ASC->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.Dead")));
@@ -66,11 +64,30 @@ void URGX_HealthAttributeSet::PostGameplayEffectExecute(const struct FGameplayEf
 			}
 			else
 			{
-				// TODO: Create common class for all characters in game
+				UGameplayEffect* HitEffect = URGX_HitEffect::StaticClass()->GetDefaultObject<UGameplayEffect>();
+				ASC->ApplyGameplayEffectToSelf(HitEffect, 1, ASC->MakeEffectContext());
 
-				ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(Data.Target.AvatarActor);
-				//ARGX_PlayerCharacter* PlayerCharacter = Cast<ARGX_PlayerCharacter>(Data.Target.AvatarActor);
+				{
+					FGameplayEventData EventData;
+					EventData.Instigator = Data.EffectSpec.GetEffectContext().GetInstigator();
+					ASC->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Combat.TakeDamage")), &EventData);
+				}
+			
 
+				if (CurrentHealth < GetMaxHealth() * 0.25f)
+				{
+					FGameplayEventData EventData;
+					ASC->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Enemy.Weakened")), &EventData);
+				}
+			}
+
+			// TODO: Create common class for all characters in game
+
+			ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(Data.Target.AvatarActor);
+			//ARGX_PlayerCharacter* PlayerCharacter = Cast<ARGX_PlayerCharacter>(Data.Target.AvatarActor);
+
+			if (Enemy)
+			{
 				// Compute the delta between old and new, if it is available
 				float DeltaValue = 0;
 				if (Data.EvaluatedData.ModifierOp == EGameplayModOp::Type::Additive)
@@ -81,10 +98,7 @@ void URGX_HealthAttributeSet::PostGameplayEffectExecute(const struct FGameplayEf
 
 				if (DeltaValue != 0)
 				{
-					if (Enemy)
-					{
-						Enemy->HandleHealthChanged(DeltaValue);
-					}
+					Enemy->HandleHealthChanged(DeltaValue);
 				}
 
 				if (DeltaValue < 0)
@@ -93,34 +107,12 @@ void URGX_HealthAttributeSet::PostGameplayEffectExecute(const struct FGameplayEf
 					ARGX_EnemyBase* InstigatorEnemy = Cast<ARGX_EnemyBase>(Source->AvatarActor);
 					if (InstigatorEnemy)
 					{
-						if (Enemy)
-						{
-							Enemy->HandleDamage(FMath::Abs(DeltaValue), InstigatorEnemy);
-						}
+						Enemy->HandleDamage(FMath::Abs(DeltaValue), InstigatorEnemy);
 					}
 					else
 					{
 						ARGX_PlayerCharacter* InstigatorPlayer = Cast<ARGX_PlayerCharacter>(Data.Target.AvatarActor);
-						if (Enemy)
-						{
-							Enemy->HandleDamage(FMath::Abs(DeltaValue), InstigatorPlayer);
-						}
-					}
-
-					UGameplayEffect* HitEffect = URGX_HitEffect::StaticClass()->GetDefaultObject<UGameplayEffect>();
-					ASC->ApplyGameplayEffectToSelf(HitEffect, 1, ASC->MakeEffectContext());
-
-					{
-						FGameplayEventData EventData;
-						EventData.Instigator = Data.EffectSpec.GetEffectContext().GetInstigator();
-						ASC->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Combat.TakeDamage")), &EventData);
-					}
-
-
-					if (CurrentHealth < GetMaxHealth() * 0.25f)
-					{
-						FGameplayEventData EventData;
-						ASC->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Enemy.Weakened")), &EventData);
+						Enemy->HandleDamage(FMath::Abs(DeltaValue), InstigatorPlayer);
 					}
 				}
 			}
