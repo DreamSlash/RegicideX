@@ -33,10 +33,10 @@ void URGX_GA_PeasantDie::ActivateAbility(
 	// Disable Collision
 	Character->GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Overlap);
 
-	if (ARGX_RoundGameMode* MyGameMode = Cast<ARGX_RoundGameMode>(GetWorld()->GetAuthGameMode()))
-	{
-		MyGameMode->OnEnemyDeath(0);
-	}
+	//if (ARGX_RoundGameMode* MyGameMode = Cast<ARGX_RoundGameMode>(GetWorld()->GetAuthGameMode()))
+	//{
+	//	MyGameMode->OnEnemyDeath(0);
+	//}
 
 	if (MontageToPlay && Character)
 	{

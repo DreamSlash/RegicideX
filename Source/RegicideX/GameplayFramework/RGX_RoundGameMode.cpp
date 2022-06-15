@@ -7,7 +7,6 @@
 #include "Engine/AssetManager.h"
 #include "GameplayTagContainer.h"
 #include "RegicideX/Data/RGX_EnemyDataAsset.h"
-#include "RegicideX/Data/RGX_RoundDataTable.h"
 #include "Kismet/GameplayStatics.h"
 
 TArray<AActor*> ARGX_RoundGameMode::GetEnemySpawners() const
@@ -44,6 +43,8 @@ int ARGX_RoundGameMode::GetRound() const
 void ARGX_RoundGameMode::StartPlay()
 {
 	StartPlayEvent();
+	TargetActor = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	StartEnemySpawn();
 	Super::StartPlay(); //Must be at the end
 }
 
@@ -52,108 +53,33 @@ void ARGX_RoundGameMode::BeginPlay()
 	Super::BeginPlay();
 
 	GetGameState<ARGX_ScoreGameState>()->SetStateDefaults();
-	PopulateSpawnerList();
-	// @todo: call enter cinematic
-	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &ARGX_RoundGameMode::StartGameSpawn, 4.0f, false);
+	StartPlay();
 }
-
-void ARGX_RoundGameMode::OnEnemyDeath(const int Type)
+void ARGX_RoundGameMode::StartEnemySpawn()
 {
-	// @todo: Investigate delegate to avoid explicit call
-
-	ARGX_ScoreGameState* State = GetGameState<ARGX_ScoreGameState>();
-	State->OnEnemyDeath(Type);
-	if(State->GetNumEnemies() == 0) //@todo Rename NumEnemies
+	if (TargetActor == nullptr)
 	{
-		StartNextRound();
-	}
-}
-
-void ARGX_RoundGameMode::StartNextRound()
-{
-
-	GEngine->AddOnScreenDebugMessage(-1, 3.f, FColor::Green, TEXT("Next Round"));
-	ARGX_ScoreGameState* GameStateTemp = GetGameState<ARGX_ScoreGameState>(); 
-	GameStateTemp->StartNextRound();
-
-	// Spawn enemies 4 seconds after round started.
-	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &ARGX_RoundGameMode::SpawnEnemies, 4.0f, false);
-}
-
-void ARGX_RoundGameMode::SpawnEnemies()
-{
-	int SpawnedEnemies = 0;
-	ARGX_ScoreGameState* GameStateTemp = GetGameState<ARGX_ScoreGameState>();
-	if(DTRounds == nullptr || DTEnemies == nullptr)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Error"));
-		GameStateTemp->SetNumEnemies(SpawnedEnemies);
-	}
-
-	// @todo: Investigate call round row by index and not by name
-	FString RoundName = RoundName.FromInt(GetGameState<ARGX_ScoreGameState>()->GetRound());
-	RoundName = "Round" + RoundName;
-	const FName FRoundName = FName(RoundName);
-	const FRGX_RoundDataTable* RoundInfo = DTRounds->FindRow<FRGX_RoundDataTable>(FRoundName, "");
-
-	const TArray<FName> EnemyNames = DTEnemies->GetRowNames();
-	const int NumEnemies = EnemyNames.Num();
-
-	// For each enemy type
-	for (int i = 0; i < NumEnemies; ++i)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::Purple, EnemyNames[i].ToString());
-
-		// For each enemy to spawn
-		for(int j = 0; j < RoundInfo->EnemiesToSpawn[i]; ++j)
+		APlayerController* PC = UGameplayStatics::GetPlayerController(GetWorld(), 0);
+		AActor* Target = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+		if (Target)
+			TargetActor = Target;
+		else
 		{
-			GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Red, TEXT("Enemy Spawn Call"));
-			SpawnEnemy(DTEnemies->FindRow<FRGX_EnemiesDataTable>(EnemyNames[i], "")->EnemyInfo);
-			++SpawnedEnemies;
+			UE_LOG(LogTemp, Error, TEXT("No player character available."));
+			return;
 		}
 	}
-		
-	GameStateTemp->SetNumEnemies(SpawnedEnemies);
-}
 
-void ARGX_RoundGameMode::SpawnEnemy(UDataAsset* EnemyInfo)
-{
-	const URGX_EnemyDataAsset* EnemyInfoCasted = Cast<URGX_EnemyDataAsset>(EnemyInfo);
-	
-	if(EnemyInfoCasted->EnemyBP && EnemySpawners.Num() > 0)
-	{
-		const int Rand = FMath::RandRange(0, EnemySpawners.Num()-1);
-		if(EnemySpawners[Rand])
-		{
-			if (ARGX_EnemyBase* Enemy = (Cast<ARGX_EnemySpawner>(EnemySpawners[Rand])->Spawn(EnemyInfoCasted->EnemyBP)))
-			{
-				Enemy->TargetActor = TargetActor;
-			}
-		}
-		
-	} else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No Spawn"));
-	}
-	
-}
-
-/*
-void ARGX_ScoreGameMode::PopulateRoundMap(int Round)
-{
-	
-}*/
-
-void ARGX_RoundGameMode::PopulateSpawnerList()
-{
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARGX_EnemySpawner::StaticClass(), EnemySpawners);
 
-	// Debug
-	for (int i = 0; i<EnemySpawners.Num(); ++i)
-	{
-		//GEngine->AddOnScreenDebugMessage(-1, 20.f, FColor::White, EnemySpawners[i]->GetActorLabel());
-		UE_LOG(LogTemp, Warning, TEXT("Spawner Detected"));
-	}
+	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &ARGX_RoundGameMode::StartNewWave, 4.0f, false);
+	//StartNewWave();
+}
+void ARGX_RoundGameMode::IncreaseKillCount()
+{
+	KillCount++;
+	SpawnedEnemies--;
+	CheckCurrentWave();
 }
 
 void ARGX_RoundGameMode::StartPlayEvent_Implementation()
@@ -162,23 +88,83 @@ void ARGX_RoundGameMode::StartPlayEvent_Implementation()
 	
 }
 
-void ARGX_RoundGameMode::StartGameSpawn()
+void ARGX_RoundGameMode::StartNewWave()
 {
-	if (AActor* Target = UGameplayStatics::GetPlayerCharacter(GetWorld(),0))
+	if (DTRounds == nullptr || DTEnemies == nullptr)
 	{
-		TargetActor = Target;
+		UE_LOG(LogTemp, Error, TEXT("No Rounds or Enemies data tables available."))
+			return;
 	}
 
-	SpawnEnemies();
+	FString WaveName = WaveName.FromInt(CurrentWave);
+	WaveName = "Round" + WaveName;
+	const FName FRoundName = FName(WaveName);
+	RoundInfo = *DTRounds->FindRow<FRGX_RoundDataTable>(FRoundName, "");
+
+	EnemyWaveNames = DTEnemies->GetRowNames();
+
+	SpawnNewWave();
 }
 
-void ARGX_RoundGameMode::CleanCorpses()
+void ARGX_RoundGameMode::CheckCurrentWave()
 {
-	TArray<AActor*> AllActors;
-	UGameplayStatics::GetAllActorsWithTag(GetWorld(), FGameplayTag::RequestGameplayTag(FName("Status.Dead")).GetTagName(), AllActors);
-
-	for (AActor* Actor : AllActors)
+	if (SpawnedEnemies <= 0)
 	{
-		Actor->Destroy();
+		// TODO OnWaveFinished --> print widget in the screen
+		CurrentWave++;
+		OnWaveFinished();
 	}
+	// TODO If not all enemies have spawned, spawn them
+}
+
+void ARGX_RoundGameMode::SpawnNewWave()
+{
+	// Show round widget
+
+	SpawnEnemyGroups();
+}
+
+void ARGX_RoundGameMode::SpawnEnemyGroups()
+{
+	for (int i = 0; i < EnemyWaveNames.Num(); ++i)
+	{
+		for (int j = 0; j < RoundInfo.EnemiesToSpawn[i]; ++j)
+		{
+			SpawnEnemy(DTEnemies->FindRow<FRGX_EnemiesDataTable>(EnemyWaveNames[i], "")->EnemyInfo);
+		}
+	}
+}
+
+void ARGX_RoundGameMode::SpawnEnemy(UDataAsset* EnemyInfo)
+{
+	const URGX_EnemyDataAsset* EnemyInfoCasted = Cast<URGX_EnemyDataAsset>(EnemyInfo);
+
+	if (EnemyInfoCasted->EnemyBP && EnemySpawners.Num() > 0)
+	{
+		const int Rand = FMath::RandRange(0, EnemySpawners.Num() - 1);
+		if (EnemySpawners[Rand])
+		{
+			if (ARGX_EnemyBase* Enemy = (Cast<ARGX_EnemySpawner>(EnemySpawners[Rand])->Spawn(EnemyInfoCasted->EnemyBP)))
+			{
+				Enemy->TargetActor = TargetActor;
+				SpawnedEnemies++;
+			}
+		}
+
+	}
+}
+
+void ARGX_RoundGameMode::OnEnemyDestroyed()
+{
+	// TODO bind this function to an spawned enemy to be called when destroyed.
+	IncreaseKillCount();
+}
+
+void ARGX_RoundGameMode::OnWaveFinished()
+{
+	// TODO Print End of Wave widget.
+
+	// TODO Set a timer to delay the begining of the new wave.
+	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &ARGX_RoundGameMode::StartNewWave, 4.0f, false);
+	//StartNewWave();
 }

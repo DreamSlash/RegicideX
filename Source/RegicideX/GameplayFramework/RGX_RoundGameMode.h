@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 #include "RegicideX/Actors/Enemies/RGX_EnemySpawner.h"
+#include "RegicideX/Data/RGX_RoundDataTable.h"
 
 #include "RGX_RoundGameMode.generated.h"
 
@@ -16,19 +17,28 @@ class REGICIDEX_API ARGX_RoundGameMode : public AGameModeBase
 
 private:
 	UPROPERTY()
-	TArray<AActor*> EnemySpawners;
+		int KillCount = 0;
+
+	UPROPERTY()
+		int CurrentWave = 1;
+
+	UPROPERTY()
+		int SpawnedEnemies = 0;
+
+	UPROPERTY()
+		TArray<AActor*> EnemySpawners;
+
+	UPROPERTY()
+		TArray<FName> EnemyWaveNames;
+
+	UPROPERTY()
+		FRGX_RoundDataTable RoundInfo;
 
 	UPROPERTY()
 	AActor* TargetActor = nullptr;
 	
 public:
 	
-	// @todo: Map DataTables On BeginPlay/StartPlay
-	/*
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TMap<FString, int> WaveSpawnsMap;
-	*/
-
 	// @todo: Replace with Asset Manager
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	const UDataTable* DTEnemies = nullptr;
@@ -66,40 +76,29 @@ public:
 	UFUNCTION(BlueprintNativeEvent, DisplayName="StartPlay")
 	void StartPlayEvent();
 
-	/** To call when an enemy dies **/
-	UFUNCTION(BlueprintCallable)
-	void OnEnemyDeath(int Type);
+	UFUNCTION()
+	void StartEnemySpawn();
 
-	/** Increments the round count and handles all the round logic **/
-	UFUNCTION(BlueprintCallable)
-	void StartNextRound();
-
-	/** Spawns enemies in the defined spawn points depending on the round. Returns the amount of enemies spawned. **/
-	UFUNCTION(BlueprintCallable)
-	void SpawnEnemies();
-
-	/** Spawns enemy of the defined class **/
-	UFUNCTION(BlueprintCallable)
-	void SpawnEnemy(UDataAsset* EnemyInfo);
-
-	/** Populates the list of enemy spawners by getting them from the current map.
-	 * Called at Begin Play **/
-	UFUNCTION(BlueprintCallable)
-	void PopulateSpawnerList();
-
-	// ¿ Should corpses be managed by themselves instead or being cleaned by game mode ?
-	void CleanCorpses();
+	UFUNCTION()
+	void IncreaseKillCount();
 
 private:
-	/** Sets TargetActor to Player 0 Character and calls Spawn Enemies. Called at Begin Play**/
-	void StartGameSpawn();
-	
+
 	FTimerHandle SpawnTimerHandle;
 	
-	/*
-	UFUNCTION(BlueprintCallable)
-	void PopulateRoundMap(int Round);
-	*/
+	void StartNewWave();
+
+	void CheckCurrentWave();
+
+	void SpawnNewWave();
+
+	void SpawnEnemyGroups();
+
+	void SpawnEnemy(UDataAsset* EnemyInfo);
+
+	void OnEnemyDestroyed();
+
+	void OnWaveFinished();
 };
 
 

@@ -6,6 +6,7 @@
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
 #include "RegicideX/GAS/AttributeSets/RGX_HealthAttributeSet.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "RegicideX/GameplayFramework/RGX_RoundGameMode.h"
 #include "AbilitySystemGlobals.h"
@@ -155,6 +156,9 @@ void ARGX_EnemyBase::HandleHealthChanged(float DeltaValue)
 void ARGX_EnemyBase::HandleDeath()
 {
 	OnHandleDeath();
+	ARGX_RoundGameMode* RoundGameMode = Cast<ARGX_RoundGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
+	RoundGameMode->IncreaseKillCount();
+	//RoundGameMode->WaveManager->OnEnemyDestroyed();
 	HealthDisplayWidgetComponent->SetVisibility(false);
 }
 
