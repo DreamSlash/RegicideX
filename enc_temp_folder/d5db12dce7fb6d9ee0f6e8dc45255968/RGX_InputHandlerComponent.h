@@ -73,9 +73,8 @@ protected:
 public:	
 	void HandleInput(const ERGX_PlayerInputID NewInputID, const bool bRelease, const bool bIsInAir);
 	void ResetAirState();
-	void ResetInputState();
 
-	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;	
 
 private:
 	bool ProcessInput(FRGX_InputToken& InputToken, float DeltaTime);

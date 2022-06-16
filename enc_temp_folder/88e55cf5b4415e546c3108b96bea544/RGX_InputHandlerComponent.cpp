@@ -47,16 +47,6 @@ void URGX_InputHandlerComponent::ResetAirState()
 	}
 }
 
-void URGX_InputHandlerComponent::ResetInputState()
-{
-	InputPressedState = 0x0000;
-
-	for (TPair<uint16, FRGX_InputInfo>& InputToHold : InputToInfoMap)
-	{
-		InputToHold.Value.HoldTime = 0.0f;
-	}
-}
-
 void URGX_InputHandlerComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
