@@ -1,6 +1,6 @@
-SET UE4_ROOT="F:/Epic/UE_4.27"
+SET UE4_ROOT="C:\Program Files\Epic Games\UE_4.27"
 SET UE4_UAT=%UE4_ROOT%/Engine/Build/BatchFiles/RunUAT.bat
-SET PROJECT_ROOT=F:/Master/UE4/RegicideX
+SET PROJECT_ROOT="C:\Users\alvar\OneDrive\Documents\Unreal Projects\RegicideX"
 SET UPROJECT=%PROJECT_ROOT%/RegicideX.uproject
 SET CONFIG=Development
 
