@@ -92,6 +92,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float RecentDamageSeconds = 2.0f;
 
+	/* Percentage of health player must apply as recent damage to weaken enemy */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float WeakenPercentage = 0.3f;
+
 	float RecentDamage;
 
 public:

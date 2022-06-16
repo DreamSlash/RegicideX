@@ -122,13 +122,6 @@ void URGX_HealthAttributeSet::PostGameplayEffectExecute(const struct FGameplayEf
 						EventData.Instigator = Data.EffectSpec.GetEffectContext().GetInstigator();
 						ASC->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Combat.TakeDamage")), &EventData);
 					}
-
-
-					if (CurrentHealth < GetMaxHealth() * 0.25f)
-					{
-						FGameplayEventData EventData;
-						ASC->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Enemy.Weakened")), &EventData);
-					}
 				}
 			}
 		}

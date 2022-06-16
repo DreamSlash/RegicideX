@@ -139,12 +139,21 @@ void ARGX_EnemyBase::HandleDamage(FAttackInfo info)
 void ARGX_EnemyBase::HandleDamage(float DamageAmount, AActor* DamageCauser)
 {
 	RecentDamage += DamageAmount;
-	UE_LOG(LogTemp, Warning, TEXT("Recent Damage: %f\n"), RecentDamage);
+	//UE_LOG(LogTemp, Warning, TEXT("Recent Damage: %f\n"), RecentDamage);
 
 	FTimerDelegate TimerDel;
 	FTimerHandle TimerHandle;
 	TimerDel.BindUFunction(this, FName("EraseRecentDamage"), DamageAmount);
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, 2.f, false);
+
+	const float MaxHealth = AbilitySystemComponent->GetNumericAttribute(HealthAttributeSet->GetMaxHealthAttribute());
+	const float RecentDamageAsHealthPercentage = RecentDamage / MaxHealth;
+	UE_LOG(LogTemp, Warning, TEXT("Percentage Recent Damage: %f\n"), RecentDamageAsHealthPercentage);
+	if (RecentDamageAsHealthPercentage >= WeakenPercentage)
+	{
+		FGameplayEventData EventData;
+		AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Enemy.Weakened")), &EventData);
+	}
 
 	OnHandleDamage(DamageAmount, DamageCauser);
 }
