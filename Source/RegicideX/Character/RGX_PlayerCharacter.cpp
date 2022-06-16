@@ -472,7 +472,7 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 
 	//UE_LOG(LogTemp, Warning, TEXT("Character Speed: %f\n"), GetCharacterMovement()->GetMaxSpeed());
 
-	
+	/*
 	if (bStaggered == true)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Staggered: TRUE\n"));
@@ -481,7 +481,7 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Staggered: FALSE\n"));
 	}
-	
+	*/
 	// Leaning
 	const FRGX_LeanInfo LeanInfo = CalculateLeanAmount();
 	LeanAmount = UKismetMathLibrary::FInterpTo(LeanAmount, LeanInfo.LeanAmount, DeltaTime, LeanInfo.InterSpeed);
