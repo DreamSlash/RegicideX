@@ -56,7 +56,15 @@ void ARGX_RoundGameMode::BeginPlay()
 	StartPlay();
 }
 
-void ARGX_RoundGameMode::EndWavesEvent_Implementation()
+void ARGX_RoundGameMode::StartWaveEvent_Implementation()
+{
+}
+
+void ARGX_RoundGameMode::EndWaveEvent_Implementation()
+{
+}
+
+void ARGX_RoundGameMode::EndGameEvent_Implementation()
 {
 }
 
@@ -109,7 +117,7 @@ void ARGX_RoundGameMode::StartNewWave()
 	FRGX_RoundDataTable* round = DTRounds->FindRow<FRGX_RoundDataTable>(FRoundName, "");
 
 	if (round == nullptr) {
-		EndWavesEvent();
+		EndGameEvent();
 		return;
 	}
 
@@ -117,6 +125,7 @@ void ARGX_RoundGameMode::StartNewWave()
 
 	EnemyWaveNames = DTEnemies->GetRowNames();
 
+	StartWaveEvent();
 	SpawnNewWave();
 }
 
@@ -177,9 +186,13 @@ void ARGX_RoundGameMode::OnEnemyDestroyed()
 
 void ARGX_RoundGameMode::OnWaveFinished()
 {
-	// TODO Print End of Wave widget.
+	// Throw end event to print End of Wave widget.
+	EndWaveEvent();
 
-	// TODO Set a timer to delay the begining of the new wave.
+	ARGX_ScoreGameState* GameStateTemp = GetGameState<ARGX_ScoreGameState>();
+	GameStateTemp->SetRound(CurrentWave);
+
+	// Set a timer to delay the begining of the new wave.
 	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &ARGX_RoundGameMode::StartNewWave, 4.0f, false);
-	//StartNewWave();
+	//GetGameState<ARGX_ScoreGameState>()
 }
