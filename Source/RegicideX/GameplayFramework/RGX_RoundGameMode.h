@@ -76,8 +76,14 @@ public:
 	UFUNCTION(BlueprintNativeEvent, DisplayName="StartPlay")
 	void StartPlayEvent();
 
-	UFUNCTION(BlueprintNativeEvent, DisplayName = "EndWavesEvent")
-		void EndWavesEvent();
+	UFUNCTION(BlueprintNativeEvent, DisplayName = "StartWaveEvent")
+		void StartWaveEvent();
+
+	UFUNCTION(BlueprintNativeEvent, DisplayName = "EndWaveEvent")
+		void EndWaveEvent();
+
+	UFUNCTION(BlueprintNativeEvent, DisplayName = "EndGameEvent")
+		void EndGameEvent();
 
 	UFUNCTION()
 	void StartEnemySpawn();

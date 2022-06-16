@@ -40,7 +40,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 		bool OnEnemyDeath(int Type);
 
+	UFUNCTION(BlueprintCallable)
+		void SetRound(int NewRound) { Round = NewRound; }
 	/** Manages the game state changes for round change. **/
+
 	UFUNCTION(BlueprintCallable)
 		int StartNextRound();
 
