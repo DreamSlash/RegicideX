@@ -10,6 +10,7 @@
 #include "AbilitySystemGlobals.h"
 #include "AbilitySystemComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "RegicideX/GAS/RGX_GameplayEffectContext.h"
 
 URGX_GA_SuicidalExplosionAbility::URGX_GA_SuicidalExplosionAbility()
 {
@@ -94,10 +95,18 @@ void URGX_GA_SuicidalExplosionAbility::OnReceivedEvent(FGameplayTag EventTag, FG
 		EventPayload.Instigator = CurrentActorInfo->AvatarActor.Get();
 		EventPayload.OptionalObject = LaunchEventData;
 
-		UAbilitySystemComponent* ACS = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Actor);
-		if (ACS)
+		UAbilitySystemComponent* SourceACS = GetAbilitySystemComponentFromActorInfo();
+		UAbilitySystemComponent* TargetACS = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Actor);
+		if (TargetACS)
 		{
-			ACS->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Launched")), &EventPayload);
+			FGameplayEffectContextHandle ContextHandle = SourceACS->MakeEffectContext();
+			FRGX_GameplayEffectContext* FRGXContext = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
+			FRGXContext->AddInstigator(CurrentActorInfo->AvatarActor.Get(), CurrentActorInfo->AvatarActor.Get());
+			FRGXContext->DamageAmount = ExplosionDamage;
+			FRGXContext->ScalingAttributeFactor = 1.0f;
+
+			TargetACS->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Launched")), &EventPayload);
+			SourceACS->ApplyGameplayEffectToTarget(EffectToApply->GetDefaultObject<UGameplayEffect>(), TargetACS, 1.0f, ContextHandle);
 		}
 	}
 
