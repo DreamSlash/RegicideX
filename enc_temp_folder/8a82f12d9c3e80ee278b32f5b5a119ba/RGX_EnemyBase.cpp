@@ -58,7 +58,7 @@ void ARGX_EnemyBase::PossessedBy(AController* NewController)
 
 void ARGX_EnemyBase::EraseRecentDamage(const float DamageAmount)
 {
-	RecentDamage -= DamageAmount;
+	UE_LOG(LogTemp, Warning, TEXT("Manolingo"));
 }
 
 void ARGX_EnemyBase::MoveToTarget(float DeltaTime, FVector TargetPos)
@@ -138,10 +138,8 @@ void ARGX_EnemyBase::HandleDamage(FAttackInfo info)
 
 void ARGX_EnemyBase::HandleDamage(float DamageAmount, AActor* DamageCauser)
 {
-	RecentDamage += DamageAmount;
-	UE_LOG(LogTemp, Warning, TEXT("Recent Damage: %f\n"), RecentDamage);
-
 	FTimerDelegate TimerDel;
+
 	FTimerHandle TimerHandle;
 	TimerDel.BindUFunction(this, FName("EraseRecentDamage"), DamageAmount);
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, 2.f, false);
