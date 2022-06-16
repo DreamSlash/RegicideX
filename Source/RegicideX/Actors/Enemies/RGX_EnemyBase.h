@@ -39,6 +39,7 @@ class USphereComponent;
 class UWidgetComponent;
 class URGX_HitboxesManagerComponent;
 
+/* Struct to inform about when the attack was received*/
 UCLASS()
 class REGICIDEX_API ARGX_EnemyBase : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface, public IGenericTeamAgentInterface, public IRGX_InteractInterface
 {
@@ -88,6 +89,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float HealthBarHideDistance = 800.0f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float RecentDamageSeconds = 2.0f;
+
+	float RecentDamage;
+
 public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -108,6 +114,9 @@ protected:
 	void BeginPlay() override;
 
 	void PossessedBy(AController* NewController) override;
+
+	UFUNCTION()
+	void EraseRecentDamage(const float DamageAmount);
 
 	// FGenericTeamId interface
 	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;

@@ -56,6 +56,11 @@ void ARGX_EnemyBase::PossessedBy(AController* NewController)
 	AddGameplayTag(FGameplayTag::RequestGameplayTag("RGXCharacter.Enemy"));
 }
 
+void ARGX_EnemyBase::EraseRecentDamage(const float DamageAmount)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Manolingo"));
+}
+
 void ARGX_EnemyBase::MoveToTarget(float DeltaTime, FVector TargetPos)
 {
 	if (TargetActor)
@@ -133,6 +138,12 @@ void ARGX_EnemyBase::HandleDamage(FAttackInfo info)
 
 void ARGX_EnemyBase::HandleDamage(float DamageAmount, AActor* DamageCauser)
 {
+	FTimerDelegate TimerDel;
+
+	FTimerHandle TimerHandle;
+	TimerDel.BindUFunction(this, FName("EraseRecentDamage"), DamageAmount);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, 2.f, false);
+
 	OnHandleDamage(DamageAmount, DamageCauser);
 }
 
