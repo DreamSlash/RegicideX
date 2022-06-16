@@ -80,6 +80,7 @@ void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAction("LightAttack", IE_Released, this, &ARGX_PlayerCharacter::ManageLightAttackInputRelease);
 	PlayerInputComponent->BindAction("HeavyAttack", IE_Pressed, this, &ARGX_PlayerCharacter::ManageHeavyAttackInput);
 	PlayerInputComponent->BindAction("HeavyAttack", IE_Released, this, &ARGX_PlayerCharacter::ManageHeavyAttackInputRelease);
+	PlayerInputComponent->BindAction("PowerSkill", IE_Pressed, this, &ARGX_PlayerCharacter::ManagePowerSkillInput);
 
 	PlayerInputComponent->BindAction("SwitchPowerSkill", IE_Pressed, this, &ARGX_PlayerCharacter::ChangePowerSkill);
 	PlayerInputComponent->BindAction("TimeScale", IE_Pressed, this, &ARGX_PlayerCharacter::ChangeTimeScale);
@@ -119,9 +120,6 @@ FGenericTeamId ARGX_PlayerCharacter::GetGenericTeamId() const
 
 void ARGX_PlayerCharacter::ManageLightAttackInput()
 {
-	if (bStaggered == true)
-		return;
-
 	InputHandlerComponent->HandleInput(ERGX_PlayerInputID::LightAttackInput, false, GetCharacterMovement()->IsFalling());
 
 	//bool bCanAirCombo = HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
@@ -169,17 +167,11 @@ void ARGX_PlayerCharacter::ManageLightAttackInput()
 
 void ARGX_PlayerCharacter::ManageLightAttackInputRelease()
 {
-	if (bStaggered == true)
-		return;
-
 	InputHandlerComponent->HandleInput(ERGX_PlayerInputID::LightAttackInput, true, GetCharacterMovement()->IsFalling());
 }
 
 void ARGX_PlayerCharacter::ManageHeavyAttackInput()
 {
-	if (bStaggered == true)
-		return;
-
 	InputHandlerComponent->HandleInput(ERGX_PlayerInputID::HeavyAttackInput, false, GetCharacterMovement()->IsFalling());
 	/*
 	bool bCanAirCombo = HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
@@ -201,9 +193,6 @@ void ARGX_PlayerCharacter::ManageHeavyAttackInput()
 
 void ARGX_PlayerCharacter::ManageHeavyAttackInputRelease()
 {
-	if (bStaggered == true)
-		return;
-
 	InputHandlerComponent->HandleInput(ERGX_PlayerInputID::HeavyAttackInput, true, GetCharacterMovement()->IsFalling());
 
 	/*
@@ -218,7 +207,6 @@ void ARGX_PlayerCharacter::ManageHeavyAttackInputRelease()
 	*/
 }
 
-/*
 void ARGX_PlayerCharacter::ManagePowerSkillInput()
 {
 	// TODO: Make a component for managing skills?
@@ -232,12 +220,9 @@ void ARGX_PlayerCharacter::ManagePowerSkillInput()
 	FGameplayEventData EventData;
 	AbilitySystemComponent->HandleGameplayEvent(PowerSkills[CurrentSkillSelected], &EventData);
 }
-*/
+
 void ARGX_PlayerCharacter::TryToInteract()
 {
-	if (bStaggered == true)
-		return;
-
 	InteractComponent->TryToInteract();
 }
 
@@ -462,26 +447,18 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 		bIsFallingDown = true;
 	}
 
-	bool bWasStaggered = bStaggered;
-	bStaggered = HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Combat.InHurtReact")));
-
-	if (bWasStaggered == false && bStaggered == true)
-	{
-		InputHandlerComponent->ResetInputState();
-	}
-
 	//UE_LOG(LogTemp, Warning, TEXT("Character Speed: %f\n"), GetCharacterMovement()->GetMaxSpeed());
 
-	
-	if (bStaggered == true)
+	/*
+	if (bIsFallingDown == true)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Staggered: TRUE\n"));
+		UE_LOG(LogTemp, Warning, TEXT("Is Falling Down: TRUE\n"));
 	}
 	else
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Staggered: FALSE\n"));
+		UE_LOG(LogTemp, Warning, TEXT("Is Falling Down: FALSE\n"));
 	}
-	
+	*/
 	// Leaning
 	const FRGX_LeanInfo LeanInfo = CalculateLeanAmount();
 	LeanAmount = UKismetMathLibrary::FInterpTo(LeanAmount, LeanInfo.LeanAmount, DeltaTime, LeanInfo.InterSpeed);

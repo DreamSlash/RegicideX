@@ -160,8 +160,6 @@ protected:
 
 	bool bCanAirCombo = true;
 
-	bool bStaggered = false;
-
 	/* Level Up variables */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UGameplayEffect> LevelUpEffect;
@@ -227,7 +225,7 @@ protected:
 	void ManageHeavyAttackInput();
 	void ManageHeavyAttackInputRelease();
 
-	//void ManagePowerSkillInput();
+	void ManagePowerSkillInput();
 	void TryToInteract();
 	// ----------------------------------
 
