@@ -148,8 +148,10 @@ void ARGX_EnemyBase::HandleDamage(float DamageAmount, AActor* DamageCauser)
 
 	const float MaxHealth = AbilitySystemComponent->GetNumericAttribute(HealthAttributeSet->GetMaxHealthAttribute());
 	const float RecentDamageAsHealthPercentage = RecentDamage / MaxHealth;
+	const float CurrentHealth = AbilitySystemComponent->GetNumericAttribute(HealthAttributeSet->GetHealthAttribute());
+	const float HealthAsPercentage = CurrentHealth / MaxHealth;
 	UE_LOG(LogTemp, Warning, TEXT("Percentage Recent Damage: %f\n"), RecentDamageAsHealthPercentage);
-	if (RecentDamageAsHealthPercentage >= WeakenPercentage)
+	if (RecentDamageAsHealthPercentage >= WeakenPercentage || HealthAsPercentage < 0.1f)
 	{
 		FGameplayEventData EventData;
 		AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Enemy.Weakened")), &EventData);
