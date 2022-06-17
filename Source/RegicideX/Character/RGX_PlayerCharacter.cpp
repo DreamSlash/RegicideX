@@ -530,6 +530,9 @@ void ARGX_PlayerCharacter::OnFollowCombo()
 
 void ARGX_PlayerCharacter::MoveForward(float Value)
 {
+	if (bStaggered)
+		return;
+
 	if ((Controller != nullptr) && (Value != 0.0f) && !bIgnoreInputMoveVector)
 	{
 		// find out which way is forward
@@ -545,6 +548,9 @@ void ARGX_PlayerCharacter::MoveForward(float Value)
 
 void ARGX_PlayerCharacter::MoveRight(float Value)
 {
+	if (bStaggered)
+		return;
+
 	if ((Controller != nullptr) && (Value != 0.0f) && !bIgnoreInputMoveVector)
 	{
 		// find out which way is forward
