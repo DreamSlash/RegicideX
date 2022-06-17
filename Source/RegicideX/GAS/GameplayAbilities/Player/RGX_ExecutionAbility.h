@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GA_CastSkillAbility.h"
+#include "GameplayEffect.h"
 #include "RGX_ExecutionAbility.generated.h"
 
 /**
@@ -31,4 +32,7 @@ protected:
 
 protected:
 	const AActor* TargetActor;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UGameplayEffect> InstakillEffect;
 };
