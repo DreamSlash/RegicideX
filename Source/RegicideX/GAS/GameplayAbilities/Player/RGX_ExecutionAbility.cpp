@@ -101,6 +101,7 @@ void URGX_ExecutionAbility::OnReceivedEvent(FGameplayTag EventTag, FGameplayEven
 		if (TargetACS)
 		{
 			SourceACS->ApplyGameplayEffectToTarget(InstakillEffect->GetDefaultObject<UGameplayEffect>(), TargetACS, 1.0f, SourceACS->MakeEffectContext());
+			TargetACS->ApplyGameplayEffectToTarget(PlayerHealingEffect->GetDefaultObject<UGameplayEffect>(), SourceACS, 1.0f, TargetACS->MakeEffectContext());
 		}
 
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
