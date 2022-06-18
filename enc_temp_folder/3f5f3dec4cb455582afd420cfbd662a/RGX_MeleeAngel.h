@@ -22,19 +22,19 @@ public:
 	ARGX_MeleeAngel();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bLevitating = false;
+		bool bLevitating = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bFlying = false;
+		bool bFlying = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bCharged = false;
+		bool bCharged = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bSweeping = false;
+		bool bSweeping = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	URGX_MovementAssistComponent* MovementAssistComponent;
+		URGX_MovementAssistComponent* MovementAssistComponent;
 
 	void RotateToTarget(float DeltaTime) override;
 
