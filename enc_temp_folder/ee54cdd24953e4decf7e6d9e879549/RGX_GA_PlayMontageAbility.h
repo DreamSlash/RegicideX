@@ -24,16 +24,16 @@ protected:
 
 protected:
 	UFUNCTION()
-	virtual void OnMontageBlendOut();
+	void OnMontageBlendOut();
 
 	UFUNCTION()
-	virtual void OnMontageInterrupted();
+	void OnMontageInterrupted();
 
 	UFUNCTION()
-	virtual void OnMontageCancelled();
+	void OnMontageCancelled();
 
 	UFUNCTION()
-	virtual void OnMontageCompleted();
+	void OnMontageCompleted();
 
 protected:
 	UPROPERTY(EditAnywhere)
