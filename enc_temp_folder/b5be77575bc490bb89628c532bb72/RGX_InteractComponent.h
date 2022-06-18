@@ -34,14 +34,9 @@ public:
 
 	URGX_InteractComponent();
 
-	void BeginPlay() override;
-
 	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void TryToInteract();
 
-	void ShowInteractWidget();
-	void HideInteractWidget();
-
-	void SetInteractionText(const FText& InteractionText);
+	void SetInteractionText();
 };

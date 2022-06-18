@@ -24,6 +24,7 @@
 #include "RegicideX/RGX_PlayerCameraManager.h"
 #include "RegicideX/GAS/RGX_GameplayEffectContext.h"
 #include "AbilitySystemGlobals.h"
+#include "Components/WidgetComponent.h"
 
 ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 {
@@ -59,11 +60,15 @@ ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
 
+	InteractWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("InteractWidgetComponent"));
+	InteractWidgetComponent->SetupAttachment(FollowCamera);
+
 	AbilitySystemComponent = CreateDefaultSubobject<UMCV_AbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	ComboSystemComponent = CreateDefaultSubobject<URGX_ComboSystemComponent>(TEXT("ComboSystemComponent"));
 	CombatAssistComponent = CreateDefaultSubobject<URGX_CombatAssistComponent>(TEXT("CombatAssistComponent"));
 	InputHandlerComponent = CreateDefaultSubobject<URGX_InputHandlerComponent>(TEXT("InputHandlerComponent"));
 	InteractComponent = CreateDefaultSubobject<URGX_InteractComponent>(TEXT("InteractComponent"));
+	InteractComponent->InteractWidgetComponent = InteractWidgetComponent;
 	HealthAttributeSet = CreateDefaultSubobject<URGX_HealthAttributeSet>(TEXT("HealthAttributeSet"));
 	MovementAttributeSet = CreateDefaultSubobject<URGX_MovementAttributeSet>(TEXT("MovementAttributeSet"));
 	CombatAttributeSet = CreateDefaultSubobject<URGX_CombatAttributeSet>(TEXT("CombatAttributeSet"));

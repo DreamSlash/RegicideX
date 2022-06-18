@@ -12,6 +12,7 @@
 #include "AbilitySystemGlobals.h"
 #include "RegicideX/Components/RGX_HitboxesManagerComponent.h"
 #include "RegicideX/UI/RGX_EnemyHealthBar.h"
+#include "RegicideX/Components/RGX_InteractComponent.h"
 
 // Sets default values
 ARGX_EnemyBase::ARGX_EnemyBase()
@@ -255,12 +256,16 @@ void ARGX_EnemyBase::Interact(AActor* ActorInteracting)
 
 void ARGX_EnemyBase::StartCanInteract(AActor* ActorInteracting)
 {
-	// TODO: Show Widget
+	URGX_InteractComponent* InteractComponent = ActorInteracting->FindComponentByClass<URGX_InteractComponent>();
+	FString Text = "Execute";
+	InteractComponent->SetInteractionText(FText::FromString(Text));
+	InteractComponent->ShowInteractWidget();
 }
 
 void ARGX_EnemyBase::StopCanInteract(AActor* ActorInteracting)
 {
-	// TODO: Hide Widget
+	URGX_InteractComponent* InteractComponent = ActorInteracting->FindComponentByClass<URGX_InteractComponent>();
+	InteractComponent->HideInteractWidget();
 }
 
 bool ARGX_EnemyBase::CanBeInteractedWith(AActor* ActorInteracting)

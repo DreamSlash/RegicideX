@@ -8,6 +8,7 @@
 #include "GenericTeamAgentInterface.h"
 #include "RegicideX/Interfaces/RGX_GameplayTagInterface.h"
 #include "RegicideX/Interfaces/RGX_InteractInterface.h"
+#include "Blueprint/UserWidget.h"
 #include "RGX_EnemyBase.generated.h"
 
 USTRUCT()

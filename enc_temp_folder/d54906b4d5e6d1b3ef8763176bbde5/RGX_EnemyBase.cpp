@@ -255,12 +255,12 @@ void ARGX_EnemyBase::Interact(AActor* ActorInteracting)
 
 void ARGX_EnemyBase::StartCanInteract(AActor* ActorInteracting)
 {
-	// TODO: Show Widget
+
 }
 
 void ARGX_EnemyBase::StopCanInteract(AActor* ActorInteracting)
 {
-	// TODO: Hide Widget
+
 }
 
 bool ARGX_EnemyBase::CanBeInteractedWith(AActor* ActorInteracting)

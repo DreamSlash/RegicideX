@@ -24,6 +24,7 @@ class URGX_CombatAttributeSet;
 class URGX_InteractComponent;
 class URGX_LaunchEventDataAsset;
 class UGameplayEffect;
+class UWidgetComponent;
 
 USTRUCT()
 struct FRGX_LeanInfo
@@ -68,6 +69,10 @@ class REGICIDEX_API ARGX_PlayerCharacter : public ACharacter, public IAbilitySys
 	/** Interact Component to manage actions with interactable actors in the world */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Interaction, meta = (AllowPrivateAccess = "true"))
 	URGX_InteractComponent* InteractComponent = nullptr;
+
+	/** Interact Widget Component*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Interaction, meta = (AllowPrivateAccess = "true"))
+	UWidgetComponent* InteractWidgetComponent = nullptr;
 
 	// Attributes ---------------
 	UPROPERTY()
