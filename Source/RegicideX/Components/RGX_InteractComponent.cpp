@@ -2,6 +2,8 @@
 #include "RegicideX/Interfaces/RGX_InteractInterface.h"
 #include "DrawDebugHelpers.h"				// ::DrawDebugLine
 #include "Kismet/KismetSystemLibrary.h"
+#include "Components/WidgetComponent.h"
+#include "RegicideX/UI/RGX_PlayerInteract.h"
 
 DEFINE_LOG_CATEGORY(LogInteract);
 
@@ -9,6 +11,13 @@ URGX_InteractComponent::URGX_InteractComponent()
 {
 	// Because we want the tick to be active for these type of components
 	PrimaryComponentTick.bCanEverTick = true;
+}
+
+void URGX_InteractComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	HideInteractWidget();
 }
 
 void URGX_InteractComponent::TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -87,4 +96,20 @@ void URGX_InteractComponent::TryToInteract()
 		//UE_LOG(LogInteract, Display, TEXT("Interacting with actor %s"), *CurrentActor->GetName());
 		CurrentInteract->Interact(GetOwner());
 	}
+}
+
+void URGX_InteractComponent::ShowInteractWidget()
+{
+	InteractWidgetComponent->SetVisibility(true);
+}
+
+void URGX_InteractComponent::HideInteractWidget()
+{
+	InteractWidgetComponent->SetVisibility(false);
+}
+
+void URGX_InteractComponent::SetInteractionText(const FText& InteractionText)
+{
+	URGX_PlayerInteract* PlayerInteractWidget = Cast<URGX_PlayerInteract>(InteractWidgetComponent->GetWidget());
+	PlayerInteractWidget->InteractionText = InteractionText;
 }

@@ -12,6 +12,7 @@
 #include "AbilitySystemGlobals.h"
 #include "RegicideX/Components/RGX_HitboxesManagerComponent.h"
 #include "RegicideX/UI/RGX_EnemyHealthBar.h"
+#include "RegicideX/Components/RGX_InteractComponent.h"
 
 // Sets default values
 ARGX_EnemyBase::ARGX_EnemyBase()
@@ -54,6 +55,11 @@ void ARGX_EnemyBase::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	AddGameplayTag(FGameplayTag::RequestGameplayTag("RGXCharacter.Enemy"));
+}
+
+void ARGX_EnemyBase::EraseRecentDamage(const float DamageAmount)
+{
+	RecentDamage -= DamageAmount;
 }
 
 void ARGX_EnemyBase::MoveToTarget(float DeltaTime, FVector TargetPos)
@@ -133,6 +139,25 @@ void ARGX_EnemyBase::HandleDamage(FAttackInfo info)
 
 void ARGX_EnemyBase::HandleDamage(float DamageAmount, AActor* DamageCauser)
 {
+	RecentDamage += DamageAmount;
+	//UE_LOG(LogTemp, Warning, TEXT("Recent Damage: %f\n"), RecentDamage);
+
+	FTimerDelegate TimerDel;
+	FTimerHandle TimerHandle;
+	TimerDel.BindUFunction(this, FName("EraseRecentDamage"), DamageAmount);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, 2.f, false);
+
+	const float MaxHealth = AbilitySystemComponent->GetNumericAttribute(HealthAttributeSet->GetMaxHealthAttribute());
+	const float RecentDamageAsHealthPercentage = RecentDamage / MaxHealth;
+	const float CurrentHealth = AbilitySystemComponent->GetNumericAttribute(HealthAttributeSet->GetHealthAttribute());
+	const float HealthAsPercentage = CurrentHealth / MaxHealth;
+	UE_LOG(LogTemp, Warning, TEXT("Percentage Recent Damage: %f\n"), RecentDamageAsHealthPercentage);
+	if (RecentDamageAsHealthPercentage >= WeakenPercentage || HealthAsPercentage < 0.1f)
+	{
+		FGameplayEventData EventData;
+		AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Enemy.Weakened")), &EventData);
+	}
+
 	OnHandleDamage(DamageAmount, DamageCauser);
 }
 
@@ -226,12 +251,16 @@ void ARGX_EnemyBase::Interact(AActor* ActorInteracting)
 
 void ARGX_EnemyBase::StartCanInteract(AActor* ActorInteracting)
 {
-	// TODO: Show Widget
+	URGX_InteractComponent* InteractComponent = ActorInteracting->FindComponentByClass<URGX_InteractComponent>();
+	FString Text = "Execute";
+	InteractComponent->SetInteractionText(FText::FromString(Text));
+	InteractComponent->ShowInteractWidget();
 }
 
 void ARGX_EnemyBase::StopCanInteract(AActor* ActorInteracting)
 {
-	// TODO: Hide Widget
+	URGX_InteractComponent* InteractComponent = ActorInteracting->FindComponentByClass<URGX_InteractComponent>();
+	InteractComponent->HideInteractWidget();
 }
 
 bool ARGX_EnemyBase::CanBeInteractedWith(AActor* ActorInteracting)

@@ -3,12 +3,15 @@
 #include "CoreMinimal.h"
 #include "RGX_InteractComponent.generated.h"
 
+class UWidgetComponent;
+
 UCLASS(Blueprintable, meta = (BlueprintSpawnableComponent))
 class URGX_InteractComponent : public UActorComponent
 {
 	GENERATED_BODY()
 
 public:
+	UWidgetComponent* InteractWidgetComponent = nullptr;
 
 	//UPROPERTY(EditDefaultsOnly)
 	//float InteractionDistance = 100.0f;
@@ -31,7 +34,14 @@ public:
 
 	URGX_InteractComponent();
 
+	void BeginPlay() override;
+
 	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	void TryToInteract();
+
+	void ShowInteractWidget();
+	void HideInteractWidget();
+
+	void SetInteractionText(const FText& InteractionText);
 };

@@ -8,6 +8,7 @@
 #include "GenericTeamAgentInterface.h"
 #include "RegicideX/Interfaces/RGX_GameplayTagInterface.h"
 #include "RegicideX/Interfaces/RGX_InteractInterface.h"
+#include "Blueprint/UserWidget.h"
 #include "RGX_EnemyBase.generated.h"
 
 USTRUCT()
@@ -41,6 +42,7 @@ class URGX_HitboxesManagerComponent;
 
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnHandleDeath, int)
 
+/* Struct to inform about when the attack was received*/
 UCLASS()
 class REGICIDEX_API ARGX_EnemyBase : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface, public IGenericTeamAgentInterface, public IRGX_InteractInterface
 {
@@ -95,6 +97,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float HealthBarHideDistance = 800.0f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float RecentDamageSeconds = 2.0f;
+
+	/* Percentage of health player must apply as recent damage to weaken enemy */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float WeakenPercentage = 0.3f;
+
+	float RecentDamage;
+
 public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -115,6 +126,9 @@ protected:
 	void BeginPlay() override;
 
 	void PossessedBy(AController* NewController) override;
+
+	UFUNCTION()
+	void EraseRecentDamage(const float DamageAmount);
 
 	// FGenericTeamId interface
 	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
