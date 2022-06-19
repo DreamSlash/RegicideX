@@ -30,9 +30,8 @@ void ARGX_MeleeAngel::RotateToTarget(float DeltaTime)
 
 void ARGX_MeleeAngel::SetGravityScale(float value)
 {
-	//GetCharacterMovement()->GravityScale = value;
+	GetCharacterMovement()->GravityScale = value;
 }
-
 
 void ARGX_MeleeAngel::Tick(float DeltaTime)
 {
