@@ -25,16 +25,16 @@ class REGICIDEX_API URGX_BTTask_MeleeAngelCharge : public UBTTaskNode
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float MaxTime = 5.0;
+		float MaxTime = 5.0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float AccelerationMultiplier = 1.0;
+		float AccelerationMultiplier = 1.0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bDebug = false;
+		bool bDebug = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FGameplayTag HitboxTag;
+		FGameplayTag HitboxTag;
 
 	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
