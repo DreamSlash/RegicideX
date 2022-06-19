@@ -85,6 +85,9 @@ public:
 	UFUNCTION(BlueprintNativeEvent, DisplayName = "EndGameEvent")
 		void EndGameEvent();
 
+	UFUNCTION(BlueprintNativeEvent, DisplayName = "OnEnemyDeadEvent")
+		void EnemyDeadEvent();
+
 	UFUNCTION()
 	void StartEnemySpawn();
 
@@ -105,7 +108,8 @@ private:
 
 	void SpawnEnemy(UDataAsset* EnemyInfo);
 
-	void OnEnemyDestroyed();
+	UFUNCTION()
+	void OnEnemyDestroyed(int EnemyScoreValue);
 
 	void OnWaveFinished();
 };
