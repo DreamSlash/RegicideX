@@ -34,7 +34,6 @@ bool ARGX_PoolActor::IsActive()
 void ARGX_PoolActor::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void ARGX_PoolActor::Deactivate()

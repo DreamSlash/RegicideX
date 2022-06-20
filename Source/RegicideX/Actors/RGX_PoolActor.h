@@ -3,11 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "GameFramework/Character.h"
 #include "RGX_PoolActor.generated.h"
 
 UCLASS()
-class REGICIDEX_API ARGX_PoolActor : public AActor
+class REGICIDEX_API ARGX_PoolActor : public ACharacter
 {
 	GENERATED_BODY()
 	

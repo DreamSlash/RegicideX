@@ -45,7 +45,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnHandleDeath, int)
 
 /* Struct to inform about when the attack was received*/
 UCLASS()
-class REGICIDEX_API ARGX_EnemyBase : public ACharacter, public ARGX_PoolActor, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface, public IGenericTeamAgentInterface, public IRGX_InteractInterface
+class REGICIDEX_API ARGX_EnemyBase : public ARGX_PoolActor, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface, public IGenericTeamAgentInterface, public IRGX_InteractInterface
 {
 	GENERATED_BODY()
 

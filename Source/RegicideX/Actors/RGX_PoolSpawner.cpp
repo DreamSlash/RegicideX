@@ -3,6 +3,8 @@
 #include "Components/BoxComponent.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
+#include "Math/UnrealMathUtility.h"
+#include "Math/Box.h"
 
 // Sets default values
 ARGX_PoolSpawner::ARGX_PoolSpawner()
@@ -21,9 +23,8 @@ ARGX_PoolSpawner::ARGX_PoolSpawner()
 void ARGX_PoolSpawner::BeginPlay()
 {
 	Super::BeginPlay();
-
+	SpawnBox = SpawnBox.ShiftBy(GetActorLocation());
 	GetWorldTimerManager().SetTimer(SpawnCooldownTimerHandle, this, &ARGX_PoolSpawner::Spawn, SpawnCooldown, false);
-	
 }
 
 void ARGX_PoolSpawner::Spawn()
@@ -36,9 +37,13 @@ void ARGX_PoolSpawner::Spawn()
 		GetWorldTimerManager().SetTimer(SpawnCooldownTimerHandle, this, &ARGX_PoolSpawner::Spawn, SpawnCooldown, false);
 		return;
 	}
-	PooledActor->SetActorLocation(Character->GetNavAgentLocation());
+
+	const FVector Location = FMath::RandPointInBox(SpawnBox) + FVector(150.0f, 150.0f, 300.0f);
+
+	PooledActor->SetActorLocation(Location);
 	PooledActor->SetLifeSpan(LifeSpan);
 	PooledActor->SetActive(true);
+	PooledActor->SetActorEnableCollision(true);
 	GetWorldTimerManager().SetTimer(SpawnCooldownTimerHandle, this, &ARGX_PoolSpawner::Spawn, SpawnCooldown, false);
 }
 

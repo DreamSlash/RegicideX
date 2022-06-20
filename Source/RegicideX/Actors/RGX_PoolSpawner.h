@@ -3,9 +3,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "RegicideX/Components/RGX_PoolComponent.h"
 #include "GameFramework/Actor.h"
+#include "RegicideX/Components/RGX_PoolComponent.h"
 #include "RGX_PoolSpawner.generated.h"
+
+struct FBox;
 
 UCLASS()
 class REGICIDEX_API ARGX_PoolSpawner : public AActor
@@ -15,6 +17,9 @@ class REGICIDEX_API ARGX_PoolSpawner : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ARGX_PoolSpawner();
+
+	UPROPERTY(EditAnywhere)
+	FBox SpawnBox;
 
 protected:
 	// Called when the game starts or when spawned
