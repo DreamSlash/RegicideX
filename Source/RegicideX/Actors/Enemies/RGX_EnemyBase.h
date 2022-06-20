@@ -9,6 +9,7 @@
 #include "RegicideX/Interfaces/RGX_GameplayTagInterface.h"
 #include "RegicideX/Interfaces/RGX_InteractInterface.h"
 #include "Blueprint/UserWidget.h"
+#include "RegicideX/Actors/RGX_PoolActor.h"
 #include "RGX_EnemyBase.generated.h"
 
 USTRUCT()
@@ -44,7 +45,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnHandleDeath, int)
 
 /* Struct to inform about when the attack was received*/
 UCLASS()
-class REGICIDEX_API ARGX_EnemyBase : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface, public IGenericTeamAgentInterface, public IRGX_InteractInterface
+class REGICIDEX_API ARGX_EnemyBase : public ACharacter, public ARGX_PoolActor, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface, public IGenericTeamAgentInterface, public IRGX_InteractInterface
 {
 	GENERATED_BODY()
 
