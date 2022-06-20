@@ -37,7 +37,7 @@ void URGX_ShootProjectilesAbility::Shoot(ARGX_DistanceAngel* DistAngel)
 		float RotPitchOffset = FMath::RandRange(-45.0f, 45.0f);
 		BulletRotation.Pitch += RotPitchOffset;
 
-		const FVector BulletPosition = DistAngel->GetActorLocation() + FVector(0.0, 0.0, i*offset);
+		const FVector BulletPosition = DistAngel->GetEyeWorldLocation() + FVector(0.0, 0.0, i*offset);
 		const FVector BulletScale(0.1);
 		FTransform BulletTransform(BulletRotation, BulletPosition, BulletScale);
 
