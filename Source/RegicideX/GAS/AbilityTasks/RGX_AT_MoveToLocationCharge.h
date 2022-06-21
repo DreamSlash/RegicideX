@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/Tasks/AbilityTask_MoveToLocation.h"
-#include "RGX_MoveToLocationCharge.generated.h"
+#include "RGX_AT_MoveToLocationCharge.generated.h"
 
 /**
  * 

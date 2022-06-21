@@ -3,7 +3,7 @@
 
 #include "RegicideX/GAS/GameplayAbilities/MeleeAngel/RGX_MEAChargeAbility.h"
 #include "GameFramework/Character.h"
-#include "RegicideX/GAS/AbilityTasks/RGX_MoveToLocationCharge.h"
+#include "RegicideX/GAS/AbilityTasks/RGX_AT_MoveToLocationCharge.h"
 #include "Abilities/Tasks/AbilityTask_MoveToLocation.h"
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 #include "Kismet/KismetMathLibrary.h"
