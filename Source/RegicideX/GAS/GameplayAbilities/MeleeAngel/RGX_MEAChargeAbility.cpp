@@ -3,6 +3,7 @@
 
 #include "RegicideX/GAS/GameplayAbilities/MeleeAngel/RGX_MEAChargeAbility.h"
 #include "GameFramework/Character.h"
+#include "RegicideX/GAS/AbilityTasks/RGX_MoveToLocationCharge.h"
 #include "Abilities/Tasks/AbilityTask_MoveToLocation.h"
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 
@@ -28,7 +29,15 @@ void URGX_MEAChargeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Han
 	// Execute move task
 	ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(GetAvatarActorFromActorInfo());
 	FVector TargetLocation = Enemy->TargetActor->GetActorLocation();
-	UAbilityTask_MoveToLocation* MoveToLocationTask = UAbilityTask_MoveToLocation::MoveToLocation(this, NAME_None, TargetLocation, 5.0f, nullptr, nullptr);
+	URGX_MoveToLocationCharge* MoveToLocationTask = URGX_MoveToLocationCharge::MoveToLocationCharge(this, NAME_None, TargetLocation, 5.0f, nullptr, nullptr);
+	MoveToLocationTask->OnTargetLocationReached.AddDynamic(this, &URGX_MEAChargeAbility::OnDestinationReached);
+	//UAbilityTask_MoveToLocation* MoveToLocationTask = UAbilityTask_MoveToLocation::MoveToLocation(this, NAME_None, TargetLocation, 5.0f, nullptr, nullptr);
+	MoveToLocationTask->ReadyForActivation();
+}
+
+void URGX_MEAChargeAbility::OnDestinationReached()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Destination Reached\n"));
 }
 
 void URGX_MEAChargeAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
