@@ -23,4 +23,7 @@ protected:
 
 protected:
 	void PopulateGameplayEffectContext(FRGX_GameplayEffectContext& GameplayEffectContext) override;
+
+	UFUNCTION()
+	void OnEndSweepDuration();
 };

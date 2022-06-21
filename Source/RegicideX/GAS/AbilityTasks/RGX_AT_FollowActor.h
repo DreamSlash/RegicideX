@@ -34,9 +34,11 @@ public:
 
 	void OnDestroy(bool AbilityIsEnding) override;
 
-protected:
+public:
 	UPROPERTY(BlueprintAssignable)
 	FFollowActorDelegate	OnFollowActorEnded;
+
+protected:
 
 	bool bIsFinished;
 

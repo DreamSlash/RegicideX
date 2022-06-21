@@ -27,6 +27,7 @@ void URGX_MEASweepAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	AActor* ActorToFollow = MEAngel->TargetActor;
 
 	URGX_AT_FollowActor* FollowActorTask = URGX_AT_FollowActor::FollowActor(this, NAME_None, ActorToFollow, 200.0f, 5.0f);
+	FollowActorTask->OnFollowActorEnded.AddDynamic(this, &URGX_MEASweepAbility::OnEndSweepDuration);
 	FollowActorTask->ReadyForActivation();
 }
 
@@ -44,4 +45,10 @@ void URGX_MEASweepAbility::PopulateGameplayEffectContext(FRGX_GameplayEffectCont
 	FRealCurve* ScalingCurve = DamageLevelCurve->FindCurve(AttributeScalingCurveName, ContextString);
 	GameplayEffectContext.DamageAmount = DamageCurve->Eval(AbilityLevel);
 	GameplayEffectContext.ScalingAttributeFactor = ScalingCurve->Eval(AbilityLevel);
+}
+
+void URGX_MEASweepAbility::OnEndSweepDuration()
+{
+	UE_LOG(LogTemp, Warning, TEXT("On End Sweep Duration\n"));
+	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
 }
