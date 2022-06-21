@@ -36,9 +36,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	URGX_MovementAssistComponent* MovementAssistComponent;
 
+protected:
+	FVector ChargeVelocity;
+
+public:
 	void RotateToTarget(float DeltaTime) override;
 
 	void SetGravityScale(float value);
 
 	void Tick(float DeltaTime) override;
+
+	FVector GetVelocity() const;
+
+	void SetChargeVelocity(const FVector NewChargeVelocity) { ChargeVelocity = NewChargeVelocity; }
 };

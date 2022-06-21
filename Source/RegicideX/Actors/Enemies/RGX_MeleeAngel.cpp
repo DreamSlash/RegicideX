@@ -43,4 +43,19 @@ void ARGX_MeleeAngel::SetGravityScale(float value)
 void ARGX_MeleeAngel::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+
+}
+
+FVector ARGX_MeleeAngel::GetVelocity() const
+{
+	FVector Velocity = Super::GetVelocity();
+	if (Velocity.Size() < 11.f)
+	{
+		return ChargeVelocity;
+	}
+	else
+	{
+		return Velocity;
+	}
 }
