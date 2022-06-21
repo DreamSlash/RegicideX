@@ -1,0 +1,9 @@
+,1,10,20
+LightAttack1_Damage,20,30,40
+LightAttack1_Scaling,0.5,0.5,0.5
+LightAttack2_Damage,20,30,40
+LightAttack2_Scaling,0.5,0.5,0.5
+LightAttack3_Damage,20,30,40
+LightAttack3_Scaling,0.5,0.5,0.5
+ChargeAttack_Damage,50,70,90
+ChargeAttack_Scaling,0.5,0.5,0.5

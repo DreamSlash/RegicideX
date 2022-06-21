@@ -11,6 +11,7 @@
 #include "RegicideX/Actors/Enemies/RGX_MeleeAngel.h"
 #include "RegicideX/Components/RGX_HitboxComponent.h"
 #include "RegicideX/Components/RGX_HitboxesManagerComponent.h"
+#include "RegicideX/GAS/RGX_GameplayEffectContext.h"
 
 bool URGX_MEAChargeAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const
 {
@@ -22,6 +23,10 @@ bool URGX_MEAChargeAbility::CanActivateAbility(const FGameplayAbilitySpecHandle 
 	if (Enemy == nullptr)
 		return false;
 
+	URGX_HitboxesManagerComponent* HitboxManagerComponent = Enemy->FindComponentByClass<URGX_HitboxesManagerComponent>();
+	if (HitboxManagerComponent == nullptr)
+		return false;
+
 	return true;
 }
 
@@ -30,6 +35,29 @@ void URGX_MEAChargeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Han
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
 	// Pass info to hitbox
+	URGX_HitboxesManagerComponent* HitboxManagerComponent = GetAvatarActorFromActorInfo()->FindComponentByClass<URGX_HitboxesManagerComponent>();
+	URGX_HitboxComponent* Hitbox = HitboxManagerComponent->GetHitboxByTag(HitboxTag);
+	if (Hitbox)
+	{
+		// TODO: Use this line to create a context with the ability spec so the effects can access its information, like ability level or a struct with custom information
+		FGameplayEffectContextHandle ContextHandle = MakeEffectContext(GetCurrentAbilitySpecHandle(), ActorInfo);
+		FRGX_GameplayEffectContext* Context = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
+
+		float AbilityLevel = GetAbilityLevel();
+		FString ContextString;
+		FRealCurve* DamageCurve = DamageLevelCurve->FindCurve(DamageCurveName, ContextString);
+		FRealCurve* ScalingCurve = DamageLevelCurve->FindCurve(AttributeScalingCurveName, ContextString);
+		Context->DamageAmount = DamageCurve->Eval(AbilityLevel);
+		Context->ScalingAttributeFactor = ScalingCurve->Eval(AbilityLevel);
+
+		FRGX_AbilityEffectsInfo AbilityEffectsInfo;
+		AbilityEffectsInfo.EffectContextHandle = ContextHandle;
+		AbilityEffectsInfo.GameplayEffectsToTarget = EffectsToApplyToTarget;
+		AbilityEffectsInfo.GameplayEffectsToOwner = EffectsToApplyToOwner;
+		AbilityEffectsInfo.GameplayEventsToTarget = EventsToApplyToTarget;
+		AbilityEffectsInfo.GameplayEventsToOwner = EventsToApplyToOwner;
+		Hitbox->SetAbilityEffectsInfo(AbilityEffectsInfo);
+	}
 
 	// Execute move task
 	ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(GetAvatarActorFromActorInfo());
@@ -95,10 +123,11 @@ void URGX_MEAChargeAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, 
 	}
 
 	// Clean hitbox state
-	URGX_HitboxComponent* Hitbox = GetAvatarActorFromActorInfo()->FindComponentByClass<URGX_HitboxesManagerComponent>()->GetHitboxByTag(HitboxTag);
+	URGX_HitboxesManagerComponent* HitboxManagerComponent = ActorInfo->AvatarActor->FindComponentByClass<URGX_HitboxesManagerComponent>();
+	URGX_HitboxComponent* Hitbox = HitboxManagerComponent->GetHitboxByTag(HitboxTag);
 	if (Hitbox)
 	{
-		Hitbox->DeactivateEffect();
+		Hitbox->RemoveAbilityEffectsInfo();
 	}
 
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);

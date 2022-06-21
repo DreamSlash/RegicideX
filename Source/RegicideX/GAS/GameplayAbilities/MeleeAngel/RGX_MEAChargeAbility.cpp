@@ -57,6 +57,7 @@ void URGX_MEAChargeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Han
 		AbilityEffectsInfo.GameplayEventsToTarget = EventsToApplyToTarget;
 		AbilityEffectsInfo.GameplayEventsToOwner = EventsToApplyToOwner;
 		Hitbox->SetAbilityEffectsInfo(AbilityEffectsInfo);
+		Hitbox->ActivateEffect();
 	}
 
 	// Execute move task
