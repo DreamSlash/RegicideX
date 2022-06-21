@@ -28,6 +28,9 @@ protected:
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float ChargeSpeed = 1000.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FName DamageCurveName;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)

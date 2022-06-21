@@ -63,8 +63,13 @@ void URGX_MEAChargeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Han
 	UKismetSystemLibrary::DrawDebugLine(GetWorld(), RaySrc, RayEnd, FColor(255, 0, 0), 5.0, 5.0f);
 	UKismetSystemLibrary::DrawDebugPoint(GetWorld(), TargetLocation, 100.0f, FColor(255, 255, 255), 5.0f);
 
+	// Duration of the charge based on distance and speed
+	const FVector VectorToTarget = TargetLocation - CurrentLocation;
+	const float DistanceToTarget = VectorToTarget.Size();
+	const float Duration = DistanceToTarget / ChargeSpeed;
+
 	// TODO: Change this task for a task that follows the player until collision
-	URGX_MoveToLocationCharge* MoveToLocationTask = URGX_MoveToLocationCharge::MoveToLocationCharge(this, NAME_None, TargetLocation, 5.0f, nullptr, nullptr);
+	URGX_MoveToLocationCharge* MoveToLocationTask = URGX_MoveToLocationCharge::MoveToLocationCharge(this, NAME_None, TargetLocation, Duration, nullptr, nullptr);
 	MoveToLocationTask->OnTargetLocationReached.AddDynamic(this, &URGX_MEAChargeAbility::OnDestinationReached);
 	//UAbilityTask_MoveToLocation* MoveToLocationTask = UAbilityTask_MoveToLocation::MoveToLocation(this, NAME_None, TargetLocation, 5.0f, nullptr, nullptr);
 	MoveToLocationTask->ReadyForActivation();
