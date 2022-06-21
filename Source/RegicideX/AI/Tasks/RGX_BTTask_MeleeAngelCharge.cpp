@@ -77,13 +77,3 @@ void URGX_BTTask_MeleeAngelCharge::TickTask(UBehaviorTreeComponent& OwnerComp, u
 	MeleeAngelPawn->MoveSpeed += TaskTime * AccelerationMultiplier;
 	MeleeAngelPawn->MoveToTarget(DeltaSeconds, FVector());
 }
-
-
-
-
-
-
-
-
-
-
