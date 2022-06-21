@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "RegicideX/GAS/GameplayAbilities/RGX_WeakenedAbility.h"
+#include "RegicideX/GAS/GameplayAbilities/Common/RGX_WeakenedAbility.h"
 #include "Components/MCV_AbilitySystemComponent.h"
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 #include "AIController.h"

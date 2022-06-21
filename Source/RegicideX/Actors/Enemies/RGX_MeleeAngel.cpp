@@ -33,7 +33,6 @@ void ARGX_MeleeAngel::RotateToTarget(float DeltaTime)
 		const FRotator NewRotation = FMath::Lerp(this->GetActorRotation(), MyTargetRotation, DeltaTime * InterpSpeed);
 		this->SetActorRotation(NewRotation);
 	}
-
 }
 
 void ARGX_MeleeAngel::SetGravityScale(float value)

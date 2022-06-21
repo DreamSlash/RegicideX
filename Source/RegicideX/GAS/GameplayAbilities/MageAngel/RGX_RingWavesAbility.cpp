@@ -1,8 +1,8 @@
 #include "RGX_RingWavesAbility.h"
 
 #include "Abilities/Tasks/AbilityTask_WaitDelay.h"
-#include "../../Actors/Enemies/RGX_MageAngel.h"
-#include "../../Actors/Weapons/RGX_RingWave.h"
+#include "RegicideX/Actors/Enemies/RGX_MageAngel.h"
+#include "RegicideX/Actors/Weapons/RGX_RingWave.h"
 
 void URGX_RingWavesAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {

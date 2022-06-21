@@ -1,7 +1,7 @@
 #include "RGX_GroundExplosionAbility.h"
 
-#include "../../Actors/Enemies/RGX_EnemyBase.h"
-#include "../../Actors/Weapons/RGX_GroundExplosion.h"
+#include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
+#include "RegicideX/Actors/Weapons/RGX_GroundExplosion.h"
 
 void URGX_GroundExplosionAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
