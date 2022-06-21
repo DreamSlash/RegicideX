@@ -4,6 +4,7 @@
 #include "RegicideX/GAS/GameplayAbilities/MeleeAngel/RGX_MEASweepAbility.h"
 #include "RegicideX/GAS/RGX_GameplayEffectContext.h"
 #include "RegicideX/Actors/Enemies/RGX_MeleeAngel.h"
+#include "RegicideX/GAS/AbilityTasks/RGX_AT_FollowActor.h"
 
 bool URGX_MEASweepAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const 
 {
@@ -21,6 +22,12 @@ bool URGX_MEASweepAbility::CanActivateAbility(const FGameplayAbilitySpecHandle H
 void URGX_MEASweepAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
+	ARGX_MeleeAngel* MEAngel = Cast<ARGX_MeleeAngel>(GetAvatarActorFromActorInfo());
+	AActor* ActorToFollow = MEAngel->TargetActor;
+
+	URGX_AT_FollowActor* FollowActorTask = URGX_AT_FollowActor::FollowActor(this, NAME_None, ActorToFollow, 200.0f, 5.0f);
+	FollowActorTask->ReadyForActivation();
 }
 
 void URGX_MEASweepAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
