@@ -9,6 +9,8 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "RegicideX/Actors/Enemies/RGX_MeleeAngel.h"
+#include "RegicideX/Components/RGX_HitboxComponent.h"
+#include "RegicideX/Components/RGX_HitboxesManagerComponent.h"
 
 bool URGX_MEAChargeAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const
 {
@@ -76,5 +78,23 @@ void URGX_MEAChargeAbility::OnDestinationReached()
 
 void URGX_MEAChargeAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
+	ARGX_MeleeAngel* MEAngel = Cast<ARGX_MeleeAngel>(GetAvatarActorFromActorInfo());
+	if (MEAngel)
+	{
+		MEAngel->SetGravityScale(1.0);
+		MEAngel->bFlying = false;
+		MEAngel->bCharged = false;
+		FRotator Rotation = MEAngel->GetActorRotation();
+		Rotation.Pitch = 0.0;
+		MEAngel->SetActorRotation(Rotation);
+	}
+
+	// Clean hitbox state
+	URGX_HitboxComponent* Hitbox = GetAvatarActorFromActorInfo()->FindComponentByClass<URGX_HitboxesManagerComponent>()->GetHitboxByTag(HitboxTag);
+	if (Hitbox)
+	{
+		Hitbox->DeactivateEffect();
+	}
+
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
