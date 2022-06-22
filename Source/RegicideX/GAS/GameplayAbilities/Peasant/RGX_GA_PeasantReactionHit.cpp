@@ -30,6 +30,9 @@ void URGX_GA_PeasantReactionHit::ActivateAbility(
 	FVector PeasantLocation		= Enemy->GetActorLocation();
 
 	UCharacterMovementComponent* EnemyMovementComponent = Enemy->GetCharacterMovement();
+	bool bIsFalling = EnemyMovementComponent->IsFalling();
+
+	UE_LOG(LogTemp, Warning, TEXT("Hit on air\n"));
 
 	if (EnemyMovementComponent->IsFalling())
 	{

@@ -20,7 +20,7 @@ void URGX_HealthAttributeSet::PreAttributeBaseChange(const FGameplayAttribute& A
 {
 	Super::PreAttributeBaseChange(Attribute, NewValue);
 
-	//UE_LOG(LogTemp, Warning, TEXT("New Health: %f\n"), NewValue);
+	UE_LOG(LogTemp, Warning, TEXT("New Health: %f\n"), NewValue);
 
 	if (Attribute == GetHealthAttribute())
 	{
@@ -96,7 +96,7 @@ void URGX_HealthAttributeSet::PostGameplayEffectExecute(const struct FGameplayEf
 
 				if (DeltaValue < 0)
 				{
-					//UE_LOG(LogTemp, Warning, TEXT("Delta Health: %f\n"), DeltaValue);
+					UE_LOG(LogTemp, Warning, TEXT("Delta Health: %f\n"), DeltaValue);
 					ARGX_EnemyBase* InstigatorEnemy = Cast<ARGX_EnemyBase>(Source->AvatarActor);
 					if (InstigatorEnemy)
 					{
