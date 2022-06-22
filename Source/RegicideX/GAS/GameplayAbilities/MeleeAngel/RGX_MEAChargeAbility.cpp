@@ -115,7 +115,7 @@ void URGX_MEAChargeAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, 
 	ARGX_MeleeAngel* MEAngel = Cast<ARGX_MeleeAngel>(GetAvatarActorFromActorInfo());
 	if (MEAngel)
 	{
-		MEAngel->SetGravityScale(1.0);
+		MEAngel->SetGravityScale(3.0);
 		MEAngel->bFlying = false;
 		MEAngel->bCharged = false;
 		FRotator Rotation = MEAngel->GetActorRotation();
