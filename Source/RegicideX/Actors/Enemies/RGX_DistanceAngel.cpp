@@ -72,7 +72,8 @@ void ARGX_DistanceAngel::RotateToTarget(float DeltaTime)
 
 void ARGX_DistanceAngel::RotateRings(float DeltaTime) 
 {
-	const float speed = RingRotatingSpeed * DeltaTime;
+	const float ClampedDT = DeltaTime > 0.016 ? 0.016 : DeltaTime; //Clamped to a dt of 60 fps
+	const float speed = RingRotatingSpeed * ClampedDT;
 	Ring_2_Mesh->AddLocalRotation(FRotator(-speed, 0.0, speed));
 	Ring_3_Mesh->AddLocalRotation(FRotator(0.0, speed, speed));
 }
