@@ -89,8 +89,8 @@ void URGX_MEAChargeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Han
 		}
 	}
 
-	//UKismetSystemLibrary::DrawDebugLine(GetWorld(), RaySrc, RayEnd, FColor(255, 0, 0), 5.0, 5.0f);
-	//UKismetSystemLibrary::DrawDebugPoint(GetWorld(), TargetLocation, 100.0f, FColor(255, 255, 255), 5.0f);
+	UKismetSystemLibrary::DrawDebugLine(GetWorld(), RaySrc, RayEnd, FColor(255, 0, 0), 5.0, 5.0f);
+	UKismetSystemLibrary::DrawDebugPoint(GetWorld(), TargetLocation, 100.0f, FColor(255, 255, 255), 5.0f);
 
 	// Duration of the charge based on distance and speed
 	const FVector VectorToTarget = TargetLocation - CurrentLocation;
