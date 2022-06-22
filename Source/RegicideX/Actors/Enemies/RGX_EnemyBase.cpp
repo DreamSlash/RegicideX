@@ -180,13 +180,8 @@ void ARGX_EnemyBase::HandleHealthChanged(float DeltaValue)
 
 void ARGX_EnemyBase::HandleDeath()
 {
+	OnHandleDeathEvent.Broadcast(ScoreValue);
 	OnHandleDeath();
-	ARGX_RoundGameMode* RoundGameMode = Cast<ARGX_RoundGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
-	if (RoundGameMode)
-	{
-		RoundGameMode->IncreaseKillCount();
-	}
-	//RoundGameMode->WaveManager->OnEnemyDestroyed();
 	HealthDisplayWidgetComponent->SetVisibility(false);
 }
 

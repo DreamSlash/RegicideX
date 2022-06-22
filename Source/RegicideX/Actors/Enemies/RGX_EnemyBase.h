@@ -40,6 +40,8 @@ class USphereComponent;
 class UWidgetComponent;
 class URGX_HitboxesManagerComponent;
 
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnHandleDeath, int)
+
 /* Struct to inform about when the attack was received*/
 UCLASS()
 class REGICIDEX_API ARGX_EnemyBase : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface, public IGenericTeamAgentInterface, public IRGX_InteractInterface
@@ -59,6 +61,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float AttackRadius = 700.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int ScoreValue = 10;
+
+	//UPROPERTY(BlueprintAssignable)
+	FOnHandleDeath OnHandleDeathEvent;
 
 protected:
 

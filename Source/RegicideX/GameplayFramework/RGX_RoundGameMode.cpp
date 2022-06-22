@@ -68,6 +68,10 @@ void ARGX_RoundGameMode::EndGameEvent_Implementation()
 {
 }
 
+void ARGX_RoundGameMode::EnemyDeadEvent_Implementation()
+{
+}
+
 void ARGX_RoundGameMode::StartEnemySpawn()
 {
 	if (TargetActor == nullptr)
@@ -92,7 +96,6 @@ void ARGX_RoundGameMode::IncreaseKillCount()
 {
 	KillCount++;
 	SpawnedEnemies--;
-	UE_LOG(LogTemp, Warning, TEXT("Spawned Enemies: %d"), SpawnedEnemies);
 	CheckCurrentWave();
 }
 
@@ -156,7 +159,6 @@ void ARGX_RoundGameMode::SpawnEnemyGroups()
 			SpawnEnemy(DTEnemies->FindRow<FRGX_EnemiesDataTable>(EnemyWaveNames[i], "")->EnemyInfo);
 		}
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Spanwed Enemies in this Rounds: %d"), SpawnedEnemies);
 }
 
 void ARGX_RoundGameMode::SpawnEnemy(UDataAsset* EnemyInfo)
@@ -170,6 +172,7 @@ void ARGX_RoundGameMode::SpawnEnemy(UDataAsset* EnemyInfo)
 		{
 			if (ARGX_EnemyBase* Enemy = (Cast<ARGX_EnemySpawner>(EnemySpawners[Rand])->Spawn(EnemyInfoCasted->EnemyBP)))
 			{
+				Enemy->OnHandleDeathEvent.AddUObject(this, &ARGX_RoundGameMode::OnEnemyDestroyed);
 				Enemy->TargetActor = TargetActor;
 				SpawnedEnemies++;
 			}
@@ -178,10 +181,12 @@ void ARGX_RoundGameMode::SpawnEnemy(UDataAsset* EnemyInfo)
 	}
 }
 
-void ARGX_RoundGameMode::OnEnemyDestroyed()
+void ARGX_RoundGameMode::OnEnemyDestroyed(const int EnemyScoreValue)
 {
-	// TODO bind this function to an spawned enemy to be called when destroyed.
 	IncreaseKillCount();
+	ARGX_ScoreGameState* GameStateTemp = GetGameState<ARGX_ScoreGameState>();
+	GameStateTemp->SetScore(GameStateTemp->GetScore() + EnemyScoreValue);
+	EnemyDeadEvent();
 }
 
 void ARGX_RoundGameMode::OnWaveFinished()
