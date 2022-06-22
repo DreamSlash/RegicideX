@@ -21,20 +21,41 @@ void ARGX_MeleeAngel::RotateToTarget(float DeltaTime)
 	{
 		const FVector MyLocation = this->GetActorLocation();
 		const FVector TargetLocation = TargetActor->GetActorLocation();
-		const FRotator RotOffset = UKismetMathLibrary::FindLookAtRotation(MyLocation, TargetLocation);
-		FRotator NewRotation = FMath::Lerp(this->GetActorRotation(), RotOffset, DeltaTime * InterpSpeed);
+
+		FVector ToTarget = TargetLocation - MyLocation;
+		ToTarget.Normalize();
+		ToTarget.Z = 0.0f;
+
+		FRotator MyTargetRotation = UKismetMathLibrary::MakeRotFromX(ToTarget);
+		MyTargetRotation.Pitch = 0.0f;
+		MyTargetRotation.Roll = 0.0f;
+
+		const FRotator NewRotation = FMath::Lerp(this->GetActorRotation(), MyTargetRotation, DeltaTime * InterpSpeed);
 		this->SetActorRotation(NewRotation);
 	}
-
 }
 
 void ARGX_MeleeAngel::SetGravityScale(float value)
 {
-	//GetCharacterMovement()->GravityScale = value;
+	GetCharacterMovement()->GravityScale = value;
 }
-
 
 void ARGX_MeleeAngel::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+
+}
+
+FVector ARGX_MeleeAngel::GetVelocity() const
+{
+	FVector Velocity = Super::GetVelocity();
+	if (Velocity.Size() < 11.f)
+	{
+		return ChargeVelocity;
+	}
+	else
+	{
+		return Velocity;
+	}
 }

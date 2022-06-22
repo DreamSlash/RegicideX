@@ -25,13 +25,13 @@ class REGICIDEX_API URGX_BTTask_Levitate : public UBTTaskNode
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float MaxTime = 5.0;
+	float MaxTime = 5.0;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float MaxLHeight = 600.0f;
+	float MaxLHeight = 600.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float LevitateSpeed = 600.0f;
+	float LevitateSpeed = 600.0f;
 
 	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
