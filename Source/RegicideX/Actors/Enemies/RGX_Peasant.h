@@ -21,28 +21,19 @@ public:
 	UPROPERTY(EditAnywhere)
 	UBehaviorTree* BTree = nullptr;
 
-	// String to show the status in the Text RenderComponent
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FString TextStatusString;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool bInCombat = true;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	int IdleAction;
-
 	UPROPERTY(EditDefaultsOnly)
 	float WanderSpeed = 100.0f;
 
 	UPROPERTY(EditDefaultsOnly)
 	float MaxSpeed = 400.0f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	int IdleAction;
+
 	float GetDistanceToTarget() const;
 
 	// Bool to signal if actor is going to get destroyed.
-	bool ToBeDestroyed = false;
 	void HandleDeath() override;
-	void DestroyPeasant();
 
 protected:
 
@@ -51,6 +42,9 @@ protected:
 
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
+
+	virtual void Activate() override;
+	virtual void Deactivate() override;
 
 private:
 };

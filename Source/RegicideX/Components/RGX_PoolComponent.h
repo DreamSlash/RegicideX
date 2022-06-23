@@ -22,15 +22,13 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+public:
 
-	UPROPERTY(EditAnywhere, Category = "PoolActor")
+	UPROPERTY(EditAnywhere)
 		TSubclassOf<ARGX_PoolActor> PooledActorSubclass;
 	
-	UPROPERTY(EditAnywhere, Category = "ObjectPooler")
-		int PoolSize = 100;
+	UPROPERTY(EditAnywhere)
+		int PoolSize = 0;
 
 	TArray<ARGX_PoolActor*> Pool;
 

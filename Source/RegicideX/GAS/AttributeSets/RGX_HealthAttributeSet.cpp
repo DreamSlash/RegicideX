@@ -66,7 +66,7 @@ void URGX_HealthAttributeSet::PostGameplayEffectExecute(const struct FGameplayEf
 							// If this was additive, store the raw delta value to be passed along later
 							DeltaValue = Data.EvaluatedData.Magnitude;
 						}
-						Enemy->HandleHealthChanged(DeltaValue);
+						//Enemy->HandleHealthChanged(DeltaValue);
 						Enemy->HandleDeath();
 					}
 				}
@@ -90,7 +90,7 @@ void URGX_HealthAttributeSet::PostGameplayEffectExecute(const struct FGameplayEf
 				{
 					if (Enemy)
 					{
-						Enemy->HandleHealthChanged(DeltaValue);
+						//Enemy->HandleHealthChanged(DeltaValue);
 					}
 				}
 
@@ -102,7 +102,7 @@ void URGX_HealthAttributeSet::PostGameplayEffectExecute(const struct FGameplayEf
 					{
 						if (Enemy)
 						{
-							Enemy->HandleDamage(FMath::Abs(DeltaValue), InstigatorEnemy);
+							//Enemy->HandleDamage(FMath::Abs(DeltaValue), InstigatorEnemy);
 						}
 					}
 					else
@@ -110,7 +110,7 @@ void URGX_HealthAttributeSet::PostGameplayEffectExecute(const struct FGameplayEf
 						ARGX_PlayerCharacter* InstigatorPlayer = Cast<ARGX_PlayerCharacter>(Data.Target.AvatarActor);
 						if (Enemy)
 						{
-							Enemy->HandleDamage(FMath::Abs(DeltaValue), InstigatorPlayer);
+							//Enemy->HandleDamage(FMath::Abs(DeltaValue), InstigatorPlayer);
 						}
 					}
 

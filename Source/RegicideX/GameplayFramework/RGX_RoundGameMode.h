@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 #include "RegicideX/Actors/Enemies/RGX_EnemySpawner.h"
+#include "RegicideX/Actors/RGX_PoolSpawner.h"
 #include "RegicideX/Data/RGX_RoundDataTable.h"
 
 #include "RGX_RoundGameMode.generated.h"

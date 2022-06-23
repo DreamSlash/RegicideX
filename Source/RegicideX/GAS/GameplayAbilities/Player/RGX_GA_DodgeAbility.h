@@ -1,14 +1,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Abilities/MCV_GameplayAbility.h"
+#include "RegicideX/GAS/GameplayAbilities/RGX_GameplayAbility.h"
 #include "RGX_GA_DodgeAbility.generated.h"
 
 class UGameplayEffect;
 class ACharacter;
 
 UCLASS()
-class REGICIDEX_API URGX_DodgeAbility : public UMCV_GameplayAbility
+class REGICIDEX_API URGX_DodgeAbility : public URGX_GameplayAbility
 {
 	GENERATED_BODY()
 

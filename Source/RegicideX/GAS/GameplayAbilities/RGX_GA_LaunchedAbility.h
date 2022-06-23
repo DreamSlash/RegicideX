@@ -1,11 +1,11 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Abilities/MCV_GameplayAbility.h"
+#include "RegicideX/GAS/GameplayAbilities/RGX_GameplayAbility.h"
 #include "RGX_GA_LaunchedAbility.generated.h"
 
 UCLASS()
-class REGICIDEX_API URGX_LaunchedAbility : public UMCV_GameplayAbility
+class REGICIDEX_API URGX_LaunchedAbility : public URGX_GameplayAbility
 {
 	GENERATED_BODY()
 

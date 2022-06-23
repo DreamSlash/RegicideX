@@ -1,14 +1,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Abilities/MCV_GameplayAbility.h"
+#include "RegicideX/GAS/GameplayAbilities/RGX_GameplayAbility.h"
 #include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
 #include "RGX_GA_SpearsAbility.generated.h"
 
 class ARGX_SpearProjectile;
 
 UCLASS()
-class REGICIDEX_API URGX_SpearsAbility : public UMCV_GameplayAbility
+class REGICIDEX_API URGX_SpearsAbility : public URGX_GameplayAbility
 {
 	GENERATED_BODY()
 

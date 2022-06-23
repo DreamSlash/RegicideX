@@ -63,15 +63,14 @@ ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 	InteractWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("InteractWidgetComponent"));
 	InteractWidgetComponent->SetupAttachment(FollowCamera);
 
-	AbilitySystemComponent = CreateDefaultSubobject<UMCV_AbilitySystemComponent>(TEXT("AbilitySystemComponent"));
-	ComboSystemComponent = CreateDefaultSubobject<URGX_ComboSystemComponent>(TEXT("ComboSystemComponent"));
-	CombatAssistComponent = CreateDefaultSubobject<URGX_CombatAssistComponent>(TEXT("CombatAssistComponent"));
-	InputHandlerComponent = CreateDefaultSubobject<URGX_InputHandlerComponent>(TEXT("InputHandlerComponent"));
-	InteractComponent = CreateDefaultSubobject<URGX_InteractComponent>(TEXT("InteractComponent"));
+	ComboSystemComponent	= CreateDefaultSubobject<URGX_ComboSystemComponent>(TEXT("ComboSystemComponent"));
+	CombatAssistComponent	= CreateDefaultSubobject<URGX_CombatAssistComponent>(TEXT("CombatAssistComponent"));
+	InputHandlerComponent	= CreateDefaultSubobject<URGX_InputHandlerComponent>(TEXT("InputHandlerComponent"));
+	HealthAttributeSet		= CreateDefaultSubobject<URGX_HealthAttributeSet>(TEXT("HealthAttributeSet"));
+	MovementAttributeSet	= CreateDefaultSubobject<URGX_MovementAttributeSet>(TEXT("MovementAttributeSet"));
+	CombatAttributeSet		= CreateDefaultSubobject<URGX_CombatAttributeSet>(TEXT("CombatAttributeSet"));
+	InteractComponent		= CreateDefaultSubobject<URGX_InteractComponent>(TEXT("InteractComponent"));
 	InteractComponent->InteractWidgetComponent = InteractWidgetComponent;
-	HealthAttributeSet = CreateDefaultSubobject<URGX_HealthAttributeSet>(TEXT("HealthAttributeSet"));
-	MovementAttributeSet = CreateDefaultSubobject<URGX_MovementAttributeSet>(TEXT("MovementAttributeSet"));
-	CombatAttributeSet = CreateDefaultSubobject<URGX_CombatAttributeSet>(TEXT("CombatAttributeSet"));
 }
 
 void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -351,21 +350,21 @@ void ARGX_PlayerCharacter::ChangePowerSkill()
 	UE_LOG(LogTemp, Warning, TEXT("Power Skill Selected: %s\n"), *SkillName);
 }
 
-void ARGX_PlayerCharacter::LevelUp(const float NewLevel)
-{
-	Level = NewLevel;
-
-	FGameplayEffectContextHandle ContextHandle = AbilitySystemComponent->MakeEffectContext();
-	FRGX_GameplayEffectContext* FRGXContext = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
-
-	FString ContextString;
-	FRealCurve* MaxHealth = MaxHealthLevelCurve->FindCurve(FName("MaxHealth"), ContextString);
-	FRealCurve* AttackPower = AttackPowerLevelCurve->FindCurve(FName("AttackPower"), ContextString);
-	FRGXContext->NewMaxHealth = MaxHealth->Eval(Level);
-	FRGXContext->NewAttackPower = AttackPower->Eval(Level);
-	AbilitySystemComponent->ApplyGameplayEffectToSelf(LevelUpEffect.GetDefaultObject(), 1.0f, ContextHandle);
-	AbilitySystemComponent->ApplyGameplayEffectToSelf(FullHealthEffect.GetDefaultObject(), 1.0, ContextHandle);
-}
+//void ARGX_PlayerCharacter::LevelUp(const float NewLevel)
+//{
+//	Level = NewLevel;
+//
+//	FGameplayEffectContextHandle ContextHandle = AbilitySystemComponent->MakeEffectContext();
+//	FRGX_GameplayEffectContext* FRGXContext = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
+//
+//	FString ContextString;
+//	FRealCurve* MaxHealth = MaxHealthLevelCurve->FindCurve(FName("MaxHealth"), ContextString);
+//	FRealCurve* AttackPower = AttackPowerLevelCurve->FindCurve(FName("AttackPower"), ContextString);
+//	FRGXContext->NewMaxHealth = MaxHealth->Eval(Level);
+//	FRGXContext->NewAttackPower = AttackPower->Eval(Level);
+//	AbilitySystemComponent->ApplyGameplayEffectToSelf(LevelUpEffect.GetDefaultObject(), 1.0f, ContextHandle);
+//	AbilitySystemComponent->ApplyGameplayEffectToSelf(FullHealthEffect.GetDefaultObject(), 1.0, ContextHandle);
+//}
 
 void ARGX_PlayerCharacter::PrintDebugInformation()
 {
@@ -454,7 +453,7 @@ void ARGX_PlayerCharacter::BeginPlay()
 
 	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ARGX_PlayerCharacter::OnCapsuleHit);
 
-	LevelUp(Level);
+	//LevelUp(Level);
 	//AbilitySystemComponent->ApplyGameplayEffectToSelf()
 }
 

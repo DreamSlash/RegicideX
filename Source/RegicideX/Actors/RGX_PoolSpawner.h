@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "RegicideX/Components/RGX_PoolComponent.h"
+#include "RegicideX/Data/RGX_EnemyDataAsset.h"
 #include "RGX_PoolSpawner.generated.h"
 
 struct FBox;
@@ -21,15 +22,25 @@ public:
 	UPROPERTY(EditAnywhere)
 	FBox SpawnBox;
 
+	ARGX_EnemyBase* Spawn(ERGX_EnemyTypes Type);
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 private:
-	float GetLifeSpan();
 	class UBoxComponent* SpawnVolume = nullptr;
 
-	UPROPERTY(EditAnywhere, Category = "Spawner")
-		URGX_PoolComponent* ActorPool = nullptr;
+	UPROPERTY(EditAnywhere, Category = "Pool|MeleePeasantPool")
+		URGX_PoolComponent* MeleePeasantPool = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "Pool|DistancePeasantPool")
+		URGX_PoolComponent* DistancePeasantPool = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "Pool|MolePeasantPool")
+		URGX_PoolComponent* MolePeasantPool = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = "Pool|SuicidePeasantPool")
+		URGX_PoolComponent* SuicidePeasantPool = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = "Trigger")
 		bool Trigger;
@@ -41,7 +52,4 @@ private:
 		float SpawnCooldown = 0.0f;
 
 	FTimerHandle SpawnCooldownTimerHandle;
-
-	void Spawn();
-
 };

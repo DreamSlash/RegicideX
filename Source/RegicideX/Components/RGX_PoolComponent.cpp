@@ -41,13 +41,3 @@ void URGX_PoolComponent::BeginPlay()
 	}
 	
 }
-
-
-// Called every frame
-void URGX_PoolComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
-}
-

@@ -58,8 +58,8 @@ void URGX_MeleeAttackAbility::EndAbility(const FGameplayAbilitySpecHandle Handle
 
 void URGX_MeleeAttackAbility::PopulateGameplayEffectContext(FRGX_GameplayEffectContext& GameplayEffectContext)
 {
-	float AbilityLevel;
-	ARGX_PlayerCharacter* PlayerCharacter = Cast<ARGX_PlayerCharacter>(CurrentActorInfo->AvatarActor);
+	float AbilityLevel = 1;
+	/*ARGX_PlayerCharacter* PlayerCharacter = Cast<ARGX_PlayerCharacter>(CurrentActorInfo->AvatarActor);
 	if (PlayerCharacter)
 	{
 		AbilityLevel = static_cast<float>(PlayerCharacter->Level);
@@ -67,7 +67,7 @@ void URGX_MeleeAttackAbility::PopulateGameplayEffectContext(FRGX_GameplayEffectC
 	else
 	{
 		AbilityLevel = GetAbilityLevel();
-	}
+	}*/
 
 	FString ContextString;
 	FRealCurve* DamageCurve = DamageLevelCurve->FindCurve(DamageCurveName, ContextString);

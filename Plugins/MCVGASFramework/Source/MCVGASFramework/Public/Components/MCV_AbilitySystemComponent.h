@@ -75,7 +75,7 @@ class MCVGASFRAMEWORK_API UMCV_AbilitySystemComponent : public UAbilitySystemCom
 public:
 	
 	//~ Begin UAbilitySystemComponent interface
-	virtual void InitAbilityActorInfo(AActor* InOwnerActor, AActor* InAvatarActor) override;
+	//virtual void InitAbilityActorInfo(AActor* InOwnerActor, AActor* InAvatarActor) override;
 	//~ End UAbilitySystemComponent interface
 
 	//~ Begin UObject interface

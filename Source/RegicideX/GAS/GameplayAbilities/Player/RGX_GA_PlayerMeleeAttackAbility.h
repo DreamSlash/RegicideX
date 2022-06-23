@@ -1,12 +1,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Abilities/MCV_GameplayAbility.h"
-#include "../../RGX_PayloadObjects.h"
+#include "RegicideX/GAS/GameplayAbilities/RGX_GameplayAbility.h"
+#include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RGX_GA_PlayerMeleeAttackAbility.generated.h"
 
 UCLASS()
-class REGICIDEX_API URGX_PlayerMeleeAttackAbility : public UMCV_GameplayAbility
+class REGICIDEX_API URGX_PlayerMeleeAttackAbility : public URGX_GameplayAbility
 {
 	GENERATED_BODY()
 

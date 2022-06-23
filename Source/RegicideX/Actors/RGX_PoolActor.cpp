@@ -1,5 +1,7 @@
 
 #include "RGX_PoolActor.h"
+#include "AIController.h"
+#include "BrainComponent.h"
 
 // Sets default values
 ARGX_PoolActor::ARGX_PoolActor()
@@ -23,6 +25,8 @@ void ARGX_PoolActor::SetActive(bool InbActive)
 {
 	bActive = InbActive;
 	SetActorHiddenInGame(!bActive);
+	//if (bActive)
+		//BeginPlay();
 }
 
 bool ARGX_PoolActor::IsActive()
@@ -34,6 +38,11 @@ bool ARGX_PoolActor::IsActive()
 void ARGX_PoolActor::BeginPlay()
 {
 	Super::BeginPlay();
+}
+
+void ARGX_PoolActor::Activate()
+{
+	SetActive(true);
 }
 
 void ARGX_PoolActor::Deactivate()

@@ -87,7 +87,8 @@ void ARGX_RoundGameMode::StartEnemySpawn()
 		}
 	}
 
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARGX_EnemySpawner::StaticClass(), EnemySpawners);
+	//UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARGX_EnemySpawner::StaticClass(), EnemySpawners);
+	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARGX_PoolSpawner::StaticClass(), EnemySpawners);
 
 	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &ARGX_RoundGameMode::StartNewWave, 4.0f, false);
 	//StartNewWave();
@@ -170,7 +171,8 @@ void ARGX_RoundGameMode::SpawnEnemy(UDataAsset* EnemyInfo)
 		const int Rand = FMath::RandRange(0, EnemySpawners.Num() - 1);
 		if (EnemySpawners[Rand])
 		{
-			if (ARGX_EnemyBase* Enemy = (Cast<ARGX_EnemySpawner>(EnemySpawners[Rand])->Spawn(EnemyInfoCasted->EnemyBP)))
+			//if (ARGX_EnemyBase* Enemy = (Cast<ARGX_EnemySpawner>(EnemySpawners[Rand])->Spawn(EnemyInfoCasted->EnemyBP)))
+			if (ARGX_EnemyBase* Enemy = (Cast<ARGX_PoolSpawner>(EnemySpawners[Rand])->Spawn(EnemyInfoCasted->TypeName)))
 			{
 				Enemy->OnHandleDeathEvent.AddUObject(this, &ARGX_RoundGameMode::OnEnemyDestroyed);
 				Enemy->TargetActor = TargetActor;

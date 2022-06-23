@@ -1,14 +1,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
-#include "GameplayTags.h"
-#include "AbilitySystemInterface.h"
 #include "Components/MCV_AbilitySystemComponent.h"
+#include "GameplayTags.h"
+#include "RegicideX/Actors/RGX_CharacterBase.h"
 #include "RegicideX/Components/RGX_CombatAssistComponent.h"
 #include "RegicideX/Interfaces/RGX_GameplayTagInterface.h"
 #include "RegicideX/Enums/RGX_InputEnums.h"
-#include "GenericTeamAgentInterface.h"
 
 #include "RGX_PlayerCharacter.generated.h"
 
@@ -40,7 +38,7 @@ public:
 };
 
 UCLASS(config = Game)
-class REGICIDEX_API ARGX_PlayerCharacter : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface, public IGenericTeamAgentInterface
+class REGICIDEX_API ARGX_PlayerCharacter : public ARGX_CharacterBase, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface
 {
 	GENERATED_BODY()
 
@@ -50,9 +48,9 @@ class REGICIDEX_API ARGX_PlayerCharacter : public ACharacter, public IAbilitySys
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera = nullptr;
 
-	/** Ability System Component to be used */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Abilities, meta = (AllowPrivateAccess = "true"))
-	UMCV_AbilitySystemComponent* AbilitySystemComponent = nullptr;
+	///** Ability System Component to be used */
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Abilities, meta = (AllowPrivateAccess = "true"))
+	//UMCV_AbilitySystemComponent* AbilitySystemComponent = nullptr;
 
 	/** Combo System Component to manage player combos */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combos, meta = (AllowPrivateAccess = "true"))
@@ -94,9 +92,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseLookUpRate;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FGenericTeamId CharacterTeam;
-
 	// TODO [REFACTOR]: Move this to AbilitySystemComponent.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<FGameplayTag> PowerSkills;
@@ -107,10 +102,6 @@ public:
 	UPROPERTY()
 	FGameplayTag CurrentSkillTag;
 	//--------------------------
-
-	/* Level used to determine attributes and gameplay abilities stats */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0.0", UIMin = "0.0"))
-	int Level = 1;
 
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EObjectTypeQuery> DodgeableObjectType;
@@ -167,13 +158,13 @@ protected:
 
 	bool bStaggered = false;
 
-	/* Level Up variables */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TSubclassOf<UGameplayEffect> LevelUpEffect;
+	///* Level Up variables */
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	//TSubclassOf<UGameplayEffect> LevelUpEffect;
 
-	/* Full Health Recovery effect */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TSubclassOf<UGameplayEffect> FullHealthEffect;
+	///* Full Health Recovery effect */
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	//TSubclassOf<UGameplayEffect> FullHealthEffect;
 
 	UPROPERTY(EditAnywhere)
 	UCurveTable* MaxHealthLevelCurve = nullptr;
@@ -241,7 +232,7 @@ protected:
 	void ChangePowerSkill();
 
 	/* Level and experience*/
-	void LevelUp(const float NewLevel);
+	//void LevelUp(const float NewLevel);
 	// ----------------------
 
 	// Debug

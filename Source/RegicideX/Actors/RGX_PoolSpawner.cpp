@@ -15,8 +15,12 @@ ARGX_PoolSpawner::ARGX_PoolSpawner()
 	SpawnVolume = CreateDefaultSubobject<UBoxComponent>(TEXT("SpawnVolume"));
 	RootComponent = SpawnVolume;
 
-	ActorPool = CreateDefaultSubobject<URGX_PoolComponent>(TEXT("ActoorPool"));
+	//SpawnBox = CreateDefaultSubobject<FBox>(TEXT("Spawn Box"));
 
+	MeleePeasantPool	= CreateDefaultSubobject<URGX_PoolComponent>(TEXT("MeleePeasantPool"));
+	DistancePeasantPool = CreateDefaultSubobject<URGX_PoolComponent>(TEXT("DistancePeasantPool"));
+	MolePeasantPool		= CreateDefaultSubobject<URGX_PoolComponent>(TEXT("MolePeasantPool"));
+	SuicidePeasantPool	= CreateDefaultSubobject<URGX_PoolComponent>(TEXT("SuicidePeasantPool"));
 }
 
 // Called when the game starts or when spawned
@@ -24,26 +28,45 @@ void ARGX_PoolSpawner::BeginPlay()
 {
 	Super::BeginPlay();
 	SpawnBox = SpawnBox.ShiftBy(GetActorLocation());
-	GetWorldTimerManager().SetTimer(SpawnCooldownTimerHandle, this, &ARGX_PoolSpawner::Spawn, SpawnCooldown, false);
+	//GetWorldTimerManager().SetTimer(SpawnCooldownTimerHandle, this, &ARGX_PoolSpawner::Spawn, SpawnCooldown, false);
 }
 
-void ARGX_PoolSpawner::Spawn()
+ARGX_EnemyBase* ARGX_PoolSpawner::Spawn(ERGX_EnemyTypes Type)
 {
-	ACharacter* Character = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	ARGX_PoolActor* PooledActor = ActorPool->GetPooledActor();
+	ARGX_EnemyBase* PooledActor = nullptr;
+	switch (Type)
+	{
+	case ERGX_EnemyTypes::MeleePeasant:
+		PooledActor = Cast<ARGX_EnemyBase>(MeleePeasantPool->GetPooledActor());
+		break;
+	case ERGX_EnemyTypes::DistancePeasant:
+		PooledActor = Cast<ARGX_EnemyBase>(DistancePeasantPool->GetPooledActor());
+		break;
+	case ERGX_EnemyTypes::MolePeasant:
+		PooledActor = Cast<ARGX_EnemyBase>(MolePeasantPool->GetPooledActor());
+		break;
+	case ERGX_EnemyTypes::SuicidePeasant:
+		PooledActor = Cast<ARGX_EnemyBase>(SuicidePeasantPool->GetPooledActor());
+		break;
+	default:
+		break;
+	}
+	
 	if (PooledActor == nullptr)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Cannot spawn pooled actor"));
-		GetWorldTimerManager().SetTimer(SpawnCooldownTimerHandle, this, &ARGX_PoolSpawner::Spawn, SpawnCooldown, false);
-		return;
+		//GetWorldTimerManager().SetTimer(SpawnCooldownTimerHandle, this, &ARGX_PoolSpawner::Spawn, SpawnCooldown, false);
+		return PooledActor;
 	}
 
 	const FVector Location = FMath::RandPointInBox(SpawnBox) + FVector(150.0f, 150.0f, 300.0f);
 
 	PooledActor->SetActorLocation(Location);
 	PooledActor->SetLifeSpan(LifeSpan);
-	PooledActor->SetActive(true);
+	PooledActor->Activate();
 	PooledActor->SetActorEnableCollision(true);
-	GetWorldTimerManager().SetTimer(SpawnCooldownTimerHandle, this, &ARGX_PoolSpawner::Spawn, SpawnCooldown, false);
+
+	return PooledActor;
+	//GetWorldTimerManager().SetTimer(SpawnCooldownTimerHandle, this, &ARGX_PoolSpawner::Spawn, SpawnCooldown, false);
 }
 

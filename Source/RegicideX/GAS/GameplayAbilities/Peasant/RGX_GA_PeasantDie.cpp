@@ -56,7 +56,9 @@ void URGX_GA_PeasantDie::EndAbility(
 	bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
-	ActorInfo->AvatarActor->Destroy();
+	ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(CurrentActorInfo->OwnerActor);
+	//Peasant->HandleDeath();
+	//ActorInfo->AvatarActor->Destroy();
 }
 
 void URGX_GA_PeasantDie::OnEndMontage()

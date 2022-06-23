@@ -25,16 +25,30 @@ ARGX_EnemyBase::ARGX_EnemyBase()
 	HealthDisplayWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthDisplayWidgetComponent"));
 	HealthDisplayWidgetComponent->SetupAttachment(RootComponent);
 
-	AbilitySystemComponent = CreateDefaultSubobject<UMCV_AbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	InteractionShapeComponent = CreateDefaultSubobject<USphereComponent>(TEXT("InteractionShapeComponent"));
 	InteractionShapeComponent->SetupAttachment(RootComponent);
-
-	HealthAttributeSet = CreateDefaultSubobject<URGX_HealthAttributeSet>(TEXT("HealthAttributeSet"));
 
 	DebugAttributesWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("DebugAttributesWidgetComponent"));
 	DebugAttributesWidgetComponent->SetupAttachment(RootComponent);
 
 	HitboxesManager = CreateDefaultSubobject<URGX_HitboxesManagerComponent>(TEXT("HitboxesManager"));
+
+	bAbilitiesInitialized = false;
+}
+
+void ARGX_EnemyBase::Activate()
+{
+	Super::Activate();
+
+	HealthDisplayWidgetComponent->SetVisibility(true);
+	AddStartupGameplayAbilities();
+}
+
+void ARGX_EnemyBase::Deactivate()
+{
+	Super::Deactivate();
+	GetMesh()->bPauseAnims = true;
+	RemoveStartupGameplayAbilities();
 }
 
 // Called when the game starts or when spawned
@@ -48,7 +62,7 @@ void ARGX_EnemyBase::BeginPlay()
 	HideCombatTargetWidget();
 
 	// For initializing health bar
-	HandleHealthChanged(0.0f);
+	HandleHealthChanged(0.0f, FGameplayTagContainer());
 }
 
 void ARGX_EnemyBase::PossessedBy(AController* NewController)
@@ -128,28 +142,33 @@ void ARGX_EnemyBase::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
-UAbilitySystemComponent* ARGX_EnemyBase::GetAbilitySystemComponent() const
-{
-	return AbilitySystemComponent;
-}
-
 void ARGX_EnemyBase::HandleDamage(FAttackInfo info)
 {
 }
 
-void ARGX_EnemyBase::HandleDamage(float DamageAmount, AActor* DamageCauser)
+void ARGX_EnemyBase::HandleDamage(
+	float DamageAmount,
+	const FHitResult& HitInfo,
+	const struct FGameplayTagContainer& DamageTags,
+	ARGX_CharacterBase* InstigatorCharacter,
+	AActor* DamageCauser)
 {
+	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser);
+
+	// TODO Show Damage Amount in C++ instead of Blueprints.
+
+
+	// Execution Damage percentage
 	RecentDamage += DamageAmount;
-	//UE_LOG(LogTemp, Warning, TEXT("Recent Damage: %f\n"), RecentDamage);
 
 	FTimerDelegate TimerDel;
 	FTimerHandle TimerHandle;
 	TimerDel.BindUFunction(this, FName("EraseRecentDamage"), DamageAmount);
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, 2.f, false);
 
-	const float MaxHealth = AbilitySystemComponent->GetNumericAttribute(HealthAttributeSet->GetMaxHealthAttribute());
+	const float MaxHealth		= AbilitySystemComponent->GetNumericAttribute(AttributeSet->GetMaxHealthAttribute());
+	const float CurrentHealth	= AbilitySystemComponent->GetNumericAttribute(AttributeSet->GetHealthAttribute());
 	const float RecentDamageAsHealthPercentage = RecentDamage / MaxHealth;
-	const float CurrentHealth = AbilitySystemComponent->GetNumericAttribute(HealthAttributeSet->GetHealthAttribute());
 	const float HealthAsPercentage = CurrentHealth / MaxHealth;
 	UE_LOG(LogTemp, Warning, TEXT("Percentage Recent Damage: %f\n"), RecentDamageAsHealthPercentage);
 	if (RecentDamageAsHealthPercentage >= WeakenPercentage || HealthAsPercentage < 0.1f)
@@ -157,32 +176,38 @@ void ARGX_EnemyBase::HandleDamage(float DamageAmount, AActor* DamageCauser)
 		FGameplayEventData EventData;
 		AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Enemy.Weakened")), &EventData);
 	}
-
-	OnHandleDamage(DamageAmount, DamageCauser);
 }
 
-void ARGX_EnemyBase::HandleHealthChanged(float DeltaValue)
+void ARGX_EnemyBase::HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags)
 {
-	UMCV_AbilitySystemComponent* ACS = Cast<UMCV_AbilitySystemComponent>(AbilitySystemComponent);
-	URGX_EnemyHealthBar* HealthBar = Cast<URGX_EnemyHealthBar>(HealthDisplayWidgetComponent->GetWidget());
+	Super::HandleHealthChanged(DeltaValue, EventTags);
+
+	UMCV_AbilitySystemComponent* ACS	= Cast<UMCV_AbilitySystemComponent>(AbilitySystemComponent);
+	URGX_EnemyHealthBar* HealthBar		= Cast<URGX_EnemyHealthBar>(HealthDisplayWidgetComponent->GetWidget());
 	if (HealthBar)
 	{
-		HealthBar->MaxHealth = ACS->GetNumericAttribute(HealthAttributeSet->GetMaxHealthAttribute());
-		HealthBar->CurrentHealth = ACS->GetNumericAttribute(HealthAttributeSet->GetHealthAttribute());
+		HealthBar->MaxHealth		= ACS->GetNumericAttribute(AttributeSet->GetMaxHealthAttribute());
+		HealthBar->CurrentHealth	= ACS->GetNumericAttribute(AttributeSet->GetHealthAttribute());
 	}
 
 	// Only call BP event if ACS is initialized
 	if (ACS->bIsInitialized == true)
 	{
-		OnHandleHealthChanged(DeltaValue);
+		OnHealthChanged(DeltaValue, EventTags);
 	}
+
+	//if (IsAlive() == false)
+	//	HandleDeath();
 }
 
 void ARGX_EnemyBase::HandleDeath()
 {
+	Super::HandleDeath();
+
 	OnHandleDeathEvent.Broadcast(ScoreValue);
 	OnHandleDeath();
 	HealthDisplayWidgetComponent->SetVisibility(false);
+	Deactivate();
 }
 
 void ARGX_EnemyBase::SetGenericTeamId(const FGenericTeamId& TeamID)
