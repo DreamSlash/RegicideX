@@ -87,6 +87,11 @@ void ARGX_EnemyBase::MoveToTarget(float DeltaTime, FVector TargetPos)
 	}
 }
 
+bool ARGX_EnemyBase::IsWeak()
+{
+	return bWeak;
+}
+
 void ARGX_EnemyBase::EnableInteraction()
 {
 	InteractionShapeComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -159,6 +164,7 @@ void ARGX_EnemyBase::HandleDamage(
 
 
 	// Execution Damage percentage
+	// TODO Make Execution logic into a function
 	RecentDamage += DamageAmount;
 
 	FTimerDelegate TimerDel;
@@ -173,6 +179,7 @@ void ARGX_EnemyBase::HandleDamage(
 	UE_LOG(LogTemp, Warning, TEXT("Percentage Recent Damage: %f\n"), RecentDamageAsHealthPercentage);
 	if (RecentDamageAsHealthPercentage >= WeakenPercentage || HealthAsPercentage < 0.1f)
 	{
+		bWeak = true;
 		FGameplayEventData EventData;
 		AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Enemy.Weakened")), &EventData);
 	}

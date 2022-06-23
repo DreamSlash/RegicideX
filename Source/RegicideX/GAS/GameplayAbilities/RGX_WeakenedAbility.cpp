@@ -45,7 +45,7 @@ void URGX_WeakenedAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 void URGX_WeakenedAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(ActorInfo->OwnerActor);
-	
+	Enemy->bWeak = false;
 	// Restart brain logic
 	AAIController* Controller = Cast<AAIController>(Enemy->GetController());
 	if (Controller) {

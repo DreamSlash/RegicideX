@@ -54,9 +54,11 @@ void UExecution_Damage::Execute_Implementation(const FGameplayEffectCustomExecut
 	float AttackPower = 0.0f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().AttackPowerDef, EvaluationParameters, AttackPower);
 
+	FGameplayEffectContextHandle ContextHandle = Spec.GetContext();
+	FRGX_GameplayEffectContext* FRGXContext = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
+
 	float FinalDamage = 0.0f;
-	FinalDamage = Damage * AttackPower;//FRGXContext->DamageAmount + AttackPower * FRGXContext->ScalingAttributeFactor;
-	//FinalDamage = AttackPower * FMath::Max(0.0f, (1.0f - DamageMitigation));
+	FinalDamage = FRGXContext->DamageAmount + AttackPower * FRGXContext->ScalingAttributeFactor;
 
 	if (FinalDamage > 0.0f)
 	{

@@ -39,7 +39,7 @@ class URGX_HitboxesManagerComponent;
 DECLARE_MULTICAST_DELEGATE_OneParam(FOnHandleDeath, int)
 
 /* Struct to inform about when the attack was received*/
-UCLASS()
+UCLASS(BlueprintType)
 class REGICIDEX_API ARGX_EnemyBase : public ARGX_PoolActor, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface, public IRGX_InteractInterface
 {
 	GENERATED_BODY()
@@ -129,6 +129,12 @@ public:
 
 	virtual void MoveToTarget(float DeltaTime, FVector TargetPos);
 	// ---------------------
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bWeak = false;
+
+	UFUNCTION(BlueprintCallable)
+	bool IsWeak();
 
 	void EnableInteraction();
 	void DisableInteraction();
