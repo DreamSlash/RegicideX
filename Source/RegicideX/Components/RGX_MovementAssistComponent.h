@@ -17,10 +17,10 @@ public:
 	URGX_MovementAssistComponent();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float ForwardMagnitude = 0.0f; //Movement magnitude
+	float ForwardMagnitude = 0.0f; //Movement magnitude
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float MovementSpeed = 1.0f;
+	float MovementSpeed = 1.0f;
 
 private:
 
@@ -32,7 +32,7 @@ private:
 
 protected:
 	// Called when the game starts
-	virtual void BeginPlay() override;
+	void BeginPlay() override;
 
 	void MoveForward(float DeltaTime);
 
@@ -40,15 +40,13 @@ protected:
 
 public:	
 	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable)
 	void SetMagnitudeAndSpeed(float Magnitude, float Speed);
 
 	UFUNCTION(BlueprintCallable)
 	void EnableMovementAssist();
-
-
 
 	UFUNCTION(BlueprintCallable)
 	void DisableMovementAssist();

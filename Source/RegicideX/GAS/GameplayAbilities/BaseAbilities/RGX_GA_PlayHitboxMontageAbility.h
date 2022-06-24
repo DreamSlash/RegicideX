@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "RegicideX/GAS/GameplayAbilities/RGX_GameplayAbility.h"
+#include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GameplayAbility.h"
 #include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RegicideX/GAS/RGX_GameplayEffectContext.h"
 #include "RGX_GA_PlayHitboxMontageAbility.generated.h"

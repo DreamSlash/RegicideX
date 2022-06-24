@@ -43,6 +43,9 @@ public:
 		USphereComponent* SphereCollider = nullptr;
 
 	UPROPERTY(EditAnywhere)
+		USceneComponent* FloorReturnPlace = nullptr;
+
+	UPROPERTY(EditAnywhere)
 		TArray<FVector> BombingPoints;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -111,5 +114,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 		void ChangeEyeColor(FLinearColor Color);
+
+	UFUNCTION(BlueprintCallable)
+		FVector GetEyeWorldLocation();
 
 };

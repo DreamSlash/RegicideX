@@ -21,7 +21,7 @@ void ARGX_DistanceAngelController::SetRandomLocationAroundTarget(float Distance)
 	ARGX_DistanceAngel* DistAngel = Cast<ARGX_DistanceAngel>(GetPawn());
 	const FVector OriginalLocation = DistAngel->GetActorLocation();
 	FVector LocationAroundPlayer = GenerateRandomLocationAroundPoint(DistAngel->TargetActor->GetTargetLocation(), Distance);
-	LocationAroundPlayer.Z = OriginalLocation.Z;
+	//LocationAroundPlayer.Z = OriginalLocation.Z;
 	UBlackboardComponent* BB = GetBlackboardComponent();
 	BB->SetValueAsVector(TEXT("TeleportLocation"), LocationAroundPlayer);
 }

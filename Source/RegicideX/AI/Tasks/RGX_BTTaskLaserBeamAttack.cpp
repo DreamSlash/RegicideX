@@ -19,7 +19,7 @@ EBTNodeResult::Type URGX_BTTaskLaserBeamAttack::ExecuteTask(UBehaviorTreeCompone
 	SpawnParams.Instigator = OwnerActor;
 
 	LaserWeapon = GetWorld()->SpawnActor<ARGX_LaserBeamWeapon>(LaserBeamClass, SpawnParams);
-	LaserWeapon->SetSourcePoint(OwnerActor->GetActorLocation());
+	LaserWeapon->SetSourcePoint(OwnerActor->GetEyeWorldLocation());
 	OwnerActor->LaserBeamRef = LaserWeapon;
 
 	bNotifyTick = true;
@@ -41,13 +41,13 @@ void URGX_BTTaskLaserBeamAttack::TickTask(UBehaviorTreeComponent& OwnerComp, uin
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 
-	const FVector ActorLocation = OwnerActor->GetActorLocation();
+	const FVector ActorLocation = OwnerActor->GetEyeWorldLocation();
 	const FVector EndPointLocation = LaserWeapon->EndPointMesh->K2_GetComponentLocation();
 
-	const FRotator RotOffset = UKismetMathLibrary::FindLookAtRotation(ActorLocation, EndPointLocation);
-	OwnerActor->SetActorRotation(RotOffset);
-
+	/*const FRotator RotOffset = UKismetMathLibrary::FindLookAtRotation(ActorLocation, EndPointLocation);
+	OwnerActor->SetActorRotation(RotOffset);*/
+	OwnerActor->RotateToTarget(DeltaSeconds);
 	LaserWeapon->MoveAndDrawRay(DeltaSeconds);
-
 	FinishLatentTask(OwnerComp, EBTNodeResult::InProgress);
+
 }

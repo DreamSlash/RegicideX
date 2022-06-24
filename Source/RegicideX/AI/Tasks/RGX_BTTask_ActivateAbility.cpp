@@ -10,7 +10,6 @@
 URGX_BTTask_ActivateAbility::URGX_BTTask_ActivateAbility()
 {
 	bCreateNodeInstance = true;
-
 }
 
 EBTNodeResult::Type URGX_BTTask_ActivateAbility::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
