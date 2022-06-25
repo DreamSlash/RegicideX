@@ -22,10 +22,15 @@ class REGICIDEX_API URGX_BTTask_BulletHell : public UBTTaskNode
 
 	ARGX_DistanceAngel* DistAngelPawn = nullptr;
 
+	float OriginalBulletHellSphereScale = 10.0;
+
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float MaxTime = 5.0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float MaxSize = 20.0;
 
 	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 

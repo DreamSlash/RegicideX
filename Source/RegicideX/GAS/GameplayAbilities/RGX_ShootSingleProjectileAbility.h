@@ -25,6 +25,9 @@ public:
 	UPROPERTY(EditAnywhere)
 		TSubclassOf<ARGX_Bullet> ProjectileClass;
 
+	UPROPERTY(EditAnywhere)
+		FVector Offset;
+
 	UFUNCTION()
 		void Shoot(APawn* Actor);
 };

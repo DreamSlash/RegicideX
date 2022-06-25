@@ -37,6 +37,10 @@ public:
 		UStaticMeshComponent* Ring_3_Mesh = nullptr;
 
 	UPROPERTY(EditAnywhere)
+		UStaticMeshComponent* BulletHellSphere = nullptr;
+
+
+	UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* LaserEndPointMesh = nullptr;
 
 	UPROPERTY(EditAnywhere)
