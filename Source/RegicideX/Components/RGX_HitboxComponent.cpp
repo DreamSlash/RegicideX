@@ -9,6 +9,8 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
+DEFINE_LOG_CATEGORY(LogHitbox);
+
 URGX_HitboxComponent::URGX_HitboxComponent()
 {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -32,11 +34,14 @@ void URGX_HitboxComponent::BeginPlay()
 		}
 	}
 
-	for (UShapeComponent* shape : Shapes)
+	if (ARGX_PlayerCharacter* player = Cast<ARGX_PlayerCharacter>(GetOwner()))
 	{
-		shape->OnComponentBeginOverlap.AddDynamic(this, &URGX_HitboxComponent::OnComponentOverlap);
+		for (UShapeComponent* shape : Shapes)
+		{
+			shape->OnComponentBeginOverlap.AddDynamic(this, &URGX_HitboxComponent::OnComponentOverlap);
+		}
 	}
-
+	
 	if (bStartActive)
 	{
 		ActivateHitbox();
@@ -47,6 +52,11 @@ void URGX_HitboxComponent::BeginPlay()
 		DeactivateHitbox();
 		DeactivateEffect();
 	}
+}
+
+void URGX_HitboxComponent::OnComponentEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+{
+	UE_LOG(LogTemp, Warning, TEXT("OnComponentEndOverlap: %s - %s"), *GetOwner()->GetName(), *OtherActor->GetName());
 }
 
 void URGX_HitboxComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
@@ -72,6 +82,8 @@ void URGX_HitboxComponent::EndPlay(EEndPlayReason::Type EndPlayReason)
 
 void URGX_HitboxComponent::ActivateHitbox()
 {
+	UE_LOG(LogHitbox, Display, TEXT("ActivateHitbox"));
+
 	const USceneComponent* Parent = GetAttachParent();
 	AActor* OwnerActor = Parent->GetAttachmentRootActor();
 
@@ -90,6 +102,7 @@ void URGX_HitboxComponent::ActivateHitbox()
 
 void URGX_HitboxComponent::DeactivateHitbox()
 {
+	UE_LOG(LogHitbox, Display, TEXT("DeactivateHitbox"));
 	//UE_LOG(LogTemp, Warning, TEXT("Deactivate Hitbox\n"));
 	for (UShapeComponent* Shape : Shapes)
 	{
@@ -102,7 +115,8 @@ void URGX_HitboxComponent::DeactivateHitbox()
 
 void URGX_HitboxComponent::ActivateEffect()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Activate Effect\n"));
+	UE_LOG(LogHitbox, Display, TEXT("ActivateEffect"));
+	//FDebug::DumpStackTraceToLog(TEXT("ActivateEffect"), ELogVerbosity::Display);
 	bEffectActivated = true;
 	for (UShapeComponent* Shape : Shapes)
 	{
@@ -113,7 +127,7 @@ void URGX_HitboxComponent::ActivateEffect()
 
 void URGX_HitboxComponent::DeactivateEffect()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Deactivate Effect\n"));
+	UE_LOG(LogHitbox, Display, TEXT("DeactivateEffect"));
 	bEffectActivated = false;
 	for (UShapeComponent* Shape : Shapes)
 	{
@@ -287,6 +301,10 @@ void URGX_HitboxComponent::OnComponentOverlap(
 	bool bFromSweep, 
 	const FHitResult& SweepResult)
 {
+	USceneComponent* Parent = GetAttachParent();
+	AActor* OwnerActor = Parent->GetAttachmentRootActor();
+
+	UE_LOG(LogHitbox, Display, TEXT("OnComponentOverlap: %s - %s"), *OwnerActor->GetName(), *OtherActor->GetName());
 	//UE_LOG(LogTemp, Warning, TEXT("On Component Overlap Hitbox\n"));
 	if (bEffectActivated == false)
 		return;
@@ -302,9 +320,7 @@ void URGX_HitboxComponent::OnComponentOverlap(
 	}
 
 	//UE_LOG(LogTemp, Warning, TEXT("Overlap\n"));
-	USceneComponent* Parent = GetAttachParent();
-	AActor* OwnerActor = Parent->GetAttachmentRootActor();
-
+	//AActor* OwnerActor = Parent->GetAttachmentRootActor();
 	if (!OwnerActor)
 	{
 		OwnerActor = GetOwner();
@@ -329,21 +345,21 @@ void URGX_HitboxComponent::OnComponentOverlap(
 
 	if (Attitude == TeamToApply && HitboxComponent == nullptr && CanApplyEffect)
 	{
-		/*
 		// Stopping for two frame. If probably should be done only for the owner and target actors and not for all actors.
 		ARGX_PlayerCharacter* player = Cast<ARGX_PlayerCharacter>(OwnerActor);
 		if (player)
 		{
 			if (Owner == nullptr) {
 				Owner = OwnerActor;
-				Owner->CustomTimeDilation = 0.0f;
+				Owner->CustomTimeDilation = 0.1f;
+				GetWorld()->GetTimerManager().SetTimer(PunchTimerHandle, this, &URGX_HitboxComponent::ResetCustomTimeDilation, 0.1, false);
+				//UGameplayStatics::PlayWorldCameraShake(GetWorld(), CameraShake, player->GetActorLocation(), 0.0, 10000.0);
 			}
 
-			OtherActor->CustomTimeDilation = 0.0f;
+			OtherActor->CustomTimeDilation = 0.1f;
 			ActorsWithTimeDilation.Add(OtherActor);
-			GetWorld()->GetTimerManager().SetTimer(PunchTimerHandle, this, &URGX_HitboxComponent::ResetCustomTimeDilation, 0.06666, false);
 		}
-		*/
+
 		ActorsHit.Add(OtherActor);
 		ApplyEffects(OtherActor);
 	}
@@ -392,7 +408,7 @@ void URGX_HitboxComponent::ResetCustomTimeDilation()
 {
 	if (Owner == nullptr && ActorsWithTimeDilation.Num() == 0)
 		return;
-
+	UE_LOG(LogHitbox, Display, TEXT("ResetCustomTimeDilation"));
 	Owner->CustomTimeDilation = 1.0f;
 	Owner = nullptr;
 	for (const auto& Enemy : ActorsWithTimeDilation) {
