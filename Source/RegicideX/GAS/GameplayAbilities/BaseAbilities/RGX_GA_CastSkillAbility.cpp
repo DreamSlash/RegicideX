@@ -26,14 +26,7 @@ void URGX_CastSkillAbility::ActivateAbility(const FGameplayAbilitySpecHandle Han
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	URGX_PlayMontageAndWaitForEvent* PlayMontageAndWaitForEventTask = URGX_PlayMontageAndWaitForEvent::PlayMontageAndWaitForEvent(
-		this, NAME_None, MontageToPlay, WaitForEventTags, MontagePlayRate, MontageStartSectionName, true);
-	PlayMontageAndWaitForEventTask->OnInterrupted.AddDynamic(this, &URGX_CastSkillAbility::OnFailedAbilityMontage);
-	PlayMontageAndWaitForEventTask->OnBlendOut.AddDynamic(this, &URGX_CastSkillAbility::OnSuccessfulAbilityMontage);
-	PlayMontageAndWaitForEventTask->OnCancelled.AddDynamic(this, &URGX_CastSkillAbility::OnFailedAbilityMontage);
-	PlayMontageAndWaitForEventTask->OnCompleted.AddDynamic(this, &URGX_CastSkillAbility::OnSuccessfulAbilityMontage);
-	PlayMontageAndWaitForEventTask->EventReceived.AddDynamic(this, &URGX_CastSkillAbility::OnReceivedEvent);
-	PlayMontageAndWaitForEventTask->ReadyForActivation();
+	PlayMontageBySectionName(MontageStartSectionName);
 }
 
 void URGX_CastSkillAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
@@ -54,4 +47,16 @@ void URGX_CastSkillAbility::OnFailedAbilityMontage(FGameplayTag EventTag, FGamep
 void URGX_CastSkillAbility::OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData)
 {
 
+}
+
+void URGX_CastSkillAbility::PlayMontageBySectionName(const FName& SectionName)
+{
+	URGX_PlayMontageAndWaitForEvent* PlayMontageAndWaitForEventTask = URGX_PlayMontageAndWaitForEvent::PlayMontageAndWaitForEvent(
+		this, NAME_None, MontageToPlay, WaitForEventTags, MontagePlayRate, SectionName, true);
+	PlayMontageAndWaitForEventTask->OnInterrupted.AddDynamic(this, &URGX_CastSkillAbility::OnFailedAbilityMontage);
+	PlayMontageAndWaitForEventTask->OnBlendOut.AddDynamic(this, &URGX_CastSkillAbility::OnSuccessfulAbilityMontage);
+	PlayMontageAndWaitForEventTask->OnCancelled.AddDynamic(this, &URGX_CastSkillAbility::OnFailedAbilityMontage);
+	PlayMontageAndWaitForEventTask->OnCompleted.AddDynamic(this, &URGX_CastSkillAbility::OnSuccessfulAbilityMontage);
+	PlayMontageAndWaitForEventTask->EventReceived.AddDynamic(this, &URGX_CastSkillAbility::OnReceivedEvent);
+	PlayMontageAndWaitForEventTask->ReadyForActivation();
 }
