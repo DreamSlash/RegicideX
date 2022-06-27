@@ -15,6 +15,7 @@ class UStaticMeshComponent;
 class USphereComponent;
 class UMaterialInterface;
 class UMaterialInstanceDynamic;
+class URGX_HitboxComponent;
 
 UCLASS()
 class REGICIDEX_API ARGX_DistanceAngel : public ARGX_EnemyBase
@@ -39,9 +40,18 @@ public:
 	UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* BulletHellSphere = nullptr;
 
+	UPROPERTY(EditAnywhere)
+		USphereComponent* BulletHellSphereCollider = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		URGX_HitboxComponent* BHHitboxComponent = nullptr;
 
 	UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* LaserEndPointMesh = nullptr;
+
+
+	UPROPERTY(EditAnywhere)
+		UStaticMeshComponent* BulletHellOutSphere = nullptr;
 
 	UPROPERTY(EditAnywhere)
 		USphereComponent* SphereCollider = nullptr;

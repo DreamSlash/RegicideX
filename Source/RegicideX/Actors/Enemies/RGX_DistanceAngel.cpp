@@ -12,6 +12,7 @@
 #include "Math/UnrealMathUtility.h"
 
 #include "Components/WidgetComponent.h"
+#include "../../Components/RGX_HitboxComponent.h"
 
 ARGX_DistanceAngel::ARGX_DistanceAngel() : ARGX_EnemyBase()
 {
@@ -19,6 +20,7 @@ ARGX_DistanceAngel::ARGX_DistanceAngel() : ARGX_EnemyBase()
 	Ring_2_Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ring2"));
 	Ring_3_Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ring3"));
 	BulletHellSphere = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletHellSphere"));
+	BulletHellOutSphere = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletHellOutSphere"));
 
 	SphereCollider = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollider"));
 
@@ -39,8 +41,15 @@ ARGX_DistanceAngel::ARGX_DistanceAngel() : ARGX_EnemyBase()
 
 	HealthDisplayWidgetComponent->SetupAttachment(SphereCollider);
 	CombatTargetWidgetComponent->SetupAttachment(SphereCollider);
+	BulletHellOutSphere->SetupAttachment(SphereCollider);
 
+	BHHitboxComponent = CreateDefaultSubobject<URGX_HitboxComponent>(TEXT("BHHitboxComponent"));
+	BHHitboxComponent->SetupAttachment(SphereCollider);
+
+	BulletHellSphereCollider = CreateDefaultSubobject<USphereComponent>(TEXT("BulletHellSphereCollider"));
+	BulletHellSphereCollider->SetupAttachment(BHHitboxComponent);
 	BulletHellSphere->SetHiddenInGame(true);
+
 }
 
 void ARGX_DistanceAngel::BeginPlay()
