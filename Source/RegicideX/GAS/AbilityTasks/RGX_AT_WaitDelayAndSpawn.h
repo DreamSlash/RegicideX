@@ -8,6 +8,7 @@
 #include "RGX_AT_WaitDelayAndSpawn.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWaitDelayDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSpawnDelegate);
 /**
  * 
  */
@@ -20,6 +21,9 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FWaitDelayDelegate	OnFinish;
 
+	UPROPERTY(BlueprintAssignable)
+	FSpawnDelegate OnSpawn;
+
 	virtual void Activate() override;
 
 	/** Return debug string describing task */
@@ -27,7 +31,7 @@ public:
 
 	/** Wait specified time. This is functionally the same as a standard Delay node. Spawn specified actors at a specified rate */
 	UFUNCTION(BlueprintCallable, Category = "Ability|Tasks", meta = (HidePin = "OwningAbility", DefaultToSelf = "OwningAbility", BlueprintInternalUseOnly = "TRUE"))
-	static URGX_AT_WaitDelayAndSpawn* WaitDelayAndSpawn(UGameplayAbility* OwningAbility, float Time);
+	static URGX_AT_WaitDelayAndSpawn* WaitDelayAndSpawn(UGameplayAbility* OwningAbility, float Time, float SpawnRate);
 
 	void TickTask(float DeltaTime) override;
 	void OnDestroy(bool AbilityIsEnding) override;
@@ -35,6 +39,11 @@ public:
 private:
 	void OnTimeFinish();
 
+	/* Time delay variables */
 	float Time;
 	float TimeStarted;
+
+	/* Time spawn variables */
+	float NextSpawnTime;
+	float SpawnRate;
 };

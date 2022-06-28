@@ -4,6 +4,7 @@
 #include "RegicideX/GAS/GameplayAbilities/DistanceAngel/RGX_GA_BulletHell.h"
 #include "Components/SceneComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "RegicideX/GAS/AbilityTasks/RGX_AT_WaitDelayAndSpawn.h"
 
 bool URGX_GA_BulletHell::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const
 {
@@ -18,6 +19,11 @@ void URGX_GA_BulletHell::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 
 	TArray<UActorComponent*> BulletOrigins = GetAvatarActorFromActorInfo()->GetComponentsByTag(USceneComponent::StaticClass(), FName("BulletHell"));
 
+	URGX_AT_WaitDelayAndSpawn* WaitDelayAndSpawnTask = URGX_AT_WaitDelayAndSpawn::WaitDelayAndSpawn(this, 5.0f, 1.0f);
+	WaitDelayAndSpawnTask->OnFinish.AddDynamic(this, &URGX_GA_BulletHell::OnFinished);
+	WaitDelayAndSpawnTask->ReadyForActivation();
+
+	/*
 	for (const UActorComponent* ActorOrigin : BulletOrigins)
 	{
 		const USceneComponent* SceneOrigin = Cast<USceneComponent>(ActorOrigin);
@@ -27,9 +33,14 @@ void URGX_GA_BulletHell::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 		const FVector BulletDestination = BulletOrigin + SceneOrigin->GetForwardVector() * 1000.0f;
 		UKismetSystemLibrary::DrawDebugLine(GetWorld(), BulletOrigin, BulletDestination, FColor(255, 0, 0), 5.0, 5.0f);
 	}
+	*/
 }
 
 void URGX_GA_BulletHell::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+}
+
+void URGX_GA_BulletHell::OnFinished()
+{
 }

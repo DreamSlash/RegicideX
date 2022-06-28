@@ -11,14 +11,16 @@ URGX_AT_WaitDelayAndSpawn::URGX_AT_WaitDelayAndSpawn(const FObjectInitializer& O
 	bTickingTask = true;
 	Time = 0.f;
 	TimeStarted = 0.f;
+	NextSpawnTime = 0.0f;
 }
 
-URGX_AT_WaitDelayAndSpawn* URGX_AT_WaitDelayAndSpawn::WaitDelayAndSpawn(UGameplayAbility* OwningAbility, float Time)
+URGX_AT_WaitDelayAndSpawn* URGX_AT_WaitDelayAndSpawn::WaitDelayAndSpawn(UGameplayAbility* OwningAbility, float Time, float SpawnRate)
 {
 	UAbilitySystemGlobals::NonShipping_ApplyGlobalAbilityScaler_Duration(Time);
 
 	URGX_AT_WaitDelayAndSpawn* MyObj = NewAbilityTask<URGX_AT_WaitDelayAndSpawn>(OwningAbility);
 	MyObj->Time = Time;
+	MyObj->SpawnRate = SpawnRate;
 	return MyObj;
 }
 
@@ -26,6 +28,7 @@ void URGX_AT_WaitDelayAndSpawn::Activate()
 {
 	UWorld* World = GetWorld();
 	TimeStarted = World->GetTimeSeconds();
+	NextSpawnTime = TimeStarted;
 
 	// Use a dummy timer handle as we don't need to store it for later but we don't need to look for something to clear
 	FTimerHandle TimerHandle;
@@ -42,7 +45,17 @@ void URGX_AT_WaitDelayAndSpawn::TickTask(float DeltaTime)
 {
 	Super::TickTask(DeltaTime);
 
-	UE_LOG(LogTemp, Warning, TEXT("Bullet Hell Tick\n"));
+	UWorld* World = GetWorld();
+	float CurrentTime = World->GetTimeSeconds();
+	if (CurrentTime > NextSpawnTime)
+	{
+		NextSpawnTime = CurrentTime + SpawnRate;
+
+		if (ShouldBroadcastAbilityTaskDelegates())
+		{
+			OnSpawn.Broadcast();
+		}
+	}
 }
 
 void URGX_AT_WaitDelayAndSpawn::OnDestroy(bool AbilityIsEnding)
@@ -52,6 +65,8 @@ void URGX_AT_WaitDelayAndSpawn::OnDestroy(bool AbilityIsEnding)
 
 void URGX_AT_WaitDelayAndSpawn::OnTimeFinish()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Timer Finished\n"));
+
 	if (ShouldBroadcastAbilityTaskDelegates())
 	{
 		OnFinish.Broadcast();
