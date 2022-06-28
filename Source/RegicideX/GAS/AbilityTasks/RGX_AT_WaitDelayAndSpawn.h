@@ -7,10 +7,10 @@
 #include "Abilities/Tasks/AbilityTask.h"
 #include "RGX_AT_WaitDelayAndSpawn.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWaitDelayDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FWaitDelayAndSpawnDelegate);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FSpawnDelegate);
 /**
- * 
+  Wait a delay time while calling spawn delegate at a specified rate
  */
 UCLASS()
 class REGICIDEX_API URGX_AT_WaitDelayAndSpawn : public UAbilityTask
@@ -19,7 +19,7 @@ class REGICIDEX_API URGX_AT_WaitDelayAndSpawn : public UAbilityTask
 
 public:
 	UPROPERTY(BlueprintAssignable)
-	FWaitDelayDelegate	OnFinish;
+	FWaitDelayAndSpawnDelegate	OnFinish;
 
 	UPROPERTY(BlueprintAssignable)
 	FSpawnDelegate OnSpawn;

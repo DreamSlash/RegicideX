@@ -5,20 +5,11 @@
 #include "Components/SceneComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "RegicideX/GAS/AbilityTasks/RGX_AT_WaitDelayAndSpawn.h"
-#include "RegicideX/Actors/Weapons/RGX_ClusteredBullet.h"
-#include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
+#include "RegicideX\Actors\Weapons\RGX_ClusteredBullet.h"
 
 bool URGX_GA_BulletHell::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const
 {
-	bool bResult = Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
-	if (bResult == false)
-		return false;
-
-	ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(GetAvatarActorFromActorInfo());
-	if (Enemy == nullptr)
-		return false;
-
-	return true;
+	return Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
 }
 
 void URGX_GA_BulletHell::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)

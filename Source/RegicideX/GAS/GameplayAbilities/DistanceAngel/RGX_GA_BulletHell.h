@@ -6,6 +6,8 @@
 #include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GameplayAbility.h"
 #include "RGX_GA_BulletHell.generated.h"
 
+class ARGX_ClusteredBullet;
+
 /**
  * 
  */
@@ -22,6 +24,14 @@ protected:
 	void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 protected:
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<ARGX_ClusteredBullet> BulletBP;
+
+	TArray<UActorComponent*> BulletOrigins;
+
+	UFUNCTION()
+	void OnSpawnBullet();
+
 	UFUNCTION()
 	void OnFinished();
 };
