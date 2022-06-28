@@ -3,6 +3,8 @@
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 #include "RegicideX/Actors/Weapons/RGX_SlowWall.h"
 
+#pragma optimize("", off)
+
 void URGX_SlowWallAbility::OnAttackWindow()
 {
 	const AActor* AvatarActor = GetAvatarActorFromActorInfo();
@@ -10,7 +12,10 @@ void URGX_SlowWallAbility::OnAttackWindow()
 	const AActor* Player = Enemy->TargetActor;
 
 	const FVector Forward = Player->GetActorForwardVector();
-	const FVector WallLocation = Player->GetActorLocation() + Forward * DistanceToTarget;
+	UStaticMeshComponent* comp = Cast<UStaticMeshComponent>(Player->GetComponentByClass(UStaticMeshComponent::StaticClass()));
+	FVector WallLocation = Player->GetActorLocation() + Forward * DistanceToTarget;
+	WallLocation.Z = 100.0f; // Hack duro
+	//const FVector WallLocation = comp->GetComponentLocation() + Forward * DistanceToTarget;
 	const FTransform WallTransform(WallLocation);
 	GetWorld()->SpawnActor<ARGX_SlowWall>(WallActorClass, WallTransform);
 }

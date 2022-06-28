@@ -28,7 +28,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float AttackTime = 0.0f;
 
-private:
+protected:
 	FTimerHandle TimerHandle;
 	
 	bool bEndChannelingLoop = false;

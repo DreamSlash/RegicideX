@@ -49,4 +49,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	FGameplayTagContainer WaitForEventTags;
 
+	UPROPERTY()
+	class URGX_PlayMontageAndWaitForEvent* PlayMontageAndWaitForEventTask = nullptr;
+
 };

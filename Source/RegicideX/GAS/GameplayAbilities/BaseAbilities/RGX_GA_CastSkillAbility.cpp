@@ -51,7 +51,16 @@ void URGX_CastSkillAbility::OnReceivedEvent(FGameplayTag EventTag, FGameplayEven
 
 void URGX_CastSkillAbility::PlayMontageBySectionName(const FName& SectionName)
 {
-	URGX_PlayMontageAndWaitForEvent* PlayMontageAndWaitForEventTask = URGX_PlayMontageAndWaitForEvent::PlayMontageAndWaitForEvent(
+	if (PlayMontageAndWaitForEventTask)
+	{
+		PlayMontageAndWaitForEventTask->OnInterrupted.RemoveDynamic(this, &URGX_CastSkillAbility::OnFailedAbilityMontage);
+		PlayMontageAndWaitForEventTask->OnBlendOut.RemoveDynamic(this, &URGX_CastSkillAbility::OnSuccessfulAbilityMontage);
+		PlayMontageAndWaitForEventTask->OnCancelled.RemoveDynamic(this, &URGX_CastSkillAbility::OnFailedAbilityMontage);
+		PlayMontageAndWaitForEventTask->OnCompleted.RemoveDynamic(this, &URGX_CastSkillAbility::OnSuccessfulAbilityMontage);
+		PlayMontageAndWaitForEventTask->EventReceived.RemoveDynamic(this, &URGX_CastSkillAbility::OnReceivedEvent);
+	}
+
+	PlayMontageAndWaitForEventTask = URGX_PlayMontageAndWaitForEvent::PlayMontageAndWaitForEvent(
 		this, NAME_None, MontageToPlay, WaitForEventTags, MontagePlayRate, SectionName, true);
 	PlayMontageAndWaitForEventTask->OnInterrupted.AddDynamic(this, &URGX_CastSkillAbility::OnFailedAbilityMontage);
 	PlayMontageAndWaitForEventTask->OnBlendOut.AddDynamic(this, &URGX_CastSkillAbility::OnSuccessfulAbilityMontage);

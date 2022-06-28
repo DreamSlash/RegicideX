@@ -37,9 +37,14 @@ void URGX_MageAngelAttackAbility::OnReceivedEvent(FGameplayTag EventTag, FGamepl
 
 void URGX_MageAngelAttackAbility::OnStartChannelLoop()
 {
+	if (bEndChannelingLoop) return; // Gets called after invalidating the timer handle... check this
+
 	if (ChannelingTime > 0.0f)
 	{
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]() { bEndChannelingLoop = true; }, ChannelingTime, false);
+		if (TimerHandle.IsValid() == false)
+		{
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]() { bEndChannelingLoop = true; }, ChannelingTime, false);
+		}
 	}
 	else
 	{
@@ -51,15 +56,21 @@ void URGX_MageAngelAttackAbility::OnEndChannelLoop()
 {
 	if (bEndChannelingLoop)
 	{
+		TimerHandle.Invalidate();
 		PlayMontageBySectionName(FName("attack_start"));
 	}
 }
 
 void URGX_MageAngelAttackAbility::OnStartAttackLoop()
 {
+	if (bEndAttackingLoop) return;
+
 	if (AttackTime > 0.0f)
 	{
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]() { bEndAttackingLoop = true; }, AttackTime, false);
+		if (TimerHandle.IsValid() == false)
+		{
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]() { bEndAttackingLoop = true; }, AttackTime, false);
+		}
 	}
 	else
 	{
@@ -71,6 +82,7 @@ void URGX_MageAngelAttackAbility::OnEndAttackLoop()
 {
 	if (bEndAttackingLoop)
 	{
+		TimerHandle.Invalidate();
 		PlayMontageBySectionName(FName("attack_end"));
 	}
 }

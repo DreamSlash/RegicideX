@@ -41,6 +41,8 @@ void ARGX_SlowWall::BeginPlay()
 		RiseTimeLine.SetTimelineFinishedFunc(TimelineFinishedCallback);
 
 		RiseTimeLine.PlayFromStart();
+
+		InitialZ = GetActorLocation().Z;
 	}
 }
 
@@ -53,7 +55,7 @@ void ARGX_SlowWall::Tick(float DeltaTime)
 		RiseTimeLine.TickTimeline(DeltaTime);
 
 		FVector location = GetActorLocation();
-		location.Z = WallCurve->GetFloatValue(RiseTimeLine.GetPlaybackPosition());
+		location.Z = InitialZ + WallCurve->GetFloatValue(RiseTimeLine.GetPlaybackPosition());
 		SetActorLocation(location);
 	}
 }
