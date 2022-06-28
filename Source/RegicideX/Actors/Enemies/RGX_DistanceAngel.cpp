@@ -189,5 +189,12 @@ void ARGX_DistanceAngel::HandleDamage(
 		Ring_3_Mesh->SetSimulatePhysics(true);
 		PrimaryActorTick.bCanEverTick = false;
 		DestroyMyself(22.0f);
+
+		HandleDeath();
 	}
+}
+
+void ARGX_DistanceAngel::HandleDeath()
+{
+	Super::HandleDeath();
 }
