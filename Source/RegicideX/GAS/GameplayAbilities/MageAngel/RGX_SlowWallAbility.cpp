@@ -3,8 +3,6 @@
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 #include "RegicideX/Actors/Weapons/RGX_SlowWall.h"
 
-#pragma optimize("", off)
-
 void URGX_SlowWallAbility::OnAttackWindow()
 {
 	const AActor* AvatarActor = GetAvatarActorFromActorInfo();
