@@ -26,7 +26,20 @@ protected:
 protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<ARGX_ClusteredBullet> BulletBP;
+	
+	UPROPERTY(EditDefaultsOnly)
+	float FireRate = 0.2f;
 
+	UPROPERTY(EditDefaultsOnly)
+	float FireTime = 5.0f;
+
+	UPROPERTY(EditDefaultsOnly)
+	float LowerBoundPitchOffset = 10.0f;
+
+	UPROPERTY(EditDefaultsOnly)
+	float UpperBoundPitchOffset = 20.0f;
+
+	AActor* TargetActor = nullptr;
 	TArray<UActorComponent*> BulletOrigins;
 
 	UFUNCTION()

@@ -7,6 +7,7 @@
 #include "RegicideX/GAS/AbilityTasks/RGX_AT_WaitDelayAndSpawn.h"
 #include "RegicideX/Actors/Weapons/RGX_ClusteredBullet.h"
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
+#include "Kismet/KismetMathLibrary.h"
 
 bool URGX_GA_BulletHell::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const
 {
@@ -32,7 +33,10 @@ void URGX_GA_BulletHell::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 		EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
 	}
 
-	URGX_AT_WaitDelayAndSpawn* WaitDelayAndSpawnTask = URGX_AT_WaitDelayAndSpawn::WaitDelayAndSpawn(this, 5.0f, 1.0f);
+	ARGX_EnemyBase* EnemyBase = Cast<ARGX_EnemyBase>(GetAvatarActorFromActorInfo());
+	TargetActor = EnemyBase->TargetActor;
+
+	URGX_AT_WaitDelayAndSpawn* WaitDelayAndSpawnTask = URGX_AT_WaitDelayAndSpawn::WaitDelayAndSpawn(this, FireTime, FireRate);
 	WaitDelayAndSpawnTask->OnSpawn.AddDynamic(this, &URGX_GA_BulletHell::OnSpawnBullet);
 	WaitDelayAndSpawnTask->OnFinish.AddDynamic(this, &URGX_GA_BulletHell::OnFinished);
 	WaitDelayAndSpawnTask->ReadyForActivation();
@@ -47,14 +51,22 @@ void URGX_GA_BulletHell::OnSpawnBullet()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Spawn Bullet\n"));
 
+	const FVector TargetLocation = TargetActor->GetActorLocation();
+
 	for (const UActorComponent* ActorOrigin : BulletOrigins)
 	{
 		const USceneComponent* SceneOrigin = Cast<USceneComponent>(ActorOrigin);
 		const FVector BulletOrigin = SceneOrigin->GetComponentLocation();
-		const FRotator BulletRotation = SceneOrigin->GetComponentRotation();
+		const FRotator OriginRotation = SceneOrigin->GetComponentRotation();
 
 		const FVector BulletDestination = BulletOrigin + SceneOrigin->GetForwardVector() * 1000.0f;
-		UKismetSystemLibrary::DrawDebugLine(GetWorld(), BulletOrigin, BulletDestination, FColor(255, 0, 0), 5.0, 5.0f);
+		//UKismetSystemLibrary::DrawDebugLine(GetWorld(), BulletOrigin, BulletDestination, FColor(255, 0, 0), 5.0, 5.0f);
+
+		FVector OriginToTarget = TargetLocation - BulletOrigin;
+		OriginToTarget.Normalize();
+
+		FRotator BulletRotation = OriginRotation;
+		BulletRotation.Pitch = OriginToTarget.Rotation().Pitch + FMath::FRandRange(-LowerBoundPitchOffset, UpperBoundPitchOffset);
 
 		ARGX_ClusteredBullet* Bullet = GetWorld()->SpawnActor<ARGX_ClusteredBullet>(BulletBP, BulletOrigin, BulletRotation);
 	}
