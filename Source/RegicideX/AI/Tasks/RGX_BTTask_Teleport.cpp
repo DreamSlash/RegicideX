@@ -4,12 +4,13 @@
 #include "AIController.h"
 
 #include "BehaviorTree/BlackboardComponent.h"
-
 #include "../../Actors/Enemies/RGX_DistanceAngel.h"
 #include "Components/SphereComponent.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 EBTNodeResult::Type URGX_BTTask_Teleport::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+
 	FName KeyName = BlackboardKey.SelectedKeyName;
 
 	const AAIController* AIController = OwnerComp.GetAIOwner();
@@ -17,7 +18,12 @@ EBTNodeResult::Type URGX_BTTask_Teleport::ExecuteTask(UBehaviorTreeComponent& Ow
 
 	ARGX_DistanceAngel* ControlledPawn = Cast<ARGX_DistanceAngel>(AIController->GetPawn());
 
+	FVector EndDrawLocation = Location; EndDrawLocation.Z = ControlledPawn->GetEyeWorldLocation().Z;
+
+	UKismetSystemLibrary::DrawDebugLine(GetWorld(),ControlledPawn->GetEyeWorldLocation(),EndDrawLocation,FColor(255, 0, 100),44.0,5.0f);
+
 	const FVector CapsuleColliderLocation = ControlledPawn->GetActorLocation();
+
 	Location.Z = CapsuleColliderLocation.Z;
 	ControlledPawn->SetActorLocation(Location);
 
@@ -28,18 +34,3 @@ EBTNodeResult::Type URGX_BTTask_Teleport::ExecuteTask(UBehaviorTreeComponent& Ow
 
 	return EBTNodeResult::Succeeded;
 }
-
-//EBTNodeResult::Type URGX_BTTask_Teleport::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
-//{
-//	FName KeyName = BlackboardKey.SelectedKeyName;
-// 
-//	const AAIController* AIController = OwnerComp.GetAIOwner();
-//	FVector Location = AIController->GetBlackboardComponent()->GetValueAsVector(KeyName);
-//
-//	APawn* ControlledPawn = AIController->GetPawn();
-//
-//	ControlledPawn->SetActorLocation(Location);
-//
-//	return EBTNodeResult::Succeeded;
-//}
-

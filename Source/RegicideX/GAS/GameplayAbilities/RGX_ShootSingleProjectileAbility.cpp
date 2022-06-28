@@ -21,7 +21,7 @@ void URGX_ShootSingleProjectileAbility::ActivateAbility(const FGameplayAbilitySp
 void URGX_ShootSingleProjectileAbility::Shoot(APawn* Actor)
 {
 	ARGX_DistanceAngel* Angel = Cast<ARGX_DistanceAngel>(Actor);
-	const FVector ProjectileLocation = Angel->GetEyeWorldLocation() + Angel->GetActorForwardVector() * 200.0;
+	const FVector ProjectileLocation = Angel->GetEyeWorldLocation() + Angel->GetActorForwardVector() * 200.0 + Offset;
 
 	FTransform BulletTransform(FRotator(),ProjectileLocation, FVector(0.1));
 
