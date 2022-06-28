@@ -132,4 +132,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 		FVector GetEyeWorldLocation();
 
+	// Overridable Events
+	virtual void HandleDamage(
+		float DamageAmount,
+		const FHitResult& HitInfo,
+		const struct FGameplayTagContainer& DamageTags,
+		ARGX_CharacterBase* InstigatorCharacter,
+		AActor* DamageCauser) override;
+
 };

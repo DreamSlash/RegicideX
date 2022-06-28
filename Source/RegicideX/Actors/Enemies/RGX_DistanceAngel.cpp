@@ -2,6 +2,8 @@
 
 #include "RGX_DistanceAngel.h"
 
+#include "AIController.h"
+#include "BrainComponent.h"
 #include "Components/MCV_AbilitySystemComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/StaticMeshComponent.h"
@@ -12,7 +14,7 @@
 #include "Math/UnrealMathUtility.h"
 
 #include "Components/WidgetComponent.h"
-#include "../../Components/RGX_HitboxComponent.h"
+#include "RegicideX/Components/RGX_HitboxComponent.h"
 
 ARGX_DistanceAngel::ARGX_DistanceAngel() : ARGX_EnemyBase()
 {
@@ -49,6 +51,8 @@ ARGX_DistanceAngel::ARGX_DistanceAngel() : ARGX_EnemyBase()
 	BulletHellSphereCollider = CreateDefaultSubobject<USphereComponent>(TEXT("BulletHellSphereCollider"));
 	BulletHellSphereCollider->SetupAttachment(BHHitboxComponent);
 	BulletHellSphere->SetHiddenInGame(true);
+
+	SetActorEnableCollision(true);
 
 }
 
@@ -158,4 +162,32 @@ void ARGX_DistanceAngel::ChangeEyeColor(FLinearColor Color)
 FVector ARGX_DistanceAngel::GetEyeWorldLocation()
 {
 	return GetTransform().TransformPosition(SphereCollider->GetRelativeLocation());
+}
+
+void ARGX_DistanceAngel::HandleDamage(
+	float DamageAmount,
+	const FHitResult& HitInfo,
+	const struct FGameplayTagContainer& DamageTags,
+	ARGX_CharacterBase* InstigatorCharacter,
+	AActor* DamageCauser)
+{
+	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser);
+
+	if (IsAlive() == false)
+	{
+		AAIController* AiController = Cast<AAIController>(GetController());
+		AiController->GetBrainComponent()->StopLogic(FString("Character has died."));
+
+		SphereCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		if (LaserBeamRef != nullptr)
+		{
+			LaserBeamRef->Destroy();
+		}
+
+		Ring_1_Mesh->SetSimulatePhysics(true);
+		Ring_2_Mesh->SetSimulatePhysics(true);
+		Ring_3_Mesh->SetSimulatePhysics(true);
+		PrimaryActorTick.bCanEverTick = false;
+		DestroyMyself(22.0f);
+	}
 }

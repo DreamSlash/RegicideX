@@ -1,18 +1,12 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Abilities/MCV_GameplayAbility.h"
+#include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GameplayAbility.h"
 #include "RGX_TeleportAbility.generated.h"
-
-/**
- * 
- */
 
 
 UCLASS()
-class REGICIDEX_API URGX_TeleportAbility : public UMCV_GameplayAbility
+class REGICIDEX_API URGX_TeleportAbility : public URGX_GameplayAbility
 {
 	GENERATED_BODY()
 

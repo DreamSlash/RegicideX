@@ -4,6 +4,7 @@
 #include "RGX_ShootProjectilesAbility.h"
 #include "RegicideX\Actors\Enemies\RGX_DistanceAngel.h"
 #include "RegicideX\Actors\Weapons\RGX_Bullet.h"
+#include "RegicideX\Components\RGX_HitboxesManagerComponent.h"
 
 URGX_ShootProjectilesAbility::URGX_ShootProjectilesAbility()
 {
@@ -41,6 +42,8 @@ void URGX_ShootProjectilesAbility::Shoot(ARGX_DistanceAngel* DistAngel)
 		const FVector BulletScale(0.1);
 		FTransform BulletTransform(BulletRotation, BulletPosition, BulletScale);
 
-		GetWorld()->SpawnActor<ARGX_Bullet>(ProjectileClass, BulletTransform, SpawnParameters);
+		//ARGX_Bullet* Bullet = GetWorld()->SpawnActor<ARGX_Bullet>(ProjectileClass, BulletTransform, SpawnParameters);
+		//URGX_HitboxesManagerComponent* HitboxComponent = Bullet->FindComponentByClass<URGX_HitboxesManagerComponent>();
+		//HitboxComponent->GetHitboxByTag(HitboxTag);
 	}
 }
