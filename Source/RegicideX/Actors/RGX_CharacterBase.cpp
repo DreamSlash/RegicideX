@@ -76,6 +76,10 @@ void ARGX_CharacterBase::HandleDamage(
 	ARGX_CharacterBase* InstigatorCharacter, 
 	AActor* DamageCauser)
 {
+	// Add the Status.Dead tag if not alive to avoid getting affected by Gameplay Effects.
+	if(IsAlive() == false)
+		GetAbilitySystemComponent()->AddLooseGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.Dead")));
+
 	OnDamaged(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser);
 }
 
@@ -106,7 +110,6 @@ void ARGX_CharacterBase::AddStartupGameplayAbilities()
 			FGameplayAbilitySpec AbilitySpec(AbilityClass, 1, static_cast<int32>(StartupAbility.InputID));
 			AbilitySystemComponent->GiveAbility(AbilitySpec);
 		}
-		//AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(StartupAbility.Ability, GetCharacterLevel(), StartupAbility.InputID, this));
 	}
 
 	// Apply effects, such as initializing the base attributes.
@@ -139,7 +142,7 @@ void ARGX_CharacterBase::RemoveStartupGameplayAbilities()
 	{
 		FRGX_AbilityInitData Ability;
 		Ability.InputID = ERGX_AbilityInputID(Spec.InputID);
-		if (Spec.SourceObject == this) //&& GameplayAbilities.Contains(Ability))
+		if (Spec.SourceObject == this)
 		{
 			for (const auto& GA : GameplayAbilities)
 			{

@@ -39,7 +39,9 @@ void UExecution_Damage::Execute_Implementation(const FGameplayEffectCustomExecut
 	const FGameplayTagContainer* SourceTags = Spec.CapturedSourceTags.GetAggregatedTags();
 	const FGameplayTagContainer* TargetTags = Spec.CapturedTargetTags.GetAggregatedTags();
 
-	if (TargetTags->HasTag(FGameplayTag::RequestGameplayTag(FName("Status.Invulnerable"))) == true)
+	// If invulnerable or dead, not damage execution to apply.
+	if (TargetTags->HasTag(FGameplayTag::RequestGameplayTag(FName("Status.Invulnerable"))) == true ||
+		TargetTags->HasTag(FGameplayTag::RequestGameplayTag(FName("Status.Dead"))) == true)
 	{
 		return;
 	}

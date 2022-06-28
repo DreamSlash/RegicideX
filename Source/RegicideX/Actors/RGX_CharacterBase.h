@@ -85,6 +85,7 @@ protected:
 		AActor* DamageCauser);
 
 	virtual void HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags);
+
 	UFUNCTION(BlueprintCallable)
 	virtual void HandleDeath();
 

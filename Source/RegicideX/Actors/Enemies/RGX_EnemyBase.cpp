@@ -2,6 +2,8 @@
 
 
 #include "RGX_EnemyBase.h"
+#include "AIController.h"
+#include "BrainComponent.h"
 #include "Components/MCV_AbilitySystemComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
@@ -40,8 +42,8 @@ void ARGX_EnemyBase::Activate()
 {
 	Super::Activate();
 
-	HealthDisplayWidgetComponent->SetVisibility(true);
-	AddStartupGameplayAbilities();
+	//HealthDisplayWidgetComponent->SetVisibility(true);
+	//AddStartupGameplayAbilities();
 }
 
 void ARGX_EnemyBase::Deactivate()
@@ -62,6 +64,7 @@ void ARGX_EnemyBase::BeginPlay()
 	HideCombatTargetWidget();
 
 	// For initializing health bar
+	AddStartupGameplayAbilities();
 	HandleHealthChanged(0.0f, FGameplayTagContainer());
 }
 
@@ -158,31 +161,40 @@ void ARGX_EnemyBase::HandleDamage(
 	ARGX_CharacterBase* InstigatorCharacter,
 	AActor* DamageCauser)
 {
-	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser);
-
 	// TODO Show Damage Amount in C++ instead of Blueprints.
 
 
-	// Execution Damage percentage
-	// TODO Make Execution logic into a function
-	RecentDamage += DamageAmount;
-
-	FTimerDelegate TimerDel;
-	FTimerHandle TimerHandle;
-	TimerDel.BindUFunction(this, FName("EraseRecentDamage"), DamageAmount);
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, 2.f, false);
-
-	const float MaxHealth		= AbilitySystemComponent->GetNumericAttribute(AttributeSet->GetMaxHealthAttribute());
-	const float CurrentHealth	= AbilitySystemComponent->GetNumericAttribute(AttributeSet->GetHealthAttribute());
-	const float RecentDamageAsHealthPercentage = RecentDamage / MaxHealth;
-	const float HealthAsPercentage = CurrentHealth / MaxHealth;
-	UE_LOG(LogTemp, Warning, TEXT("Percentage Recent Damage: %f\n"), RecentDamageAsHealthPercentage);
-	if (RecentDamageAsHealthPercentage >= WeakenPercentage || HealthAsPercentage < 0.1f)
+	// If damage killed the actor, we should kill its AI Logic and clean weak status as it is already dead.
+	if (IsAlive() == false)
 	{
-		bWeak = true;
-		FGameplayEventData EventData;
-		AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Enemy.Weakened")), &EventData);
+		bWeak = false;
+		StopAnimMontage(); // If dead, make sure nothing is executing in order to execute death animation from AnimBP.
+		AAIController* AiController = Cast<AAIController>(GetController());
+		AiController->GetBrainComponent()->StopLogic(FString("Character dead."));
 	}
+	else
+	{
+		// Execution Damage percentage
+		// TODO Make Execution logic into a function
+		RecentDamage += DamageAmount;
+
+		FTimerDelegate TimerDel;
+		FTimerHandle TimerHandle;
+		TimerDel.BindUFunction(this, FName("EraseRecentDamage"), DamageAmount);
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, 2.f, false);
+
+		const float MaxHealth		= AbilitySystemComponent->GetNumericAttribute(AttributeSet->GetMaxHealthAttribute());
+		const float CurrentHealth	= AbilitySystemComponent->GetNumericAttribute(AttributeSet->GetHealthAttribute());
+		const float RecentDamageAsHealthPercentage = RecentDamage / MaxHealth;
+		const float HealthAsPercentage = CurrentHealth / MaxHealth;
+		UE_LOG(LogTemp, Warning, TEXT("Percentage Recent Damage: %f\n"), RecentDamageAsHealthPercentage);
+		if (/*RecentDamageAsHealthPercentage >= WeakenPercentage || */ HealthAsPercentage < WeakenPercentage)
+		{
+			bWeak = true;
+		}
+	}
+
+	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser);
 }
 
 void ARGX_EnemyBase::HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags)
@@ -202,9 +214,6 @@ void ARGX_EnemyBase::HandleHealthChanged(float DeltaValue, const struct FGamepla
 	{
 		OnHealthChanged(DeltaValue, EventTags);
 	}
-
-	//if (IsAlive() == false)
-	//	HandleDeath();
 }
 
 void ARGX_EnemyBase::HandleDeath()
@@ -214,7 +223,8 @@ void ARGX_EnemyBase::HandleDeath()
 	OnHandleDeathEvent.Broadcast(ScoreValue);
 	OnHandleDeath();
 	HealthDisplayWidgetComponent->SetVisibility(false);
-	Deactivate();
+	//Deactivate();
+	Destroy();
 }
 
 void ARGX_EnemyBase::SetGenericTeamId(const FGenericTeamId& TeamID)

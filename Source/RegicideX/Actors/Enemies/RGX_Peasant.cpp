@@ -19,6 +19,7 @@ void ARGX_Peasant::BeginPlay()
 	Super::BeginPlay();
 
 	AddGameplayTag(FGameplayTag::RequestGameplayTag(TEXT("Status.Alive")));
+	SetActorEnableCollision(true);
 }
 
 void ARGX_Peasant::Tick(float DeltaTime)
@@ -30,20 +31,45 @@ void ARGX_Peasant::Activate()
 {
 	Super::Activate();
 
-	SetActorEnableCollision(true);
-	GetMesh()->SetScalarParameterValueOnMaterials(FName("Amount (S)"), 0.0f); // Recover from evaporation effect when dying
-	GetMesh()->bPauseAnims = false; // Recover from pausing anims in GA_PeasantDeath
+	//SetActorEnableCollision(true);
+	//GetMesh()->SetScalarParameterValueOnMaterials(FName("Amount (S)"), 0.0f); // Recover from evaporation effect when dying
+	//GetMesh()->bPauseAnims = false; // Recover from pausing anims in GA_PeasantDeath
 
-	AAIController* PeasantController = Cast<AAIController>(GetController());
-	if (PeasantController)
-	{
-		PeasantController->GetBrainComponent()->StartLogic();
-	}
+	//AAIController* PeasantController = Cast<AAIController>(GetController());
+	//if (PeasantController)
+	//{
+	//	PeasantController->GetBrainComponent()->StartLogic();
+	//}
 }
 
 void ARGX_Peasant::Deactivate()
 {
 	Super::Deactivate();
+}
+
+void ARGX_Peasant::HandleDamage(
+	float DamageAmount, 
+	const FHitResult& HitInfo, 
+	const FGameplayTagContainer& DamageTags, 
+	ARGX_CharacterBase* InstigatorCharacter, 
+	AActor* DamageCauser)
+{
+	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser);
+
+	if (IsAlive())
+	{
+		if (IsWeak() == false)
+		{
+			// Play reaction hit animation.
+			PlayAnimMontage(AMReactionHit);
+		}
+		else
+			StopAnimMontage();
+	}
+	else
+	{
+		PlayAnimMontage(AMDeath);
+	}
 }
 
 void ARGX_Peasant::HandleDeath()
