@@ -12,6 +12,7 @@ ARGX_MageAngel::ARGX_MageAngel()
 
 	RingWaveSource = CreateDefaultSubobject<USceneComponent>(TEXT("RingWaveSource"));
 	RingWaveSource->SetupAttachment(RootComponent);
+	SetActorEnableCollision(true);
 }
 
 void ARGX_MageAngel::BeginPlay()

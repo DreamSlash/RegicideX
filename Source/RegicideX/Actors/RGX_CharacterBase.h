@@ -7,7 +7,7 @@
 #include "GenericTeamAgentInterface.h"
 #include "GameFramework/Character.h"
 #include "RegicideX/GAS/AttributeSets/RGX_AttributeSet.h"
-#include "RegicideX/GAS/GameplayAbilities/RGX_GameplayAbility.h"
+#include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GameplayAbility.h"
 #include "RGX_CharacterBase.generated.h"
 
 class UMCV_AbilitySystemComponent; // TODO Change to RGX

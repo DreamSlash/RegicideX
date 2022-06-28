@@ -50,8 +50,8 @@ void URGX_AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 	if (Data.EvaluatedData.Attribute == GetDamageAttribute())
 	{
 		// Get the source actor
-		AActor*				SourceActor = nullptr;
-		AController*		SourceController = nullptr;
+		AActor*	SourceActor					= nullptr;
+		AController* SourceController		= nullptr;
 		ARGX_CharacterBase* SourceCharacter = nullptr;
 		if (Source && Source->AbilityActorInfo.IsValid() && Source->AbilityActorInfo->AvatarActor.IsValid())
 		{

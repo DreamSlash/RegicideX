@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "RegicideX/GAS/GameplayAbilities/RGX_GameplayAbility.h"
+#include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GameplayAbility.h"
 #include "Abilities/Tasks/AbilityTask_WaitInputRelease.h"
 #include "RGX_GA_SpearsAbility.generated.h"
 
