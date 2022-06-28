@@ -34,13 +34,10 @@ void URGX_HitboxComponent::BeginPlay()
 		}
 	}
 
-	if (ARGX_PlayerCharacter* player = Cast<ARGX_PlayerCharacter>(GetOwner()))
+	for (UShapeComponent* shape : Shapes)
 	{
-		for (UShapeComponent* shape : Shapes)
-		{
-			shape->OnComponentBeginOverlap.AddDynamic(this, &URGX_HitboxComponent::OnComponentOverlap);
-		}
-	}
+		shape->OnComponentBeginOverlap.AddDynamic(this, &URGX_HitboxComponent::OnComponentOverlap);
+	}	
 	
 	if (bStartActive)
 	{
