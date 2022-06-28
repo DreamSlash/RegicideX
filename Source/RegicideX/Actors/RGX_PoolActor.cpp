@@ -9,7 +9,7 @@ ARGX_PoolActor::ARGX_PoolActor()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	SetActorEnableCollision(false);
+	//SetActorEnableCollision(true);
 }
 
 void ARGX_PoolActor::SetLifeSpan(float InLifespan)

@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
@@ -7,9 +5,6 @@
 #include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GameplayAbility.h"
 #include "RGX_GA_MeleeAttackAbility.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class REGICIDEX_API URGX_MeleeAttackAbility : public URGX_PlayHitboxMontageAbility
 {

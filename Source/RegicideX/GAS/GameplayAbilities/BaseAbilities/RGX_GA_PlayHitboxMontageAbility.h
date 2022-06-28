@@ -8,10 +8,6 @@
 #include "RegicideX/GAS/RGX_GameplayEffectContext.h"
 #include "RGX_GA_PlayHitboxMontageAbility.generated.h"
 
-//struct FRGX_GameplayEffectContext;
-/**
- * 
- */
 UCLASS()
 class REGICIDEX_API URGX_PlayHitboxMontageAbility : public URGX_GameplayAbility
 {
