@@ -91,6 +91,7 @@ void ARGX_RoundGameMode::StartEnemySpawn()
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARGX_EnemySpawner::StaticClass(), EnemySpawners);
 	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &ARGX_RoundGameMode::StartNewWave, 4.0f, false);
 }
+
 void ARGX_RoundGameMode::IncreaseKillCount()
 {
 	KillCount++;
@@ -177,7 +178,6 @@ void ARGX_RoundGameMode::SpawnEnemy(UDataAsset* EnemyInfo)
 				SpawnedEnemies++;
 			}
 		}
-
 	}
 }
 

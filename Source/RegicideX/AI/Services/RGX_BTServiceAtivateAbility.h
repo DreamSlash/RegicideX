@@ -19,7 +19,7 @@ class REGICIDEX_API URGX_BTServiceAtivateAbility : public UBTService
 
 public:
 	UPROPERTY(EditAnywhere)
-		TSubclassOf<UGameplayAbility> AbilityToActivte;
+	TSubclassOf<UGameplayAbility> AbilityToActivte;
 
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 };

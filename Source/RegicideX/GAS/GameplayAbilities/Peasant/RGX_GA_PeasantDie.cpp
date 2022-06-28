@@ -11,6 +11,7 @@
 #include "RegicideX/Actors/Enemies/RGX_Peasant.h"
 #include "RegicideX/GameplayFramework/RGX_RoundGameMode.h"
 #include "GameFramework/Character.h"
+#include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 
 void URGX_GA_PeasantDie::ActivateAbility(
 	const FGameplayAbilitySpecHandle Handle, 
@@ -63,7 +64,7 @@ void URGX_GA_PeasantDie::EndAbility(
 
 void URGX_GA_PeasantDie::OnEndMontage()
 {
-	ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(CurrentActorInfo->OwnerActor);
+	ARGX_EnemyBase* Peasant = Cast<ARGX_EnemyBase>(CurrentActorInfo->OwnerActor);
 	Peasant->GetMesh()->bPauseAnims = true;
 	GetWorld()->GetTimerManager().SetTimer(CorpseTimerHandle, this, &URGX_GA_PeasantDie::PreEndAbility, 2.0f, false);
 }
