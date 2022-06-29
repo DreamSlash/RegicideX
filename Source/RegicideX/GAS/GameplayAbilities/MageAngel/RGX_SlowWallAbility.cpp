@@ -14,6 +14,7 @@ void URGX_SlowWallAbility::OnAttackWindow()
 	FVector WallLocation = Player->GetActorLocation() + Forward * DistanceToTarget;
 	WallLocation.Z = 100.0f; // Hack duro
 	//const FVector WallLocation = comp->GetComponentLocation() + Forward * DistanceToTarget;
-	const FTransform WallTransform(WallLocation);
+	const FRotator Rotator = Player->GetActorRotation();
+	const FTransform WallTransform(Rotator.Quaternion(), WallLocation);
 	GetWorld()->SpawnActor<ARGX_SlowWall>(WallActorClass, WallTransform);
 }
