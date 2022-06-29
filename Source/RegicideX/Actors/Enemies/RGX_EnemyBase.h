@@ -137,6 +137,8 @@ public:
 	bool IsWeak();
 
 	void EnableInteraction();
+
+	UFUNCTION(BlueprintCallable)
 	void DisableInteraction();
 
 public:	

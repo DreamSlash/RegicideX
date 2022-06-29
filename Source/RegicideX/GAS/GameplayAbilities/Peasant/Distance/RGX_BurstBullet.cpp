@@ -34,7 +34,8 @@ void URGX_BurstBullet::OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData
 	if (Counter > NumberProjectilesToFire && Character)
 	{
 		Counter = 0;
-		Character->PlayAnimMontage(MontageToPlay, 1.0f, FName("EndBurstShoot"));
+		//Character->PlayAnimMontage(MontageToPlay, 1.0f, FName("EndBurstShoot"));
+		MontageJumpToSection(FName("EndBurstShoot"));
 	}
 }
 

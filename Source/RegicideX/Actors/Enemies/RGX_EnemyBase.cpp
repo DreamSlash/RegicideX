@@ -161,6 +161,12 @@ void ARGX_EnemyBase::HandleDamage(
 	ARGX_CharacterBase* InstigatorCharacter,
 	AActor* DamageCauser)
 {
+	// Make sure they don't handle damage twice when dead.
+	if (GetAbilitySystemComponent()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.Dead"))))
+	{
+		return;
+	}
+
 	// TODO Show Damage Amount in C++ instead of Blueprints.
 
 
@@ -171,6 +177,7 @@ void ARGX_EnemyBase::HandleDamage(
 		StopAnimMontage(); // If dead, make sure nothing is executing in order to execute death animation from AnimBP.
 		AAIController* AiController = Cast<AAIController>(GetController());
 		AiController->GetBrainComponent()->StopLogic(FString("Character dead."));
+		//GetAbilitySystemComponent()->AddLooseGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.Dead")));
 	}
 	else
 	{
@@ -190,6 +197,9 @@ void ARGX_EnemyBase::HandleDamage(
 		UE_LOG(LogTemp, Warning, TEXT("Percentage Recent Damage: %f\n"), RecentDamageAsHealthPercentage);
 		if (/*RecentDamageAsHealthPercentage >= WeakenPercentage || */ HealthAsPercentage < WeakenPercentage)
 		{
+			if (CanBeInteractedWith(nullptr) == false)
+				EnableInteraction();
+
 			bWeak = true;
 		}
 	}
