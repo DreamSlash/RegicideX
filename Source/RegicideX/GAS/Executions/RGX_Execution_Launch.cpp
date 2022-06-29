@@ -1,6 +1,5 @@
 #include "RGX_Execution_Launch.h"
-#include "RegicideX/GAS/AttributeSets/RGX_HealthAttributeSet.h"
-#include "RegicideX/GAS/AttributeSets/RGX_CombatAttributeSet.h"
+#include "AttributeSets/MCV_AttributeSet.h"
 #include "RegicideX/GAS/RGX_PayloadObjects.h"
 
 UExecution_Launch::UExecution_Launch()

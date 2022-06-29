@@ -7,7 +7,6 @@
 #include "Components/MCV_AbilitySystemComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
-#include "RegicideX/GAS/AttributeSets/RGX_HealthAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "RegicideX/GameplayFramework/RGX_RoundGameMode.h"
@@ -148,10 +147,6 @@ void ARGX_EnemyBase::Tick(float DeltaTime)
 void ARGX_EnemyBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-}
-
-void ARGX_EnemyBase::HandleDamage(FAttackInfo info)
-{
 }
 
 void ARGX_EnemyBase::HandleDamage(

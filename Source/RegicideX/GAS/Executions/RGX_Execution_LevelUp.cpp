@@ -1,10 +1,7 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "RegicideX/GAS/Executions/RGX_Execution_LevelUp.h"
-#include "RegicideX/GAS/AttributeSets/RGX_HealthAttributeSet.h"
-#include "RegicideX/GAS/AttributeSets/RGX_CombatAttributeSet.h"
 #include "RegicideX/GAS/RGX_GameplayEffectContext.h"
+#include "RegicideX/GAS/AttributeSets/RGX_AttributeSet.h"
 
 struct RGX_LevelUpStatics
 {
@@ -13,8 +10,8 @@ struct RGX_LevelUpStatics
 
 	RGX_LevelUpStatics()
 	{
-		DEFINE_ATTRIBUTE_CAPTUREDEF(URGX_HealthAttributeSet, MaxHealth, Target, true);
-		DEFINE_ATTRIBUTE_CAPTUREDEF(URGX_CombatAttributeSet, AttackPower, Target, true);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(URGX_AttributeSet, MaxHealth, Target, true);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(URGX_AttributeSet, AttackPower, Target, true);
 	}
 };
 

@@ -1,9 +1,6 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "RegicideX/GAS/Executions/RGX_ExecutionEnemyExecution.h"
-#include "../AttributeSets/RGX_HealthAttributeSet.h"
-#include "../AttributeSets/RGX_CombatAttributeSet.h"
+#include "RegicideX/GAS/AttributeSets/RGX_AttributeSet.h"
 
 //#pragma optimize( "", off )
 struct RGX_HealthStatics
@@ -13,8 +10,8 @@ struct RGX_HealthStatics
 
 	RGX_HealthStatics()
 	{
-		DEFINE_ATTRIBUTE_CAPTUREDEF(URGX_HealthAttributeSet, Health, Target, true);
-		DEFINE_ATTRIBUTE_CAPTUREDEF(URGX_HealthAttributeSet, MaxHealth, Target, true);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(URGX_AttributeSet, Health, Target, true);
+		DEFINE_ATTRIBUTE_CAPTUREDEF(URGX_AttributeSet, MaxHealth, Target, true);
 	}
 };
 

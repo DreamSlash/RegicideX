@@ -16,9 +16,7 @@ class URGX_AbilitySystemComponent;
 class URGX_ComboSystemComponent;
 class URGX_CombatAssistComponent;
 class URGX_InputHandlerComponent;
-class URGX_HealthAttributeSet;
 class URGX_MovementAttributeSet;
-class URGX_CombatAttributeSet;
 class URGX_InteractComponent;
 class URGX_LaunchEventDataAsset;
 class UGameplayEffect;
@@ -73,12 +71,6 @@ class REGICIDEX_API ARGX_PlayerCharacter : public ARGX_CharacterBase, public IGa
 	UWidgetComponent* InteractWidgetComponent = nullptr;
 
 	// Attributes ---------------
-	UPROPERTY()
-	URGX_HealthAttributeSet* HealthAttributeSet = nullptr;
-
-	UPROPERTY()
-	URGX_CombatAttributeSet* CombatAttributeSet = nullptr;
-
 	UPROPERTY()
 	URGX_MovementAttributeSet* MovementAttributeSet = nullptr;
 

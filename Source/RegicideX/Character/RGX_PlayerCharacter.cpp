@@ -13,9 +13,7 @@
 #include "RegicideX/Components/RGX_HitboxComponent.h"
 #include "RegicideX/Components/RGX_InputHandlerComponent.h"
 #include "RegicideX/Components/RGX_InteractComponent.h"
-#include "RegicideX/GAS/AttributeSets/RGX_HealthAttributeSet.h"
 #include "RegicideX/GAS/AttributeSets/RGX_MovementAttributeSet.h"
-#include "RegicideX/GAS/AttributeSets/RGX_CombatAttributeSet.h"
 #include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -66,9 +64,7 @@ ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 	ComboSystemComponent	= CreateDefaultSubobject<URGX_ComboSystemComponent>(TEXT("ComboSystemComponent"));
 	CombatAssistComponent	= CreateDefaultSubobject<URGX_CombatAssistComponent>(TEXT("CombatAssistComponent"));
 	InputHandlerComponent	= CreateDefaultSubobject<URGX_InputHandlerComponent>(TEXT("InputHandlerComponent"));
-	HealthAttributeSet		= CreateDefaultSubobject<URGX_HealthAttributeSet>(TEXT("HealthAttributeSet"));
 	MovementAttributeSet	= CreateDefaultSubobject<URGX_MovementAttributeSet>(TEXT("MovementAttributeSet"));
-	CombatAttributeSet		= CreateDefaultSubobject<URGX_CombatAttributeSet>(TEXT("CombatAttributeSet"));
 	InteractComponent		= CreateDefaultSubobject<URGX_InteractComponent>(TEXT("InteractComponent"));
 	InteractComponent->InteractWidgetComponent = InteractWidgetComponent;
 }

@@ -65,7 +65,7 @@ protected:
 	TArray<TSubclassOf<UGameplayEffect>> PassiveGameplayEffects;
 
 	/** Gameplay Ability System components */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY()
 	UMCV_AbilitySystemComponent* AbilitySystemComponent = nullptr;
 
 	/** Attributes forming and modifying the Ability System */

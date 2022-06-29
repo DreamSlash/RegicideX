@@ -148,10 +148,6 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override; 
 
-	//virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-
-	virtual void HandleDamage(FAttackInfo info); //TODO: what is this
-
 	/** Events called from attribute set changes to decouple the logic. They call BP events. */
 	virtual void HandleDamage(
 		float DamageAmount,
@@ -162,7 +158,6 @@ public:
 
 	virtual void HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags) override;
 	virtual void HandleDeath() override;
-
 
 	/** GameplayTagAssetInterface methods */
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
