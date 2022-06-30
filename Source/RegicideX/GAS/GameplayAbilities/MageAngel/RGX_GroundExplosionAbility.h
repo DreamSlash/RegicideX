@@ -1,17 +1,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Abilities/MCV_GameplayAbility.h"
+#include "RegicideX/GAS/GameplayAbilities/MageAngel/RGX_MageAngelAttackAbility.h"
 #include "RGX_GroundExplosionAbility.generated.h"
 
 class ARGX_GroundExplosion;
 
 UCLASS()
-class REGICIDEX_API URGX_GroundExplosionAbility : public UMCV_GameplayAbility
+class REGICIDEX_API URGX_GroundExplosionAbility : public URGX_MageAngelAttackAbility
 {
 	GENERATED_BODY()
 
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+protected:
+	void OnAttackWindow() override;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
