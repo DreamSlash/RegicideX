@@ -4,15 +4,15 @@
 #include "RegicideX/Actors/Enemies/RGX_MageAngel.h"
 #include "RegicideX/Actors/Weapons/RGX_RingWave.h"
 
-void URGX_RingWavesAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
+void URGX_RingWavesAbility::OnStartAttackLoop()
 {
-	EndHandle = Handle;
-	EndActorInfo = ActorInfo;
-	EndActivationInfo = ActivationInfo;
 
+}
+
+void URGX_RingWavesAbility::OnAttackWindow()
+{
 	PendingWaves = NumWaves;
 
-	CommitAbility(Handle, ActorInfo, ActivationInfo);
 	OnSpawnRingWave();
 }
 
@@ -29,13 +29,14 @@ void URGX_RingWavesAbility::OnSpawnRingWave()
 	}
 	else
 	{
-		EndAbility(EndHandle, EndActorInfo, EndActivationInfo, false, false);
+		bEndAttackingLoop = true;
 	}
 }
 
 void URGX_RingWavesAbility::StartDelay()
 {
-	UAbilityTask_WaitDelay* WaitDelayTask = UAbilityTask_WaitDelay::WaitDelay(this, DelayBetweenWaves);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]() { OnSpawnRingWave(); }, DelayBetweenWaves, false);
+	/*UAbilityTask_WaitDelay* WaitDelayTask = UAbilityTask_WaitDelay::WaitDelay(this, DelayBetweenWaves);
 	WaitDelayTask->OnFinish.AddDynamic(this, &URGX_RingWavesAbility::OnSpawnRingWave);
-	WaitDelayTask->ReadyForActivation();
+	WaitDelayTask->ReadyForActivation();*/
 }

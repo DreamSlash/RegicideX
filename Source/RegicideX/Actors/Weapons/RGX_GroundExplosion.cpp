@@ -85,7 +85,9 @@ void ARGX_GroundExplosion::Explode()
 		}
 	}
 
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionVFX, GetActorLocation(), GetActorRotation(), FVector(3.0f, 3.0f, 1.0f));
+	FVector Location = GetActorLocation();
+	Location.Z = 100; // Hack durisimo
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionVFX, Location, GetActorRotation(), FVector(3.0f, 3.0f, 1.0f));
 
 	Destroy();
 }

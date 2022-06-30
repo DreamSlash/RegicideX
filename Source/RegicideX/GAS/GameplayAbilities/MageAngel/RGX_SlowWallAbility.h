@@ -1,17 +1,21 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Abilities/MCV_GameplayAbility.h"
+#include "RegicideX/GAS/GameplayAbilities/MageAngel/RGX_MageAngelAttackAbility.h"
 #include "RGX_SlowWallAbility.generated.h"
 
 class ARGX_SlowWall;
 
 UCLASS()
-class REGICIDEX_API URGX_SlowWallAbility : public UMCV_GameplayAbility
+class REGICIDEX_API URGX_SlowWallAbility : public URGX_MageAngelAttackAbility
 {
 	GENERATED_BODY()
 
-	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+public:
+	URGX_SlowWallAbility() = default;
+
+protected:
+	void OnAttackWindow() override;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

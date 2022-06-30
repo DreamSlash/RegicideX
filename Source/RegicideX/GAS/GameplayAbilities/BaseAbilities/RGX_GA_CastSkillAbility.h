@@ -34,6 +34,8 @@ protected:
 	UFUNCTION()
 	virtual void OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData); // Must be overriden by child classes
 
+	void PlayMontageBySectionName(const FName& SectionName);
+
 protected:
 	UPROPERTY(EditAnywhere)
 	class UAnimMontage* MontageToPlay = nullptr;
@@ -46,4 +48,8 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	FGameplayTagContainer WaitForEventTags;
+
+	UPROPERTY()
+	class URGX_PlayMontageAndWaitForEvent* PlayMontageAndWaitForEventTask = nullptr;
+
 };
