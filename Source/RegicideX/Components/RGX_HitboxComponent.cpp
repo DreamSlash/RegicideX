@@ -358,6 +358,12 @@ void URGX_HitboxComponent::OnComponentOverlap(
 		}
 
 		ActorsHit.Add(OtherActor);
+
+		if (OnHitboxOverlap.IsBound())
+		{
+			OnHitboxOverlap.Broadcast(OtherActor);
+		}
+
 		ApplyEffects(OtherActor);
 	}
 

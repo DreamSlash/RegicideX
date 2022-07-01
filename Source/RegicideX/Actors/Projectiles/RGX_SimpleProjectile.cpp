@@ -21,6 +21,15 @@ ARGX_SimpleProjectile::ARGX_SimpleProjectile()
 void ARGX_SimpleProjectile::BeginPlay()
 {
 	Super::BeginPlay();
+
+	HitboxComponent->OnHitboxOverlap.AddDynamic(this, &ARGX_SimpleProjectile::OnHitboxOverlap);
+}
+
+void ARGX_SimpleProjectile::EndPlay(EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	HitboxComponent->OnHitboxOverlap.RemoveDynamic(this, &ARGX_SimpleProjectile::OnHitboxOverlap);
 }
 
 void ARGX_SimpleProjectile::OnHitboxOverlap(AActor* OverlappedActor)
