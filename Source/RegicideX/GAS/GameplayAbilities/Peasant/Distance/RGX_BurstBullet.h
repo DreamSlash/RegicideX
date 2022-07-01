@@ -7,7 +7,7 @@
 #include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GA_CastSkillAbility.h"
 #include "RGX_BurstBullet.generated.h"
 
-class ARGX_ClusteredBullet;
+class ARGX_SimpleProjectile;
 
 UCLASS()
 class REGICIDEX_API URGX_BurstBullet : public URGX_CastSkillAbility
@@ -23,7 +23,7 @@ public:
 		int NumberProjectilesToFire = 5;
 
 	UPROPERTY(EditDefaultsOnly)
-		TSubclassOf<ARGX_ClusteredBullet> BulletBP;
+		TSubclassOf<ARGX_SimpleProjectile> BulletBP;
 
 
 protected:
