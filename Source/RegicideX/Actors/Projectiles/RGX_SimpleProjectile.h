@@ -18,6 +18,18 @@ class REGICIDEX_API ARGX_SimpleProjectile : public ARGX_Projectile
 	GENERATED_BODY()
 
 public:
+	ARGX_SimpleProjectile();
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	URGX_HitboxComponent* HitboxComponent = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UProjectileMovementComponent* ProjectileMovementComponent = nullptr;
+
+protected:
+	virtual void BeginPlay() override;
+
+protected:
+	UFUNCTION()
+	virtual void OnHitboxOverlap(AActor* OverlappedActor);
 };

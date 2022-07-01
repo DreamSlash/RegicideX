@@ -14,14 +14,12 @@ UCLASS()
 class REGICIDEX_API ARGX_Projectile : public AActor, public IGenericTeamAgentInterface
 {
 	GENERATED_BODY()
-	
+
 public:	
-	// Sets default values for this actor's properties
 	ARGX_Projectile();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* ProjectileMesh = nullptr;
-
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FGenericTeamId ProjectileTeam;
