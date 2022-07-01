@@ -11,6 +11,8 @@
 #include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RGX_HitboxComponent.generated.h"
 
+//DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRGX_HitboxOverlapDelegate, class AActor*, HitActor);
+
 USTRUCT()
 struct FRGX_HitboxGameplayEvent
 {
