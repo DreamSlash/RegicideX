@@ -24,13 +24,24 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
 	virtual void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
 protected:
 	UFUNCTION()
 	virtual void OnHitboxOverlap(AActor* OverlappedActor);
 
+	void RotateToTarget(float DeltaTime);
+	void CheckDistance();
+
 protected:
+	AActor* TargetActor = nullptr;
+
+	bool bStopFollowing = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float StopFollowingDistance = 200.f;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float Damage = 20.0f;
 };
