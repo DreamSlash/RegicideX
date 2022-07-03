@@ -53,5 +53,8 @@ void URGX_BurstBullet::SpawnBullet()
 {
 	ARGX_SimpleProjectile* Bullet = GetWorld()->SpawnActor<ARGX_SimpleProjectile>(BulletBP, Transform);
 	if(Bullet)
+	{
 		Bullet->SetGenericTeamId(TeamIdToApply);
+		Bullet->Instigator = GetAvatarActorFromActorInfo();
+	}
 }

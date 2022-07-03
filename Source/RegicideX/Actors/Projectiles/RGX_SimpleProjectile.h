@@ -33,4 +33,8 @@ protected:
 protected:
 	UFUNCTION()
 	virtual void OnHitboxOverlap(AActor* OverlappedActor);
+
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float Damage = 20.0f;
 };

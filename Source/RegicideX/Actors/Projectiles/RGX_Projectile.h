@@ -46,7 +46,7 @@ public:
 protected:
 	/* Effects the projectile applies when hitting a target */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TArray<TSubclassOf<UGameplayEffect>> EffectToApply;
+	TArray<TSubclassOf<UGameplayEffect>> EffectsToApply;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float BaseSpeed = 500.0f;
