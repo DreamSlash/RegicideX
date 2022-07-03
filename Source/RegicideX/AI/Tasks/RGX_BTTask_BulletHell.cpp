@@ -6,7 +6,7 @@
 #include "RegicideX/Actors/Enemies/RGX_DistanceAngel.h"
 #include "AIController.h"
 #include "Components/SphereComponent.h"
-#include "../../Components/RGX_HitboxComponent.h"
+#include "RegicideX/Components/RGX_HitboxComponent.h"
 
 EBTNodeResult::Type URGX_BTTask_BulletHell::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
@@ -20,7 +20,7 @@ EBTNodeResult::Type URGX_BTTask_BulletHell::ExecuteTask(UBehaviorTreeComponent& 
 	DistAngelPawn->BulletHellSphereCollider->SetRelativeScale3D(FVector(OriginalBulletHellSphereScale));
 	DistAngelPawn->BulletHellSphere->SetHiddenInGame(false);
 	//DistAngelPawn->BulletHellOutSphere->SetHiddenInGame(false);
-	DistAngelPawn->BHHitboxComponent->ActivateEffect();
+	//DistAngelPawn->BHHitboxComponent->ActivateEffect();
 	DistAngelPawn->BulletHellOutSphere->SetRelativeScale3D(FVector(MaxSize));
 	bNotifyTick = true;
 
@@ -38,7 +38,7 @@ void URGX_BTTask_BulletHell::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 		DistAngelPawn->BulletHellSphere->SetRelativeScale3D(FVector(OriginalBulletHellSphereScale));
 		DistAngelPawn->BulletHellSphere->SetHiddenInGame(true);
 		//DistAngelPawn->BulletHellOutSphere->SetHiddenInGame(true);
-		DistAngelPawn->BHHitboxComponent->DeactivateEffect();
+		//DistAngelPawn->BHHitboxComponent->DeactivateEffect();
 		DistAngelPawn->BulletHellSphereCollider->SetRelativeScale3D(FVector(6.5));
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}

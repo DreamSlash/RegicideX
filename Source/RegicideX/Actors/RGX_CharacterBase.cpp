@@ -19,8 +19,8 @@ void ARGX_CharacterBase::PossessedBy(AController* NewController)
 	// Init abilities
 	if (AbilitySystemComponent)
 	{
-		AbilitySystemComponent->InitAbilityActorInfo(this, this);
 		AddStartupGameplayAbilities();
+		AbilitySystemComponent->InitAbilityActorInfo(this, this);
 	}
 }
 

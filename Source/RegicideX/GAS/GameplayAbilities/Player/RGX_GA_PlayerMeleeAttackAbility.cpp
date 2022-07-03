@@ -40,7 +40,7 @@ void URGX_PlayerMeleeAttackAbility::ActivateAbility(const FGameplayAbilitySpecHa
 		FRGX_AbilityEffectsInfo AbilityEffectsInfo = GetAbilityEffectsInfo();
 		if (Hitbox)
 		{
-			Hitbox->SetAbilityEffectsInfo(AbilityEffectsInfo);
+			//Hitbox->SetAbilityEffectsInfo(AbilityEffectsInfo);
 		}
 		else
 		{
@@ -72,7 +72,7 @@ void URGX_PlayerMeleeAttackAbility::EndAbility(const FGameplayAbilitySpecHandle 
 	URGX_HitboxComponent* Hitbox = HitboxManagerComponent->GetHitboxByTag(HitboxTag);
 	if (Hitbox)
 	{
-		Hitbox->RemoveAbilityEffectsInfo();
+		//Hitbox->RemoveAbilityEffectsInfo();
 	}
 	UE_LOG(LogTemp, Warning, TEXT("Remove Ability Effects\n"));
 

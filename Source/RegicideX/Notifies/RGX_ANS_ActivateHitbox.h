@@ -21,4 +21,7 @@ class REGICIDEX_API URGX_ANS_ActivateHitbox : public UAnimNotifyState
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FGameplayTag HitboxTag;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FGameplayTag EventTag;
 };

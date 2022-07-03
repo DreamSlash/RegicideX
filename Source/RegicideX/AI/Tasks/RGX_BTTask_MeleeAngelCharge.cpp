@@ -20,7 +20,7 @@ EBTNodeResult::Type URGX_BTTask_MeleeAngelCharge::ExecuteTask(UBehaviorTreeCompo
 
 	URGX_HitboxComponent* Hitbox = MeleeAngelPawn->HitboxesManager->GetHitboxByTag(HitboxTag);
 
-	Hitbox->ActivateEffect();
+	//Hitbox->ActivateEffect();
 
 	MeleeAngelPawn->bFlying = true;
 
@@ -71,7 +71,7 @@ void URGX_BTTask_MeleeAngelCharge::TickTask(UBehaviorTreeComponent& OwnerComp, u
 		Rotation.Pitch = 0.0;
 		MeleeAngelPawn->SetActorRotation(Rotation);
 		URGX_HitboxComponent* Hitbox = MeleeAngelPawn->HitboxesManager->GetHitboxByTag(HitboxTag);
-		Hitbox->DeactivateEffect();
+		//Hitbox->DeactivateEffect();
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 	MeleeAngelPawn->MoveSpeed += TaskTime * AccelerationMultiplier;

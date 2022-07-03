@@ -64,7 +64,7 @@ void URGX_CastHitboxAttackAbility::OnReceivedEvent(FGameplayTag EventTag, FGamep
 		AbilityEffectsInfo.GameplayEffectsToOwner = EffectsToApplyToOwner;
 		AbilityEffectsInfo.GameplayEventsToTarget = EventsToApplyToTarget;
 		AbilityEffectsInfo.GameplayEventsToOwner = EventsToApplyToOwner;
-		Hitbox->SetAbilityEffectsInfo(AbilityEffectsInfo);
+		//Hitbox->SetAbilityEffectsInfo(AbilityEffectsInfo);
 	}
 	else
 	{
@@ -87,7 +87,7 @@ void URGX_CastHitboxAttackAbility::OnFinalMontageFinished()
 	URGX_HitboxComponent* Hitbox = HitboxManagerComponent->GetHitboxByTag(HitboxTag);
 	if (Hitbox)
 	{
-		Hitbox->RemoveAbilityEffectsInfo();
+		//Hitbox->RemoveAbilityEffectsInfo();
 	}
 
 	UE_LOG(LogTemp, Warning, TEXT("Remove Ability Effects\n"));

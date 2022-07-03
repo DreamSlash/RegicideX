@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GameplayAbility.h"
+#include "RegicideX/GAS/AbilityTasks/RGX_AT_PlayMontageAndWaitForEvent.h"
 #include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RegicideX/GAS/RGX_GameplayEffectContext.h"
 #include "RGX_GA_PlayHitboxMontageAbility.generated.h"
@@ -18,6 +19,8 @@ public:
 	URGX_PlayHitboxMontageAbility();
 	virtual ~URGX_PlayHitboxMontageAbility() {}
 
+	UPROPERTY()
+	class URGX_PlayMontageAndWaitForEvent* PlayMontageAndWaitForEventTask = nullptr;
 
 protected:
 	bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags = nullptr, const FGameplayTagContainer* TargetTags = nullptr, OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const;
@@ -29,7 +32,10 @@ protected:
 protected:
 	/* If it is overriden, Base version sould be called at the end of the overrided version */
 	UFUNCTION()
-	virtual void OnMontageFinished();
+	virtual void OnMontageFinished(FGameplayTag EventTag, FGameplayEventData EventData);
+
+	UFUNCTION()
+	virtual void OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData);
 
 	UFUNCTION()
 	virtual void PopulateGameplayEffectContext(FRGX_GameplayEffectContext& GameplayEffectContext);
@@ -56,15 +62,13 @@ protected:
 	UPROPERTY(EditAnywhere)
 	FGameplayTag HitboxTag;
 
+	UPROPERTY(EditAnywhere)
+	FGameplayTagContainer EventTagContainer;
+
+	// A map of a tag that should trigger a gameplay effect.
 	UPROPERTY(EditDefaultsOnly)
-	TArray<TSubclassOf<UGameplayEffect>> EffectsToApplyToTarget;
+	TMap<FGameplayTag, TSubclassOf<UGameplayEffect>> EffectToApplyToTarget;
 
 	UPROPERTY(EditDefaultsOnly)
-	TArray<TSubclassOf<UGameplayEffect>> EffectsToApplyToOwner;
-
-	UPROPERTY(EditDefaultsOnly)
-	TArray<URGX_RGXEventDataAsset*> EventsToApplyToTarget;
-
-	UPROPERTY(EditDefaultsOnly)
-	TArray<URGX_RGXEventDataAsset*> EventsToApplyToOwner;
+	TMap<FGameplayTag, TSubclassOf<UGameplayEffect>> EffectToApplyToOwner;
 };

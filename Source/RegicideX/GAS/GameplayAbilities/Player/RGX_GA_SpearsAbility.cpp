@@ -69,7 +69,7 @@ void URGX_SpearsAbility::CastSpearsAttack(AActor* CasterActor)
 		Context->ScalingAttributeFactor = 1.0f;
 
 		URGX_HitboxComponent* HitboxComponent = SpawnedSpear->FindComponentByClass<URGX_HitboxComponent>();
-		HitboxComponent->SetGameplayEffectContextHandle(ContextHandle);
+		//HitboxComponent->SetGameplayEffectContextHandle(ContextHandle);
 
 		if (const IGenericTeamAgentInterface* TeamAgent = Cast<IGenericTeamAgentInterface>(CasterActor))
 		{

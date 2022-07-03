@@ -56,19 +56,44 @@ void URGX_MeleeAttackAbility::EndAbility(const FGameplayAbilitySpecHandle Handle
 void URGX_MeleeAttackAbility::PopulateGameplayEffectContext(FRGX_GameplayEffectContext& GameplayEffectContext)
 {
 	float AbilityLevel = 1;
-	/*ARGX_PlayerCharacter* PlayerCharacter = Cast<ARGX_PlayerCharacter>(CurrentActorInfo->AvatarActor);
-	if (PlayerCharacter)
-	{
-		AbilityLevel = static_cast<float>(PlayerCharacter->Level);
-	}
-	else
-	{
-		AbilityLevel = GetAbilityLevel();
-	}*/
 
 	FString ContextString;
 	FRealCurve* DamageCurve = DamageLevelCurve->FindCurve(DamageCurveName, ContextString);
 	FRealCurve* ScalingCurve = DamageLevelCurve->FindCurve(AttributeScalingCurveName, ContextString);
 	GameplayEffectContext.DamageAmount = DamageCurve->Eval(AbilityLevel);
 	GameplayEffectContext.ScalingAttributeFactor = ScalingCurve->Eval(AbilityLevel);
+}
+
+void URGX_MeleeAttackAbility::OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData)
+{
+	AActor* OwnerActor = GetOwningActorFromActorInfo();
+	ARGX_CharacterBase* OwnerCharacter = Cast<ARGX_CharacterBase>(OwnerActor);
+	const ARGX_CharacterBase* TargetCharacter = Cast<ARGX_CharacterBase>(EventData.Target);
+	UAbilitySystemComponent* TargetACS = TargetCharacter->GetAbilitySystemComponent();
+
+	// Find the effect mapped to the triggering event tag.
+	if (EffectToApplyToTarget.Contains(EventTag))
+	{
+		TSubclassOf<UGameplayEffect>* GameplayEffectToApply = EffectToApplyToTarget.Find(EventTag);
+		FGameplayEffectSpecHandle GameplayEffectSpecHandle =  MakeOutgoingGameplayEffectSpec(*GameplayEffectToApply, OwnerCharacter->GetCharacterLevel());
+
+		FString ContextString;
+		FRealCurve* DamageCurve		= DamageLevelCurve->FindCurve(DamageCurveName, ContextString);
+		FRealCurve* ScalingCurve	= DamageLevelCurve->FindCurve(AttributeScalingCurveName, ContextString);
+
+		FGameplayEffectContextHandle EffectContext			= MakeEffectContext(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo());
+		FRGX_GameplayEffectContext* GameplayEffectContext	= static_cast<FRGX_GameplayEffectContext*>(EffectContext.Get());
+		GameplayEffectContext->DamageAmount					= DamageCurve->Eval(TargetCharacter->GetCharacterLevel());
+		GameplayEffectContext->ScalingAttributeFactor		= ScalingCurve->Eval(TargetCharacter->GetCharacterLevel());
+
+		FGameplayEffectSpec* GESpec = GameplayEffectSpecHandle.Data.Get();
+		GESpec->SetContext(EffectContext);
+		TargetACS->ApplyGameplayEffectSpecToSelf(*GESpec);
+
+		// Apply the effect given the TargetData
+		//FGameplayAbilitySpecHandle AbilitySpecHandle	= GetCurrentAbilitySpecHandle();
+		//FGameplayAbilityActorInfo ActorInfo				= GetActorInfo();
+		//FGameplayAbilityActivationInfo ActivationInfo	= GetCurrentActivationInfo();
+		//ApplyGameplayEffectSpecToTarget(AbilitySpecHandle, &ActorInfo, ActivationInfo, GameplayEffectSpecHandle, EventData.TargetData);
+	}
 }

@@ -46,10 +46,6 @@ class REGICIDEX_API ARGX_PlayerCharacter : public ARGX_CharacterBase, public IGa
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera = nullptr;
 
-	///** Ability System Component to be used */
-	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Abilities, meta = (AllowPrivateAccess = "true"))
-	//UMCV_AbilitySystemComponent* AbilitySystemComponent = nullptr;
-
 	/** Combo System Component to manage player combos */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combos, meta = (AllowPrivateAccess = "true"))
 	URGX_ComboSystemComponent* ComboSystemComponent = nullptr;

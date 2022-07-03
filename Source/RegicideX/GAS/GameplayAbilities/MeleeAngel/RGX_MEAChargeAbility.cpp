@@ -56,8 +56,8 @@ void URGX_MEAChargeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Han
 		AbilityEffectsInfo.GameplayEffectsToOwner = EffectsToApplyToOwner;
 		AbilityEffectsInfo.GameplayEventsToTarget = EventsToApplyToTarget;
 		AbilityEffectsInfo.GameplayEventsToOwner = EventsToApplyToOwner;
-		Hitbox->SetAbilityEffectsInfo(AbilityEffectsInfo);
-		Hitbox->ActivateEffect();
+		//Hitbox->SetAbilityEffectsInfo(AbilityEffectsInfo);
+		//Hitbox->ActivateEffect();
 	}
 
 	// Execute move task
@@ -128,7 +128,7 @@ void URGX_MEAChargeAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, 
 	URGX_HitboxComponent* Hitbox = HitboxManagerComponent->GetHitboxByTag(HitboxTag);
 	if (Hitbox)
 	{
-		Hitbox->RemoveAbilityEffectsInfo();
+		//Hitbox->RemoveAbilityEffectsInfo();
 	}
 
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);

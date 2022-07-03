@@ -1,3 +1,4 @@
+
 #include "RGX_HitboxComponent.h"
 #include "AbilitySystemGlobals.h"
 #include "AbilitySystemComponent.h"
@@ -26,32 +27,36 @@ void URGX_HitboxComponent::BeginPlay()
 	for (USceneComponent* Child : Children)
 	{
 		UShapeComponent* ShapeComponent = Cast<UShapeComponent>(Child);
-
 		if (ShapeComponent)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("Collider Added to Hitbox\n"));
 			Shapes.Add(ShapeComponent);
 		}
 	}
 
+	// Delegate Shape OnComponentBeginOverlap to custom OnCompnentOverlap
 	for (UShapeComponent* shape : Shapes)
 	{
 		shape->OnComponentBeginOverlap.AddDynamic(this, &URGX_HitboxComponent::OnComponentOverlap);
 	}
 	
-	if (bStartActive)
+	bStartActive ? ActivateHitbox() : DeactivateHitbox();
+}
+
+void URGX_HitboxComponent::EndPlay(EEndPlayReason::Type EndPlayReason)
+{
+	Super::EndPlay(EndPlayReason);
+
+	for (UShapeComponent* shape : Shapes)
 	{
-		ActivateHitbox();
-		ActivateEffect();
-	}
-	else
-	{
-		DeactivateHitbox();
-		DeactivateEffect();
+		shape->OnComponentBeginOverlap.RemoveDynamic(this, &URGX_HitboxComponent::OnComponentOverlap);
 	}
 }
 
-void URGX_HitboxComponent::OnComponentEndOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
+void URGX_HitboxComponent::OnComponentEndOverlap(
+	UPrimitiveComponent* OverlappedComponent, 
+	AActor* OtherActor, 
+	UPrimitiveComponent* OtherComp, 
+	int32 OtherBodyIndex)
 {
 	UE_LOG(LogTemp, Warning, TEXT("OnComponentEndOverlap: %s - %s"), *GetOwner()->GetName(), *OtherActor->GetName());
 }
@@ -67,29 +72,16 @@ void URGX_HitboxComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 		return;
 }
 
-void URGX_HitboxComponent::EndPlay(EEndPlayReason::Type EndPlayReason)
-{
-	Super::EndPlay(EndPlayReason);
-
-	for (UShapeComponent* shape : Shapes)
-	{
-		shape->OnComponentBeginOverlap.RemoveDynamic(this, &URGX_HitboxComponent::OnComponentOverlap);
-	}
-}
-
 void URGX_HitboxComponent::ActivateHitbox()
 {
-	UE_LOG(LogHitbox, Display, TEXT("ActivateHitbox"));
-
 	const USceneComponent* Parent = GetAttachParent();
 	AActor* OwnerActor = Parent->GetAttachmentRootActor();
 
-	if (!OwnerActor)
+	if (OwnerActor == nullptr)
 	{
 		OwnerActor = GetOwner();
 	}
 
-	//UE_LOG(LogTemp, Warning, TEXT("Activate Hitbox\n"));
 	for (UShapeComponent* Shape : Shapes)
 	{
 		Shape->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
@@ -99,61 +91,37 @@ void URGX_HitboxComponent::ActivateHitbox()
 
 void URGX_HitboxComponent::DeactivateHitbox()
 {
-	UE_LOG(LogHitbox, Display, TEXT("DeactivateHitbox"));
-	//UE_LOG(LogTemp, Warning, TEXT("Deactivate Hitbox\n"));
 	for (UShapeComponent* Shape : Shapes)
 	{
 		Shape->SetCollisionProfileName("Dodgeable");
 		Shape->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
-
 	ActorsHit.Empty();
 }
 
-void URGX_HitboxComponent::ActivateEffect()
+void URGX_HitboxComponent::SetEventTag(const FGameplayTag& NewTag)
 {
-	UE_LOG(LogHitbox, Display, TEXT("ActivateEffect"));
-	//FDebug::DumpStackTraceToLog(TEXT("ActivateEffect"), ELogVerbosity::Display);
-	bEffectActivated = true;
-	for (UShapeComponent* Shape : Shapes)
-	{
-		Shape->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-		Shape->SetCollisionProfileName("Dodgeable");
-	}
+	EventTag = NewTag;
 }
 
-void URGX_HitboxComponent::DeactivateEffect()
-{
-	UE_LOG(LogHitbox, Display, TEXT("DeactivateEffect"));
-	bEffectActivated = false;
-	for (UShapeComponent* Shape : Shapes)
-	{
-		Shape->SetCollisionProfileName("Dodgeable");
-		Shape->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	}
+//void URGX_HitboxComponent::SetAbilityEffectsInfo(const FRGX_AbilityEffectsInfo& NewAbilityEffectsInfo)
+//{
+//	AbilityEffectsInfo = NewAbilityEffectsInfo;
+//}
+//
+//void URGX_HitboxComponent::RemoveAbilityEffectsInfo()
+//{
+//	AbilityEffectsInfo.EffectContextHandle = FGameplayEffectContextHandle();
+//	AbilityEffectsInfo.GameplayEffectsToTarget.Empty();
+//	AbilityEffectsInfo.GameplayEventsToTarget.Empty();
+//	AbilityEffectsInfo.GameplayEffectsToOwner.Empty();
+//	AbilityEffectsInfo.GameplayEventsToOwner.Empty();
+//}
 
-	ActorsHit.Empty();
-}
-
-void URGX_HitboxComponent::SetAbilityEffectsInfo(const FRGX_AbilityEffectsInfo& NewAbilityEffectsInfo)
-{
-	AbilityEffectsInfo = NewAbilityEffectsInfo;
-}
-
-void URGX_HitboxComponent::RemoveAbilityEffectsInfo()
-{
-	//UE_LOG(LogTemp, Warning, TEXT("Remove Ability Effects\n"));
-	AbilityEffectsInfo.EffectContextHandle = FGameplayEffectContextHandle();
-	AbilityEffectsInfo.GameplayEffectsToTarget.Empty();
-	AbilityEffectsInfo.GameplayEventsToTarget.Empty();
-	AbilityEffectsInfo.GameplayEffectsToOwner.Empty();
-	AbilityEffectsInfo.GameplayEventsToOwner.Empty();
-}
-
-void URGX_HitboxComponent::SetGameplayEffectContextHandle(FGameplayEffectContextHandle Handle)
-{
-	DefaultGameplayEffectContextHandle = Handle;
-}
+//void URGX_HitboxComponent::SetGameplayEffectContextHandle(FGameplayEffectContextHandle Handle)
+//{
+//	DefaultGameplayEffectContextHandle = Handle;
+//}
 
 // TODO [REFACTOR]: This functions should take into account the multiple shapes this class can have
 bool URGX_HitboxComponent::IsGoingToOverlapActor(AActor* Actor)
@@ -197,98 +165,98 @@ bool URGX_HitboxComponent::IsGoingToOverlapActor(AActor* Actor)
 	return false;
 }
 
-void URGX_HitboxComponent::ApplyEffects(AActor* OtherActor)
-{
-	//UE_LOG(LogTemp, Warning, TEXT("Apply putos efectos\n"));
-	if (DefaultEffectToApply || AbilityEffectsInfo.GameplayEffectsToTarget.Num() > 0 || AbilityEffectsInfo.GameplayEventsToTarget.Num() > 0
-		|| AbilityEffectsInfo.GameplayEffectsToOwner.Num() > 0 || AbilityEffectsInfo.GameplayEventsToOwner.Num() > 0)
-	{
-		USceneComponent* Parent = GetAttachParent();
-		AActor* OwnerActor = Parent->GetAttachmentRootActor();
-
-		if (!OwnerActor)
-		{
-			OwnerActor = GetOwner();
-		}
-
-		// Try to get owner ASC
-		UAbilitySystemComponent* ApplierASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OwnerActor);
-		UAbilitySystemComponent* TargetASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OtherActor);
-		// If not fallback to target
-		if (!ApplierASC)
-		{
-			ApplierASC = TargetASC;
-		}
-
-		// Only apply if ASC valid
-		if (ApplierASC && TargetASC)
-		{
-			// Default Effect to apply
-			if (DefaultEffectToApply)
-			{
-				FGameplayEffectContextHandle ContextHandle;
-				if (DefaultGameplayEffectContextHandle.Get())
-				{
-					ContextHandle = DefaultGameplayEffectContextHandle;
-				}
-				else
-				{
-					ContextHandle = ApplierASC->MakeEffectContext();
-				}
-
-				ApplierASC->ApplyGameplayEffectToTarget(DefaultEffectToApply->GetDefaultObject<UGameplayEffect>(), TargetASC, 1, ContextHandle);
-			}
-			
-			// Default Events to apply
-			for (FRGX_HitboxGameplayEvent& DefaultEvent : DefaultEventsToApply)
-			{
-				if (DefaultEvent.bActivated == true)
-				{
-					DefaultEvent.EventData.Instigator = OwnerActor;
-					TargetASC->HandleGameplayEvent(DefaultEvent.GameplayEvent, &DefaultEvent.EventData);
-				}
-			}
-
-			// Effects and Events to apply that come from an ability activation
-			float AbilityLevel = AbilityEffectsInfo.EffectContextHandle.GetAbilityLevel();
-
-			FGameplayEffectContextHandle ContextHandle = AbilityEffectsInfo.EffectContextHandle.Get() ? AbilityEffectsInfo.EffectContextHandle : ApplierASC->MakeEffectContext();
-
-			for (TSubclassOf<UGameplayEffect> Effect : AbilityEffectsInfo.GameplayEffectsToTarget) // TODO: BUGARDO
-			{
-				ApplierASC->ApplyGameplayEffectToTarget(Effect->GetDefaultObject<UGameplayEffect>(), TargetASC, AbilityLevel, ContextHandle);
-			}
-
-			for (TSubclassOf<UGameplayEffect> Effect : AbilityEffectsInfo.GameplayEffectsToOwner)
-			{
-				ApplierASC->ApplyGameplayEffectToSelf(Effect->GetDefaultObject<UGameplayEffect>(), AbilityLevel, ContextHandle);
-
-			}
-
-			for (int i = 0; i < AbilityEffectsInfo.GameplayEventsToTarget.Num(); ++i)
-			{
-				FGameplayTag EventTag = AbilityEffectsInfo.GameplayEventsToTarget[i]->EventTag;
-				FGameplayEventData EventData = {};
-				EventData.Instigator = OwnerActor;
-				EventData.OptionalObject = AbilityEffectsInfo.GameplayEventsToTarget[i];
-				TargetASC->HandleGameplayEvent(EventTag, &EventData);
-			}
-
-			for (int i = 0; i < AbilityEffectsInfo.GameplayEventsToOwner.Num(); ++i)
-			{
-				FGameplayTag EventTag = AbilityEffectsInfo.GameplayEventsToOwner[i]->EventTag;
-				FGameplayEventData EventData = {};
-				EventData.Instigator = OwnerActor;
-				EventData.OptionalObject = AbilityEffectsInfo.GameplayEventsToOwner[i];
-				ApplierASC->HandleGameplayEvent(EventTag, &EventData);
-			}
-		}
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("No effect or event to apply with the hitbox"));
-	}
-}
+//void URGX_HitboxComponent::ApplyEffects(AActor* OtherActor)
+//{
+//	//UE_LOG(LogTemp, Warning, TEXT("Apply putos efectos\n"));
+//	if (DefaultEffectToApply || AbilityEffectsInfo.GameplayEffectsToTarget.Num() > 0 || AbilityEffectsInfo.GameplayEventsToTarget.Num() > 0
+//		|| AbilityEffectsInfo.GameplayEffectsToOwner.Num() > 0 || AbilityEffectsInfo.GameplayEventsToOwner.Num() > 0)
+//	{
+//		USceneComponent* Parent = GetAttachParent();
+//		AActor* OwnerActor = Parent->GetAttachmentRootActor();
+//
+//		if (!OwnerActor)
+//		{
+//			OwnerActor = GetOwner();
+//		}
+//
+//		// Try to get owner ASC
+//		UAbilitySystemComponent* ApplierASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OwnerActor);
+//		UAbilitySystemComponent* TargetASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OtherActor);
+//		// If not fallback to target
+//		if (!ApplierASC)
+//		{
+//			ApplierASC = TargetASC;
+//		}
+//
+//		// Only apply if ASC valid
+//		if (ApplierASC && TargetASC)
+//		{
+//			// Default Effect to apply
+//			if (DefaultEffectToApply)
+//			{
+//				FGameplayEffectContextHandle ContextHandle;
+//				if (DefaultGameplayEffectContextHandle.Get())
+//				{
+//					ContextHandle = DefaultGameplayEffectContextHandle;
+//				}
+//				else
+//				{
+//					ContextHandle = ApplierASC->MakeEffectContext();
+//				}
+//
+//				ApplierASC->ApplyGameplayEffectToTarget(DefaultEffectToApply->GetDefaultObject<UGameplayEffect>(), TargetASC, 1, ContextHandle);
+//			}
+//			
+//			// Default Events to apply
+//			for (FRGX_HitboxGameplayEvent& DefaultEvent : DefaultEventsToApply)
+//			{
+//				if (DefaultEvent.bActivated == true)
+//				{
+//					DefaultEvent.EventData.Instigator = OwnerActor;
+//					TargetASC->HandleGameplayEvent(DefaultEvent.GameplayEvent, &DefaultEvent.EventData);
+//				}
+//			}
+//
+//			// Effects and Events to apply that come from an ability activation
+//			float AbilityLevel = AbilityEffectsInfo.EffectContextHandle.GetAbilityLevel();
+//
+//			FGameplayEffectContextHandle ContextHandle = AbilityEffectsInfo.EffectContextHandle.Get() ? AbilityEffectsInfo.EffectContextHandle : ApplierASC->MakeEffectContext();
+//
+//			for (TSubclassOf<UGameplayEffect> Effect : AbilityEffectsInfo.GameplayEffectsToTarget) // TODO: BUGARDO
+//			{
+//				ApplierASC->ApplyGameplayEffectToTarget(Effect->GetDefaultObject<UGameplayEffect>(), TargetASC, AbilityLevel, ContextHandle);
+//			}
+//
+//			for (TSubclassOf<UGameplayEffect> Effect : AbilityEffectsInfo.GameplayEffectsToOwner)
+//			{
+//				ApplierASC->ApplyGameplayEffectToSelf(Effect->GetDefaultObject<UGameplayEffect>(), AbilityLevel, ContextHandle);
+//
+//			}
+//
+//			for (int i = 0; i < AbilityEffectsInfo.GameplayEventsToTarget.Num(); ++i)
+//			{
+//				FGameplayTag EventTag = AbilityEffectsInfo.GameplayEventsToTarget[i]->EventTag;
+//				FGameplayEventData EventData = {};
+//				EventData.Instigator = OwnerActor;
+//				EventData.OptionalObject = AbilityEffectsInfo.GameplayEventsToTarget[i];
+//				TargetASC->HandleGameplayEvent(EventTag, &EventData);
+//			}
+//
+//			for (int i = 0; i < AbilityEffectsInfo.GameplayEventsToOwner.Num(); ++i)
+//			{
+//				FGameplayTag EventTag = AbilityEffectsInfo.GameplayEventsToOwner[i]->EventTag;
+//				FGameplayEventData EventData = {};
+//				EventData.Instigator = OwnerActor;
+//				EventData.OptionalObject = AbilityEffectsInfo.GameplayEventsToOwner[i];
+//				ApplierASC->HandleGameplayEvent(EventTag, &EventData);
+//			}
+//		}
+//	}
+//	else
+//	{
+//		UE_LOG(LogTemp, Error, TEXT("No effect or event to apply with the hitbox"));
+//	}
+//}
 
 void URGX_HitboxComponent::OnComponentOverlap(
 	UPrimitiveComponent* OverlappedComponent, 
@@ -297,68 +265,47 @@ void URGX_HitboxComponent::OnComponentOverlap(
 	int32 OtherBodyIndex, 
 	bool bFromSweep, 
 	const FHitResult& SweepResult)
-{
-	USceneComponent* Parent = GetAttachParent();
-	AActor* OwnerActor = Parent->GetAttachmentRootActor();
-
-	UE_LOG(LogHitbox, Display, TEXT("OnComponentOverlap: %s - %s"), *OwnerActor->GetName(), *OtherActor->GetName());
-	//UE_LOG(LogTemp, Warning, TEXT("On Component Overlap Hitbox\n"));
-	if (bEffectActivated == false)
-		return;
-
+{	
+	// Check if the actor being hit has previously been hit. 
+	// It cannot be hit more than once by the same hitbox activation.
 	for (AActor* Hit : ActorsHit)
 	{
-		// An actor cannot be hit more than once by the same hitbox activation
 		if (OtherActor == Hit)
-		{
-			//UE_LOG(LogTemp, Warning, TEXT("Hit Same Actor\n"));
 			return;
-		}
 	}
 
-	//UE_LOG(LogTemp, Warning, TEXT("Overlap\n"));
-	//AActor* OwnerActor = Parent->GetAttachmentRootActor();
+	const USceneComponent* Parent	= GetAttachParent();
+	AActor* OwnerActor				= Parent->GetAttachmentRootActor();
 	if (!OwnerActor)
 	{
 		OwnerActor = GetOwner();
 	}
-	
 
-	//UE_LOG(LogTemp, Warning, TEXT("Other component name is %s."), *OtherComp->GetName());
-	URGX_HitboxComponent* HitboxComponent = Cast<URGX_HitboxComponent>(OtherComp->GetAttachParent());
+	UE_LOG(LogHitbox, Display, TEXT("OnComponentOverlap: %s - %s"), *OwnerActor->GetName(), *OtherActor->GetName());
 
-	ETeamAttitude::Type Attitude = FGenericTeamId::GetAttitude(OwnerActor, OtherActor);
 	const FGameplayTagContainer BlockingTags = TagsToBlockTheHit;
 	IGameplayTagAssetInterface* TagInterface = Cast<IGameplayTagAssetInterface>(OtherActor);
 	bool CanApplyEffect = false;
 	if (TagInterface )
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("Hitbox Overlap"));
-
-		// Check and may rethink this ... If BlockingTags is empty, this returns true
 		if (TagInterface->HasAllMatchingGameplayTags(BlockingTags) == false || BlockingTags.IsEmpty())
 			CanApplyEffect = true;
 	}
 
-	if (Attitude == TeamToApply && HitboxComponent == nullptr && CanApplyEffect)
+	ETeamAttitude::Type Attitude = FGenericTeamId::GetAttitude(OwnerActor, OtherActor);
+	if (Attitude == TeamToApply && CanApplyEffect)
 	{
-		// Stopping for two frame. If probably should be done only for the owner and target actors and not for all actors.
-		ARGX_PlayerCharacter* player = Cast<ARGX_PlayerCharacter>(OwnerActor);
-		if (player)
-		{
-			if (Owner == nullptr) {
-				Owner = OwnerActor;
-				Owner->CustomTimeDilation = 0.1f;
-				GetWorld()->GetTimerManager().SetTimer(PunchTimerHandle, this, &URGX_HitboxComponent::ResetCustomTimeDilation, 0.1, false);
-				//UGameplayStatics::PlayWorldCameraShake(GetWorld(), CameraShake, player->GetActorLocation(), 0.0, 10000.0);
-			}
+		const ARGX_CharacterBase* OwnerCharacter = Cast<ARGX_CharacterBase>(OwnerActor);
+		UAbilitySystemComponent* OwnerAbilitySystemComponent = OwnerCharacter->GetAbilitySystemComponent();
 
-			OtherActor->CustomTimeDilation = 0.1f;
-			ActorsWithTimeDilation.Add(OtherActor);
-		}
+		FGameplayEventData *Payload = new FGameplayEventData();
+		Payload->Instigator = OwnerActor;
+		Payload->Target		= OtherActor;
+
+		for(const FGameplayTag tag : EffectTags)
+			OwnerAbilitySystemComponent->HandleGameplayEvent(tag, Payload);
 
 		ActorsHit.Add(OtherActor);
-		ApplyEffects(OtherActor);
 	}
 
 	switch (DestroyOnOverlap)
@@ -386,19 +333,6 @@ void URGX_HitboxComponent::OnComponentOverlap(
 void URGX_HitboxComponent::DestroyOwnerOnOverlap()
 {
 	GetOwner()->Destroy();
-}
-
-bool URGX_HitboxComponent::CheckIfEffectIsApplied(AActor* TargetActor)
-{
-	// If TargetActor met the requirements to avoid the effect, return false.
-	IGameplayTagAssetInterface* TagInterface = Cast<IGameplayTagAssetInterface>(TargetActor);
-	if (TagInterface)
-	{
-		const FGameplayTagContainer& BlockingTags = TagsToBlockTheHit;
-		if (TagInterface->HasAllMatchingGameplayTags(BlockingTags))
-			return false;
-	}
-	return true;
 }
 
 void URGX_HitboxComponent::ResetCustomTimeDilation()
