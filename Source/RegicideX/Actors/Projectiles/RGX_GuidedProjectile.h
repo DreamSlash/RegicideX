@@ -33,6 +33,7 @@ protected:
 
 	void RotateToTarget(float DeltaTime);
 	void CheckDistance();
+	void Move(float DeltaTime);
 
 protected:
 	AActor* TargetActor = nullptr;

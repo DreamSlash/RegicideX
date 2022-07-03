@@ -51,7 +51,7 @@ void URGX_BurstBullet::EndAbility(
 
 void URGX_BurstBullet::SpawnBullet()
 {
-	ARGX_SimpleProjectile* Bullet = GetWorld()->SpawnActor<ARGX_SimpleProjectile>(BulletBP, Transform);
+	ARGX_Projectile* Bullet = GetWorld()->SpawnActor<ARGX_Projectile>(BulletBP, Transform);
 	if(Bullet)
 	{
 		Bullet->SetGenericTeamId(TeamIdToApply);

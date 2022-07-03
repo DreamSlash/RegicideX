@@ -8,6 +8,7 @@
 #include "Components/StaticMeshComponent.h"
 #include "RegicideX/Components/RGX_HitboxComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
 
 ARGX_GuidedProjectile::ARGX_GuidedProjectile()
 {
@@ -18,6 +19,8 @@ ARGX_GuidedProjectile::ARGX_GuidedProjectile()
 
 	RootComponent = ProjectileMesh;
 	HitboxComponent->SetupAttachment(RootComponent);
+
+	TargetActor = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 }
 
 void ARGX_GuidedProjectile::BeginPlay()
@@ -29,9 +32,11 @@ void ARGX_GuidedProjectile::BeginPlay()
 
 void ARGX_GuidedProjectile::Tick(float DeltaTime)
 {
+	Super::Tick(DeltaTime);
+
 	CheckDistance();
 	RotateToTarget(DeltaTime);
-	Super::Tick(DeltaTime);
+	Move(DeltaTime);
 }
 
 
@@ -81,12 +86,24 @@ void ARGX_GuidedProjectile::RotateToTarget(float DeltaTime)
 
 void ARGX_GuidedProjectile::CheckDistance()
 {
-	const FVector MyLocation = this->GetActorLocation();
-	const FVector TargetLocation = TargetActor->GetActorLocation();
-
-	const  float Dist = FVector::Distance(MyLocation, TargetLocation);
-	if (Dist <= StopFollowingDistance)
+	if (TargetActor)
 	{
-		bStopFollowing = true;
+		const FVector MyLocation = this->GetActorLocation();
+		const FVector TargetLocation = TargetActor->GetActorLocation();
+
+		const  float Dist = FVector::Distance(MyLocation, TargetLocation);
+		if (Dist <= StopFollowingDistance)
+		{
+			bStopFollowing = true;
+		}
 	}
+}
+
+void ARGX_GuidedProjectile::Move(float DeltaTime)
+{
+	const FVector MyFront = this->GetActorForwardVector();
+	const FVector CurrentLocation = this->GetActorLocation();
+	const FVector NewLocation = CurrentLocation + MyFront * BaseSpeed * DeltaTime;
+
+	SetActorLocation(NewLocation);
 }
