@@ -52,5 +52,8 @@ protected:
 	float BaseSpeed = 500.0f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float Damage = 20.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float LifeSpan = 10.0f;
 };
