@@ -99,9 +99,14 @@ void URGX_HitboxComponent::DeactivateHitbox()
 	ActorsHit.Empty();
 }
 
-void URGX_HitboxComponent::SetEventTag(const FGameplayTag& NewTag)
+void URGX_HitboxComponent::AddEventTag(const FGameplayTag& NewTag)
 {
 	EffectTags.Add(NewTag);
+}
+
+void URGX_HitboxComponent::RemoveEventTag(const FGameplayTag& Tag)
+{
+	EffectTags.Remove(Tag);
 }
 
 // TODO [REFACTOR]: This functions should take into account the multiple shapes this class can have

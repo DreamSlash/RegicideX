@@ -56,9 +56,13 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DeactivateHitbox();
 
-	/** Add the tag to activate */
+	/** Add the tag to the list to activate */
 	UFUNCTION()
-	void SetEventTag(const FGameplayTag& NewTag);
+	void AddEventTag(const FGameplayTag& NewTag);
+
+	/** Remove the tag from the list to activate */
+	UFUNCTION()
+	void RemoveEventTag(const FGameplayTag& NewTag);
 
 	/* Check if the collider is going to hit the actor in the next frames taking into account 
 		its velocity and position of both actors*/

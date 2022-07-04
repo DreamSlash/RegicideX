@@ -62,6 +62,8 @@ void UExecution_Damage::Execute_Implementation(const FGameplayEffectCustomExecut
 	float FinalDamage = 0.0f;
 	FinalDamage = FRGXContext->DamageAmount + AttackPower * FRGXContext->ScalingAttributeFactor;
 
+	UE_LOG(LogTemp, Warning, TEXT("Damage: %f"), FinalDamage);
+
 	if (FinalDamage > 0.0f)
 	{
 		OutExecutionOutput.AddOutputModifier(FGameplayModifierEvaluatedData(RGX_DamageStatics().DamageProperty, EGameplayModOp::Additive, FinalDamage));
