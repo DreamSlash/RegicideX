@@ -6,7 +6,7 @@
 #include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GameplayAbility.h"
 #include "RGX_GA_BulletHell.generated.h"
 
-class ARGX_ClusteredBullet;
+class ARGX_Projectile;
 
 /**
  * 
@@ -25,7 +25,7 @@ protected:
 
 protected:
 	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<ARGX_ClusteredBullet> BulletBP;
+	TSubclassOf<ARGX_Projectile> BulletBP;
 	
 	UPROPERTY(EditDefaultsOnly)
 	float FireRate = 0.2f;
