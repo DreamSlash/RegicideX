@@ -101,27 +101,8 @@ void URGX_HitboxComponent::DeactivateHitbox()
 
 void URGX_HitboxComponent::SetEventTag(const FGameplayTag& NewTag)
 {
-	EventTag = NewTag;
+	EffectTags.Add(NewTag);
 }
-
-//void URGX_HitboxComponent::SetAbilityEffectsInfo(const FRGX_AbilityEffectsInfo& NewAbilityEffectsInfo)
-//{
-//	AbilityEffectsInfo = NewAbilityEffectsInfo;
-//}
-//
-//void URGX_HitboxComponent::RemoveAbilityEffectsInfo()
-//{
-//	AbilityEffectsInfo.EffectContextHandle = FGameplayEffectContextHandle();
-//	AbilityEffectsInfo.GameplayEffectsToTarget.Empty();
-//	AbilityEffectsInfo.GameplayEventsToTarget.Empty();
-//	AbilityEffectsInfo.GameplayEffectsToOwner.Empty();
-//	AbilityEffectsInfo.GameplayEventsToOwner.Empty();
-//}
-
-//void URGX_HitboxComponent::SetGameplayEffectContextHandle(FGameplayEffectContextHandle Handle)
-//{
-//	DefaultGameplayEffectContextHandle = Handle;
-//}
 
 // TODO [REFACTOR]: This functions should take into account the multiple shapes this class can have
 bool URGX_HitboxComponent::IsGoingToOverlapActor(AActor* Actor)
@@ -165,99 +146,6 @@ bool URGX_HitboxComponent::IsGoingToOverlapActor(AActor* Actor)
 	return false;
 }
 
-//void URGX_HitboxComponent::ApplyEffects(AActor* OtherActor)
-//{
-//	//UE_LOG(LogTemp, Warning, TEXT("Apply putos efectos\n"));
-//	if (DefaultEffectToApply || AbilityEffectsInfo.GameplayEffectsToTarget.Num() > 0 || AbilityEffectsInfo.GameplayEventsToTarget.Num() > 0
-//		|| AbilityEffectsInfo.GameplayEffectsToOwner.Num() > 0 || AbilityEffectsInfo.GameplayEventsToOwner.Num() > 0)
-//	{
-//		USceneComponent* Parent = GetAttachParent();
-//		AActor* OwnerActor = Parent->GetAttachmentRootActor();
-//
-//		if (!OwnerActor)
-//		{
-//			OwnerActor = GetOwner();
-//		}
-//
-//		// Try to get owner ASC
-//		UAbilitySystemComponent* ApplierASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OwnerActor);
-//		UAbilitySystemComponent* TargetASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OtherActor);
-//		// If not fallback to target
-//		if (!ApplierASC)
-//		{
-//			ApplierASC = TargetASC;
-//		}
-//
-//		// Only apply if ASC valid
-//		if (ApplierASC && TargetASC)
-//		{
-//			// Default Effect to apply
-//			if (DefaultEffectToApply)
-//			{
-//				FGameplayEffectContextHandle ContextHandle;
-//				if (DefaultGameplayEffectContextHandle.Get())
-//				{
-//					ContextHandle = DefaultGameplayEffectContextHandle;
-//				}
-//				else
-//				{
-//					ContextHandle = ApplierASC->MakeEffectContext();
-//				}
-//
-//				ApplierASC->ApplyGameplayEffectToTarget(DefaultEffectToApply->GetDefaultObject<UGameplayEffect>(), TargetASC, 1, ContextHandle);
-//			}
-//			
-//			// Default Events to apply
-//			for (FRGX_HitboxGameplayEvent& DefaultEvent : DefaultEventsToApply)
-//			{
-//				if (DefaultEvent.bActivated == true)
-//				{
-//					DefaultEvent.EventData.Instigator = OwnerActor;
-//					TargetASC->HandleGameplayEvent(DefaultEvent.GameplayEvent, &DefaultEvent.EventData);
-//				}
-//			}
-//
-//			// Effects and Events to apply that come from an ability activation
-//			float AbilityLevel = AbilityEffectsInfo.EffectContextHandle.GetAbilityLevel();
-//
-//			FGameplayEffectContextHandle ContextHandle = AbilityEffectsInfo.EffectContextHandle.Get() ? AbilityEffectsInfo.EffectContextHandle : ApplierASC->MakeEffectContext();
-//
-//			for (TSubclassOf<UGameplayEffect> Effect : AbilityEffectsInfo.GameplayEffectsToTarget) // TODO: BUGARDO
-//			{
-//				ApplierASC->ApplyGameplayEffectToTarget(Effect->GetDefaultObject<UGameplayEffect>(), TargetASC, AbilityLevel, ContextHandle);
-//			}
-//
-//			for (TSubclassOf<UGameplayEffect> Effect : AbilityEffectsInfo.GameplayEffectsToOwner)
-//			{
-//				ApplierASC->ApplyGameplayEffectToSelf(Effect->GetDefaultObject<UGameplayEffect>(), AbilityLevel, ContextHandle);
-//
-//			}
-//
-//			for (int i = 0; i < AbilityEffectsInfo.GameplayEventsToTarget.Num(); ++i)
-//			{
-//				FGameplayTag EventTag = AbilityEffectsInfo.GameplayEventsToTarget[i]->EventTag;
-//				FGameplayEventData EventData = {};
-//				EventData.Instigator = OwnerActor;
-//				EventData.OptionalObject = AbilityEffectsInfo.GameplayEventsToTarget[i];
-//				TargetASC->HandleGameplayEvent(EventTag, &EventData);
-//			}
-//
-//			for (int i = 0; i < AbilityEffectsInfo.GameplayEventsToOwner.Num(); ++i)
-//			{
-//				FGameplayTag EventTag = AbilityEffectsInfo.GameplayEventsToOwner[i]->EventTag;
-//				FGameplayEventData EventData = {};
-//				EventData.Instigator = OwnerActor;
-//				EventData.OptionalObject = AbilityEffectsInfo.GameplayEventsToOwner[i];
-//				ApplierASC->HandleGameplayEvent(EventTag, &EventData);
-//			}
-//		}
-//	}
-//	else
-//	{
-//		UE_LOG(LogTemp, Error, TEXT("No effect or event to apply with the hitbox"));
-//	}
-//}
-
 void URGX_HitboxComponent::OnComponentOverlap(
 	UPrimitiveComponent* OverlappedComponent, 
 	AActor* OtherActor, 
@@ -298,16 +186,18 @@ void URGX_HitboxComponent::OnComponentOverlap(
 		const ARGX_CharacterBase* OwnerCharacter = Cast<ARGX_CharacterBase>(OwnerActor);
 		UAbilitySystemComponent* OwnerAbilitySystemComponent = OwnerCharacter->GetAbilitySystemComponent();
 
-		FGameplayEventData *Payload = new FGameplayEventData();
-		Payload->Instigator = OwnerActor;
+		FGameplayEventData* Payload = new FGameplayEventData();
+		Payload->Instigator	= OwnerActor;
 		Payload->Target		= OtherActor;
 
-		for(const FGameplayTag tag : EffectTags)
-			OwnerAbilitySystemComponent->HandleGameplayEvent(tag, Payload);
+		for(const FGameplayTag Tag : EffectTags)
+			OwnerAbilitySystemComponent->HandleGameplayEvent(Tag, Payload);
 
 		ActorsHit.Add(OtherActor);
 	}
 
+	// TODO It probably should not be handled by hitbox component.
+	// Check the case where hitbox should destroy the object.
 	switch (DestroyOnOverlap)
 	{
 	case ERGX_DestroyOnOverlapType::Overlap:

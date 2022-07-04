@@ -19,14 +19,9 @@ protected:
 	void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 protected:
-	void PopulateGameplayEffectContext(FRGX_GameplayEffectContext& GameplayEffectContext) override;
-
 	virtual void OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData);
 
 protected:
 	UPROPERTY(EditAnywhere)
 	float MoveVectorLength = 0.0f;
-
-	//UPROPERTY(EditAnywhere)
-	//UGameplayEffect EffectToApply;
 };

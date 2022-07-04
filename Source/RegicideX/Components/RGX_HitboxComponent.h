@@ -98,8 +98,8 @@ protected:
 	TArray<UShapeComponent*> Shapes;
 
 	/** Event Tag to activate */
-	UPROPERTY(EditDefaultsOnly, Category = HitboxComponent)
-	FGameplayTag EventTag;
+	//UPROPERTY(EditDefaultsOnly, Category = HitboxComponent)
+	//FGameplayTag EventTag;
 
 	UPROPERTY(EditDefaultsOnly, Category = HitboxComponent)
 	TEnumAsByte<ETeamAttitude::Type> TeamToApply = ETeamAttitude::Hostile;
@@ -114,7 +114,7 @@ protected:
 	bool bEffectActivated = false;
 
 	/** Map of gameplay tags to trigger events. */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = HitboxComponent)
+	UPROPERTY(/*EditDefaultsOnly, BlueprintReadOnly, Category = HitboxComponent*/)
 	TArray<FGameplayTag> EffectTags;
 
 	/** "This tags do not allow the hitbox effect to get applied to the actor if owned by him." */

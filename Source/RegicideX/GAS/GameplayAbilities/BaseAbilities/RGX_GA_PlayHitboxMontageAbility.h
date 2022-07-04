@@ -41,6 +41,8 @@ protected:
 	virtual void PopulateGameplayEffectContext(FRGX_GameplayEffectContext& GameplayEffectContext);
 
 protected:
+
+	// TODO Check how damage should be handled.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FName DamageCurveName;
 
@@ -50,18 +52,22 @@ protected:
 	UPROPERTY(EditAnywhere)
 	UCurveTable* DamageLevelCurve = nullptr;
 
+	// Montage ability will play.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UAnimMontage* MontageToPlay;
 
+	// Section of the montage in case we do not want to play from the beginning.
 	UPROPERTY(EditAnywhere)
 	FName StartSectionName;
 
 	UPROPERTY(EditAnywhere)
 	float PlayRatio = 1.0f;
 
+	// The tag pointing to the hitbox component.
 	UPROPERTY(EditAnywhere)
 	FGameplayTag HitboxTag;
 
+	// The Tag for the montage to wait for.
 	UPROPERTY(EditAnywhere)
 	FGameplayTagContainer EventTagContainer;
 
@@ -69,6 +75,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TMap<FGameplayTag, TSubclassOf<UGameplayEffect>> EffectToApplyToTarget;
 
+	// A map of a tag that should trigger a gameplay effect to ability owner.
 	UPROPERTY(EditDefaultsOnly)
 	TMap<FGameplayTag, TSubclassOf<UGameplayEffect>> EffectToApplyToOwner;
 };

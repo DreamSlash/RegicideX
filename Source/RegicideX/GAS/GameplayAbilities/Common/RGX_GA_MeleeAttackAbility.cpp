@@ -1,17 +1,12 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "RGX_GA_MeleeAttackAbility.h"
-#include "GameFramework/Character.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
-#include "RegicideX/Components/RGX_HitboxesManagerComponent.h"
 #include "RegicideX/Components/RGX_CombatAssistComponent.h"
 #include "RegicideX/Character/RGX_PlayerCharacter.h"
-#include "RegicideX/Components/RGX_HitboxComponent.h"
 
 URGX_MeleeAttackAbility::URGX_MeleeAttackAbility()
 {
+	EventTagContainer.AddTag(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Action")));
 }
 
 void URGX_MeleeAttackAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
@@ -53,26 +48,16 @@ void URGX_MeleeAttackAbility::EndAbility(const FGameplayAbilitySpecHandle Handle
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
-void URGX_MeleeAttackAbility::PopulateGameplayEffectContext(FRGX_GameplayEffectContext& GameplayEffectContext)
-{
-	float AbilityLevel = 1;
-
-	FString ContextString;
-	FRealCurve* DamageCurve = DamageLevelCurve->FindCurve(DamageCurveName, ContextString);
-	FRealCurve* ScalingCurve = DamageLevelCurve->FindCurve(AttributeScalingCurveName, ContextString);
-	GameplayEffectContext.DamageAmount = DamageCurve->Eval(AbilityLevel);
-	GameplayEffectContext.ScalingAttributeFactor = ScalingCurve->Eval(AbilityLevel);
-}
-
 void URGX_MeleeAttackAbility::OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData)
 {
 	AActor* OwnerActor = GetOwningActorFromActorInfo();
-	ARGX_CharacterBase* OwnerCharacter = Cast<ARGX_CharacterBase>(OwnerActor);
-	const ARGX_CharacterBase* TargetCharacter = Cast<ARGX_CharacterBase>(EventData.Target);
-	UAbilitySystemComponent* TargetACS = TargetCharacter->GetAbilitySystemComponent();
+	ARGX_CharacterBase* OwnerCharacter			= Cast<ARGX_CharacterBase>(OwnerActor);
+	UAbilitySystemComponent* OwnerACS			= OwnerCharacter->GetAbilitySystemComponent();
+	const ARGX_CharacterBase* TargetCharacter	= Cast<ARGX_CharacterBase>(EventData.Target);
+	UAbilitySystemComponent* TargetACS			= TargetCharacter ? TargetCharacter->GetAbilitySystemComponent() : nullptr;
 
-	// Find the effect mapped to the triggering event tag.
-	if (EffectToApplyToTarget.Contains(EventTag))
+	// Find the effect mapped to the triggering event tag to apply to target.
+	if (EffectToApplyToTarget.Contains(EventTag) && TargetACS)
 	{
 		TSubclassOf<UGameplayEffect>* GameplayEffectToApply = EffectToApplyToTarget.Find(EventTag);
 		FGameplayEffectSpecHandle GameplayEffectSpecHandle =  MakeOutgoingGameplayEffectSpec(*GameplayEffectToApply, OwnerCharacter->GetCharacterLevel());
@@ -89,11 +74,14 @@ void URGX_MeleeAttackAbility::OnReceivedEvent(FGameplayTag EventTag, FGameplayEv
 		FGameplayEffectSpec* GESpec = GameplayEffectSpecHandle.Data.Get();
 		GESpec->SetContext(EffectContext);
 		TargetACS->ApplyGameplayEffectSpecToSelf(*GESpec);
+	}
 
-		// Apply the effect given the TargetData
-		//FGameplayAbilitySpecHandle AbilitySpecHandle	= GetCurrentAbilitySpecHandle();
-		//FGameplayAbilityActorInfo ActorInfo				= GetActorInfo();
-		//FGameplayAbilityActivationInfo ActivationInfo	= GetCurrentActivationInfo();
-		//ApplyGameplayEffectSpecToTarget(AbilitySpecHandle, &ActorInfo, ActivationInfo, GameplayEffectSpecHandle, EventData.TargetData);
+	// Apply own effects, such as cooldowns.
+	if (EffectToApplyToOwner.Contains(EventTag) && OwnerACS)
+	{
+		TSubclassOf<UGameplayEffect>* GameplayEffectToApply = EffectToApplyToOwner.Find(EventTag);
+		FGameplayEffectSpecHandle GameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(*GameplayEffectToApply, OwnerCharacter->GetCharacterLevel());
+
+		OwnerACS->ApplyGameplayEffectSpecToSelf(*GameplayEffectSpecHandle.Data.Get());
 	}
 }
