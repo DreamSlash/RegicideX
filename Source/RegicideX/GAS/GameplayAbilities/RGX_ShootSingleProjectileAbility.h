@@ -3,16 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Abilities/MCV_GameplayAbility.h"
+#include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GameplayAbility.h"
 #include "RGX_ShootSingleProjectileAbility.generated.h"
 
 /**
  * 
  */
-class ARGX_Bullet;
+class ARGX_Projectile;
 
 UCLASS()
-class REGICIDEX_API URGX_ShootSingleProjectileAbility : public UMCV_GameplayAbility
+class REGICIDEX_API URGX_ShootSingleProjectileAbility : public URGX_GameplayAbility
 {
 	GENERATED_BODY()
 
@@ -23,7 +23,7 @@ public:
 	URGX_ShootSingleProjectileAbility();
 
 	UPROPERTY(EditAnywhere)
-		TSubclassOf<ARGX_Bullet> ProjectileClass;
+		TSubclassOf<ARGX_Projectile> ProjectileClass;
 
 	UPROPERTY(EditAnywhere)
 		FVector Offset;

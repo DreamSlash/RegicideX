@@ -3,8 +3,10 @@
 
 #include "RGX_ShootSingleProjectileAbility.h"
 
-#include "RegicideX\Actors\Weapons\RGX_Bullet.h"
+#include "RegicideX/Actors/Projectiles/RGX_Projectile.h"
+#include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 #include "RegicideX\Actors\Enemies\RGX_DistanceAngel.h"
+#include "GenericTeamAgentInterface.h"
 
 URGX_ShootSingleProjectileAbility::URGX_ShootSingleProjectileAbility() 
 {
@@ -28,5 +30,16 @@ void URGX_ShootSingleProjectileAbility::Shoot(APawn* Actor)
 	FActorSpawnParameters SpawnParameters;
 	SpawnParameters.Instigator = Actor;
 
-	GetWorld()->SpawnActor<ARGX_Bullet>(ProjectileClass, BulletTransform, SpawnParameters);
+	ARGX_Projectile* Projectile = GetWorld()->SpawnActor<ARGX_Projectile>(ProjectileClass, BulletTransform, SpawnParameters);
+	if (Projectile)
+	{
+		ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(GetAvatarActorFromActorInfo());
+		if (Enemy)
+		{
+			FGenericTeamId TeamID = Enemy->GetGenericTeamId();
+			Projectile->SetGenericTeamId(TeamID);
+		}
+
+		Projectile->Instigator = GetAvatarActorFromActorInfo();
+	}
 }
