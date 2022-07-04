@@ -10,9 +10,6 @@ class AActor;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FFollowActorDelegate);
 
-/**
- * 
- */
 UCLASS()
 class REGICIDEX_API URGX_AT_FollowActor : public UAbilityTask
 {

@@ -189,16 +189,19 @@ void URGX_HitboxComponent::OnComponentOverlap(
 	if (Attitude == TeamToApply && CanApplyEffect)
 	{
 		const ARGX_CharacterBase* OwnerCharacter = Cast<ARGX_CharacterBase>(OwnerActor);
-		UAbilitySystemComponent* OwnerAbilitySystemComponent = OwnerCharacter->GetAbilitySystemComponent();
+		if (OwnerCharacter)
+		{
+			UAbilitySystemComponent* OwnerAbilitySystemComponent = OwnerCharacter->GetAbilitySystemComponent();
 
-		FGameplayEventData* Payload = new FGameplayEventData();
-		Payload->Instigator	= OwnerActor;
-		Payload->Target		= OtherActor;
+			FGameplayEventData* Payload = new FGameplayEventData();
+			Payload->Instigator	= OwnerActor;
+			Payload->Target		= OtherActor;
 
-		for(const FGameplayTag Tag : EffectTags)
-			OwnerAbilitySystemComponent->HandleGameplayEvent(Tag, Payload);
+			for(const FGameplayTag Tag : EffectTags)
+				OwnerAbilitySystemComponent->HandleGameplayEvent(Tag, Payload);
 
-		ActorsHit.Add(OtherActor);
+			ActorsHit.Add(OtherActor);
+		}
 	}
 
 	// TODO It probably should not be handled by hitbox component.
