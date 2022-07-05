@@ -201,6 +201,12 @@ void URGX_HitboxComponent::OnComponentOverlap(
 				OwnerAbilitySystemComponent->HandleGameplayEvent(Tag, Payload);
 
 			ActorsHit.Add(OtherActor);
+
+		}
+
+		if (OnHitboxOverlap.IsBound())
+		{
+			OnHitboxOverlap.Broadcast(OtherActor);
 		}
 	}
 

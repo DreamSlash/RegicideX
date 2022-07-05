@@ -95,7 +95,6 @@ void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ARGX_PlayerCharacter::LookUpAtRate);
 
-
 	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"), FString("CancelTarget"), FString("EMCVAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::Confirm), static_cast<int32>(EMCVAbilityInputID::Cancel)));
 }
 
@@ -425,6 +424,11 @@ void ARGX_PlayerCharacter::AddGameplayTag(const FGameplayTag& TagToAdd)
 void ARGX_PlayerCharacter::RemoveGameplayTag(const FGameplayTag& TagToRemove)
 {
 	AbilitySystemComponent->RemoveLooseGameplayTag(TagToRemove);
+}
+
+void ARGX_PlayerCharacter::OnInterrupted()
+{
+	ComboSystemComponent->OnEndCombo();
 }
 
 void ARGX_PlayerCharacter::BeginPlay()

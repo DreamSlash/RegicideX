@@ -1,11 +1,9 @@
+
 #include "RGX_SpearProjectile.h"
-#include "../Components/RGX_HitboxComponent.h"
-#include "GameFramework/ProjectileMovementComponent.h"
-#include "GenericTeamAgentInterface.h"
-#include "GameFramework/Actor.h"
-#include "Kismet/GameplayStatics.h"
-#include "Enemies/RGX_EnemyBase.h"
 #include "Components/MCV_AbilitySystemComponent.h"
+#include "GameFramework/ProjectileMovementComponent.h"
+#include "RegicideX/Components/RGX_HitboxComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 ARGX_SpearProjectile::ARGX_SpearProjectile()
 {
@@ -39,9 +37,9 @@ void ARGX_SpearProjectile::Tick(float DeltaTime)
 		return;
 	
 	// TODO: Meter en una funcion
-	FVector CasterLocation = Caster->GetActorLocation();
-	FVector CasterRight = Caster->GetActorRightVector();
-	FVector CasterForward = Caster->GetActorForwardVector();
+	FVector CasterLocation = Instigator->GetActorLocation();
+	FVector CasterRight = Instigator->GetActorRightVector();
+	FVector CasterForward = Instigator->GetActorForwardVector();
 
 	FVector CasterOffset = FVector(0.0f);
 	CasterOffset = CasterRight.RotateAngleAxis(Angle, CasterForward) * DistanceFromCaster;
@@ -50,7 +48,7 @@ void ARGX_SpearProjectile::Tick(float DeltaTime)
 
 	SetActorLocation(NewLocation);
 
-	FRotator NewRotation = Caster->GetActorRotation();
+	FRotator NewRotation = Instigator->GetActorRotation();
 	SetActorRotation(NewRotation);
 }
 
@@ -124,14 +122,4 @@ void ARGX_SpearProjectile::OnComponentHit(UPrimitiveComponent* HitComponent, AAc
 bool ARGX_SpearProjectile::IsHostile(const IGameplayTagAssetInterface* InstigatorTagInterface, const IGameplayTagAssetInterface* OtherTagInterface) const
 {
 	return false;
-}
-
-void ARGX_SpearProjectile::SetGenericTeamId(const FGenericTeamId& TeamID)
-{
-	CharacterTeam = TeamID;
-}
-
-FGenericTeamId ARGX_SpearProjectile::GetGenericTeamId() const
-{
-	return CharacterTeam;
 }

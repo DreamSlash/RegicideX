@@ -2,9 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "GameplayTagContainer.h"
+#include "GameplayEffectTypes.h"
+#include "GameplayEffect.h"
 #include "RGX_PayloadObjects.generated.h"
-
-struct FGameplayEffectContextHandle;
 
 UCLASS()
 class REGICIDEX_API URGX_LaunchEventPayload : public UObject

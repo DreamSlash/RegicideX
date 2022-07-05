@@ -3,8 +3,8 @@
 
 #include "RGX_ShootProjectilesAbility.h"
 #include "RegicideX\Actors\Enemies\RGX_DistanceAngel.h"
-#include "RegicideX\Actors\Weapons\RGX_Bullet.h"
 #include "RegicideX\Components\RGX_HitboxesManagerComponent.h"
+#include "RegicideX/Actors/Projectiles/RGX_Projectile.h"
 
 URGX_ShootProjectilesAbility::URGX_ShootProjectilesAbility()
 {

@@ -7,7 +7,7 @@
 #include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GA_CastSkillAbility.h"
 #include "RGX_GA_ClusteredProjectiles.generated.h"
 
-class ARGX_ClusteredBullet;
+class ARGX_Projectile;
 
 UCLASS()
 class REGICIDEX_API URGX_GA_ClusteredProjectiles : public URGX_CastSkillAbility
@@ -22,7 +22,7 @@ public:
 		TArray<FVector> PointsToSpawn;
 
 	UPROPERTY(EditDefaultsOnly)
-		TSubclassOf<ARGX_ClusteredBullet> BulletBP;
+		TSubclassOf<ARGX_Projectile> BulletBP;
 
 
 protected:

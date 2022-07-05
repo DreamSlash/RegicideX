@@ -11,6 +11,8 @@
 #include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RGX_HitboxComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRGX_HitboxOverlapDelegate, class AActor*, HitActor);
+
 USTRUCT()
 struct FRGX_HitboxGameplayEvent
 {
@@ -68,6 +70,9 @@ public:
 		its velocity and position of both actors*/
 	UFUNCTION()
 	bool IsGoingToOverlapActor(AActor* Actor);
+
+public:
+	FRGX_HitboxOverlapDelegate OnHitboxOverlap;
 
 protected:
 

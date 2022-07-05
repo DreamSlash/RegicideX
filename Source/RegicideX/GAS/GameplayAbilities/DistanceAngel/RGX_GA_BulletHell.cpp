@@ -5,7 +5,7 @@
 #include "Components/SceneComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "RegicideX/GAS/AbilityTasks/RGX_AT_WaitDelayAndSpawn.h"
-#include "RegicideX/Actors/Weapons/RGX_ClusteredBullet.h"
+#include "RegicideX/Actors/Projectiles/RGX_Projectile.h"
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 #include "Kismet/KismetMathLibrary.h"
 
@@ -68,7 +68,17 @@ void URGX_GA_BulletHell::OnSpawnBullet()
 		FRotator BulletRotation = OriginRotation;
 		BulletRotation.Pitch = OriginToTarget.Rotation().Pitch + FMath::FRandRange(-LowerBoundPitchOffset, UpperBoundPitchOffset);
 
-		ARGX_ClusteredBullet* Bullet = GetWorld()->SpawnActor<ARGX_ClusteredBullet>(BulletBP, BulletOrigin, BulletRotation);
+		ARGX_Projectile* Bullet = GetWorld()->SpawnActor<ARGX_Projectile>(BulletBP, BulletOrigin, BulletRotation);
+		if (Bullet)
+		{
+			ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(GetAvatarActorFromActorInfo());
+			if (Enemy)
+			{
+				FGenericTeamId TeamID = Enemy->GetGenericTeamId();
+				Bullet->SetGenericTeamId(TeamID);
+				Bullet->Instigator = GetAvatarActorFromActorInfo();
+			}
+		}
 	}
 }
 

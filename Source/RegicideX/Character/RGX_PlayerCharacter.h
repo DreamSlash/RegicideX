@@ -239,6 +239,10 @@ public:
 	void AddGameplayTag(const FGameplayTag& TagToAdd) override;
 	void RemoveGameplayTag(const FGameplayTag& TagToRemove) override;
 
+	/** Stops any combo logic. It should be called at any action that interrupts an ongoing combo from the Combo system. */
+	UFUNCTION(BlueprintCallable)
+	void OnInterrupted();
+
 	/** Utility methods */
 	UFUNCTION(BlueprintCallable)
 	bool IsBeingAttacked();
