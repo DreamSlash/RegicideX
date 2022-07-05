@@ -7,7 +7,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GenericTeamAgentInterface.h"
-#include "Components/InputComponent.h"
 #include "RegicideX/GameplayFramework/RGX_PlayerState.h" // TODO: write path to project settings
 #include "RegicideX/Components/RGX_ComboSystemComponent.h"
 #include "RegicideX/Components/RGX_HitboxComponent.h"
@@ -124,40 +123,33 @@ void ARGX_PlayerCharacter::ManageLightAttackInput()
 
 	InputHandlerComponent->HandleInput(ERGX_PlayerInputID::LightAttackInput, false, GetCharacterMovement()->IsFalling());
 
-	//bool bCanAirCombo = HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
 	FGameplayTag NextAttack = ComboSystemComponent->ManageInputToken(ERGX_ComboTokenID::LightAttackToken, GetCharacterMovement()->IsFalling(), bCanAirCombo);
 
 	if (NextAttack == FGameplayTag::RequestGameplayTag(FName("Combo.Light")) || NextAttack == FGameplayTag::RequestGameplayTag(FName("Combo.Air.Light")))
 	{
-		if (GetCharacterMovement()->IsFalling())
+		if (GetCharacterMovement()->IsFalling() && bCanAirCombo == true)
 		{
-			if (bCanAirCombo == true)
+			UE_LOG(LogTemp, Warning, TEXT("CanAirCombo\n"));
+			FGameplayEventData EventData;
+			int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(NextAttack, &EventData);
+			// clean state if ability was not activated
+			if (TriggeredAbilities == 0)
 			{
-				UE_LOG(LogTemp, Warning, TEXT("CanAirCombo\n"));
-				FGameplayEventData EventData;
-				int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(NextAttack, &EventData);
-				//UE_LOG(LogTemp, Warning, TEXT("Triggered Abilities: %d\n"), TriggeredAbilities);
-				// clean state if ability was not activated
-				if (TriggeredAbilities == 0)
-				{
-					ComboSystemComponent->OnEndCombo();
-				}
-				else
-				{
-					UE_LOG(LogTemp, Warning, TEXT("Remove Can Air Combo\n"));
-					//RemoveGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
-					bCanAirCombo = false;
-					StopJumping();
-					LaunchCharacter(FVector(0.0f, 0.0f, -1.0f), true, true); // If Z force is 0.0f for some reason it doesn't work
-					GetCharacterMovement()->GravityScale = 0.0f;
-				}
+				ComboSystemComponent->OnEndCombo();
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Remove Can Air Combo\n"));
+				bCanAirCombo = false;
+				StopJumping();
+				LaunchCharacter(FVector(0.0f, 0.0f, -1.0f), true, true); // If Z force is 0.0f for some reason it doesn't work
+				GetCharacterMovement()->GravityScale = 0.0f;
 			}
 		}
 		else
 		{
 			FGameplayEventData EventData;
 			int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(NextAttack, &EventData);
-			//UE_LOG(LogTemp, Warning, TEXT("Triggered Abilities: %d\n"), TriggeredAbilities);
 			// clean state if ability was not activated
 			if (TriggeredAbilities == 0)
 			{

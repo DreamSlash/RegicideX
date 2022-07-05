@@ -6,7 +6,12 @@
 #include "RegicideX/Actors/Enemies/RGX_MeleeAngel.h"
 #include "RegicideX/GAS/AbilityTasks/RGX_AT_FollowActor.h"
 
-bool URGX_MEASweepAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const 
+bool URGX_MEASweepAbility::CanActivateAbility(
+	const FGameplayAbilitySpecHandle Handle, 
+	const FGameplayAbilityActorInfo* ActorInfo, 
+	const FGameplayTagContainer* SourceTags, 
+	const FGameplayTagContainer* TargetTags, 
+	OUT FGameplayTagContainer* OptionalRelevantTags) const 
 {
 	bool bResult = Super::CanActivateAbility(Handle, ActorInfo, SourceTags, TargetTags, OptionalRelevantTags);
 	if (bResult == false)
@@ -19,7 +24,11 @@ bool URGX_MEASweepAbility::CanActivateAbility(const FGameplayAbilitySpecHandle H
 	return true;
 }
 
-void URGX_MEASweepAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
+void URGX_MEASweepAbility::ActivateAbility(
+	const FGameplayAbilitySpecHandle Handle, 
+	const FGameplayAbilityActorInfo* ActorInfo, 
+	const FGameplayAbilityActivationInfo ActivationInfo, 
+	const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
@@ -31,7 +40,12 @@ void URGX_MEASweepAbility::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	FollowActorTask->ReadyForActivation();
 }
 
-void URGX_MEASweepAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
+void URGX_MEASweepAbility::EndAbility(
+	const FGameplayAbilitySpecHandle Handle, 
+	const FGameplayAbilityActorInfo* ActorInfo, 
+	const FGameplayAbilityActivationInfo ActivationInfo, 
+	bool bReplicateEndAbility, 
+	bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
@@ -45,6 +59,44 @@ void URGX_MEASweepAbility::PopulateGameplayEffectContext(FRGX_GameplayEffectCont
 	FRealCurve* ScalingCurve = DamageLevelCurve->FindCurve(AttributeScalingCurveName, ContextString);
 	GameplayEffectContext.DamageAmount = DamageCurve->Eval(AbilityLevel);
 	GameplayEffectContext.ScalingAttributeFactor = ScalingCurve->Eval(AbilityLevel);
+}
+
+void URGX_MEASweepAbility::OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData)
+{
+	AActor* OwnerActor = GetOwningActorFromActorInfo();
+	ARGX_CharacterBase* OwnerCharacter = Cast<ARGX_CharacterBase>(OwnerActor);
+	UAbilitySystemComponent* OwnerACS = OwnerCharacter->GetAbilitySystemComponent();
+	const ARGX_CharacterBase* TargetCharacter = Cast<ARGX_CharacterBase>(EventData.Target);
+	UAbilitySystemComponent* TargetACS = TargetCharacter ? TargetCharacter->GetAbilitySystemComponent() : nullptr;
+
+	// Find the effect mapped to the triggering event tag to apply to target.
+	if (EffectToApplyToTarget.Contains(EventTag) && TargetACS)
+	{
+		TSubclassOf<UGameplayEffect>* GameplayEffectToApply = EffectToApplyToTarget.Find(EventTag);
+		FGameplayEffectSpecHandle GameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(*GameplayEffectToApply, OwnerCharacter->GetCharacterLevel());
+
+		FString ContextString;
+		FRealCurve* DamageCurve = DamageLevelCurve->FindCurve(DamageCurveName, ContextString);
+		FRealCurve* ScalingCurve = DamageLevelCurve->FindCurve(AttributeScalingCurveName, ContextString);
+
+		FGameplayEffectContextHandle EffectContext = MakeEffectContext(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo());
+		FRGX_GameplayEffectContext* GameplayEffectContext = static_cast<FRGX_GameplayEffectContext*>(EffectContext.Get());
+		GameplayEffectContext->DamageAmount = DamageCurve->Eval(TargetCharacter->GetCharacterLevel());
+		GameplayEffectContext->ScalingAttributeFactor = ScalingCurve->Eval(TargetCharacter->GetCharacterLevel());
+
+		FGameplayEffectSpec* GESpec = GameplayEffectSpecHandle.Data.Get();
+		GESpec->SetContext(EffectContext);
+		TargetACS->ApplyGameplayEffectSpecToSelf(*GESpec);
+	}
+
+	// Apply own effects, such as cooldowns.
+	if (EffectToApplyToOwner.Contains(EventTag) && OwnerACS)
+	{
+		TSubclassOf<UGameplayEffect>* GameplayEffectToApply = EffectToApplyToOwner.Find(EventTag);
+		FGameplayEffectSpecHandle GameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(*GameplayEffectToApply, OwnerCharacter->GetCharacterLevel());
+
+		OwnerACS->ApplyGameplayEffectSpecToSelf(*GameplayEffectSpecHandle.Data.Get());
+	}
 }
 
 void URGX_MEASweepAbility::OnEndSweepDuration()

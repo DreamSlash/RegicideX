@@ -142,17 +142,11 @@ protected:
 	UPROPERTY()
 	bool bTimeScale = false;
 
+	/** Check if player can perform an attack in the air */
 	bool bCanAirCombo = true;
 
+	/** If player has been hit and thus cannot perform any action */
 	bool bStaggered = false;
-
-	///* Level Up variables */
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	//TSubclassOf<UGameplayEffect> LevelUpEffect;
-
-	///* Full Health Recovery effect */
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	//TSubclassOf<UGameplayEffect> FullHealthEffect;
 
 	UPROPERTY(EditAnywhere)
 	UCurveTable* MaxHealthLevelCurve = nullptr;
@@ -211,13 +205,13 @@ protected:
 	void ManageHeavyAttackInput();
 	void ManageHeavyAttackInputRelease();
 
-	//void ManagePowerSkillInput();
-	void TryToInteract();
-	// ----------------------------------
-
 	void PerformFallAttack();
 	void PerformLaunchAttack();
 	void ChangePowerSkill();
+
+	//void ManagePowerSkillInput();
+	void TryToInteract();
+	// ----------------------------------
 
 	/* Level and experience*/
 	//void LevelUp(const float NewLevel);
