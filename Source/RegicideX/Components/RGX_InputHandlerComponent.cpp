@@ -1,5 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 
 #include "RegicideX/Components/RGX_InputHandlerComponent.h"
 #include "RegicideX/Character/RGX_PlayerCharacter.h"
@@ -61,6 +59,7 @@ void URGX_InputHandlerComponent::TickComponent(float DeltaTime, ELevelTick TickT
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	// Add holding time for the specific input.
 	for (TPair<uint16, FRGX_InputInfo>& InputToHold : InputToInfoMap)
 	{
 		if (IsInputPressed(InputToHold.Key) == true)
@@ -74,10 +73,13 @@ void URGX_InputHandlerComponent::TickComponent(float DeltaTime, ELevelTick TickT
 		}
 	}
 
+	/** Iterate through all possible actions and handle them if necessary. */
 	for (TPair<ERGX_PlayerActions, FRGX_InputChainInfo>& InputToAction : InputToActionMap)
 	{
 		bool bResult = true;
 
+		// Check if Input Token was really pressed on air, already used or if cannot be processed.
+		// Otherwise, mark as true to handle the action.
 		for (FRGX_InputToken InputToken : InputToAction.Value.Inputs)
 		{
 			if (InputToInfoMap[(uint16)InputToken.InputID].bPressedInAir != InputToken.bPressedInAir)

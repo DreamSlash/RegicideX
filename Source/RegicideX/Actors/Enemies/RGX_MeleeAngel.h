@@ -18,7 +18,6 @@ class REGICIDEX_API ARGX_MeleeAngel : public ARGX_EnemyBase
 	
 public:
 
-
 	ARGX_MeleeAngel();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

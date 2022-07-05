@@ -42,15 +42,15 @@ protected:
 	UPROPERTY(EditAnywhere)
 	FGameplayTag HitboxTag;
 
-	UPROPERTY(EditDefaultsOnly)
-	TArray<TSubclassOf<UGameplayEffect>> EffectsToApplyToTarget;
+	// The Tag for the montage to wait for.
+	UPROPERTY(EditAnywhere)
+	FGameplayTag EventTag;
 
+	// A map of a tag that should trigger a gameplay effect.
 	UPROPERTY(EditDefaultsOnly)
-	TArray<TSubclassOf<UGameplayEffect>> EffectsToApplyToOwner;
+	TMap<FGameplayTag, TSubclassOf<UGameplayEffect>> EffectToApplyToTarget;
 
+	// A map of a tag that should trigger a gameplay effect to ability owner.
 	UPROPERTY(EditDefaultsOnly)
-	TArray<URGX_RGXEventDataAsset*> EventsToApplyToTarget;
-
-	UPROPERTY(EditDefaultsOnly)
-	TArray<URGX_RGXEventDataAsset*> EventsToApplyToOwner;
+	TMap<FGameplayTag, TSubclassOf<UGameplayEffect>> EffectToApplyToOwner;
 };
