@@ -61,7 +61,10 @@ void ARGX_Peasant::HandleDamage(
 		if (IsWeak() == false)
 		{
 			// Play reaction hit animation.
-			PlayAnimMontage(AMReactionHit);
+			if (GetMovementComponent()->IsFalling())
+				PlayAnimMontage(AMAirReactionHit);
+			else
+				PlayAnimMontage(AMReactionHit);
 		}
 		else
 			StopAnimMontage();

@@ -34,6 +34,9 @@ public:
 	UAnimMontage* AMReactionHit = nullptr;
 
 	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* AMAirReactionHit = nullptr;
+
+	UPROPERTY(EditDefaultsOnly)
 	UAnimMontage* AMDeath = nullptr;
 
 	float GetDistanceToTarget() const;
