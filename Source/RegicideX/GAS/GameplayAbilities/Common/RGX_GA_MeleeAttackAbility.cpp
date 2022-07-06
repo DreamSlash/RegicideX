@@ -62,6 +62,8 @@ void URGX_MeleeAttackAbility::OnReceivedEvent(FGameplayTag EventTag, FGameplayEv
 		TSubclassOf<UGameplayEffect>* GameplayEffectToApply = EffectToApplyToTarget.Find(EventTag);
 		FGameplayEffectSpecHandle GameplayEffectSpecHandle =  MakeOutgoingGameplayEffectSpec(*GameplayEffectToApply, OwnerCharacter->GetCharacterLevel());
 
+
+		// TODO Damage should be handled by the effect and not the ability.
 		FString ContextString;
 		FRealCurve* DamageCurve		= DamageLevelCurve->FindCurve(DamageCurveName, ContextString);
 		FRealCurve* ScalingCurve	= DamageLevelCurve->FindCurve(AttributeScalingCurveName, ContextString);

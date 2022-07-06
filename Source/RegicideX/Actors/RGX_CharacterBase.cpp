@@ -1,6 +1,8 @@
 
 #include "RGX_CharacterBase.h"
 #include "Components/MCV_AbilitySystemComponent.h"
+#include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameplayAbilitySpec.h"
 
 ARGX_CharacterBase::ARGX_CharacterBase()
@@ -67,6 +69,39 @@ bool ARGX_CharacterBase::SetCharacterLevel(int32 NewLevel)
 bool ARGX_CharacterBase::IsAlive()
 {
 	return GetHealth() > 0.0f ? true : false;
+}
+
+void ARGX_CharacterBase::OnBeingLaunched(
+	AActor* ActorInstigator,
+	float HorizontalForce, 
+	float VerticalForce, 
+	float LaunchDelay)
+{
+	FVector ActorLocation = GetActorLocation();
+	FVector ForceOrigin = ActorInstigator->GetActorLocation();
+	FVector LaunchHorizontalDirection = ActorLocation - ForceOrigin;
+	LaunchHorizontalDirection.Z = 0.0f;
+	LaunchHorizontalDirection.Normalize();
+
+	// TODO may this be overriden in EnemyBase?
+	ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(this);
+	if (Enemy && Enemy->bCanBeKnockup == false)
+	{
+		VerticalForce = 0.0f;
+	}
+
+	FVector LaunchForce = LaunchHorizontalDirection * HorizontalForce + FVector(0.0f, 0.0f, 1.0f) * VerticalForce;
+	bool bIsOnAir = GetCharacterMovement()->GravityScale == 0;
+
+	if (bIsOnAir)
+	{
+		//UAbilityTask_WaitDelay* TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, LaunchDuration);
+		//TaskWaitDelay->OnFinish.AddDynamic(this, &URGX_LaunchedAbility::OnFinishDelay);
+		//TaskWaitDelay->ReadyForActivation();
+		LaunchCharacter(LaunchForce, true, true);
+	}
+	else
+		LaunchCharacter(LaunchForce, true, true);
 }
 
 void ARGX_CharacterBase::HandleDamage(

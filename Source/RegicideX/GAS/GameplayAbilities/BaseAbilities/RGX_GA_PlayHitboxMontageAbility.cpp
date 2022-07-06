@@ -11,6 +11,7 @@
 
 URGX_PlayHitboxMontageAbility::URGX_PlayHitboxMontageAbility()
 {
+	//EventTagContainer.AddTag(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Montage")));
 }
 
 bool URGX_PlayHitboxMontageAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const
@@ -34,6 +35,7 @@ void URGX_PlayHitboxMontageAbility::ActivateAbility(
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData); // Parent already calls CommitAbility function
 
+	// Play a montage that will trigger OnReceivedEvent callback if a GameplayEvent.Montage tag is called to be handled.
 	PlayMontageAndWaitForEventTask = URGX_PlayMontageAndWaitForEvent::PlayMontageAndWaitForEvent(
 		this, NAME_None, MontageToPlay, EventTagContainer, PlayRatio, StartSectionName, true);
 	PlayMontageAndWaitForEventTask->OnInterrupted.AddDynamic(this, &URGX_PlayHitboxMontageAbility::OnMontageFinished);

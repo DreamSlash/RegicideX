@@ -19,5 +19,5 @@ public:
 	FGameplayTag HitboxTag;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FGameplayTag EventTag;
+	TArray<FGameplayTag> EventTag;
 };

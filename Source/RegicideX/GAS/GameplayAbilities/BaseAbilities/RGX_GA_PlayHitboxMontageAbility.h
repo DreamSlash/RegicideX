@@ -42,7 +42,8 @@ protected:
 
 protected:
 
-	// TODO Check how damage should be handled.
+	// TODO Check how damage should be handled. --> Should be handled by the GameplayEffect
+	// Move to the GameplayEffect
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FName DamageCurveName;
 
@@ -51,6 +52,8 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	UCurveTable* DamageLevelCurve = nullptr;
+
+	// ------------------------------------------
 
 	// Montage ability will play.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -63,15 +66,16 @@ protected:
 	UPROPERTY(EditAnywhere)
 	float PlayRatio = 1.0f;
 
-	// The tag pointing to the hitbox component.
+	// The tag pointing to the hitbox component. This is the hitbox that will be affected by this ability.
 	UPROPERTY(EditAnywhere)
 	FGameplayTag HitboxTag;
 
-	// The Tag for the montage to wait for.
+	// Review if the tag should be flexible or hardcoded to GameplayEvent.Montage
+	// The Tag for the montage to wait for. It may be hardcoded to GameplayEvent.Montage at the moment ...
 	UPROPERTY(EditAnywhere)
-	FGameplayTagContainer EventTagContainer;
+	FGameplayTagContainer EventTagContainer; // = FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Montage")));
 
-	// A map of a tag that should trigger a gameplay effect.
+	// A map of a tag that should trigger a gameplay effect to the target.
 	UPROPERTY(EditDefaultsOnly)
 	TMap<FGameplayTag, TSubclassOf<UGameplayEffect>> EffectToApplyToTarget;
 

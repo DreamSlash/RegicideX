@@ -106,10 +106,6 @@ protected:
 	UPROPERTY()
 	TArray<UShapeComponent*> Shapes;
 
-	/** Event Tag to activate */
-	//UPROPERTY(EditDefaultsOnly, Category = HitboxComponent)
-	//FGameplayTag EventTag;
-
 	UPROPERTY(EditDefaultsOnly, Category = HitboxComponent)
 	TEnumAsByte<ETeamAttitude::Type> TeamToApply = ETeamAttitude::Hostile;
 

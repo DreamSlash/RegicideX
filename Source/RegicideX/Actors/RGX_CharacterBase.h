@@ -12,6 +12,7 @@
 
 class UMCV_AbilitySystemComponent; // TODO Change to RGX
 class URGX_GameplayAbility;
+class AActor;
 
 /** Base Class for al characters in the game */
 UCLASS()
@@ -46,6 +47,13 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool IsAlive();
+
+	UFUNCTION(BlueprintCallable)
+	void OnBeingLaunched(
+		AActor* ActorInstigator, 
+		float HorizontalForce,
+		float VerticalForce,
+		float LaunchDelay = 0.2f);
 
 protected:
 	/** The level of this character, should not be modified directly once it has already spawned */

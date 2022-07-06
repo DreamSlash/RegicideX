@@ -13,8 +13,14 @@ void URGX_ANS_ActivateHitbox::NotifyBegin(USkeletalMeshComponent* MeshComp, UAni
 	if (HitboxesManagerComponent)
 	{
 		URGX_HitboxComponent* Hitbox = HitboxesManagerComponent->GetHitboxByTag(HitboxTag);
-		Hitbox->AddEventTag(EventTag);
-		Hitbox->ActivateHitbox();
+		if (Hitbox)
+		{
+			for (const auto& Tag : EventTag)
+			{
+				Hitbox->AddEventTag(Tag);
+			}
+			Hitbox->ActivateHitbox();
+		}
 	}
 }
 
@@ -26,7 +32,13 @@ void URGX_ANS_ActivateHitbox::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimS
 	if (HitboxesManagerComponent)
 	{
 		URGX_HitboxComponent* Hitbox = HitboxesManagerComponent->GetHitboxByTag(HitboxTag);
-		Hitbox->RemoveEventTag(EventTag);
-		Hitbox->DeactivateHitbox();
+		if (Hitbox)
+		{
+			for (const auto& Tag : EventTag)
+			{
+				Hitbox->RemoveEventTag(Tag);
+			}
+			Hitbox->DeactivateHitbox();
+		}
 	}
 }
