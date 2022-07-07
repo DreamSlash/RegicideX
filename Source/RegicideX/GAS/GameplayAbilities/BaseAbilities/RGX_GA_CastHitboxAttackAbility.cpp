@@ -51,26 +51,26 @@ void URGX_CastHitboxAttackAbility::OnReceivedEvent(FGameplayTag EventTag, FGamep
 {
 	URGX_HitboxesManagerComponent* HitboxManagerComponent = CurrentActorInfo->AvatarActor->FindComponentByClass<URGX_HitboxesManagerComponent>();
 
-	URGX_HitboxComponent* Hitbox = HitboxManagerComponent->GetHitboxByTag(HitboxTag);
-	if (Hitbox)
-	{
-		FGameplayEffectContextHandle ContextHandle = MakeEffectContext(GetCurrentAbilitySpecHandle(), CurrentActorInfo);
-		FRGX_GameplayEffectContext* Context = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
-		PopulateGameplayEffectContext(*Context);
+	//URGX_HitboxComponent* Hitbox = HitboxManagerComponent->GetHitboxByTag(HitboxTag);
+	//if (Hitbox)
+	//{
+	//	FGameplayEffectContextHandle ContextHandle = MakeEffectContext(GetCurrentAbilitySpecHandle(), CurrentActorInfo);
+	//	FRGX_GameplayEffectContext* Context = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
+	//	PopulateGameplayEffectContext(*Context);
 
-		FRGX_AbilityEffectsInfo AbilityEffectsInfo;
-		AbilityEffectsInfo.EffectContextHandle = ContextHandle;
-		AbilityEffectsInfo.GameplayEffectsToTarget = EffectsToApplyToTarget;
-		AbilityEffectsInfo.GameplayEffectsToOwner = EffectsToApplyToOwner;
-		AbilityEffectsInfo.GameplayEventsToTarget = EventsToApplyToTarget;
-		AbilityEffectsInfo.GameplayEventsToOwner = EventsToApplyToOwner;
-		//Hitbox->SetAbilityEffectsInfo(AbilityEffectsInfo);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Hitbox sent to ability does not exist"));
-		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, true);
-	}
+	//	FRGX_AbilityEffectsInfo AbilityEffectsInfo;
+	//	AbilityEffectsInfo.EffectContextHandle = ContextHandle;
+	//	AbilityEffectsInfo.GameplayEffectsToTarget = EffectsToApplyToTarget;
+	//	AbilityEffectsInfo.GameplayEffectsToOwner = EffectsToApplyToOwner;
+	//	AbilityEffectsInfo.GameplayEventsToTarget = EventsToApplyToTarget;
+	//	AbilityEffectsInfo.GameplayEventsToOwner = EventsToApplyToOwner;
+	//	//Hitbox->SetAbilityEffectsInfo(AbilityEffectsInfo);
+	//}
+	//else
+	//{
+	//	UE_LOG(LogTemp, Error, TEXT("Hitbox sent to ability does not exist"));
+	//	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, true);
+	//}
 
 	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(
 		this, NAME_None, FinalMontageToPlay, FinalMontagePlayRate, FinalMontageStartSectionName, true);

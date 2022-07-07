@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -9,9 +8,6 @@
 #include "RegicideX/GAS/RGX_GameplayEffectContext.h"
 #include "RGX_GA_CastHitboxAttackAbility.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class REGICIDEX_API URGX_CastHitboxAttackAbility : public URGX_CastSkillAbility
 {

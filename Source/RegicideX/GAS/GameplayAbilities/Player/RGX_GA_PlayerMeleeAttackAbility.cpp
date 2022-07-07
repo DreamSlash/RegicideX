@@ -1,10 +1,10 @@
 #include "RGX_GA_PlayerMeleeAttackAbility.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "../../../Character/RGX_PlayerCharacter.h"
-#include "../../../Components/RGX_CombatAssistComponent.h"
-#include "../../../Components/RGX_HitboxesManagerComponent.h"
-#include "../../../Components/RGX_HitboxComponent.h"
+#include "RegicideX/Character/RGX_PlayerCharacter.h"
+#include "RegicideX/Components/RGX_CombatAssistComponent.h"
+#include "RegicideX/Components/RGX_HitboxesManagerComponent.h"
+#include "RegicideX/Components/RGX_HitboxComponent.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 
 URGX_PlayerMeleeAttackAbility::URGX_PlayerMeleeAttackAbility()

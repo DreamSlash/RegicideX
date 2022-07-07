@@ -2,12 +2,16 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/MCV_GameplayAbility.h"
-#include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GA_CastHitboxAttackAbility.h"
-#include "RegicideX/GAS/RGX_PayloadObjects.h"
+//#include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GA_CastHitboxAttackAbility.h"
+#include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GA_PlayHitboxMontageAbility.h"
+//#include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RGX_PlayerFallAttackAbility.generated.h"
 
+/*
+* We make a different class from MeleeAttackAbility because we do not want any Combat Assist for this specific attack.
+*/
 UCLASS()
-class REGICIDEX_API URGX_PlayerFallAttackAbility : public URGX_CastHitboxAttackAbility
+class REGICIDEX_API URGX_PlayerFallAttackAbility : public URGX_PlayHitboxMontageAbility
 {
 	GENERATED_BODY()
 
@@ -23,13 +27,7 @@ protected:
 	void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 protected:
-	void OnSuccessfulAbilityMontage(FGameplayTag EventTag, FGameplayEventData EventData) override;
-
-	void OnFailedAbilityMontage(FGameplayTag EventTag, FGameplayEventData EventData) override;
-
 	void OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData) override;
-
-	void OnFinalMontageFinished() override;
 
 	void PopulateGameplayEffectContext(FRGX_GameplayEffectContext& GameplayEffectContext) override;
 };
