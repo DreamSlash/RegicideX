@@ -13,6 +13,7 @@
 class USpringArmComponent;
 class UCameraComponent;
 class URGX_AbilitySystemComponent;
+class URGX_ANS_JumpComboSection;
 class URGX_ComboSystemComponent;
 class URGX_CombatAssistComponent;
 class URGX_InputHandlerComponent;
@@ -66,6 +67,9 @@ class REGICIDEX_API ARGX_PlayerCharacter : public ARGX_CharacterBase, public IGa
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Interaction, meta = (AllowPrivateAccess = "true"))
 	UWidgetComponent* InteractWidgetComponent = nullptr;
 
+	/** Check if player is attacking, meaning the player has an active ability with Ability.Melee tag on it. */
+	bool IsAttacking();
+
 	// Attributes ---------------
 	UPROPERTY()
 	URGX_MovementAttributeSet* MovementAttributeSet = nullptr;
@@ -89,6 +93,15 @@ public:
 
 	UPROPERTY()
 	FGameplayTag CurrentSkillTag;
+
+	/** If ture, it is in window to keep on with the current combo. */
+	UPROPERTY()
+	bool bCanCombo = false;
+
+	/** Holds the AnimNotifyState of the current attack, which has the information for the combo to follow. */
+	UPROPERTY()
+	URGX_ANS_JumpComboSection* JumpComboNotifyState;
+
 	//--------------------------
 
 	UPROPERTY(EditDefaultsOnly)

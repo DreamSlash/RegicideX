@@ -1,5 +1,6 @@
 #include "RGX_PlayerCharacter.h"
 
+#include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/CapsuleComponent.h"
@@ -7,14 +8,15 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GenericTeamAgentInterface.h"
-#include "RegicideX/GameplayFramework/RGX_PlayerState.h" // TODO: write path to project settings
+#include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 #include "RegicideX/Components/RGX_ComboSystemComponent.h"
 #include "RegicideX/Components/RGX_HitboxComponent.h"
 #include "RegicideX/Components/RGX_InputHandlerComponent.h"
 #include "RegicideX/Components/RGX_InteractComponent.h"
+#include "RegicideX/GameplayFramework/RGX_PlayerState.h" // TODO: write path to project settings
 #include "RegicideX/GAS/AttributeSets/RGX_MovementAttributeSet.h"
 #include "RegicideX/GAS/RGX_PayloadObjects.h"
-#include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
+#include "RegicideX/Notifies/RGX_ANS_JumpComboSection.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
@@ -115,6 +117,18 @@ FGenericTeamId ARGX_PlayerCharacter::GetGenericTeamId() const
 	return CharacterTeam;
 }
 
+bool ARGX_PlayerCharacter::IsAttacking()
+{
+	TArray<FGameplayAbilitySpec*> ActivableAbilities;
+	GetAbilitySystemComponent()->GetActivatableGameplayAbilitySpecsByAllMatchingTags(FGameplayTagContainer(FGameplayTag::RequestGameplayTag("Ability.Melee")), ActivableAbilities);
+	for (const FGameplayAbilitySpec* Ability : ActivableAbilities)
+	{
+		if (Ability->IsActive())
+			return true;
+	}
+	return false;
+}
+
 void ARGX_PlayerCharacter::ManageLightAttackInput()
 {
 	if (bStaggered == true)
@@ -122,15 +136,27 @@ void ARGX_PlayerCharacter::ManageLightAttackInput()
 
 	InputHandlerComponent->HandleInput(ERGX_PlayerInputID::LightAttackInput, false, GetCharacterMovement()->IsFalling());
 
-	FGameplayTag NextAttack = ComboSystemComponent->ManageInputToken(ERGX_ComboTokenID::LightAttackToken, GetCharacterMovement()->IsFalling(), bCanAirCombo);
+	//FGameplayTag NextAttack = ComboSystemComponent->ManageInputToken(ERGX_ComboTokenID::LightAttackToken, GetCharacterMovement()->IsFalling(), bCanAirCombo);
 
-	if (NextAttack == FGameplayTag::RequestGameplayTag(FName("Combo.Light")) || NextAttack == FGameplayTag::RequestGameplayTag(FName("Combo.Air.Light")))
+	// If we are performing an attack, try to follow the combo
+	if (IsAttacking())
+	{
+		if (JumpComboNotifyState != nullptr)
+		{
+			// Jump Section for combo
+			if (JumpComboNotifyState->InputID == ERGX_ComboTokenID::LightAttackToken)
+				GetMesh()->GetAnimInstance()->Montage_JumpToSection(JumpComboNotifyState->SectionName);
+			else
+				UE_LOG(LogTemp, Warning, TEXT("ComboTokenID was not LightAttackToken"))
+		}
+	}
+	else //if (NextAttack == FGameplayTag::RequestGameplayTag(FName("Combo.Light")) || NextAttack == FGameplayTag::RequestGameplayTag(FName("Combo.Air.Light")))
 	{
 		if (GetCharacterMovement()->IsFalling() && bCanAirCombo == true)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("CanAirCombo\n"));
 			FGameplayEventData EventData;
-			int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(NextAttack, &EventData);
+			int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("Combo.Air.Light")), &EventData);
 			// clean state if ability was not activated
 			if (TriggeredAbilities == 0)
 			{
@@ -148,7 +174,7 @@ void ARGX_PlayerCharacter::ManageLightAttackInput()
 		else
 		{
 			FGameplayEventData EventData;
-			int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(NextAttack, &EventData);
+			int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("Combo.Light")), &EventData);
 			// clean state if ability was not activated
 			if (TriggeredAbilities == 0)
 			{

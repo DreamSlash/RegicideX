@@ -6,11 +6,15 @@ struct RGX_DamageStatics
 {
 	DECLARE_ATTRIBUTE_CAPTUREDEF(Damage)
 	DECLARE_ATTRIBUTE_CAPTUREDEF(AttackPower)
+	//DECLARE_ATTRIBUTE_CAPTUREDEF(ScalePower)
+	//DECLARE_ATTRIBUTE_CAPTUREDEF(DamageBase)
 
 	RGX_DamageStatics()
 	{
 		DEFINE_ATTRIBUTE_CAPTUREDEF(URGX_AttributeSet, Damage, Source, true);
 		DEFINE_ATTRIBUTE_CAPTUREDEF(URGX_AttributeSet, AttackPower, Source, true);
+		//DEFINE_ATTRIBUTE_CAPTUREDEF(URGX_AttributeSet, ScalePower, Source, true);
+		//DEFINE_ATTRIBUTE_CAPTUREDEF(URGX_AttributeSet, DamageBase, Source, true);
 	}
 };
 
@@ -24,6 +28,8 @@ UExecution_Damage::UExecution_Damage()
 {
 	RelevantAttributesToCapture.Add(DamageStatics().DamageDef);
 	RelevantAttributesToCapture.Add(DamageStatics().AttackPowerDef);
+	//RelevantAttributesToCapture.Add(DamageStatics().ScalePowerDef);
+	//RelevantAttributesToCapture.Add(DamageStatics().DamageBaseDef);
 }
 
 void UExecution_Damage::Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const
@@ -56,10 +62,17 @@ void UExecution_Damage::Execute_Implementation(const FGameplayEffectCustomExecut
 	float AttackPower = 0.0f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().AttackPowerDef, EvaluationParameters, AttackPower);
 
+	//float ScalePower = 0.0f;
+	//ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().ScalePowerDef, EvaluationParameters, ScalePower);
+
+	//float DamageBase = 0.0f;
+	//ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().DamageBaseDef, EvaluationParameters, DamageBase);
+
 	FGameplayEffectContextHandle ContextHandle = Spec.GetContext();
 	FRGX_GameplayEffectContext* FRGXContext = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
 
 	float FinalDamage = 0.0f;
+	//FinalDamage = DamageBase + AttackPower * ScalePower;
 	FinalDamage = FRGXContext->DamageAmount + AttackPower * FRGXContext->ScalingAttributeFactor;
 
 	UE_LOG(LogTemp, Warning, TEXT("Damage: %f"), FinalDamage);

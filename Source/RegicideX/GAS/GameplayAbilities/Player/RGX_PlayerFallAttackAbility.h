@@ -2,9 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/MCV_GameplayAbility.h"
-//#include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GA_CastHitboxAttackAbility.h"
 #include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GA_PlayHitboxMontageAbility.h"
-//#include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RGX_PlayerFallAttackAbility.generated.h"
 
 /*
@@ -28,6 +26,4 @@ protected:
 
 protected:
 	void OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData) override;
-
-	void PopulateGameplayEffectContext(FRGX_GameplayEffectContext& GameplayEffectContext) override;
 };
