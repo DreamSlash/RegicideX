@@ -462,6 +462,8 @@ void ARGX_PlayerCharacter::RemoveGameplayTag(const FGameplayTag& TagToRemove)
 void ARGX_PlayerCharacter::OnInterrupted()
 {
 	ComboSystemComponent->OnEndCombo();
+	InputHandlerComponent->ResetAirState();
+	InputHandlerComponent->ResetInputState();
 }
 
 void ARGX_PlayerCharacter::BeginPlay()
