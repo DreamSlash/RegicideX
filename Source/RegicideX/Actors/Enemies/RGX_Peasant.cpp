@@ -8,9 +8,11 @@
 #include "EngineUtils.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "RegicideX/Components/RGX_MovementAssistComponent.h"
 
 ARGX_Peasant::ARGX_Peasant()
 {
+	MovementAssistComponent = CreateDefaultSubobject<URGX_MovementAssistComponent>(TEXT("MovementAssistComponent"));
 }
 
 void ARGX_Peasant::BeginPlay()

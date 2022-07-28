@@ -7,6 +7,7 @@
 #include "RGX_EnemyBase.h"
 #include "RGX_Peasant.generated.h"
 
+class URGX_MovementAssistComponent;
 class UBehaviorTree;
 class ARGX_GroupManager;
 
@@ -17,6 +18,9 @@ class REGICIDEX_API ARGX_Peasant : public ARGX_EnemyBase
 public:
 
 	ARGX_Peasant();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	URGX_MovementAssistComponent* MovementAssistComponent;
 
 	UPROPERTY(EditAnywhere)
 	UBehaviorTree* BTree = nullptr;
