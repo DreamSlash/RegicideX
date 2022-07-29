@@ -77,11 +77,20 @@ void ARGX_CharacterBase::OnBeingLaunched(
 	float VerticalForce, 
 	float LaunchDelay)
 {
-	FVector ActorLocation = GetActorLocation();
-	FVector ForceOrigin = ActorInstigator->GetActorLocation();
-	FVector LaunchHorizontalDirection = ActorLocation - ForceOrigin;
-	LaunchHorizontalDirection.Z = 0.0f;
-	LaunchHorizontalDirection.Normalize();
+	const FVector ActorLocation = GetActorLocation();
+	FVector LaunchHorizontalDirection;
+
+	if (ActorInstigator)
+	{
+		const FVector ForceOrigin = ActorInstigator->GetActorLocation();
+		LaunchHorizontalDirection = ActorLocation - ForceOrigin;
+		LaunchHorizontalDirection.Z = 0.0f;
+		LaunchHorizontalDirection.Normalize();
+	}
+	else
+	{
+		LaunchHorizontalDirection = GetActorForwardVector();
+	}
 
 	// TODO may this be overriden in EnemyBase?
 	ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(this);
