@@ -15,6 +15,7 @@
 
 #include "Components/WidgetComponent.h"
 #include "RegicideX/Components/RGX_HitboxComponent.h"
+#include "RegicideX/GAS/RGX_GameplayEffectContext.h"
 
 ARGX_DistanceAngel::ARGX_DistanceAngel() : ARGX_EnemyBase()
 {
@@ -51,6 +52,9 @@ ARGX_DistanceAngel::ARGX_DistanceAngel() : ARGX_EnemyBase()
 	BulletHellSphereCollider = CreateDefaultSubobject<USphereComponent>(TEXT("BulletHellSphereCollider"));
 	BulletHellSphereCollider->SetupAttachment(BHHitboxComponent);
 	BulletHellSphere->SetHiddenInGame(true);
+
+	BHHitboxComponent->DeactivateHitbox();
+	BHHitboxComponent->OnHitboxOverlap.AddDynamic(this, &ARGX_DistanceAngel::ApplyForceFieldEffects);
 
 	SetActorEnableCollision(true);
 
@@ -192,6 +196,28 @@ void ARGX_DistanceAngel::HandleDamage(
 
 		HandleDeath();
 	}
+}
+
+void ARGX_DistanceAngel::ApplyForceFieldEffects(AActor* OtherActor)
+{
+	UAbilitySystemComponent* SourceACS = AbilitySystemComponent; 
+	UAbilitySystemComponent* TargetACS = OtherActor->FindComponentByClass<UAbilitySystemComponent>();
+	if (SourceACS && TargetACS)
+	{
+		FGameplayEffectContextHandle ContextHandle = SourceACS->MakeEffectContext();
+		FRGX_GameplayEffectContext* RGXContext = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
+		RGXContext->DamageAmount = 10.0;
+		RGXContext->ScalingAttributeFactor = 0.0f;
+
+		for (TSubclassOf<UGameplayEffect>& Effect : ForceFieldEffectsToApply)
+		{
+			if (ensureMsgf(Effect.Get(), TEXT("[Error] OnHitboxOverlap: %s Effect was nullptr"), *GetName()))
+			{
+				SourceACS->ApplyGameplayEffectToTarget(Effect->GetDefaultObject<UGameplayEffect>(), TargetACS, this->GetCharacterLevel(), ContextHandle);
+			}
+		}
+	}
+	BHHitboxComponent->DeactivateHitbox();
 }
 
 void ARGX_DistanceAngel::HandleDeath()

@@ -16,6 +16,7 @@ class USphereComponent;
 class UMaterialInterface;
 class UMaterialInstanceDynamic;
 class URGX_HitboxComponent;
+class UGameplayEffect;
 
 UCLASS()
 class REGICIDEX_API ARGX_DistanceAngel : public ARGX_EnemyBase
@@ -86,6 +87,10 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 		bool Invincible = false;
 
+	/* Effects the projectile applies when hitting a target */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+		TArray<TSubclassOf<UGameplayEffect>> ForceFieldEffectsToApply;
+
 	AActor* LaserBeamRef = nullptr;
 
 	UMaterialInterface* MaterialInterface = nullptr;
@@ -139,6 +144,9 @@ public:
 		const struct FGameplayTagContainer& DamageTags,
 		ARGX_CharacterBase* InstigatorCharacter,
 		AActor* DamageCauser) override;
+
+	UFUNCTION(BlueprintCallable)
+		void ApplyForceFieldEffects(AActor* OtherActor);
 
 	virtual void HandleDeath() override;
 };

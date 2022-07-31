@@ -30,9 +30,8 @@ public:
 	void TickTask(float DeltaTime) override;
 	void OnDestroy(bool AbilityIsEnding) override;
 
-	/** Spawn and move laser beam */
 	UFUNCTION(BlueprintCallable, Category = "Ability|Tasks", meta = (HidePin = "OwningAbility", DefaultToSelf = "OwningAbility", BlueprintInternalUseOnly = "TRUE"))
-		static URGX_AT_RotateAndUpdateForceField* RotateAndUpdateForceField(UGameplayAbility* OwningAbility, float Time, float MaxSize);
+	static URGX_AT_RotateAndUpdateForceField* RotateAndUpdateForceField(UGameplayAbility* OwningAbility, float Time, float MaxSize);
 
 private:
 	/* Time delay variables */

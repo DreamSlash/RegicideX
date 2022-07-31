@@ -6,7 +6,9 @@
 #include "AbilitySystemGlobals.h"
 #include "RegicideX\Actors\Enemies\RGX_DistanceAngel.h"
 #include "Components/SphereComponent.h"
-#include "RegicideX/Components/RGX_HitboxesManagerComponent.h"
+#include "AbilitySystemComponent.h"
+#include "RegicideX/GAS/RGX_GameplayEffectContext.h"
+#include "RegicideX/Components/RGX_HitboxComponent.h"
 
 URGX_AT_RotateAndUpdateForceField::URGX_AT_RotateAndUpdateForceField()
 {
@@ -30,6 +32,7 @@ void URGX_AT_RotateAndUpdateForceField::TickTask(float DeltaTime)
 		Attacker->BulletHellSphere->SetRelativeScale3D(FVector(OriginalBulletHellSphereScale));
 		Attacker->BulletHellSphere->SetHiddenInGame(true);
 		Attacker->BulletHellSphereCollider->SetRelativeScale3D(FVector(6.5));
+		Attacker->BHHitboxComponent->DeactivateHitbox();
 		//Attacker->BHHitboxComponent->DeactivateEffect();
 		if (ShouldBroadcastAbilityTaskDelegates())
 		{
@@ -68,6 +71,7 @@ URGX_AT_RotateAndUpdateForceField* URGX_AT_RotateAndUpdateForceField::RotateAndU
 	MyObj->Attacker->BulletHellSphereCollider->SetRelativeScale3D(FVector(10.0));
 	MyObj->Attacker->BulletHellSphere->SetHiddenInGame(false);
 	MyObj->Attacker->BulletHellOutSphere->SetRelativeScale3D(FVector(MaxSize));
+	MyObj->Attacker->BHHitboxComponent->ActivateHitbox();
 	//Attacker->BHHitboxComponent->ActivateEffect();
 	return MyObj;
 }

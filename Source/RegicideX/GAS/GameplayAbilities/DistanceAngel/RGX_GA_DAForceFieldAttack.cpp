@@ -4,6 +4,8 @@
 #include "RGX_GA_DAForceFieldAttack.h"
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 #include "RegicideX/GAS/AbilityTasks/RGX_AT_RotateAndUpdateForceField.h"
+#include "AbilitySystemComponent.h"
+#include "RegicideX/GAS/RGX_GameplayEffectContext.h"
 
 URGX_GA_DAForceFieldAttack::URGX_GA_DAForceFieldAttack()
 {
