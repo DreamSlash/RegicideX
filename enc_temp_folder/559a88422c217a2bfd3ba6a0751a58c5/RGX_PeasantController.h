@@ -30,5 +30,4 @@ public:
 	uint8 TargetActorID;
 	uint8 DistanceToPlayerID;
 	uint8 IdleActionID;
-	bool bFrenzied = false;
 };

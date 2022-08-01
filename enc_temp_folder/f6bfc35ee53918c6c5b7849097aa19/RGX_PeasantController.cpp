@@ -60,6 +60,5 @@ void ARGX_PeasantController::Tick(float DeltaTime)
 		// TODO Do not do it every tick
 		BBComponent->SetValueAsFloat("DistanceToPlayer", Peasant->GetDistanceToTarget());
 		BBComponent->SetValueAsInt("IdleAction", Peasant->IdleAction);
-		BBComponent->SetValueAsBool("bFrenzied", bFrenzied);
 	}
 }

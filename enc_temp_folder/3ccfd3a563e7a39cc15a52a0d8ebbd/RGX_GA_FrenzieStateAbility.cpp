@@ -3,7 +3,6 @@
 
 #include "RegicideX/GAS/GameplayAbilities/Peasant/Suicidal/RGX_GA_FrenzieStateAbility.h"
 #include "RegicideX/Actors/Enemies/RGX_Peasant.h"
-#include "RegicideX/Actors/Enemies/RGX_PeasantController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 URGX_GA_FrenzieStateAbility::URGX_GA_FrenzieStateAbility()
@@ -35,8 +34,6 @@ void URGX_GA_FrenzieStateAbility::OnReceivedEvent(FGameplayTag EventTag, FGamepl
             if (CharacterMovementComponent)
             {
                 CharacterMovementComponent->MaxWalkSpeed *= FrenzieSpeedMultiplier;
-                ARGX_PeasantController* PeasantController = Cast<ARGX_PeasantController>(Peasant->GetController());
-                PeasantController->bFrenzied = true;
             }
         }
 	}
