@@ -31,7 +31,7 @@ protected:
 
 	void OnFailedAbilityMontage(FGameplayTag EventTag, FGameplayEventData EventData);
 
-	void OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData);
+	void OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData) override;
 
 private:
 	void Explode();
