@@ -56,17 +56,9 @@ void URGX_GA_SuicidalExplosionAbility::OnReceivedEvent(FGameplayTag EventTag, FG
 	if (EventTag.MatchesTagExact(JumpTag))
 	{
 		AActor* OwnerActor = GetOwningActorFromActorInfo();
-		ARGX_EnemyBase* OwnerCharacter = Cast<ARGX_EnemyBase>(OwnerActor);
+		ARGX_CharacterBase* OwnerCharacter = Cast<ARGX_CharacterBase>(OwnerActor);
 		if (OwnerCharacter)
 		{
-			AActor* TargetActor = OwnerCharacter->TargetActor;
-			const float DistanceToTarget = FVector::Distance(OwnerActor->GetActorLocation(), TargetActor->GetActorLocation());
-			// If distance  is inside explosion radius, do not jump to target to enter range, because we are already in range
-			if (DistanceToTarget < ExplosionRadius)
-			{
-				return;
-			}
-
 			FGameplayEffectSpecHandle GameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(*JumpEffect, OwnerCharacter->GetCharacterLevel());
 			GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectSpecToSelf(*GameplayEffectSpecHandle.Data.Get());
 		}

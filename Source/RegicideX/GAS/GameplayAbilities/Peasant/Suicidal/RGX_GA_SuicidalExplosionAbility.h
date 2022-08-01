@@ -33,7 +33,20 @@ protected:
 
 	void OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData);
 
+private:
+	void Explode();
+
 protected:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FGameplayTag JumpTag;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UGameplayEffect> JumpEffect;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FGameplayTag ExplosionTag;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float ExplosionRadius = 200.0f;
 
