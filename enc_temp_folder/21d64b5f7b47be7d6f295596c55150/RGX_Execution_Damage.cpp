@@ -82,7 +82,7 @@ void UExecution_Damage::Execute_Implementation(const FGameplayEffectCustomExecut
 
 	float FinalDamage = 0.0f;
 	//FinalDamage = DamageBase + AttackPower * ScalePower;
-	FinalDamage = DamageAmount + AttackPower * ScalingAttributeFactor;
+	FinalDamage = FRGXContext->DamageAmount + AttackPower * FRGXContext->ScalingAttributeFactor;
 
 	UE_LOG(LogTemp, Warning, TEXT("Damage: %f"), FinalDamage);
 

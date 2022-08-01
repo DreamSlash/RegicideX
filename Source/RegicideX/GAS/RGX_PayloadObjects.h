@@ -45,6 +45,19 @@ public:
 	FGameplayTag EventTag;
 };
 
+USTRUCT(BlueprintType)
+struct FRGX_EffectContextContainer
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UGameplayEffect> EffectToApply;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	URGX_RGXEventDataAsset* Payload = nullptr;
+};
+
 USTRUCT()
 struct FRGX_AbilityEffectsInfo
 {
@@ -65,6 +78,22 @@ public:
 
 	UPROPERTY()
 	TArray<TSubclassOf<UGameplayEffect>> GameplayEffectsToOwner;
+};
+
+UCLASS(BlueprintType)
+class URGX_DamageEventDataAsset : public URGX_RGXEventDataAsset
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName DamageCurveName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName AttributeScalingCurveName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UCurveTable* DamageLevelCurve = nullptr;
 };
 
 UCLASS(BlueprintType)

@@ -56,6 +56,21 @@ void URGX_MeleeAttackAbility::OnReceivedEvent(FGameplayTag EventTag, FGameplayEv
 	const ARGX_CharacterBase* TargetCharacter	= Cast<ARGX_CharacterBase>(EventData.Target);
 	UAbilitySystemComponent* TargetACS			= TargetCharacter ? TargetCharacter->GetAbilitySystemComponent() : nullptr;
 
+	if (EffectToApplyToTargetWithPayload.Contains(EventTag) && TargetACS)
+	{
+		TSubclassOf<UGameplayEffect> GameplayEffectToApply = EffectToApplyToTargetWithPayload.Find(EventTag)->EffectToApply;
+		FGameplayEffectSpecHandle GameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(GameplayEffectToApply, OwnerCharacter->GetCharacterLevel());
+
+		FGameplayEffectContextHandle EffectContext = MakeEffectContext(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo());
+		FRGX_GameplayEffectContext* GameplayEffectContext = static_cast<FRGX_GameplayEffectContext*>(EffectContext.Get());
+		GameplayEffectContext->OptionalObject = EffectToApplyToTargetWithPayload.Find(EventTag)->Payload;
+
+		FGameplayEffectSpec* GESpec = GameplayEffectSpecHandle.Data.Get();
+		GESpec->SetContext(EffectContext);
+		TargetACS->ApplyGameplayEffectSpecToSelf(*GESpec);
+	}
+
+	/*
 	// Find the effect mapped to the triggering event tag to apply to target.
 	if (EffectToApplyToTarget.Contains(EventTag) && TargetACS)
 	{
@@ -86,4 +101,5 @@ void URGX_MeleeAttackAbility::OnReceivedEvent(FGameplayTag EventTag, FGameplayEv
 
 		OwnerACS->ApplyGameplayEffectSpecToSelf(*GameplayEffectSpecHandle.Data.Get());
 	}
+	*/
 }
