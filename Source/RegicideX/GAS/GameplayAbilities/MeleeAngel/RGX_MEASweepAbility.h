@@ -31,10 +31,6 @@ protected:
 		bool bWasCancelled) override;
 
 protected:
-	void PopulateGameplayEffectContext(FRGX_GameplayEffectContext& GameplayEffectContext) override;
-
-	virtual void OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData) override;
-
 	UFUNCTION()
 	void OnEndSweepDuration();
 };
