@@ -2,7 +2,6 @@
 
 
 #include "RGX_LaserBeamWeapon.h"
-
 #include "AbilitySystemGlobals.h"
 #include "AbilitySystemComponent.h"
 #include "Components/SplineComponent.h"
@@ -11,6 +10,8 @@
 
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
+
+#include "NavigationSystem.h"
 
 
 // Sets default values
@@ -73,10 +74,11 @@ void ARGX_LaserBeamWeapon::CheckRayTraces(FVector& NewLocation, float DeltaTime)
 
 void ARGX_LaserBeamWeapon::CheckDistance()
 {
-	const FVector MyLocation = EndPointMesh->K2_GetComponentLocation();
-	const FVector TargetLocation = TargetActor->GetActorLocation();
+	GoalPoint = TargetActor->GetActorLocation();
 
-	if (FollowTarget && FVector::Distance(MyLocation, TargetLocation) <= ForgetDistance) {
+	const FVector MyLocation = EndPointMesh->K2_GetComponentLocation();
+
+	if (FollowTarget && FVector::Distance(MyLocation, GoalPoint) <= ForgetDistance) {
 		FollowTarget = false;
 		FTimerHandle Timerhandle;
 		GetWorld()->GetTimerManager().SetTimer(Timerhandle, [this]() {this->FollowTarget = true; }, ForgetTime, false);
@@ -88,11 +90,10 @@ void ARGX_LaserBeamWeapon::ComputeNewEndpoint(float DeltaTime)
 	SpeedMult += DeltaTime * 0.1;
 
 	const FVector MyLocation = EndPointMesh->K2_GetComponentLocation();
-	const FVector TargetLocation = TargetActor->GetActorLocation();
 
 	if (FollowTarget)
 	{
-		const FRotator RotOffset = UKismetMathLibrary::FindLookAtRotation(MyLocation, TargetLocation);
+		const FRotator RotOffset = UKismetMathLibrary::FindLookAtRotation(MyLocation, GoalPoint);
 		EndPointMesh->SetWorldRotation(RotOffset);
 	}
 
@@ -136,6 +137,11 @@ void ARGX_LaserBeamWeapon::SetSourcePoint(FVector SP)
 {
 	SourcePoint = SP;
 	EndPointMesh->SetWorldLocation(SP);
+}
+
+void ARGX_LaserBeamWeapon::ComputeRayGoal()
+{
+	
 }
 
 void ARGX_LaserBeamWeapon::SetOwnerActor(AActor* OA)

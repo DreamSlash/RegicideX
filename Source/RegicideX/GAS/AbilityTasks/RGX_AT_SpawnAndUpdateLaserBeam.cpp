@@ -25,6 +25,17 @@ void URGX_AT_SpawnAndUpdateLaserBeam::TickTask(float DeltaTime)
 		SpawnLaserBeamWeapon();
 	}
 
+	if (LaserBeamWeapon->bHittingTarget)
+	{
+		LaserBeamWeapon->Destroy();
+		if (ShouldBroadcastAbilityTaskDelegates())
+		{
+			OnFinish.Broadcast();
+		}
+		EndTask();
+	}
+
+
 	TaskTime += DeltaTime;
 	if (TaskTime >= MaxTime)
 	{
@@ -38,7 +49,11 @@ void URGX_AT_SpawnAndUpdateLaserBeam::TickTask(float DeltaTime)
 		EndTask();
 	}
 
-	Attacker->RotateToTarget(DeltaTime);
+	if (LaserBeamWeapon->RayType == ERayType::Follow) 
+	{
+		Attacker->RotateToTarget(DeltaTime);
+	}
+		
 	LaserBeamWeapon->MoveAndDrawRay(DeltaTime);
 }
 
@@ -64,5 +79,8 @@ void URGX_AT_SpawnAndUpdateLaserBeam::SpawnLaserBeamWeapon()
 	SpawnParams.Owner = Attacker;
 	SpawnParams.Instigator = Attacker;
 	LaserBeamWeapon = GetWorld()->SpawnActor<ARGX_LaserBeamWeapon>(LaserBeamWeaponSubclass, SpawnParams);
+	LaserBeamWeapon->SetOwnerActor(Attacker);
 	LaserBeamWeapon->SetSourcePoint(Attacker->GetEyeWorldLocation());
+	Attacker->ForceRotateToTarget();
+	LaserBeamWeapon->ComputeRayGoal();
 }

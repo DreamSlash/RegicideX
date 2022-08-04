@@ -95,6 +95,17 @@ void ARGX_DistanceAngel::RotateToTarget(float DeltaTime)
 	}
 }
 
+void ARGX_DistanceAngel::ForceRotateToTarget()
+{
+	if (TargetActor)
+	{
+		const FVector MyLocation = GetEyeWorldLocation();
+		const FVector TargetLocation = TargetActor->GetActorLocation();
+		const FRotator NewRotation = UKismetMathLibrary::FindLookAtRotation(MyLocation, TargetLocation);
+		SphereCollider->SetWorldRotation(NewRotation);
+	}
+}
+
 void ARGX_DistanceAngel::RotateRings(float DeltaTime) 
 {
 	const float ClampedDT = DeltaTime > 0.016 ? 0.016 : DeltaTime; //Clamped to a dt of 60 fps

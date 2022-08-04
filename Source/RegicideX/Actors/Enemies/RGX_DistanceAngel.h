@@ -107,6 +107,8 @@ public:
 
 	void RotateToTarget(float DeltaTime) override;
 
+	void ForceRotateToTarget();
+
 	void RotateRings(float DeltaTime);
 
 	void RotateMe(float DeltaTime, float Speed);

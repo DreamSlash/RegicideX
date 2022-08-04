@@ -13,13 +13,20 @@ class UParticleSystemComponent;
 
 class UGameplayEffect;
 
+UENUM(BlueprintType)
+enum class ERayType : uint8 {
+	Straight       UMETA(DisplayName = "Straight"),
+	Follow        UMETA(DisplayName = "Follow"),
+	Sweep        UMETA(DisplayName = "Sweep"),
+};
+
 UCLASS()
 class REGICIDEX_API ARGX_LaserBeamWeapon : public AActor
 {
+
 	GENERATED_BODY()
 
 	bool FollowTarget = true;
-	bool bHittingTarget = false;
 
 	float SpeedMult = 1.0f;
 
@@ -57,8 +64,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float ForgetTime = 1.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float GoalDistance = 3000.0f;
+
+	bool bHittingTarget = false;
+
+	FVector GoalPoint;
+
 	UPROPERTY(EditDefaultsOnly)
 		TSubclassOf<UGameplayEffect> EffectToApply;
+
+	UPROPERTY(EditDefaultsOnly)
+		ERayType RayType = ERayType::Follow;
 
 protected:
 	// Called when the game starts or when spawned
@@ -77,6 +94,9 @@ public:
 
 	UFUNCTION()
 		void SetSourcePoint(FVector SP);
+
+	UFUNCTION()
+		void ComputeRayGoal();
 
 	UFUNCTION()
 		void SetOwnerActor(AActor* OA);
