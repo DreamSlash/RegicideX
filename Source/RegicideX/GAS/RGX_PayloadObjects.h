@@ -39,10 +39,12 @@ class URGX_RGXEventDataAsset : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 
-public:
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+protected:
+	UPROPERTY()
 	FGameplayTag EventTag;
+
+public:
+	FGameplayTag GetEventTag() { return EventTag; }
 };
 
 USTRUCT(BlueprintType)
@@ -86,6 +88,9 @@ class URGX_DamageEventDataAsset : public URGX_RGXEventDataAsset
 	GENERATED_BODY()
 
 public:
+	URGX_DamageEventDataAsset();
+
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	FName DamageCurveName;
 
@@ -100,6 +105,9 @@ UCLASS(BlueprintType)
 class URGX_LaunchEventDataAsset : public URGX_RGXEventDataAsset
 {
 	GENERATED_BODY()
+
+public:
+	URGX_LaunchEventDataAsset();
 
 public:
 
