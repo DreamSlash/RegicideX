@@ -111,8 +111,7 @@ void URGX_GA_SuicidalExplosionAbility::Explode()
 			FGameplayEffectContextHandle ContextHandle = SourceACS->MakeEffectContext();
 			FRGX_GameplayEffectContext* FRGXContext = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
 			FRGXContext->AddInstigator(CurrentActorInfo->AvatarActor.Get(), CurrentActorInfo->AvatarActor.Get());
-			FRGXContext->DamageAmount = ExplosionDamage;
-			FRGXContext->ScalingAttributeFactor = 1.0f;
+			FRGXContext->OptionalObject = Payload;
 
 			TargetACS->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Launched")), &EventPayload);
 			SourceACS->ApplyGameplayEffectToTarget(EffectToApply->GetDefaultObject<UGameplayEffect>(), TargetACS, 1.0f, ContextHandle);

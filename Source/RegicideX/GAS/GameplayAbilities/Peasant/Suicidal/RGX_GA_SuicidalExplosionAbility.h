@@ -49,6 +49,9 @@ protected:
 	TSubclassOf<UGameplayEffect> EffectToApply;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	URGX_RGXEventDataAsset* Payload = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float ExplosionDamage = 100.0f; // TODO: To be converted in table to take into account actor level
 
 	UPROPERTY(EditAnywhere)
