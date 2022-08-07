@@ -38,7 +38,8 @@ void URGX_GA_FrenzieStateAbility::OnReceivedEvent(FGameplayTag EventTag, FGamepl
                 CharacterMovementComponent->MaxWalkSpeed *= FrenzieSpeedMultiplier;
                 ARGX_PeasantController* PeasantController = Cast<ARGX_PeasantController>(Peasant->GetController());
                 UMeshComponent* Mesh = Peasant->GetMesh();
-                Mesh->SetMaterial(0, FrenziedMaterial);
+                Mesh->SetMaterial(2, FrenziedMaterial);
+                TArray<UMaterialInterface*> Materials = Mesh->GetMaterials();
                 PeasantController->bFrenzied = true;
             }
         }

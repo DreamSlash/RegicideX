@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GA_CastSkillAbility.h"
 #include "GameplayEffect.h"
+#include "Materials/MaterialInstance.h"
 #include "RGX_GA_FrenzieStateAbility.generated.h"
 
 /**
@@ -29,4 +30,7 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float FrenzieSpeedMultiplier = 2.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UMaterialInstance* FrenziedMaterial;
 };
