@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GA_CastSkillAbility.h"
+#include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "GameplayEffect.h"
 #include "RGX_GA_SuicidalExplosionAbility.generated.h"
 
@@ -36,6 +37,13 @@ private:
 	void Explode();
 
 protected:
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FGameplayTag JumpTag;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UGameplayEffect> JumpEffect;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FGameplayTag ExplosionTag;
 

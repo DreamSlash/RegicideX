@@ -5,7 +5,6 @@
 #include "GameFramework/Character.h"
 #include "RegicideX/Character/RGX_PlayerCharacter.h"
 #include "RegicideX/GAS/AbilityTasks/RGX_AT_PlayMontageAndWaitForEvent.h"
-#include "RegicideX/GAS/RGX_GameplayEffectContext.h"
 
 URGX_CastSkillAbility::URGX_CastSkillAbility()
 {
@@ -47,26 +46,7 @@ void URGX_CastSkillAbility::OnFailedAbilityMontage(FGameplayTag EventTag, FGamep
 
 void URGX_CastSkillAbility::OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData)
 {
-	AActor* OwnerActor = GetOwningActorFromActorInfo();
-	ARGX_CharacterBase* OwnerCharacter = Cast<ARGX_CharacterBase>(OwnerActor);
-	UAbilitySystemComponent* OwnerACS = OwnerCharacter->GetAbilitySystemComponent();
-	const ARGX_CharacterBase* TargetCharacter = Cast<ARGX_CharacterBase>(EventData.Target);
-	UAbilitySystemComponent* TargetACS = TargetCharacter ? TargetCharacter->GetAbilitySystemComponent() : nullptr;
 
-	// Apply own effects, such as cooldowns.
-	if (EffectToApplyToOwnerWithPayload.Contains(EventTag) && OwnerACS)
-	{
-		TSubclassOf<UGameplayEffect> GameplayEffectToApply = EffectToApplyToOwnerWithPayload.Find(EventTag)->EffectToApply;
-		FGameplayEffectSpecHandle GameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(GameplayEffectToApply, OwnerCharacter->GetCharacterLevel());
-
-		FGameplayEffectContextHandle EffectContext = MakeEffectContext(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo());
-		FRGX_GameplayEffectContext* GameplayEffectContext = static_cast<FRGX_GameplayEffectContext*>(EffectContext.Get());
-		GameplayEffectContext->OptionalObject = EffectToApplyToOwnerWithPayload.Find(EventTag)->Payload;
-
-		FGameplayEffectSpec* GESpec = GameplayEffectSpecHandle.Data.Get();
-		GESpec->SetContext(EffectContext);
-		OwnerACS->ApplyGameplayEffectSpecToSelf(*GESpec);
-	}
 }
 
 void URGX_CastSkillAbility::PlayMontageBySectionName(const FName& SectionName)

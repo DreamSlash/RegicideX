@@ -37,7 +37,7 @@ void URGX_PlayHitboxMontageAbility::ActivateAbility(
 
 	// Play a montage that will trigger OnReceivedEvent callback if a GameplayEvent.Montage tag is called to be handled.
 	PlayMontageAndWaitForEventTask = URGX_PlayMontageAndWaitForEvent::PlayMontageAndWaitForEvent(
-		this, NAME_None, MontageToPlay, EventTagContainer, PlayRate, StartSectionName, true);
+		this, NAME_None, MontageToPlay, EventTagContainer, PlayRatio, StartSectionName, true);
 	PlayMontageAndWaitForEventTask->OnInterrupted.AddDynamic(this, &URGX_PlayHitboxMontageAbility::OnMontageFinished);
 	PlayMontageAndWaitForEventTask->OnBlendOut.AddDynamic(this, &URGX_PlayHitboxMontageAbility::OnMontageFinished);
 	PlayMontageAndWaitForEventTask->OnCancelled.AddDynamic(this, &URGX_PlayHitboxMontageAbility::OnMontageFinished);

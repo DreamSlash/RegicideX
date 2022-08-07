@@ -50,7 +50,7 @@ protected:
 	FName StartSectionName;
 
 	UPROPERTY(EditAnywhere)
-	float PlayRate = 1.0f;
+	float PlayRatio = 1.0f;
 
 	// The tag pointing to the hitbox component. This is the hitbox that will be affected by this ability.
 	UPROPERTY(EditAnywhere)
