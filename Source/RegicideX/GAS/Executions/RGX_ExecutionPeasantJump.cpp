@@ -15,6 +15,6 @@ void URGX_ExecutionPeasantJump::Execute_Implementation(const FGameplayEffectCust
 	ARGX_CharacterBase* SourceCharacter = Cast<ARGX_CharacterBase>(ExecutionParams.GetTargetAbilitySystemComponent()->GetOwner());
 	ARGX_CharacterBase* TargetCharacter = Cast<ARGX_CharacterBase>(ExecutionParams.GetSourceAbilitySystemComponent()->GetOwner());
 
-	if (SourceCharacter && TargetCharacter)
-		SourceCharacter->OnBeingLaunched(nullptr, 1000.0f, 1500.0f);
+	//if (SourceCharacter && TargetCharacter)
+		//SourceCharacter->OnBeingLaunched(nullptr, 1000.0f, 1500.0f);
 }

@@ -122,6 +122,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bOverrideVertical;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bInstigatorOrigin;
 };
 
 UCLASS(BlueprintType)
