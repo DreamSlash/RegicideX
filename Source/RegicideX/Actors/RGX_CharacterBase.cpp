@@ -73,15 +73,28 @@ bool ARGX_CharacterBase::IsAlive()
 
 void ARGX_CharacterBase::OnBeingLaunched(
 	AActor* ActorInstigator,
-	float HorizontalForce, 
-	float VerticalForce, 
+	URGX_LaunchEventDataAsset* LaunchPayload,
 	float LaunchDelay)
 {
-	FVector ActorLocation = GetActorLocation();
-	FVector ForceOrigin = ActorInstigator->GetActorLocation();
-	FVector LaunchHorizontalDirection = ActorLocation - ForceOrigin;
-	LaunchHorizontalDirection.Z = 0.0f;
-	LaunchHorizontalDirection.Normalize();
+	const FVector ActorLocation = GetActorLocation();
+	float VerticalForce = LaunchPayload->LaunchVerticalForce;
+	const float HorizontalForce = LaunchPayload->LaunchHorizontalForce;
+	const bool bOverrideXY = LaunchPayload->bOverrideHorizontal;
+	const bool bOverrideZ = LaunchPayload->bOverrideVertical;
+
+	FVector LaunchHorizontalDirection;
+
+	if (ActorInstigator && LaunchPayload->bInstigatorOrigin)
+	{
+		const FVector ForceOrigin = ActorInstigator->GetActorLocation();
+		LaunchHorizontalDirection = ActorLocation - ForceOrigin;
+		LaunchHorizontalDirection.Z = 0.0f;
+		LaunchHorizontalDirection.Normalize();
+	}
+	else
+	{
+		LaunchHorizontalDirection = GetActorForwardVector();
+	}
 
 	// TODO may this be overriden in EnemyBase?
 	ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(this);
@@ -98,10 +111,10 @@ void ARGX_CharacterBase::OnBeingLaunched(
 		//UAbilityTask_WaitDelay* TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, LaunchDuration);
 		//TaskWaitDelay->OnFinish.AddDynamic(this, &URGX_LaunchedAbility::OnFinishDelay);
 		//TaskWaitDelay->ReadyForActivation();
-		LaunchCharacter(LaunchForce, true, true);
+		LaunchCharacter(LaunchForce, bOverrideXY, bOverrideZ);
 	}
 	else
-		LaunchCharacter(LaunchForce, true, true);
+		LaunchCharacter(LaunchForce, bOverrideXY, bOverrideZ);
 }
 
 void ARGX_CharacterBase::HandleDamage(

@@ -8,6 +8,7 @@
 #include "GameFramework/Character.h"
 #include "RegicideX/GAS/AttributeSets/RGX_AttributeSet.h"
 #include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GameplayAbility.h"
+#include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RGX_CharacterBase.generated.h"
 
 class UMCV_AbilitySystemComponent; // TODO Change to RGX
@@ -51,8 +52,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnBeingLaunched(
 		AActor* ActorInstigator, 
-		float HorizontalForce,
-		float VerticalForce,
+		URGX_LaunchEventDataAsset* LaunchPayload,
 		float LaunchDelay = 0.2f);
 
 protected:

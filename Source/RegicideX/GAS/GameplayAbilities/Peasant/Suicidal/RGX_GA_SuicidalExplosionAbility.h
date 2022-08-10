@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GA_CastSkillAbility.h"
-#include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "GameplayEffect.h"
 #include "RGX_GA_SuicidalExplosionAbility.generated.h"
 
@@ -31,9 +30,15 @@ protected:
 
 	void OnFailedAbilityMontage(FGameplayTag EventTag, FGameplayEventData EventData);
 
-	void OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData);
+	void OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData) override;
+
+private:
+	void Explode();
 
 protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FGameplayTag ExplosionTag;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float ExplosionRadius = 200.0f;
 
@@ -42,6 +47,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSubclassOf<UGameplayEffect> EffectToApply;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	URGX_RGXEventDataAsset* Payload = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float ExplosionDamage = 100.0f; // TODO: To be converted in table to take into account actor level

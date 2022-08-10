@@ -665,7 +665,7 @@ void ARGX_PlayerCharacter::OnCapsuleHit(UPrimitiveComponent* HitComponent, AActo
 			{
 				FGameplayEventData EventData;
 				EventData.Instigator = this;
-				EventData.EventTag = MoveAwayLaunchPayload->EventTag;
+				EventData.EventTag = MoveAwayLaunchPayload->GetEventTag();
 				EventData.OptionalObject = MoveAwayLaunchPayload;
 				OtherACS->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Launched")), &EventData);
 			}

@@ -6,7 +6,6 @@
 #include "Components/ActorComponent.h"
 #include "RGX_MovementAssistComponent.generated.h"
 
-
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class REGICIDEX_API URGX_MovementAssistComponent : public UActorComponent
 {
@@ -34,6 +33,8 @@ protected:
 	// Called when the game starts
 	void BeginPlay() override;
 
+	void EndPlay(EEndPlayReason::Type EndPlayReason) override;
+
 	void MoveForward(float DeltaTime);
 
 	bool CheckDistanceToGoalPoint();
@@ -51,3 +52,5 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DisableMovementAssist();
 };
+
+DECLARE_LOG_CATEGORY_EXTERN(LogMoveAssist, Log, All);

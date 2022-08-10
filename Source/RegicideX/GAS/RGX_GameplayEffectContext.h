@@ -39,6 +39,9 @@ public:
 	/* For level up effect */
 	float NewMaxHealth;
 	float NewAttackPower;
+
+	// Payload
+	UObject* OptionalObject = nullptr;
 };
 
 template<>
