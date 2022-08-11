@@ -71,8 +71,8 @@ public:
 
 	FVector GoalPoint;
 
-	UPROPERTY(EditDefaultsOnly)
-		TSubclassOf<UGameplayEffect> EffectToApply;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+		TArray<TSubclassOf<UGameplayEffect>> EffectsToApply;
 
 	UPROPERTY(EditDefaultsOnly)
 		ERayType RayType = ERayType::Follow;
