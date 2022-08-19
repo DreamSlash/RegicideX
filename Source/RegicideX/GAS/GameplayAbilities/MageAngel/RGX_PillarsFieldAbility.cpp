@@ -3,6 +3,7 @@
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 #include "RegicideX/Actors/Weapons/RGX_ExplosivePillar.h"
 
+#include "DrawDebugHelpers.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "SceneManagement.h"
 
@@ -30,7 +31,22 @@ void URGX_PillarsFieldAbility::OnAttackWindow()
 
 	for (const FVector& location : locations)
 	{
-		const FTransform pillarTransform(location);
-		GetWorld()->SpawnActor<ARGX_ExplosivePillar>(PillarActorClass, pillarTransform);
+		FTransform pillarTransform(location);
+
+		FHitResult Result;
+		DrawDebugLine(GetWorld(), location, location * FVector(1, 1, -1), FColor(255, 0, 0), true, 5.0f, 0, 5.0f);
+		if (GetWorld()->LineTraceSingleByChannel(Result, location, location * FVector(1,1,-1), ECollisionChannel::ECC_WorldStatic))
+		{
+			FVector newLocation = location;
+			newLocation.Z = Result.ImpactPoint.Z;
+			pillarTransform.SetLocation(newLocation);
+		}
+
+		FActorSpawnParameters params;
+		/*params.Owner = mageAngel;
+		params.Instigator = mageAngel;*/
+		//params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+
+		GetWorld()->SpawnActor<ARGX_ExplosivePillar>(PillarActorClass, pillarTransform, params);
 	}
 }

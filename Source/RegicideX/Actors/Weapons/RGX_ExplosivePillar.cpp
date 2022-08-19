@@ -41,7 +41,7 @@ void ARGX_ExplosivePillar::Explode(UPrimitiveComponent* OverlappedComponent
 	{
 		if (ASC->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("PossessedBy.Player")))
 		{
-			//ASC->ApplyGameplayEffectToSelf(ExplosionEffect->GetDefaultObject<UGameplayEffect>(), 1.0, ASC->MakeEffectContext());
+			ASC->ApplyGameplayEffectToSelf(ExplosionEffect->GetDefaultObject<UGameplayEffect>(), 1.0, ASC->MakeEffectContext());
 
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionVFX, GetActorLocation(), GetActorRotation(), FVector(3.0f, 3.0f, 1.0f));
 			Destroy();

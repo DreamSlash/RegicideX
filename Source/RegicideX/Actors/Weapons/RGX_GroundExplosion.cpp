@@ -7,6 +7,7 @@
 #include "AbilitySystemGlobals.h"
 #include "Components/DecalComponent.h"
 #include "Components/SphereComponent.h"
+#include "DrawDebugHelpers.h"
 #include "GameplayTags.h"
 #include "Kismet/GameplayStatics.h"
 #include "Materials/MaterialInstanceDynamic.h"
@@ -85,9 +86,16 @@ void ARGX_GroundExplosion::Explode()
 		}
 	}
 
-	FVector Location = GetActorLocation();
-	Location.Z = 100; // Hack durisimo
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionVFX, Location, GetActorRotation(), FVector(3.0f, 3.0f, 1.0f));
+	// Fix Z to hit the ground
+	FHitResult result;
+	FVector location = GetActorLocation();
+	DrawDebugLine(GetWorld(), location, location * FVector(1, 1, -1), FColor(255, 0, 0), true, 5.0f, 0, 5.0f);
+	if (GetWorld()->LineTraceSingleByChannel(result, location, location * FVector(1, 1, -1), ECollisionChannel::ECC_WorldStatic))
+	{
+		location.Z = result.ImpactPoint.Z;
+	}
+
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionVFX, location, GetActorRotation(), FVector(3.0f, 3.0f, 1.0f));
 
 	Destroy();
 }
