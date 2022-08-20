@@ -47,7 +47,7 @@ void ARGX_PeasantController::Tick(float DeltaTime)
 
 	if (Peasant->TargetActor && bIsInFocus == false)
 	{
-		SetFocus(Peasant->TargetActor);
+		//SetFocus(Peasant->TargetActor);
 		bIsInFocus = true;
 	}
 
