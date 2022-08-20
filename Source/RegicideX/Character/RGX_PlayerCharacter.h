@@ -67,6 +67,10 @@ class REGICIDEX_API ARGX_PlayerCharacter : public ARGX_CharacterBase, public IGa
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Interaction, meta = (AllowPrivateAccess = "true"))
 	UWidgetComponent* InteractWidgetComponent = nullptr;
 
+	/** Camera Targetting Component */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class URGX_CameraControllerComponent* CameraControllerComponent = nullptr;
+
 	/** Check if player is attacking, meaning the player has an active ability with Ability.Melee tag on it. */
 	bool IsAttacking();
 

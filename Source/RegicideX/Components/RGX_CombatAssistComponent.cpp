@@ -138,6 +138,7 @@ void URGX_CombatAssistComponent::UpdateTarget()
 	{
 		Target->HideCombatTargetWidget();
 		Target = nullptr;
+		//OnTargetUpdated.Broadcast(nullptr);
 	}
 
 	return;
@@ -301,6 +302,8 @@ void URGX_CombatAssistComponent::SetNewTarget(ARGX_EnemyBase* NewTarget)
 
 	NewTarget->ShowCombatTargetWidget();
 	Target = NewTarget;
+
+	OnTargetUpdated.Broadcast(NewTarget);
 }
 
 // TODO [REFACTOR]: Autoassist should give extra movement to the attack being done and not be a teleport

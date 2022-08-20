@@ -22,6 +22,7 @@ FORCEINLINE bool operator< (const FRGX_ActorAngle& lhs, const FRGX_ActorAngle& r
 {
 	return lhs.Angle < rhs.Angle;
 }
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRGX_TargetUpdatedDelegate, const ARGX_EnemyBase*, Enemy);
 
 UCLASS(meta = (BlueprintSpawnableComponent))
 class REGICIDEX_API URGX_CombatAssistComponent : public UActorComponent
@@ -52,6 +53,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void SetAttackMoveDuration(float Duration);
+
+	UPROPERTY(BlueprintAssignable)
+	FRGX_TargetUpdatedDelegate OnTargetUpdated;
 
 protected:
 

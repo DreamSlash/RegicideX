@@ -9,6 +9,7 @@
 #include "GameFramework/Controller.h"
 #include "GenericTeamAgentInterface.h"
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
+#include "RegicideX/Components/RGX_CameraControllerComponent.h"
 #include "RegicideX/Components/RGX_ComboSystemComponent.h"
 #include "RegicideX/Components/RGX_HitboxComponent.h"
 #include "RegicideX/Components/RGX_InputHandlerComponent.h"
@@ -62,12 +63,18 @@ ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 	InteractWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("InteractWidgetComponent"));
 	InteractWidgetComponent->SetupAttachment(FollowCamera);
 
-	ComboSystemComponent	= CreateDefaultSubobject<URGX_ComboSystemComponent>(TEXT("ComboSystemComponent"));
-	CombatAssistComponent	= CreateDefaultSubobject<URGX_CombatAssistComponent>(TEXT("CombatAssistComponent"));
-	InputHandlerComponent	= CreateDefaultSubobject<URGX_InputHandlerComponent>(TEXT("InputHandlerComponent"));
-	MovementAttributeSet	= CreateDefaultSubobject<URGX_MovementAttributeSet>(TEXT("MovementAttributeSet"));
-	InteractComponent		= CreateDefaultSubobject<URGX_InteractComponent>(TEXT("InteractComponent"));
+	CameraControllerComponent	= CreateDefaultSubobject<URGX_CameraControllerComponent>(TEXT("CameraControllerComponent"));
+	CameraControllerComponent->Camera = FollowCamera;
+	CameraControllerComponent->SpringArm = CameraBoom;
+
+	ComboSystemComponent		= CreateDefaultSubobject<URGX_ComboSystemComponent>(TEXT("ComboSystemComponent"));
+	CombatAssistComponent		= CreateDefaultSubobject<URGX_CombatAssistComponent>(TEXT("CombatAssistComponent"));
+	InputHandlerComponent		= CreateDefaultSubobject<URGX_InputHandlerComponent>(TEXT("InputHandlerComponent"));
+	MovementAttributeSet		= CreateDefaultSubobject<URGX_MovementAttributeSet>(TEXT("MovementAttributeSet"));
+	InteractComponent			= CreateDefaultSubobject<URGX_InteractComponent>(TEXT("InteractComponent"));
 	InteractComponent->InteractWidgetComponent = InteractWidgetComponent;
+
+	CombatAssistComponent->OnTargetUpdated.__Internal_AddDynamic(CameraControllerComponent, &URGX_CameraControllerComponent::SetTarget, "SetTarget");
 }
 
 void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
