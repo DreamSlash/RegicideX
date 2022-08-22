@@ -55,7 +55,7 @@ protected:
 	float ExplosionDamage = 100.0f; // TODO: To be converted in table to take into account actor level
 
 	UPROPERTY(EditAnywhere)
-	class UParticleSystem* ExplosionVFX;
+	class UNiagaraSystem* ExplosionVFX;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<UGameplayEffect> InstantDeathEffect;
