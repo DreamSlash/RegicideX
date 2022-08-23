@@ -1,5 +1,4 @@
 #include "RGX_PlayerCharacter.h"
-
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
