@@ -49,11 +49,4 @@ protected:
 
 	// Bool to signal if actor is going to get destroyed.
 	void HandleDeath() override;
-
-	virtual void HandleDamage(
-		float DamageAmount,
-		const FHitResult& HitInfo,
-		const struct FGameplayTagContainer& DamageTags,
-		ARGX_CharacterBase* InstigatorCharacter,
-		AActor* DamageCauser) override;
 };

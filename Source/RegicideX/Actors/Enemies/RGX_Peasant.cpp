@@ -48,16 +48,6 @@ void ARGX_Peasant::Deactivate()
 	Super::Deactivate();
 }
 
-void ARGX_Peasant::HandleDamage(
-	float DamageAmount, 
-	const FHitResult& HitInfo, 
-	const FGameplayTagContainer& DamageTags, 
-	ARGX_CharacterBase* InstigatorCharacter, 
-	AActor* DamageCauser)
-{
-	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser);
-}
-
 void ARGX_Peasant::HandleDeath()
 {
 	UE_LOG(LogTemp, Display, TEXT("Handling Peasant death ..."));
