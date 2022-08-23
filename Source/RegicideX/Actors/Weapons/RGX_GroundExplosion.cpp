@@ -81,13 +81,6 @@ void ARGX_GroundExplosion::Explode()
 		{
 
 		}
-		/*if (UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Actor, true))
-		{
-			if (ASC->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("PossessedBy.Player")))
-			{
-				ASC->ApplyGameplayEffectToSelf(ExplosionEffect->GetDefaultObject<UGameplayEffect>(), 1.0, ASC->MakeEffectContext());
-			}
-		}*/
 	}
 
 	// Fix Z to hit the ground
