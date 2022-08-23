@@ -10,6 +10,8 @@
 #include "AbilitySystemGlobals.h"
 #include "AbilitySystemComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 
 URGX_GA_SuicidalExplosionAbility::URGX_GA_SuicidalExplosionAbility()
 {
@@ -118,7 +120,7 @@ void URGX_GA_SuicidalExplosionAbility::Explode()
 		}
 	}
 
-	UGameplayStatics::SpawnEmitterAtLocation(CurrentActorInfo->AvatarActor->GetWorld(), ExplosionVFX, CurrentActorInfo->AvatarActor->GetTransform());
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionVFX, SpawnLocation, SpawnRotation);
 
 	FGameplayEventData DeadEventPayload;
 	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectToSelf(InstantDeathEffect->GetDefaultObject<UGameplayEffect>(), 1, GetAbilitySystemComponentFromActorInfo()->MakeEffectContext());
