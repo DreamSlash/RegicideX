@@ -6,7 +6,6 @@
 #include "Components/MCV_AbilitySystemComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "EngineUtils.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "RegicideX/Components/RGX_MovementAssistComponent.h"
 
@@ -57,24 +56,6 @@ void ARGX_Peasant::HandleDamage(
 	AActor* DamageCauser)
 {
 	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser);
-
-	if (IsAlive())
-	{
-		if (IsWeak() == false)
-		{
-			// Play reaction hit animation.
-			if (GetMovementComponent()->IsFalling())
-				PlayAnimMontage(AMAirReactionHit);
-			else
-				PlayAnimMontage(AMReactionHit);
-		}
-		else
-			StopAnimMontage();
-	}
-	else
-	{
-		PlayAnimMontage(AMDeath);
-	}
 }
 
 void ARGX_Peasant::HandleDeath()
