@@ -51,18 +51,4 @@ void ARGX_RingWave::DamageActor(UPrimitiveComponent* OverlappedComponent
 	{
 		// Do something
 	}
-
-	//if (UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OtherActor, true))
-	//{
-	//	if (ASC->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("PossessedBy.Player")))
-	//	{
-	//		FGameplayEffectContextHandle ContextHandle = ASC->MakeEffectContext();
-	//		FRGX_GameplayEffectContext* FRGXContext = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
-	//		FRGXContext->DamageAmount = 30.0f;
-	//		FRGXContext->ScalingAttributeFactor = 1.0f;
-
-	//		ASC->ApplyGameplayEffectToSelf(RingWaveEffect->GetDefaultObject<UGameplayEffect>(), 1.0, ContextHandle);
-	//		//ASC->ApplyGameplayEffectToSelf(WallEffect->GetDefaultObject<UGameplayEffect>(), 1.0, ASC->MakeEffectContext());
-	//	}
-	//}
 }

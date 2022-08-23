@@ -16,7 +16,7 @@
 
 // Sets default values
 ARGX_GroundExplosion::ARGX_GroundExplosion()
-	: AActor()
+	: ARGX_EffectApplierActor()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -77,13 +77,17 @@ void ARGX_GroundExplosion::Explode()
 
 	for (AActor* Actor : OverlappedActors)
 	{
-		if (UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Actor, true))
+		if (OnPlayerOverlaps(Actor))
+		{
+
+		}
+		/*if (UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Actor, true))
 		{
 			if (ASC->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("PossessedBy.Player")))
 			{
 				ASC->ApplyGameplayEffectToSelf(ExplosionEffect->GetDefaultObject<UGameplayEffect>(), 1.0, ASC->MakeEffectContext());
 			}
-		}
+		}*/
 	}
 
 	// Fix Z to hit the ground
