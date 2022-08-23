@@ -12,7 +12,7 @@
 
 // Sets default values
 ARGX_ExplosivePillar::ARGX_ExplosivePillar()
-	: AActor()
+	: ARGX_EffectApplierActor()
 {
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 
@@ -37,14 +37,9 @@ void ARGX_ExplosivePillar::Explode(UPrimitiveComponent* OverlappedComponent
 	, bool bFromSweep
 	, const FHitResult& SweepResult)
 {
-	if (UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OtherActor, true))
+	if (OnPlayerOverlaps(OtherActor))
 	{
-		if (ASC->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("PossessedBy.Player")))
-		{
-			ASC->ApplyGameplayEffectToSelf(ExplosionEffect->GetDefaultObject<UGameplayEffect>(), 1.0, ASC->MakeEffectContext());
-
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionVFX, GetActorLocation(), GetActorRotation(), FVector(3.0f, 3.0f, 1.0f));
-			Destroy();
-		}
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionVFX, GetActorLocation(), GetActorRotation(), FVector(3.0f, 3.0f, 1.0f));
+		Destroy();
 	}
 }

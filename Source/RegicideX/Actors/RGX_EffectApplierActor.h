@@ -25,7 +25,7 @@ public:
 
 public:
 	UFUNCTION(BlueprintCallable)
-	void OnPlayerOverlaps(AActor *Player);
+	bool OnPlayerOverlaps(AActor *Player);
 
 protected:
 	// An array of gameplay effects with assigned payloads to the target.

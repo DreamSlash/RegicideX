@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "RegicideX/Actors/RGX_EffectApplierActor.h"
 #include "RGX_ExplosivePillar.generated.h"
 
 class UBoxComponent;
@@ -12,7 +12,7 @@ class UGameplayEffect;
 class UNiagaraSystem;
 
 UCLASS()
-class REGICIDEX_API ARGX_ExplosivePillar : public AActor
+class REGICIDEX_API ARGX_ExplosivePillar : public ARGX_EffectApplierActor
 {
 	GENERATED_BODY()
 	
@@ -26,9 +26,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float LifeTime = 3.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<UGameplayEffect> ExplosionEffect;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UNiagaraSystem* ExplosionVFX = nullptr;

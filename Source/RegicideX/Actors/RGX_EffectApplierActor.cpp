@@ -26,7 +26,7 @@ FGenericTeamId ARGX_EffectApplierActor::GetGenericTeamId() const
 	return ActorTeam;
 }
 
-void ARGX_EffectApplierActor::OnPlayerOverlaps(AActor* Player)
+bool ARGX_EffectApplierActor::OnPlayerOverlaps(AActor* Player)
 {
 	if (UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Player, true))
 	{
@@ -42,6 +42,10 @@ void ARGX_EffectApplierActor::OnPlayerOverlaps(AActor* Player)
 				constexpr int32 level = 0;
 				ASC->ApplyGameplayEffectToSelf(gameplayEffect, level, effectContext);
 			}
+
+			return true;
 		}
 	}
+
+	return false;
 }
