@@ -53,6 +53,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetAttackMoveDuration(float Duration);
 
+	UFUNCTION(BlueprintCallable)
+	void SetMovementSpeed(const float Speed);
+
 protected:
 
 	void UpdateTarget();
