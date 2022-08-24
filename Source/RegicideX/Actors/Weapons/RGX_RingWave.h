@@ -3,14 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
+#include "RegicideX/Actors/RGX_EffectApplierActor.h"
 #include "RGX_RingWave.generated.h"
 
 class UStaticMeshComponent;
 class UGameplayEffect;
 
 UCLASS()
-class REGICIDEX_API ARGX_RingWave : public AActor
+class REGICIDEX_API ARGX_RingWave : public ARGX_EffectApplierActor
 {
 	GENERATED_BODY()
 	
@@ -27,9 +27,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float ScaleSpeed = 10.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<UGameplayEffect> RingWaveEffect;
 
 protected:
 	void BeginPlay() override;

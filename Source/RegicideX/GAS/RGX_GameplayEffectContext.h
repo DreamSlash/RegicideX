@@ -4,7 +4,7 @@
 #include "Abilities/GameplayAbilityTargetTypes.h"
 #include "RGX_GameplayEffectContext.generated.h"
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct REGICIDEX_API FRGX_GameplayEffectContext : public FGameplayEffectContext
 {
 	GENERATED_USTRUCT_BODY()

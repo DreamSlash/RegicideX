@@ -29,6 +29,15 @@ public:
 	void BeginPlay() override;
 	void Tick(float DeltaTime) override;
 
+	virtual void HandleDamage(
+		float DamageAmount,
+		const FHitResult& HitInfo,
+		const struct FGameplayTagContainer& DamageTags,
+		ARGX_CharacterBase* InstigatorCharacter,
+		AActor* DamageCauser) override;
+
+	virtual void HandleDeath() override;
+
 public:
 	void SetToBeDestroyed() { bToBeDestroyed = true; }
 

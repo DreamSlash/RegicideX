@@ -3,8 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Actor.h"
 #include "Components/TimelineComponent.h"
+#include "RegicideX/Actors/RGX_EffectApplierActor.h"
 #include "RGX_GroundExplosion.generated.h"
 
 class USphereComponent;
@@ -15,7 +15,7 @@ class UMaterialInstanceDynamic;
 class UNiagaraSystem;
 
 UCLASS()
-class REGICIDEX_API ARGX_GroundExplosion : public AActor
+class REGICIDEX_API ARGX_GroundExplosion : public ARGX_EffectApplierActor
 {
 	GENERATED_BODY()
 	
@@ -38,9 +38,6 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UCurveFloat* AreaCurve = nullptr;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<UGameplayEffect> ExplosionEffect;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AActor> TargetActor;
