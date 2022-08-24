@@ -81,6 +81,9 @@ void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAction("HeavyAttack", IE_Pressed, this, &ARGX_PlayerCharacter::ManageHeavyAttackInput);
 	PlayerInputComponent->BindAction("HeavyAttack", IE_Released, this, &ARGX_PlayerCharacter::ManageHeavyAttackInputRelease);
 
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ARGX_PlayerCharacter::ManageJumpInput);
+	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ARGX_PlayerCharacter::ManageJumpInputReleased);
+
 	PlayerInputComponent->BindAction("SwitchPowerSkill", IE_Pressed, this, &ARGX_PlayerCharacter::ChangePowerSkill);
 	PlayerInputComponent->BindAction("TimeScale", IE_Pressed, this, &ARGX_PlayerCharacter::ChangeTimeScale);
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ARGX_PlayerCharacter::TryToInteract);
@@ -239,6 +242,17 @@ void ARGX_PlayerCharacter::ManageHeavyAttackInputRelease()
 		UE_LOG(LogTemp, Warning, TEXT("Triggered Abilities: %d\n"), TriggeredAbilities);
 	}
 	*/
+}
+
+void ARGX_PlayerCharacter::ManageJumpInput()
+{
+	Jump();
+	OnJump();
+}
+
+void ARGX_PlayerCharacter::ManageJumpInputReleased()
+{
+	StopJumping();
 }
 
 /*

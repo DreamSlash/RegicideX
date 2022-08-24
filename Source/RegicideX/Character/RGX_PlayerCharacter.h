@@ -216,6 +216,9 @@ protected:
 	void ManageHeavyAttackInput();
 	void ManageHeavyAttackInputRelease();
 
+	void ManageJumpInput();
+	void ManageJumpInputReleased();
+
 	void PerformFallAttack();
 	void PerformLaunchAttack();
 	void ChangePowerSkill();
