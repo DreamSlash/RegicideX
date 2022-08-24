@@ -653,7 +653,7 @@ void ARGX_PlayerCharacter::Landed(const FHitResult& Hit)
 		InputHandlerComponent->ResetAirState();
 
 		AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
-		//RemoveGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.HasAirDashed")));
+		RemoveGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.HasAirDashed")));
 		bCanAirCombo = true;
 		bIsFallingDown = false;
 	}
