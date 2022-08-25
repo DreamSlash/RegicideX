@@ -39,7 +39,7 @@ void URGX_HitboxComponent::BeginPlay()
 		shape->OnComponentBeginOverlap.AddDynamic(this, &URGX_HitboxComponent::OnComponentOverlap);
 	}
 	
-	bStartActive ? ActivateHitbox() : DeactivateHitbox();
+	bStartActive ? ActivateHitbox(true) : DeactivateHitbox();
 }
 
 void URGX_HitboxComponent::EndPlay(EEndPlayReason::Type EndPlayReason)
@@ -72,8 +72,11 @@ void URGX_HitboxComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 		return;
 }
 
-void URGX_HitboxComponent::ActivateHitbox()
+void URGX_HitboxComponent::ActivateHitbox(bool bActivateEffect)
 {
+	// Changed before enabling collisions
+	bEffectActivated = bActivateEffect;
+
 	const USceneComponent* Parent = GetAttachParent();
 	AActor* OwnerActor = Parent->GetAttachmentRootActor();
 
@@ -91,11 +94,14 @@ void URGX_HitboxComponent::ActivateHitbox()
 
 void URGX_HitboxComponent::DeactivateHitbox()
 {
+	bEffectActivated = false;
+
 	for (UShapeComponent* Shape : Shapes)
 	{
 		Shape->SetCollisionProfileName("Dodgeable");
 		Shape->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
+
 	ActorsHit.Empty();
 }
 
@@ -159,6 +165,9 @@ void URGX_HitboxComponent::OnComponentOverlap(
 	bool bFromSweep, 
 	const FHitResult& SweepResult)
 {	
+	if (bEffectActivated == false)
+		return;
+
 	// Check if the actor being hit has previously been hit. 
 	// It cannot be hit more than once by the same hitbox activation.
 	for (AActor* Hit : ActorsHit)

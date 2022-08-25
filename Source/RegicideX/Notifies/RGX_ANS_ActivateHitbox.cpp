@@ -19,7 +19,7 @@ void URGX_ANS_ActivateHitbox::NotifyBegin(USkeletalMeshComponent* MeshComp, UAni
 			{
 				Hitbox->AddEventTag(Tag);
 			}
-			Hitbox->ActivateHitbox();
+			Hitbox->ActivateHitbox(bActivateEffects);
 		}
 	}
 }
