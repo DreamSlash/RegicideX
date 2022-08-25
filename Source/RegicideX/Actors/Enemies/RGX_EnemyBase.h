@@ -102,6 +102,15 @@ protected:
 
 	float RecentDamage;
 
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* AMReactionHit = nullptr;
+
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* AMAirReactionHit = nullptr;
+
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* AMDeath = nullptr;
+
 protected:
 
 	// Called when the game starts or when spawned

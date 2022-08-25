@@ -91,15 +91,6 @@ protected:
 	UPROPERTY()
 	bool bAbilitiesInitialized = false;
 
-	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* AMReactionHit = nullptr;
-
-	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* AMAirReactionHit = nullptr;
-
-	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* AMDeath = nullptr;
-
 	/** Events called from attribute set changes to decouple the logic. They call BP events. */
 	virtual void HandleDamage(
 		float DamageAmount,
