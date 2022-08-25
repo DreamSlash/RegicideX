@@ -221,6 +221,7 @@ protected:
 
 	void PerformFallAttack();
 	void PerformLaunchAttack();
+	void PerformHeavyAttack();
 	void ChangePowerSkill();
 
 	//void ManagePowerSkillInput();

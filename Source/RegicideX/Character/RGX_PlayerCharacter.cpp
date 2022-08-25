@@ -201,6 +201,7 @@ void ARGX_PlayerCharacter::ManageHeavyAttackInput()
 
 	InputHandlerComponent->HandleInput(ERGX_PlayerInputID::HeavyAttackInput, false, GetCharacterMovement()->IsFalling());
 
+	/*
 	// If we are performing an attack, try to follow the combo
 	if (IsAttacking())
 	{
@@ -223,6 +224,7 @@ void ARGX_PlayerCharacter::ManageHeavyAttackInput()
 			ComboSystemComponent->OnEndCombo();
 		}
 	}
+	*/
 }
 
 void ARGX_PlayerCharacter::ManageHeavyAttackInputRelease()
@@ -341,6 +343,9 @@ void ARGX_PlayerCharacter::HandleAction(const ERGX_PlayerActions Action)
 		//UE_LOG(LogTemp, Warning, TEXT("FallAttack\n"));
 		PerformFallAttack();
 		break;
+	case ERGX_PlayerActions::HeavyAttack:
+		PerformHeavyAttack();
+		break;
 	default:
 		//UE_LOG(LogTemp, Warning, TEXT("Manuela\n"));
 		break;
@@ -362,6 +367,32 @@ void ARGX_PlayerCharacter::PerformLaunchAttack()
 	int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("Combo.Launch")), &EventData);
 
 	//UE_LOG(LogTemp, Warning, TEXT("Triggered Abilities: %d\n"), TriggeredAbilities);
+}
+
+void ARGX_PlayerCharacter::PerformHeavyAttack()
+{
+	// If we are performing an attack, try to follow the combo
+	if (IsAttacking())
+	{
+		if (JumpComboNotifyState != nullptr)
+		{
+			// Jump Section for combo
+			if (JumpComboNotifyState->InputID == ERGX_ComboTokenID::HeavyAttackToken)
+				GetMesh()->GetAnimInstance()->Montage_JumpToSection(JumpComboNotifyState->SectionName);
+			else
+				UE_LOG(LogTemp, Warning, TEXT("ComboTokenID was not HeavyAttackToken"))
+		}
+	}
+	else
+	{
+		FGameplayEventData EventData;
+		int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("Combo.Heavy")), &EventData);
+		// clean state if ability was not activated
+		if (TriggeredAbilities == 0)
+		{
+			ComboSystemComponent->OnEndCombo();
+		}
+	}
 }
 
 void ARGX_PlayerCharacter::ChangePowerSkill()
