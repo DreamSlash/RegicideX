@@ -71,7 +71,7 @@ URGX_AT_RotateAndUpdateForceField* URGX_AT_RotateAndUpdateForceField::RotateAndU
 	MyObj->Attacker->BulletHellSphereCollider->SetRelativeScale3D(FVector(10.0));
 	MyObj->Attacker->BulletHellSphere->SetHiddenInGame(false);
 	MyObj->Attacker->BulletHellOutSphere->SetRelativeScale3D(FVector(MaxSize));
-	MyObj->Attacker->BHHitboxComponent->ActivateHitbox();
+	MyObj->Attacker->BHHitboxComponent->ActivateHitbox(true);
 	//Attacker->BHHitboxComponent->ActivateEffect();
 	return MyObj;
 }
