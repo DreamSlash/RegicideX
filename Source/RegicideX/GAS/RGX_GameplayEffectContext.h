@@ -4,7 +4,7 @@
 #include "Abilities/GameplayAbilityTargetTypes.h"
 #include "RGX_GameplayEffectContext.generated.h"
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct REGICIDEX_API FRGX_GameplayEffectContext : public FGameplayEffectContext
 {
 	GENERATED_USTRUCT_BODY()
@@ -39,6 +39,9 @@ public:
 	/* For level up effect */
 	float NewMaxHealth;
 	float NewAttackPower;
+
+	// Payload
+	UObject* OptionalObject = nullptr;
 };
 
 template<>

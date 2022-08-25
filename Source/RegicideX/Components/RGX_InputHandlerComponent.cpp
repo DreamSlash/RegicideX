@@ -30,10 +30,16 @@ void URGX_InputHandlerComponent::HandleInput(ERGX_PlayerInputID NewInputID, cons
 	}
 	else
 	{
+		// Last change to perform an action in case the action needs an input release
+		InputToInfoMap[(uint16)NewInputID].bReleased = true;
+		UpdateInputActions();
+
+		// Clean up the input info
 		uint16 BitMask = ~(uint16)NewInputID;
 		InputPressedState = InputPressedState & BitMask;
 		InputToInfoMap[(uint16)NewInputID].bPressedInAir = false;
 		InputToInfoMap[(uint16)NewInputID].bConsumed = false;
+		InputToInfoMap[(uint16)NewInputID].bReleased = false;
 	}
 }
 
@@ -59,6 +65,12 @@ void URGX_InputHandlerComponent::TickComponent(float DeltaTime, ELevelTick TickT
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	UpdateInputInfo(DeltaTime);
+	UpdateInputActions();
+}
+
+void URGX_InputHandlerComponent::UpdateInputInfo(float DeltaTime)
+{
 	// Add holding time for the specific input.
 	for (TPair<uint16, FRGX_InputInfo>& InputToHold : InputToInfoMap)
 	{
@@ -72,7 +84,10 @@ void URGX_InputHandlerComponent::TickComponent(float DeltaTime, ELevelTick TickT
 			InputToHold.Value.HoldTime = 0.0f;
 		}
 	}
+}
 
+void URGX_InputHandlerComponent::UpdateInputActions()
+{
 	/** Iterate through all possible actions and handle them if necessary. */
 	for (TPair<ERGX_PlayerActions, FRGX_InputChainInfo>& InputToAction : InputToActionMap)
 	{
@@ -94,7 +109,7 @@ void URGX_InputHandlerComponent::TickComponent(float DeltaTime, ELevelTick TickT
 				break;
 			}
 
-			if (ProcessInput(InputToken, DeltaTime) == false)
+			if (ProcessInput(InputToken) == false)
 			{
 				bResult = false;
 			}
@@ -118,7 +133,7 @@ void URGX_InputHandlerComponent::TickComponent(float DeltaTime, ELevelTick TickT
 	}
 }
 
-bool URGX_InputHandlerComponent::ProcessInput(FRGX_InputToken& InputToken, float DeltaTime)
+bool URGX_InputHandlerComponent::ProcessInput(FRGX_InputToken& InputToken)
 {
 	bool bResult = true;
 
@@ -131,7 +146,7 @@ bool URGX_InputHandlerComponent::ProcessInput(FRGX_InputToken& InputToken, float
 	if (IsInputPressed(InputToken.InputID))
 	{
 		//UE_LOG(LogTemp, Warning, TEXT("Input %d Pressed\n"), (uint16)InputToken.InputID);
-		if (ProcessInputToken(InputToken, DeltaTime) == false)
+		if (ProcessInputToken(InputToken) == false)
 		{
 			bResult = false;
 		}
@@ -146,7 +161,7 @@ bool URGX_InputHandlerComponent::ProcessInput(FRGX_InputToken& InputToken, float
 }
 
 // TODO [REFACTOR]: Each input process should have its own class with its own function to process an input and return success or failure
-bool URGX_InputHandlerComponent::ProcessInputToken(FRGX_InputToken& InputToken, float DeltaTime)
+bool URGX_InputHandlerComponent::ProcessInputToken(FRGX_InputToken& InputToken)
 {
 	bool bResult = true;
 
@@ -157,6 +172,11 @@ bool URGX_InputHandlerComponent::ProcessInputToken(FRGX_InputToken& InputToken, 
 		if (InputToInfoMap[(uint16)InputToken.InputID].HoldTime < InputToken.HoldTime)
 		{
 			//UE_LOG(LogTemp, Warning, TEXT("Not Enough Hold Time\n"));
+			bResult = false;
+		}
+
+		if (InputToInfoMap[(uint16)InputToken.InputID].bReleased != InputToken.bRelease)
+		{
 			bResult = false;
 		}
 	}

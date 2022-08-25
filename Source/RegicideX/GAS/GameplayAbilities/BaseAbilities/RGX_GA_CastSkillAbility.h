@@ -2,6 +2,8 @@
 
 #include "CoreMinimal.h"
 #include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GameplayAbility.h"
+#include "RegicideX/GAS/RGX_GameplayEffectContext.h"
+#include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RGX_GA_CastSkillAbility.generated.h"
 
 UCLASS()
@@ -44,7 +46,10 @@ protected:
 	UPROPERTY(EditAnywhere)
 	FGameplayTagContainer WaitForEventTags;
 
+	// A map of a tag that should trigger a gameplay effect with assigned payload to ability owner.
+	UPROPERTY(EditDefaultsOnly)
+	TMap<FGameplayTag, FRGX_EffectContextContainer> EffectToApplyToOwnerWithPayload;
+
 	UPROPERTY()
 	class URGX_PlayMontageAndWaitForEvent* PlayMontageAndWaitForEventTask = nullptr;
-
 };

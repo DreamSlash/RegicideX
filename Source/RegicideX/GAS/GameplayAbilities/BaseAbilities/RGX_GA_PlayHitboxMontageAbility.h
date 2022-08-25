@@ -41,20 +41,6 @@ protected:
 	virtual void PopulateGameplayEffectContext(FRGX_GameplayEffectContext& GameplayEffectContext);
 
 protected:
-
-	// TODO Check how damage should be handled. --> Should be handled by the GameplayEffect
-	// Move to the GameplayEffect
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FName DamageCurveName;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FName AttributeScalingCurveName;
-
-	UPROPERTY(EditAnywhere)
-	UCurveTable* DamageLevelCurve = nullptr;
-
-	// ------------------------------------------
-
 	// Montage ability will play.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UAnimMontage* MontageToPlay;
@@ -64,7 +50,7 @@ protected:
 	FName StartSectionName;
 
 	UPROPERTY(EditAnywhere)
-	float PlayRatio = 1.0f;
+	float PlayRate = 1.0f;
 
 	// The tag pointing to the hitbox component. This is the hitbox that will be affected by this ability.
 	UPROPERTY(EditAnywhere)
@@ -75,11 +61,11 @@ protected:
 	UPROPERTY(EditAnywhere)
 	FGameplayTagContainer EventTagContainer; // = FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Montage")));
 
-	// A map of a tag that should trigger a gameplay effect to the target.
+	// A map of a tag that should trigger a gameplay effect with assigned payload to the target.
 	UPROPERTY(EditDefaultsOnly)
-	TMap<FGameplayTag, TSubclassOf<UGameplayEffect>> EffectToApplyToTarget;
+	TMap<FGameplayTag, FRGX_EffectContextContainer> EffectToApplyToTargetWithPayload;
 
-	// A map of a tag that should trigger a gameplay effect to ability owner.
+	// A map of a tag that should trigger a gameplay effect with assigned payload to ability owner.
 	UPROPERTY(EditDefaultsOnly)
-	TMap<FGameplayTag, TSubclassOf<UGameplayEffect>> EffectToApplyToOwner;
+	TMap<FGameplayTag, FRGX_EffectContextContainer> EffectToApplyToOwnerWithPayload;
 };

@@ -6,11 +6,12 @@
 #include "Components/MCV_AbilitySystemComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 #include "EngineUtils.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "RegicideX/Components/RGX_MovementAssistComponent.h"
 
 ARGX_Peasant::ARGX_Peasant()
 {
+	MovementAssistComponent = CreateDefaultSubobject<URGX_MovementAssistComponent>(TEXT("MovementAssistComponent"));
 }
 
 void ARGX_Peasant::BeginPlay()
@@ -45,34 +46,6 @@ void ARGX_Peasant::Activate()
 void ARGX_Peasant::Deactivate()
 {
 	Super::Deactivate();
-}
-
-void ARGX_Peasant::HandleDamage(
-	float DamageAmount, 
-	const FHitResult& HitInfo, 
-	const FGameplayTagContainer& DamageTags, 
-	ARGX_CharacterBase* InstigatorCharacter, 
-	AActor* DamageCauser)
-{
-	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser);
-
-	if (IsAlive())
-	{
-		if (IsWeak() == false)
-		{
-			// Play reaction hit animation.
-			if (GetMovementComponent()->IsFalling())
-				PlayAnimMontage(AMAirReactionHit);
-			else
-				PlayAnimMontage(AMReactionHit);
-		}
-		else
-			StopAnimMontage();
-	}
-	else
-	{
-		PlayAnimMontage(AMDeath);
-	}
 }
 
 void ARGX_Peasant::HandleDeath()

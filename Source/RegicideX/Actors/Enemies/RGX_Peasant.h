@@ -7,6 +7,7 @@
 #include "RGX_EnemyBase.h"
 #include "RGX_Peasant.generated.h"
 
+class URGX_MovementAssistComponent;
 class UBehaviorTree;
 class ARGX_GroupManager;
 
@@ -17,6 +18,9 @@ class REGICIDEX_API ARGX_Peasant : public ARGX_EnemyBase
 public:
 
 	ARGX_Peasant();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	URGX_MovementAssistComponent* MovementAssistComponent;
 
 	UPROPERTY(EditAnywhere)
 	UBehaviorTree* BTree = nullptr;
@@ -30,17 +34,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	int IdleAction;
 
-	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* AMReactionHit = nullptr;
-
-	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* AMAirReactionHit = nullptr;
-
-	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* AMDeath = nullptr;
-
 	float GetDistanceToTarget() const;
-
 
 protected:
 
@@ -55,13 +49,4 @@ protected:
 
 	// Bool to signal if actor is going to get destroyed.
 	void HandleDeath() override;
-
-	virtual void HandleDamage(
-		float DamageAmount,
-		const FHitResult& HitInfo,
-		const struct FGameplayTagContainer& DamageTags,
-		ARGX_CharacterBase* InstigatorCharacter,
-		AActor* DamageCauser) override;
-
-private:
 };

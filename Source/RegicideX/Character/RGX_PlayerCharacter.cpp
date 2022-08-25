@@ -1,5 +1,4 @@
 #include "RGX_PlayerCharacter.h"
-
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -81,6 +80,9 @@ void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAction("LightAttack", IE_Released, this, &ARGX_PlayerCharacter::ManageLightAttackInputRelease);
 	PlayerInputComponent->BindAction("HeavyAttack", IE_Pressed, this, &ARGX_PlayerCharacter::ManageHeavyAttackInput);
 	PlayerInputComponent->BindAction("HeavyAttack", IE_Released, this, &ARGX_PlayerCharacter::ManageHeavyAttackInputRelease);
+
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ARGX_PlayerCharacter::ManageJumpInput);
+	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ARGX_PlayerCharacter::ManageJumpInputReleased);
 
 	PlayerInputComponent->BindAction("SwitchPowerSkill", IE_Pressed, this, &ARGX_PlayerCharacter::ChangePowerSkill);
 	PlayerInputComponent->BindAction("TimeScale", IE_Pressed, this, &ARGX_PlayerCharacter::ChangeTimeScale);
@@ -199,6 +201,7 @@ void ARGX_PlayerCharacter::ManageHeavyAttackInput()
 
 	InputHandlerComponent->HandleInput(ERGX_PlayerInputID::HeavyAttackInput, false, GetCharacterMovement()->IsFalling());
 
+	/*
 	// If we are performing an attack, try to follow the combo
 	if (IsAttacking())
 	{
@@ -221,6 +224,7 @@ void ARGX_PlayerCharacter::ManageHeavyAttackInput()
 			ComboSystemComponent->OnEndCombo();
 		}
 	}
+	*/
 }
 
 void ARGX_PlayerCharacter::ManageHeavyAttackInputRelease()
@@ -240,6 +244,17 @@ void ARGX_PlayerCharacter::ManageHeavyAttackInputRelease()
 		UE_LOG(LogTemp, Warning, TEXT("Triggered Abilities: %d\n"), TriggeredAbilities);
 	}
 	*/
+}
+
+void ARGX_PlayerCharacter::ManageJumpInput()
+{
+	Jump();
+	OnJump();
+}
+
+void ARGX_PlayerCharacter::ManageJumpInputReleased()
+{
+	StopJumping();
 }
 
 /*
@@ -328,6 +343,9 @@ void ARGX_PlayerCharacter::HandleAction(const ERGX_PlayerActions Action)
 		//UE_LOG(LogTemp, Warning, TEXT("FallAttack\n"));
 		PerformFallAttack();
 		break;
+	case ERGX_PlayerActions::HeavyAttack:
+		PerformHeavyAttack();
+		break;
 	default:
 		//UE_LOG(LogTemp, Warning, TEXT("Manuela\n"));
 		break;
@@ -349,6 +367,32 @@ void ARGX_PlayerCharacter::PerformLaunchAttack()
 	int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("Combo.Launch")), &EventData);
 
 	//UE_LOG(LogTemp, Warning, TEXT("Triggered Abilities: %d\n"), TriggeredAbilities);
+}
+
+void ARGX_PlayerCharacter::PerformHeavyAttack()
+{
+	// If we are performing an attack, try to follow the combo
+	if (IsAttacking())
+	{
+		if (JumpComboNotifyState != nullptr)
+		{
+			// Jump Section for combo
+			if (JumpComboNotifyState->InputID == ERGX_ComboTokenID::HeavyAttackToken)
+				GetMesh()->GetAnimInstance()->Montage_JumpToSection(JumpComboNotifyState->SectionName);
+			else
+				UE_LOG(LogTemp, Warning, TEXT("ComboTokenID was not HeavyAttackToken"))
+		}
+	}
+	else
+	{
+		FGameplayEventData EventData;
+		int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("Combo.Heavy")), &EventData);
+		// clean state if ability was not activated
+		if (TriggeredAbilities == 0)
+		{
+			ComboSystemComponent->OnEndCombo();
+		}
+	}
 }
 
 void ARGX_PlayerCharacter::ChangePowerSkill()
@@ -640,7 +684,7 @@ void ARGX_PlayerCharacter::Landed(const FHitResult& Hit)
 		InputHandlerComponent->ResetAirState();
 
 		AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
-		//RemoveGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.HasAirDashed")));
+		RemoveGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.HasAirDashed")));
 		bCanAirCombo = true;
 		bIsFallingDown = false;
 	}
@@ -665,7 +709,7 @@ void ARGX_PlayerCharacter::OnCapsuleHit(UPrimitiveComponent* HitComponent, AActo
 			{
 				FGameplayEventData EventData;
 				EventData.Instigator = this;
-				EventData.EventTag = MoveAwayLaunchPayload->EventTag;
+				EventData.EventTag = MoveAwayLaunchPayload->GetEventTag();
 				EventData.OptionalObject = MoveAwayLaunchPayload;
 				OtherACS->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Launched")), &EventData);
 			}

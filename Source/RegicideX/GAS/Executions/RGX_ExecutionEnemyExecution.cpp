@@ -42,8 +42,6 @@ void URGX_ExecutionEnemyExecution::Execute_Implementation(const FGameplayEffectC
 	float MaxHealth = 0.0f;
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(HealthStatics().MaxHealthDef, EvaluationParameters, MaxHealth);
 
-	//UE_LOG(LogTemp, Warning, TEXT("Attack Damage: %f\n"), AttackPower);
-
 	float HealthHealing = 0.0f;
 	HealthHealing = (1 - (1 - (MaxHealth - Health) / MaxHealth)) * 0.3f * MaxHealth;
 
