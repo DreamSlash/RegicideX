@@ -21,7 +21,6 @@ ARGX_DistanceAngel::ARGX_DistanceAngel() : ARGX_EnemyBase()
 {
 	Ring_1_Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ring1"));
 	Ring_2_Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ring2"));
-	Ring_3_Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ring3"));
 	BulletHellSphere = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletHellSphere"));
 	BulletHellOutSphere = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletHellOutSphere"));
 
@@ -33,10 +32,8 @@ ARGX_DistanceAngel::ARGX_DistanceAngel() : ARGX_EnemyBase()
 	SphereCollider->SetupAttachment(RootComponent);
 	Ring_1_Mesh->SetRelativeLocation(FVector(0.0));
 	Ring_2_Mesh->SetRelativeLocation(FVector(0.0));
-	Ring_3_Mesh->SetRelativeLocation(FVector(0.0));
 	Ring_1_Mesh->SetupAttachment(SphereCollider);
 	Ring_2_Mesh->SetupAttachment(Ring_1_Mesh);
-	Ring_3_Mesh->SetupAttachment(Ring_1_Mesh);
 	BulletHellSphere->SetupAttachment(SphereCollider);
 
 	FloorReturnPlace->SetRelativeLocation(FVector(0.0));
@@ -69,7 +66,6 @@ void ARGX_DistanceAngel::BeginPlay()
 	DynamicMaterial = UMaterialInstanceDynamic::Create(MaterialInterface, this);
 	Ring_1_Mesh->SetMaterial(1, DynamicMaterial);
 	Ring_2_Mesh->SetMaterial(1, DynamicMaterial);
-	Ring_3_Mesh->SetMaterial(1, DynamicMaterial);
 
 	bCanBeKnockup = false;
 }
@@ -110,8 +106,7 @@ void ARGX_DistanceAngel::RotateRings(float DeltaTime)
 {
 	const float ClampedDT = DeltaTime > 0.016 ? 0.016 : DeltaTime; //Clamped to a dt of 60 fps
 	const float speed = RingRotatingSpeed * ClampedDT;
-	Ring_2_Mesh->AddLocalRotation(FRotator(-speed, 0.0, speed));
-	Ring_3_Mesh->AddLocalRotation(FRotator(0.0, speed, speed));
+	Ring_2_Mesh->AddLocalRotation(FRotator(-speed, 0.0, 0.0));
 }
 
 void ARGX_DistanceAngel::RotateMe(float DeltaTime, float Speed)
@@ -201,7 +196,6 @@ void ARGX_DistanceAngel::HandleDamage(
 
 		Ring_1_Mesh->SetSimulatePhysics(true);
 		Ring_2_Mesh->SetSimulatePhysics(true);
-		Ring_3_Mesh->SetSimulatePhysics(true);
 		PrimaryActorTick.bCanEverTick = false;
 		DestroyMyself(22.0f);
 
