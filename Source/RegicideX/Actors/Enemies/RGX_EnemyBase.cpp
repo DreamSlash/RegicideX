@@ -288,7 +288,7 @@ void ARGX_EnemyBase::StopCanInteract(AActor* ActorInteracting)
 bool ARGX_EnemyBase::CanBeInteractedWith(AActor* ActorInteracting)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Can be interacted with\n"));
-	return InteractionShapeComponent->IsCollisionEnabled();
+	return InteractionShapeComponent->IsCollisionEnabled() && IsAlive();
 }
 
 bool ARGX_EnemyBase::IsInFrustum()
