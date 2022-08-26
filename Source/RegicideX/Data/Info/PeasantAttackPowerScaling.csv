@@ -3,5 +3,3 @@ PunchAttack_Damage,20,120
 PunchAttack_Scaling,0.5,0.5
 KickAttack_Damage,30,150
 KickAttack_Scaling,0.5,0.5
-BasicBullet_Damage,10,60
-BasicBullet_Scaling,0.5,0.5

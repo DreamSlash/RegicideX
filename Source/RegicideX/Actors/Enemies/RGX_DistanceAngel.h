@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "RGX_EnemyBase.h"
+#include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RGX_DistanceAngel.generated.h"
 
 /**
@@ -86,7 +87,7 @@ public:
 
 	/* Effects the projectile applies when hitting a target */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-		TArray<TSubclassOf<UGameplayEffect>> ForceFieldEffectsToApply;
+		TArray<FRGX_EffectContextContainer> ForceFieldEffectsToApply;
 
 	AActor* LaserBeamRef = nullptr;
 

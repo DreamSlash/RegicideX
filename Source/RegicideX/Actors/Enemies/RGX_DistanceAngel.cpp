@@ -211,14 +211,13 @@ void ARGX_DistanceAngel::ApplyForceFieldEffects(AActor* OtherActor)
 	{
 		FGameplayEffectContextHandle ContextHandle = SourceACS->MakeEffectContext();
 		FRGX_GameplayEffectContext* RGXContext = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
-		RGXContext->DamageAmount = 10.0;
-		RGXContext->ScalingAttributeFactor = 0.0f;
 
-		for (TSubclassOf<UGameplayEffect>& Effect : ForceFieldEffectsToApply)
+		for (FRGX_EffectContextContainer& EffectContextContainer : ForceFieldEffectsToApply)
 		{
-			if (ensureMsgf(Effect.Get(), TEXT("[Error] OnHitboxOverlap: %s Effect was nullptr"), *GetName()))
+			if (ensureMsgf(EffectContextContainer.EffectToApply.Get(), TEXT("[Error] OnHitboxOverlap: %s Effect was nullptr"), *GetName()))
 			{
-				SourceACS->ApplyGameplayEffectToTarget(Effect->GetDefaultObject<UGameplayEffect>(), TargetACS, this->GetCharacterLevel(), ContextHandle);
+				RGXContext->OptionalObject = EffectContextContainer.Payload;
+				SourceACS->ApplyGameplayEffectToTarget(EffectContextContainer.EffectToApply->GetDefaultObject<UGameplayEffect>(), TargetACS, this->GetCharacterLevel(), ContextHandle);
 			}
 		}
 	}
