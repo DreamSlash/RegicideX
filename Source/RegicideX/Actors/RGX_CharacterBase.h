@@ -80,7 +80,7 @@ protected:
 	TArray<TSubclassOf<UGameplayEffect>> PassiveGameplayEffects;
 
 	/** Gameplay Ability System components */
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	UMCV_AbilitySystemComponent* AbilitySystemComponent = nullptr;
 
 	/** Attributes forming and modifying the Ability System */
