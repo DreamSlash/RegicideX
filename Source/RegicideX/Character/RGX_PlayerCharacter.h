@@ -82,6 +82,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseLookUpRate;
 
+	bool bComboFlag = false;
+
 	// TODO [REFACTOR]: Move this to AbilitySystemComponent.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<FGameplayTag> PowerSkills;

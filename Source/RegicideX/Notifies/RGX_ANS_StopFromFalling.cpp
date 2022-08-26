@@ -6,7 +6,7 @@
 #include "RegicideX/Actors/RGX_CharacterBase.h"
 
 void URGX_ANS_StopFromFalling::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
-{
+{		
 	ARGX_CharacterBase* OwnerCharacter = Cast<ARGX_CharacterBase>(MeshComp->GetOwner());
 	AAIController* OwnerController = OwnerCharacter ? Cast<AAIController>(OwnerCharacter->GetController()) : nullptr;
 	if (OwnerCharacter)
