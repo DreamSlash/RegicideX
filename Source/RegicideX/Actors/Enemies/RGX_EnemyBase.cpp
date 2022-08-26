@@ -94,7 +94,7 @@ void ARGX_EnemyBase::CheckIfWeak(float DamageAmount)
 	const float RecentDamageAsHealthPercentage = RecentDamage / MaxHealth;
 	const float HealthAsPercentage = CurrentHealth / MaxHealth;
 	UE_LOG(LogTemp, Warning, TEXT("Percentage Recent Damage: %f\n"), RecentDamageAsHealthPercentage);
-	if (/*RecentDamageAsHealthPercentage >= WeakenPercentage || */ HealthAsPercentage < WeakenPercentage)
+	if (/*RecentDamageAsHealthPercentage >= WeakenPercentage || */HealthAsPercentage < WeakenPercentage)
 	{
 		if (CanBeInteractedWith(nullptr) == false)
 			EnableInteraction();

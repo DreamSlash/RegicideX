@@ -12,7 +12,7 @@ void URGX_DashAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 
 	if (Character)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Dash Ability"));
+		//UE_LOG(LogTemp, Warning, TEXT("Dash Ability"));
 
 		if (Character->GetCharacterMovement()->IsFalling())
 		{
@@ -23,7 +23,7 @@ void URGX_DashAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 			}
 			else
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Air Dash\n"));
+				//UE_LOG(LogTemp, Warning, TEXT("Air Dash\n"));
 				Character->StopJumping();
 				Character->LaunchCharacter(FVector(0.0f, 0.0f, 0.0f), false, true);
 				// TODO: This tag is never removed so air dash con only be made once
@@ -49,5 +49,5 @@ void URGX_DashAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const
 	Character->GetCharacterMovement()->MaxWalkSpeed = 800.0f;
 	Character->GetCharacterMovement()->GravityScale = Character->DefaultGravity;
 
-	UE_LOG(LogTemp, Warning, TEXT("Finish Dash. Current Gravity: %f\n"), Character->GetCharacterMovement()->GravityScale);
+	//UE_LOG(LogTemp, Warning, TEXT("Finish Dash. Current Gravity: %f\n"), Character->GetCharacterMovement()->GravityScale);
 }

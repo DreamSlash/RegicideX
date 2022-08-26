@@ -138,7 +138,7 @@ void URGX_ComboSystemComponent::OnDisableCombo()
 
 void URGX_ComboSystemComponent::OnEndCombo()
 {
-	UE_LOG(LogTemp, Warning, TEXT("On End Combo\n"));
+	//UE_LOG(LogTemp, Warning, TEXT("On End Combo\n"));
 	CurrentAttack = FGameplayTag::RequestGameplayTag("Combo.None");
 	NextAttack = FGameplayTag::RequestGameplayTag("Combo.None");
 	bComboFlag = false;

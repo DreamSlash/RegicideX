@@ -1,7 +1,7 @@
 ﻿,1,10,20
-PeasantMelee_MaxHealth,300,600,900
+PeasantMelee_MaxHealth,250,500,750
 PeasantMelee_AttackPower,10,15,20
-PeasantDistance_MaxHealth,400,800,1200
+PeasantDistance_MaxHealth,370,740,1110
 PeasantDistance_AttackPower,10,15,20
 PeasantSuicidal_MaxHealth,100,200,300
 PeasantSuicidal_AttackPower,1,1,1
