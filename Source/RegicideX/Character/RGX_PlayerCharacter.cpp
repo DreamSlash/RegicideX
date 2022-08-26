@@ -147,9 +147,18 @@ void ARGX_PlayerCharacter::ManageLightAttackInput()
 		{
 			// Jump Section for combo
 			if (JumpComboNotifyState->InputID == ERGX_ComboTokenID::LightAttackToken)
+			{
+				bComboFlag = true;
+				/** TODO:
+					Check bIsInAir
+					If in air, if current combo is air combo, try to jump to next attack
+					if not in air, is current combo is ground combo, try to jump to next attack */
 				GetMesh()->GetAnimInstance()->Montage_JumpToSection(JumpComboNotifyState->SectionName);
+			}
 			else
-				UE_LOG(LogTemp, Warning, TEXT("ComboTokenID was not LightAttackToken"))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("ComboTokenID was not LightAttackToken"));
+			}
 		}
 	}
 	else //if (NextAttack == FGameplayTag::RequestGameplayTag(FName("Combo.Light")) || NextAttack == FGameplayTag::RequestGameplayTag(FName("Combo.Air.Light")))
@@ -162,6 +171,7 @@ void ARGX_PlayerCharacter::ManageLightAttackInput()
 			// clean state if ability was not activated
 			if (TriggeredAbilities == 0)
 			{
+				bComboFlag = false;
 				ComboSystemComponent->OnEndCombo();
 			}
 			else
@@ -173,13 +183,14 @@ void ARGX_PlayerCharacter::ManageLightAttackInput()
 				GetCharacterMovement()->GravityScale = 0.0f;
 			}
 		}
-		else
+		else if (GetCharacterMovement()->IsFalling() == false)
 		{
 			FGameplayEventData EventData;
 			int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("Combo.Light")), &EventData);
 			// clean state if ability was not activated
 			if (TriggeredAbilities == 0)
 			{
+				bComboFlag = false;
 				ComboSystemComponent->OnEndCombo();
 			}
 		}
@@ -200,31 +211,6 @@ void ARGX_PlayerCharacter::ManageHeavyAttackInput()
 		return;
 
 	InputHandlerComponent->HandleInput(ERGX_PlayerInputID::HeavyAttackInput, false, GetCharacterMovement()->IsFalling());
-
-	/*
-	// If we are performing an attack, try to follow the combo
-	if (IsAttacking())
-	{
-		if (JumpComboNotifyState != nullptr)
-		{
-			// Jump Section for combo
-			if (JumpComboNotifyState->InputID == ERGX_ComboTokenID::HeavyAttackToken)
-				GetMesh()->GetAnimInstance()->Montage_JumpToSection(JumpComboNotifyState->SectionName);
-			else
-				UE_LOG(LogTemp, Warning, TEXT("ComboTokenID was not HeavyAttackToken"))
-		}
-	}
-	else
-	{
-		FGameplayEventData EventData;
-		int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("Combo.Heavy")), &EventData);
-		// clean state if ability was not activated
-		if (TriggeredAbilities == 0)
-		{
-			ComboSystemComponent->OnEndCombo();
-		}
-	}
-	*/
 }
 
 void ARGX_PlayerCharacter::ManageHeavyAttackInputRelease()
@@ -233,17 +219,6 @@ void ARGX_PlayerCharacter::ManageHeavyAttackInputRelease()
 		return;
 
 	InputHandlerComponent->HandleInput(ERGX_PlayerInputID::HeavyAttackInput, true, GetCharacterMovement()->IsFalling());
-
-	/*
-	if (GetCharacterMovement()->IsFalling() == false && bHeavyInputFlag == true)
-	{
-		// Launch Attack
-		FGameplayEventData EventData;
-		int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("Combo.Launch")), &EventData);
-
-		UE_LOG(LogTemp, Warning, TEXT("Triggered Abilities: %d\n"), TriggeredAbilities);
-	}
-	*/
 }
 
 void ARGX_PlayerCharacter::ManageJumpInput()
@@ -378,9 +353,14 @@ void ARGX_PlayerCharacter::PerformHeavyAttack()
 		{
 			// Jump Section for combo
 			if (JumpComboNotifyState->InputID == ERGX_ComboTokenID::HeavyAttackToken)
+			{
+				bComboFlag = true;
 				GetMesh()->GetAnimInstance()->Montage_JumpToSection(JumpComboNotifyState->SectionName);
+			}
 			else
+			{
 				UE_LOG(LogTemp, Warning, TEXT("ComboTokenID was not HeavyAttackToken"))
+			}
 		}
 	}
 	else
@@ -390,6 +370,7 @@ void ARGX_PlayerCharacter::PerformHeavyAttack()
 		// clean state if ability was not activated
 		if (TriggeredAbilities == 0)
 		{
+			bComboFlag = false;
 			ComboSystemComponent->OnEndCombo();
 		}
 	}
@@ -505,6 +486,7 @@ void ARGX_PlayerCharacter::RemoveGameplayTag(const FGameplayTag& TagToRemove)
 
 void ARGX_PlayerCharacter::OnInterrupted()
 {
+	bComboFlag = false;
 	ComboSystemComponent->OnEndCombo();
 	InputHandlerComponent->ResetAirState();
 	InputHandlerComponent->ResetInputState();
