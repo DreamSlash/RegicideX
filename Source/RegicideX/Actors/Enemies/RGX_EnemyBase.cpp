@@ -149,8 +149,7 @@ void ARGX_EnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	const bool bIsDead = HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.Dead")));
-	if (bIsDead == true)
+	if (IsAlive() == false)
 		return;
 
 	if (TargetActor)
@@ -205,6 +204,7 @@ void ARGX_EnemyBase::HandleDamage(
 		StopAnimMontage(); // If dead, make sure nothing is executing in order to execute death animation from AnimBP.
 		AAIController* AiController = Cast<AAIController>(GetController());
 		AiController->GetBrainComponent()->StopLogic(FString("Character dead."));
+		HealthDisplayWidgetComponent->SetVisibility(false);
 		PlayAnimMontage(AMDeath);
 	}
 }
@@ -234,8 +234,6 @@ void ARGX_EnemyBase::HandleDeath()
 
 	OnHandleDeathEvent.Broadcast(ScoreValue);
 	OnHandleDeath();
-	HealthDisplayWidgetComponent->SetVisibility(false);
-	//Deactivate();
 	Destroy();
 }
 
