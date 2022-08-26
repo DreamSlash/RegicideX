@@ -31,9 +31,6 @@ void ARGX_MageAngel::BeginPlay()
 void ARGX_MageAngel::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (bToBeDestroyed)
-		Destroy();
 }
 
 void ARGX_MageAngel::HandleDamage(float DamageAmount

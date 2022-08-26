@@ -37,11 +37,4 @@ public:
 		AActor* DamageCauser) override;
 
 	virtual void HandleDeath() override;
-
-public:
-	void SetToBeDestroyed() { bToBeDestroyed = true; }
-
-private:
-	bool bToBeDestroyed = false;
-
 };

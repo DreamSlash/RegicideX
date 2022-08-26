@@ -203,7 +203,10 @@ void ARGX_EnemyBase::HandleDamage(
 		bWeak = false;
 		StopAnimMontage(); // If dead, make sure nothing is executing in order to execute death animation from AnimBP.
 		AAIController* AiController = Cast<AAIController>(GetController());
-		AiController->GetBrainComponent()->StopLogic(FString("Character dead."));
+		if (AiController)
+		{
+			AiController->GetBrainComponent()->StopLogic(FString("Character dead."));
+		}
 		HealthDisplayWidgetComponent->SetVisibility(false);
 		PlayAnimMontage(AMDeath);
 	}
