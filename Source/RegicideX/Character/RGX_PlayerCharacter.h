@@ -241,11 +241,6 @@ protected:
 	// ----------------
 
 public:
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-
 	/** GameplayTagAssetInterface methods */
 	void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
 	bool HasMatchingGameplayTag(FGameplayTag TagToCheck) const override;
@@ -267,4 +262,10 @@ public:
 	/* Input Handler calls this to let the player handle the action */
 	UFUNCTION()
 	void HandleAction(const ERGX_PlayerActions Action);
+
+public:
+	/** Returns CameraBoom subobject **/
+	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	/** Returns FollowCamera subobject **/
+	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 };
