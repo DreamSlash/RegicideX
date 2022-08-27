@@ -20,4 +20,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<FGameplayTag> EventTag;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bActivateEffects;
 };

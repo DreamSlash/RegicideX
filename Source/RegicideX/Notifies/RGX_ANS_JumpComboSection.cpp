@@ -18,7 +18,15 @@ void URGX_ANS_JumpComboSection::NotifyTick(USkeletalMeshComponent* MeshComp, UAn
 void URGX_ANS_JumpComboSection::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
 	ARGX_PlayerCharacter* Player = Cast<ARGX_PlayerCharacter>(MeshComp->GetOwner());
-	if (Player) {
+	if (Player) 
+	{
+		//UE_LOG(LogTemp, Warning, TEXT("Jump Combo Section End. ComboFlag: %s"), Player->bComboFlag ? TEXT("TRUE") : TEXT("FALSE"));
+		if (Player->bComboFlag == false)
+		{
+			Player->OnInterrupted();
+		}
+
+		Player->bComboFlag = false;
 		Player->bCanCombo = false;
 		Player->JumpComboNotifyState = nullptr;
 	}

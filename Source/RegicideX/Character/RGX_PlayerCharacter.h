@@ -5,9 +5,7 @@
 #include "GameplayTags.h"
 #include "RegicideX/Actors/RGX_CharacterBase.h"
 #include "RegicideX/Components/RGX_CombatAssistComponent.h"
-#include "RegicideX/Interfaces/RGX_GameplayTagInterface.h"
 #include "RegicideX/Enums/RGX_InputEnums.h"
-
 #include "RGX_PlayerCharacter.generated.h"
 
 class USpringArmComponent;
@@ -37,7 +35,7 @@ public:
 };
 
 UCLASS(config = Game)
-class REGICIDEX_API ARGX_PlayerCharacter : public ARGX_CharacterBase, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface
+class REGICIDEX_API ARGX_PlayerCharacter : public ARGX_CharacterBase
 {
 	GENERATED_BODY()
 
@@ -83,6 +81,8 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseLookUpRate;
+
+	bool bComboFlag = false;
 
 	// TODO [REFACTOR]: Move this to AbilitySystemComponent.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -218,8 +218,12 @@ protected:
 	void ManageHeavyAttackInput();
 	void ManageHeavyAttackInputRelease();
 
+	void ManageJumpInput();
+	void ManageJumpInputReleased();
+
 	void PerformFallAttack();
 	void PerformLaunchAttack();
+	void PerformHeavyAttack();
 	void ChangePowerSkill();
 
 	//void ManagePowerSkillInput();

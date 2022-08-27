@@ -57,6 +57,7 @@ public:
 	float HoldTime = 0.0f;
 	bool bPressedInAir = false;
 	bool bConsumed = false;
+	bool bReleased = false;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -78,9 +79,12 @@ public:
 	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 private:
-	bool ProcessInput(FRGX_InputToken& InputToken, float DeltaTime);
+	void UpdateInputInfo(float DeltaTime);
+	void UpdateInputActions();
 
-	bool ProcessInputToken(FRGX_InputToken& InputToken, float DeltaTime);
+	bool ProcessInput(FRGX_InputToken& InputToken);
+
+	bool ProcessInputToken(FRGX_InputToken& InputToken);
 
 	bool IsInputPressed(const ERGX_PlayerInputID InputID);
 	bool IsInputPressed(const uint16 InputID);

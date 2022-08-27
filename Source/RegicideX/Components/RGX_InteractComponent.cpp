@@ -60,14 +60,14 @@ void URGX_InteractComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 		}
 	}
 
-	if (bHitAnything == true)
-	{
-		//UE_LOG(LogInteract, Display, TEXT("Interacting with actor.\n"));
-	}
-
 	// Did we change anything?
 	if (NewActor == CurrentActor)
 	{
+		if (NewActor == nullptr)
+		{
+			HideInteractWidget();
+		}
+
 		return;
 	}
 

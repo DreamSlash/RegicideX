@@ -52,7 +52,7 @@ public:
 
 	/** Activate hitbox for detecting overlaps and set collision preset to dodgeable. */
 	UFUNCTION(BlueprintCallable)
-	void ActivateHitbox();
+	void ActivateHitbox(bool bActivateEffect);
 
 	/** Deactivate hitbox. */
 	UFUNCTION(BlueprintCallable)
