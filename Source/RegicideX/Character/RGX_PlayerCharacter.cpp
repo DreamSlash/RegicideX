@@ -623,14 +623,26 @@ void ARGX_PlayerCharacter::MoveRight(float Value)
 
 void ARGX_PlayerCharacter::TurnAtRate(float Rate)
 {
-	YawChange = Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds();
-	AddControllerYawInput(YawChange);
+	// TODO: Only TurnAtRate or AddControllerYawInput should modify YawChange at a time, depending if the user is using mouse or controller
+	//YawChange = Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds();
+	//AddControllerYawInput(YawChange);
 }
 
 void ARGX_PlayerCharacter::LookUpAtRate(float Rate)
 {
-	PitchChange = Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds();
-	AddControllerPitchInput(PitchChange);
+	//PitchChange = Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds();
+	//AddControllerPitchInput(PitchChange);
+}
+
+void ARGX_PlayerCharacter::AddControllerYawInput(float Val)
+{
+	Super::AddControllerYawInput(Val);
+	YawChange = Val;
+}
+
+void ARGX_PlayerCharacter::AddControllerPitchInput(float Val)
+{
+	Super::AddControllerPitchInput(Val);
 }
 
 FRGX_LeanInfo ARGX_PlayerCharacter::CalculateLeanAmount()

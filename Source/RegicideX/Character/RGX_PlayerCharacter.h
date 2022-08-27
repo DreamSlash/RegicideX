@@ -190,6 +190,10 @@ protected:
 	 */
 	void LookUpAtRate(float Rate);
 
+	virtual void AddControllerYawInput(float Val) override;
+
+	virtual void AddControllerPitchInput(float Val) override;
+
 	//** Animation Functions */
 	FRGX_LeanInfo CalculateLeanAmount();
 
@@ -268,4 +272,5 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	FORCEINLINE float GetLeanAmount() const { return LeanAmount; }
 };

@@ -4,6 +4,7 @@
 #include "RGX_PlayerAnimInstance.h"
 #include "RGX_PlayerCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 void URGX_PlayerAnimInstance::NativeInitializeAnimation()
 {
@@ -27,6 +28,9 @@ void URGX_PlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	FVector Velocity = PlayerCharacter->GetVelocity();
 	Velocity.Z = 0.0f;
 	MovementSpeed = Velocity.Size();
+
+	const float PlayerLeanAmount = PlayerCharacter->GetLeanAmount();
+	LeanValue = PlayerLeanAmount * LeanOffset;
 
 	bIsOnAir = PlayerCharacter->GetCharacterMovement()->IsFalling();
 	bIsAlive = PlayerCharacter->IsAlive();
