@@ -46,6 +46,9 @@ public:
 
 	void ToggleTargetting();
 
+	void EnableTargetting();
+	void DisableTargetting();
+
 	UFUNCTION(BlueprintCallable)
 	void SetTarget(const ARGX_EnemyBase* NewTarget);
 
@@ -53,5 +56,7 @@ private:
 	TWeakObjectPtr<const ARGX_EnemyBase> CurrentTarget;
 
 	float OriginalArmLength;
+
+	bool bIsActive = false;
 
 };

@@ -6,7 +6,7 @@
 #include "Camera/CameraComponent.h"
 #include "DrawDebugHelpers.h"
 
-#pragma optimize("", off)
+//#pragma optimize("", off)
 
 // Sets default values for this component's properties
 URGX_CameraControllerComponent::URGX_CameraControllerComponent()
@@ -33,39 +33,42 @@ void URGX_CameraControllerComponent::TickComponent(float DeltaTime, ELevelTick T
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	const float CameraAngleToTarget = 15.0f;
-	const float CameraAngleSin = FMath::Sin(FMath::DegreesToRadians(CameraAngleToTarget));
-
-	if (CurrentTarget.IsValid())
+	if (bIsActive)
 	{
-		const FVector& TargetLocation = CurrentTarget->GetActorLocation();
-		const FVector& PlayerLocation = SpringArm->GetComponentLocation();
+		const float CameraAngleToTarget = 15.0f;
+		const float CameraAngleSin = FMath::Sin(FMath::DegreesToRadians(CameraAngleToTarget));
 
-		const float PivotDistance = FVector::Distance(PlayerLocation, TargetLocation);
+		if (CurrentTarget.IsValid())
+		{
+			const FVector& TargetLocation = CurrentTarget->GetActorLocation();
+			const FVector& PlayerLocation = SpringArm->GetComponentLocation();
 
-		const float Height = SpringArm->TargetArmLength * CameraAngleSin;
-		const float Beta = FMath::Asin(Height / PivotDistance);
-		const float DesiredPitch = FMath::DegreesToRadians(CameraAngleToTarget) + Beta;
+			const float PivotDistance = FVector::Distance(PlayerLocation, TargetLocation);
 
-		FRotator Rotation = FRotationMatrix::MakeFromX(TargetLocation - PlayerLocation).Rotator();
-		Rotation.Yaw -= FMath::RadiansToDegrees(DesiredPitch);
+			const float Height = SpringArm->TargetArmLength * CameraAngleSin;
+			const float Beta = FMath::Asin(Height / PivotDistance);
+			const float DesiredPitch = FMath::DegreesToRadians(CameraAngleToTarget) + Beta;
 
-		//FRotator Rotation = FRotationMatrix::MakeFromXZ((TargetLocation - SpringArm->GetComponentLocation()), FVector::UpVector).Rotator();
-		//FRotator Rotation = FRotationMatrix::MakeFromXY((TargetLocation - PlayerLocation).GetSafeNormal(), FVector::RightVector).Rotator();
-		//Rotation.Pitch = -FMath::RadiansToDegrees(DesiredPitch);
-		/*Rotation.Yaw = FMath::RadiansToDegrees(DesiredPitch);*/
+			FRotator Rotation = FRotationMatrix::MakeFromX(TargetLocation - PlayerLocation).Rotator();
+			Rotation.Yaw -= FMath::RadiansToDegrees(DesiredPitch);
 
-		if (APawn* OwnerPawn = GetOwner<APawn>()) {
-			OwnerPawn->GetController()->SetControlRotation(Rotation);
+			//FRotator Rotation = FRotationMatrix::MakeFromXZ((TargetLocation - SpringArm->GetComponentLocation()), FVector::UpVector).Rotator();
+			//FRotator Rotation = FRotationMatrix::MakeFromXY((TargetLocation - PlayerLocation).GetSafeNormal(), FVector::RightVector).Rotator();
+			//Rotation.Pitch = -FMath::RadiansToDegrees(DesiredPitch);
+			/*Rotation.Yaw = FMath::RadiansToDegrees(DesiredPitch);*/
+
+			if (APawn* OwnerPawn = GetOwner<APawn>()) {
+				OwnerPawn->GetController()->SetControlRotation(Rotation);
+			}
+
+			SpringArm->SetWorldRotation(Rotation);
+
+			//DrawDebugLine(GetWorld(), DesiredCameraLoc, TargetLocation, FColor::Blue);
 		}
-
-		SpringArm->SetWorldRotation(Rotation);
-
-		//DrawDebugLine(GetWorld(), DesiredCameraLoc, TargetLocation, FColor::Blue);
-	}
-	else
-	{
-		SetTarget(nullptr);
+		else
+		{
+			SetTarget(nullptr);
+		}
 	}
 }
 
@@ -111,10 +114,21 @@ void URGX_CameraControllerComponent::ToggleTargetting()
 	}*/
 }
 
+void URGX_CameraControllerComponent::EnableTargetting()
+{
+	bIsActive = true;
+	SpringArm->bUsePawnControlRotation = false;
+}
+
+void URGX_CameraControllerComponent::DisableTargetting()
+{
+	bIsActive = false;
+	SpringArm->bUsePawnControlRotation = true;
+}
+
 void URGX_CameraControllerComponent::SetTarget(const ARGX_EnemyBase* NewTarget)
 {
 	CurrentTarget = NewTarget;
-	SpringArm->bUsePawnControlRotation = !CurrentTarget.IsValid();
 	//if (!NewTarget) 
 	//{
 	//	SpringArm->TargetArmLength = OriginalArmLength;
