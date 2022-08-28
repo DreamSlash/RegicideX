@@ -27,7 +27,7 @@ public:
 	bool bFlying = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bCharged = false;
+	bool bCharging = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bSweeping = false;
