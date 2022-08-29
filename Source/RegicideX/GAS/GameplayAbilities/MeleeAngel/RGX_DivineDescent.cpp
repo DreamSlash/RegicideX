@@ -4,6 +4,8 @@
 #include "Animation/AnimMontage.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "RegicideX/Actors/Enemies/RGX_MeleeAngel.h"
+#include "RegicideX/Actors/RGX_CharacterBase.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 bool URGX_DivineDescent::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const
 {
@@ -22,6 +24,13 @@ void URGX_DivineDescent::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 void URGX_DivineDescent::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+
+	ARGX_CharacterBase* Character = Cast<ARGX_CharacterBase>(GetAvatarActorFromActorInfo());
+	if (Character)
+	{
+		Character->GetCharacterMovement()->GravityScale = 3.0f;
+	}
+
 	bTargetSelected = false;
 }
 
@@ -38,30 +47,27 @@ void URGX_DivineDescent::Tick(float DeltaTime)
 	if (bFinished)
 		return;
 
-	UCharacterMovementComponent* CharacterMovementComponent = Cast<UCharacterMovementComponent>(owner->GetMovementComponent());
-	if (CharacterMovementComponent)
-	{
-		CharacterMovementComponent->SetMovementMode(MOVE_Custom, 0);
-	}
-
 	FVector NewLocation = FVector::ZeroVector;
 
 	TargetLocation = owner->DivineDescentTargetLocation;
-	TargetLocation.Z = 25.0f;
 	StartLocation = owner->GetActorLocation();
 
 	FVector Direction = TargetLocation - StartLocation;
-	float Distance = Direction.Size();
 	Direction.Normalize();
 	NewLocation = StartLocation + Direction * Speed * DeltaTime;
 
-	owner->SetActorLocation(NewLocation);
-
-	if (Distance < ThresholdDistance)
+	// If we passed the z position of the target, clamp to target height and run the next section
+	if (NewLocation.Z <= TargetLocation.Z)
 	{
+		NewLocation.Z = TargetLocation.Z;
+		owner->SetActorLocation(NewLocation);
 		MontageJumpToSection(FName("Fall Section"));
 		UE_LOG(LogTemp, Warning, TEXT("CHAAAAAAAAAAAAARGE!"));
 		owner->bCharging = false;
+	}
+	else
+	{
+		owner->SetActorLocation(NewLocation);
 	}
 }
 

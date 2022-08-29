@@ -47,6 +47,4 @@ private:
 
 	UPROPERTY(EditAnywhere)
 	float Speed = 1000.0f;
-	UPROPERTY(EditAnywhere)
-	float ThresholdDistance = 100.0f;
 };
