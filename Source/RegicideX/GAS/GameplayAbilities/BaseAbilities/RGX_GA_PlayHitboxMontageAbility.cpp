@@ -64,6 +64,7 @@ void URGX_PlayHitboxMontageAbility::OnReceivedEvent(FGameplayTag EventTag, FGame
 	const ARGX_CharacterBase* TargetCharacter = Cast<ARGX_CharacterBase>(EventData.Target);
 	UAbilitySystemComponent* TargetACS = TargetCharacter ? TargetCharacter->GetAbilitySystemComponent() : nullptr;
 
+	// TODO: Correct the ACS that apply the effects
 	// Find the effect mapped to the triggering event tag to apply to target.
 	if (EffectToApplyToTargetWithPayload.Contains(EventTag) && TargetACS)
 	{

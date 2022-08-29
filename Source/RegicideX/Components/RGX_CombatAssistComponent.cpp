@@ -376,3 +376,8 @@ void URGX_CombatAssistComponent::SetAttackMoveDuration(float Duration)
 	AttackMoveDuration = Duration;
 	AttackMoveDurationLeft = AttackMoveDuration;
 }
+
+void URGX_CombatAssistComponent::SetMovementSpeed(const float Speed)
+{
+	MoveVectorSpeed = Speed;
+}

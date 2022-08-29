@@ -1,0 +1,5 @@
+,1,10,20
+GuidedBullet_Damage,20,50,100
+GuidedBullet_Scaling,0.5,0.5,0.5
+ForceField_Damage,10,20,30
+ForceField_Scaling,0.1,0.1,0.1

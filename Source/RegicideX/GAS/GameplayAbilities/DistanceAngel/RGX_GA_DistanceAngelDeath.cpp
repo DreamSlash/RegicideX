@@ -24,7 +24,6 @@ void URGX_GA_DistanceAngelDeath::ActivateAbility(const FGameplayAbilitySpecHandl
 
 	DistAngel->Ring_1_Mesh->SetSimulatePhysics(true);
 	DistAngel->Ring_2_Mesh->SetSimulatePhysics(true);
-	DistAngel->Ring_3_Mesh->SetSimulatePhysics(true);
 	DistAngel->PrimaryActorTick.bCanEverTick = false;
 
 	DistAngel->DestroyMyself(22.0f);
