@@ -136,9 +136,14 @@ void ARGX_CharacterBase::HandleHealthChanged(float DeltaValue, const FGameplayTa
 	OnHealthChanged(DeltaValue, EventTags);
 }
 
-void ARGX_CharacterBase::HandleDeath()
+void ARGX_CharacterBase::NotifyDeath()
 {
 	OnHandleDeath();
+}
+
+void ARGX_CharacterBase::HandleDeath()
+{
+	UE_LOG(LogTemp, Log, TEXT("RGX_CharacterBase: OnHandleDeath"));
 }
 
 void ARGX_CharacterBase::AddStartupGameplayAbilities()

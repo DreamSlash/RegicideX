@@ -45,4 +45,5 @@ void ARGX_MageAngel::HandleDamage(float DamageAmount
 void ARGX_MageAngel::HandleDeath()
 {
 	Super::HandleDeath();
+	OnHandleDeath();
 }

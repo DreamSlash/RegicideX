@@ -48,5 +48,5 @@ protected:
 	virtual void Deactivate() override;
 
 	// Bool to signal if actor is going to get destroyed.
-	void HandleDeath() override;
+	virtual void HandleDeath() override;
 };
