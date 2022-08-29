@@ -35,8 +35,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	URGX_MovementAssistComponent* MovementAssistComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector DivineDescentTargetLocation = FVector::ZeroVector;
 protected:
 	FVector ChargeVelocity;
+
 
 public:
 	void RotateToTarget(float DeltaTime) override;

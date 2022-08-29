@@ -13,14 +13,40 @@ class REGICIDEX_API URGX_DivineDescent : public URGX_MeleeAttackAbility, public 
 	GENERATED_BODY()
 
 protected:
-	bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags = nullptr, const FGameplayTagContainer* TargetTags = nullptr, OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
+	bool CanActivateAbility(
+		const FGameplayAbilitySpecHandle Handle, 
+		const FGameplayAbilityActorInfo* ActorInfo, 
+		const FGameplayTagContainer* SourceTags = nullptr, 
+		const FGameplayTagContainer* TargetTags = nullptr, 
+		OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const override;
 
-	void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+	void ActivateAbility(
+		const FGameplayAbilitySpecHandle Handle, 
+		const FGameplayAbilityActorInfo* ActorInfo, 
+		const FGameplayAbilityActivationInfo ActivationInfo, 
+		const FGameplayEventData* TriggerEventData) override;
 
-	void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
+	void EndAbility(
+		const FGameplayAbilitySpecHandle Handle, 
+		const FGameplayAbilityActorInfo* ActorInfo, 
+		const FGameplayAbilityActivationInfo ActivationInfo, 
+		bool bReplicateEndAbility, 
+		bool bWasCancelled) override;
 
 	void Tick(float DeltaTime) override;
 
 	TStatId GetStatId() const override;
-	
+
+private:
+
+	bool bFinished = false;
+	bool bTargetSelected = false;
+
+	FVector StartLocation = FVector::ZeroVector;
+	FVector TargetLocation = FVector::ZeroVector;
+
+	UPROPERTY(EditAnywhere)
+	float Speed = 1000.0f;
+	UPROPERTY(EditAnywhere)
+	float ThresholdDistance = 100.0f;
 };
