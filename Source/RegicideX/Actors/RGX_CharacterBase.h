@@ -101,6 +101,15 @@ protected:
 
 	virtual void HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags);
 
+	/** Call this from Montage Notify.
+	* This will call the OnHandleDeath BP event which should in turn
+	* call the HandleDeath function, which is the one that actually
+	* does the work.
+	*/
+	UFUNCTION(BlueprintCallable)
+	void NotifyDeath();
+
+	/** Call this from BP */
 	UFUNCTION(BlueprintCallable)
 	virtual void HandleDeath();
 
@@ -117,6 +126,7 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags);
 
+	/** Destroy function must be called inside this event using a delay. */
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnHandleDeath();
 

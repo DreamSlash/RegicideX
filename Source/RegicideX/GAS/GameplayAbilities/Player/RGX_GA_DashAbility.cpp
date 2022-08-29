@@ -3,6 +3,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "RegicideX/Character/RGX_PlayerCharacter.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+#include "Components/CapsuleComponent.h"
 
 void URGX_DashAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
@@ -33,6 +34,13 @@ void URGX_DashAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 
 		Character->GetCharacterMovement()->GravityScale = 0.0f;
 		Character->GetCharacterMovement()->MaxWalkSpeed = 0.0f;
+		Character->DisableMovementInput();
+
+		UCapsuleComponent* CapsuleComponent = Character->GetCapsuleComponent();
+		if (CapsuleComponent)
+		{
+			CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+		}
 	}
 	else
 	{
@@ -45,9 +53,18 @@ void URGX_DashAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 
 	ARGX_PlayerCharacter* Character = Cast<ARGX_PlayerCharacter>(ActorInfo->AvatarActor);
+	if (Character)
+	{
+		Character->GetCharacterMovement()->MaxWalkSpeed = 800.0f;
+		Character->GetCharacterMovement()->GravityScale = Character->DefaultGravity;
+		Character->EnableMovementInput();
 
-	Character->GetCharacterMovement()->MaxWalkSpeed = 800.0f;
-	Character->GetCharacterMovement()->GravityScale = Character->DefaultGravity;
+		UCapsuleComponent* CapsuleComponent = Character->GetCapsuleComponent();
+		if (CapsuleComponent)
+		{
+			CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+		}
+	}
 
 	//UE_LOG(LogTemp, Warning, TEXT("Finish Dash. Current Gravity: %f\n"), Character->GetCharacterMovement()->GravityScale);
 }

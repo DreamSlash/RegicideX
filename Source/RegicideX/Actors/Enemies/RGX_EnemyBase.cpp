@@ -15,6 +15,7 @@
 #include "RegicideX/UI/RGX_EnemyHealthBar.h"
 #include "RegicideX/Components/RGX_InteractComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Animation/AnimInstance.h"
 
 // Sets default values
 ARGX_EnemyBase::ARGX_EnemyBase()
@@ -235,8 +236,10 @@ void ARGX_EnemyBase::HandleDeath()
 {
 	Super::HandleDeath();
 
+	UE_LOG(LogTemp, Log, TEXT("Entering HandleDeath()"));
 	OnHandleDeathEvent.Broadcast(ScoreValue);
-	OnHandleDeath();
+
+	UE_LOG(LogTemp, Log, TEXT("Destroying actor..."));
 	Destroy();
 }
 
