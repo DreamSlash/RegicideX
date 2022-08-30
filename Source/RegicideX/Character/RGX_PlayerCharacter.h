@@ -95,9 +95,17 @@ public:
 	UPROPERTY()
 	FGameplayTag CurrentSkillTag;
 
-	/** If ture, it is in window to keep on with the current combo. */
+	/** If true, player is in window to carry on with the combo if appropiate input is pressed. */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bCanCombo = false;
+
+	/** Signals if player has pressed an input to continue the on going combo. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bContinueCombo = false;
+
+	/** If true, we can jump to next section in the combo. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bCanJumpToComboSection = false;
 
 	/** Holds the AnimNotifyState of the current attack, which has the information for the combo to follow. */
 	UPROPERTY()

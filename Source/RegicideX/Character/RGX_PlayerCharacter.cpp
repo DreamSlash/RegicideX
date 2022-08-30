@@ -138,22 +138,20 @@ void ARGX_PlayerCharacter::ManageLightAttackInput()
 
 	InputHandlerComponent->HandleInput(ERGX_PlayerInputID::LightAttackInput, false, GetCharacterMovement()->IsFalling());
 
-	//FGameplayTag NextAttack = ComboSystemComponent->ManageInputToken(ERGX_ComboTokenID::LightAttackToken, GetCharacterMovement()->IsFalling(), bCanAirCombo);
-
 	// If we are performing an attack, try to follow the combo
 	if (IsAttacking())
 	{
 		if (JumpComboNotifyState != nullptr)
 		{
 			// Jump Section for combo
-			if (JumpComboNotifyState->InputID == ERGX_ComboTokenID::LightAttackToken)
+			if (JumpComboNotifyState->InputID == ERGX_ComboTokenID::LightAttackToken && bCanCombo)
 			{
-				bCanCombo = true;
+				bJumpToComboSection = true;
 				/** TODO:
 					Check bIsInAir
 					If in air, if current combo is air combo, try to jump to next attack
 					if not in air, is current combo is ground combo, try to jump to next attack */
-				GetMesh()->GetAnimInstance()->Montage_JumpToSection(JumpComboNotifyState->SectionName);
+				// GetMesh()->GetAnimInstance()->Montage_JumpToSection(JumpComboNotifyState->SectionName);
 			}
 			else
 			{

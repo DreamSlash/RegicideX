@@ -28,6 +28,7 @@ void URGX_ANS_JumpComboSection::NotifyEnd(USkeletalMeshComponent* MeshComp, UAni
 		}
 
 		Player->bCanCombo = false;
+		Player->bJumpToComboSection = false;
 		Player->JumpComboNotifyState = nullptr;
 	}
 }
