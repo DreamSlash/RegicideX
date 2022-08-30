@@ -15,16 +15,23 @@ public:
 
 	ARGX_PeasantController();
 
+protected:
+	virtual void OnPossess(APawn* pawn) override;
+	virtual void BeginPlay() override;
+	virtual void Tick(float DeltaTime) override;
+
+public:
+
 	UPROPERTY(transient)
 	UBlackboardComponent* BBComponent = nullptr;
 
 	UPROPERTY(transient)
 	UBehaviorTreeComponent* BTComponent = nullptr;
 
-	bool bIsInFocus = false;
+	bool bFocusPlayer = true;
 
-	virtual void OnPossess(APawn* pawn) override;
-	virtual void Tick(float DeltaTime) override;
+	UFUNCTION(BlueprintCallable)
+	void SetFocusPlayer(bool bFocus);
 
 	// Blackboard key ids
 	uint8 TargetActorID;
