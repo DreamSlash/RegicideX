@@ -115,6 +115,19 @@ void ARGX_EnemyBase::MoveToTarget(float DeltaTime, FVector TargetPos)
 	}
 }
 
+void ARGX_EnemyBase::StopLogic(const FString& Reason)
+{
+	AAIController* AiController = Cast<AAIController>(GetController());
+	if (AiController)
+	{
+		UBrainComponent* BrainComponent = AiController->GetBrainComponent();
+		if (BrainComponent)
+		{
+			BrainComponent->StopLogic(Reason);
+		}
+	}
+}
+
 bool ARGX_EnemyBase::IsWeak()
 {
 	return bWeak;
@@ -179,6 +192,7 @@ void ARGX_EnemyBase::HandleDamage(
 
 	if (IsAlive())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Is Alive"));
 		CheckIfWeak(DamageAmount);
 
 		if (IsWeak())
@@ -203,11 +217,7 @@ void ARGX_EnemyBase::HandleDamage(
 		// If damage killed the actor, we should kill its AI Logic and clean weak status as it is already dead.
 		bWeak = false;
 		StopAnimMontage(); // If dead, make sure nothing is executing in order to execute death animation from AnimBP.
-		AAIController* AiController = Cast<AAIController>(GetController());
-		if (AiController)
-		{
-			AiController->GetBrainComponent()->StopLogic(FString("Character dead."));
-		}
+		StopLogic("Character Dead");
 		HealthDisplayWidgetComponent->SetVisibility(false);
 		PlayAnimMontage(AMDeath);
 	}

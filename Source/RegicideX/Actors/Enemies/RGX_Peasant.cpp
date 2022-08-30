@@ -52,7 +52,6 @@ void ARGX_Peasant::HandleDeath()
 {
 	UE_LOG(LogTemp, Display, TEXT("Handling Peasant death ..."));
 	Super::HandleDeath();
-	OnHandleDeath();
 }
 
 // TODO Make it in EnemyBase --> Make it 2D??
