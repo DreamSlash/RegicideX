@@ -1,6 +1,7 @@
 
 #include "RGX_ANS_JumpComboSection.h"
 #include "RegicideX\Character\RGX_PlayerCharacter.h"
+#include "Animation/AnimInstance.h"
 
 void URGX_ANS_JumpComboSection::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
 {
@@ -14,7 +15,14 @@ void URGX_ANS_JumpComboSection::NotifyBegin(USkeletalMeshComponent* MeshComp, UA
 
 void URGX_ANS_JumpComboSection::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime)
 {
-
+	ARGX_PlayerCharacter* Player = Cast<ARGX_PlayerCharacter>(MeshComp->GetOwner());
+	if (Player)
+	{
+		if (Player->bCanCombo && Player->bCanJumpToComboSection && Player->bContinueCombo)
+		{
+			Player->GetMesh()->GetAnimInstance()->Montage_JumpToSection(SectionName);
+		}
+	}
 }
 
 void URGX_ANS_JumpComboSection::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)

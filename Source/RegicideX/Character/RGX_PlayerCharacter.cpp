@@ -143,15 +143,10 @@ void ARGX_PlayerCharacter::ManageLightAttackInput()
 	{
 		if (JumpComboNotifyState != nullptr)
 		{
-			// Jump Section for combo
+			// If Input and CanCombo, signal player has pressed input.
 			if (JumpComboNotifyState->InputID == ERGX_ComboTokenID::LightAttackToken && bCanCombo)
 			{
-				bCanJumpToComboSection = true;
-				/** TODO:
-					Check bIsInAir
-					If in air, if current combo is air combo, try to jump to next attack
-					if not in air, is current combo is ground combo, try to jump to next attack */
-				// GetMesh()->GetAnimInstance()->Montage_JumpToSection(JumpComboNotifyState->SectionName);
+				bContinueCombo = true;
 			}
 			else
 			{
@@ -159,7 +154,7 @@ void ARGX_PlayerCharacter::ManageLightAttackInput()
 			}
 		}
 	}
-	else //if (NextAttack == FGameplayTag::RequestGameplayTag(FName("Combo.Light")) || NextAttack == FGameplayTag::RequestGameplayTag(FName("Combo.Air.Light")))
+	else
 	{
 		if (GetCharacterMovement()->IsFalling() && bCanAirCombo == true)
 		{
@@ -350,10 +345,9 @@ void ARGX_PlayerCharacter::PerformHeavyAttack()
 		if (JumpComboNotifyState != nullptr)
 		{
 			// Jump Section for combo
-			if (JumpComboNotifyState->InputID == ERGX_ComboTokenID::HeavyAttackToken)
+			if (JumpComboNotifyState->InputID == ERGX_ComboTokenID::HeavyAttackToken && bCanCombo)
 			{
-				bCanCombo = true;
-				GetMesh()->GetAnimInstance()->Montage_JumpToSection(JumpComboNotifyState->SectionName);
+				bContinueCombo = true;
 			}
 			else
 			{
