@@ -8,6 +8,7 @@
 #include "RegicideX/Components/RGX_CombatAssistComponent.h"
 #include "RegicideX/Character/RGX_PlayerCharacter.h"
 #include "RegicideX/Components/RGX_HitboxComponent.h"
+#include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 
 URGX_PlayHitboxMontageAbility::URGX_PlayHitboxMontageAbility()
 {
@@ -49,6 +50,12 @@ void URGX_PlayHitboxMontageAbility::ActivateAbility(
 void URGX_PlayHitboxMontageAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicateEndAbility, bWasCancelled);
+
+	ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(GetAvatarActorFromActorInfo());
+	if (Enemy)
+	{
+		Enemy->SetFocusPlayer(Enemy->bDefaultFocusPlayer);
+	}
 }
 
 void URGX_PlayHitboxMontageAbility::OnMontageFinished(FGameplayTag EventTag, FGameplayEventData EventData)

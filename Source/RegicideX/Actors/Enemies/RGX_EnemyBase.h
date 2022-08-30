@@ -145,7 +145,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bWeak = false;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bDefaultFocusPlayer = false;
 
 	UFUNCTION(BlueprintCallable)
