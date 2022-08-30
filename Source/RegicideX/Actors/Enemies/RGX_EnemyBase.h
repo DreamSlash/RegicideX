@@ -136,6 +136,9 @@ public:
 	virtual void MoveToTarget(float DeltaTime, FVector TargetPos);
 	// ---------------------
 
+	UFUNCTION(BlueprintCallable)
+	void StopLogic(const FString& Reason);
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bWeak = false;
 

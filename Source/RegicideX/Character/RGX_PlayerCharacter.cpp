@@ -392,7 +392,7 @@ void ARGX_PlayerCharacter::ChangePowerSkill()
 	AddGameplayTag(PowerSkills[CurrentSkillSelected]);
 
 	FString SkillName = PowerSkills[CurrentSkillSelected].ToString();
-	UE_LOG(LogTemp, Warning, TEXT("Power Skill Selected: %s\n"), *SkillName);
+	//UE_LOG(LogTemp, Warning, TEXT("Power Skill Selected: %s\n"), *SkillName);
 }
 
 //void ARGX_PlayerCharacter::LevelUp(const float NewLevel)
@@ -544,7 +544,7 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 	LeanAmount = UKismetMathLibrary::FInterpTo(LeanAmount, LeanInfo.LeanAmount, DeltaTime, LeanInfo.InterSpeed);
 	// ------------------
 
-	UKismetSystemLibrary::DrawDebugCircle(GetWorld(), GetActorLocation(), 100.0f, 24, FLinearColor::Green, 0.0f, 0.0f, FVector(0.0f, 1.0f, 0.0f), FVector(1.0f, 0.0f, 0.0f));
+	//UKismetSystemLibrary::DrawDebugCircle(GetWorld(), GetActorLocation(), 100.0f, 24, FLinearColor::Green, 0.0f, 0.0f, FVector(0.0f, 1.0f, 0.0f), FVector(1.0f, 0.0f, 0.0f));
 }
 
 UAbilitySystemComponent* ARGX_PlayerCharacter::GetAbilitySystemComponent() const
@@ -623,14 +623,30 @@ void ARGX_PlayerCharacter::MoveRight(float Value)
 
 void ARGX_PlayerCharacter::TurnAtRate(float Rate)
 {
+	// TODO: Only TurnAtRate or AddControllerYawInput should modify YawChange at a time, depending if the user is using mouse or controller
+	//UE_LOG(LogTemp, Warning, TEXT("Turn Rate: %f"), Rate);
 	YawChange = Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds();
-	AddControllerYawInput(YawChange);
+	//UE_LOG(LogTemp, Warning, TEXT("YawChange: %f"), YawChange);
+	Super::AddControllerYawInput(YawChange);
 }
 
 void ARGX_PlayerCharacter::LookUpAtRate(float Rate)
 {
+	//UE_LOG(LogTemp, Warning, TEXT("Look Up Rate: %f"), Rate);
 	PitchChange = Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds();
-	AddControllerPitchInput(PitchChange);
+	//UE_LOG(LogTemp, Warning, TEXT("PitchChange: %f"), PitchChange);
+	Super::AddControllerPitchInput(PitchChange);
+}
+
+void ARGX_PlayerCharacter::AddControllerYawInput(float Val)
+{
+	//Super::AddControllerYawInput(Val);
+	//YawChange = Val;
+}
+
+void ARGX_PlayerCharacter::AddControllerPitchInput(float Val)
+{
+	//Super::AddControllerPitchInput(Val);
 }
 
 FRGX_LeanInfo ARGX_PlayerCharacter::CalculateLeanAmount()
@@ -661,7 +677,7 @@ void ARGX_PlayerCharacter::Landed(const FHitResult& Hit)
 	ECollisionChannel CollisionChannel = Hit.GetComponent()->GetCollisionObjectType();
 	if (CollisionChannel == ECollisionChannel::ECC_WorldStatic)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Landed\n"));
+		//UE_LOG(LogTemp, Warning, TEXT("Landed\n"));
 
 		InputHandlerComponent->ResetAirState();
 

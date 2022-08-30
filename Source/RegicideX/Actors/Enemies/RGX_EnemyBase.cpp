@@ -15,6 +15,7 @@
 #include "RegicideX/UI/RGX_EnemyHealthBar.h"
 #include "RegicideX/Components/RGX_InteractComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Animation/AnimInstance.h"
 
 // Sets default values
 ARGX_EnemyBase::ARGX_EnemyBase()
@@ -100,6 +101,11 @@ void ARGX_EnemyBase::CheckIfWeak(float DamageAmount)
 			EnableInteraction();
 
 		bWeak = true;
+
+		if (HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("Status.Enemy.Weakened")) == false)
+		{
+			AddGameplayTag(FGameplayTag::RequestGameplayTag("Status.Enemy.Weakened"));
+		}
 	}
 }
 
@@ -111,6 +117,19 @@ void ARGX_EnemyBase::MoveToTarget(float DeltaTime, FVector TargetPos)
 		const FVector CurrentLocation = this->GetActorLocation();
 		FVector NewLocation = CurrentLocation + MyFront * MoveSpeed * DeltaTime;
 		this->SetActorLocation(NewLocation);
+	}
+}
+
+void ARGX_EnemyBase::StopLogic(const FString& Reason)
+{
+	AAIController* AiController = Cast<AAIController>(GetController());
+	if (AiController)
+	{
+		UBrainComponent* BrainComponent = AiController->GetBrainComponent();
+		if (BrainComponent)
+		{
+			BrainComponent->StopLogic(Reason);
+		}
 	}
 }
 
@@ -178,6 +197,7 @@ void ARGX_EnemyBase::HandleDamage(
 
 	if (IsAlive())
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Is Alive"));
 		CheckIfWeak(DamageAmount);
 
 		if (IsWeak())
@@ -201,12 +221,9 @@ void ARGX_EnemyBase::HandleDamage(
 	{
 		// If damage killed the actor, we should kill its AI Logic and clean weak status as it is already dead.
 		bWeak = false;
+		RemoveGameplayTag(FGameplayTag::RequestGameplayTag("Status.Enemy.Weakened"));
 		StopAnimMontage(); // If dead, make sure nothing is executing in order to execute death animation from AnimBP.
-		AAIController* AiController = Cast<AAIController>(GetController());
-		if (AiController)
-		{
-			AiController->GetBrainComponent()->StopLogic(FString("Character dead."));
-		}
+		StopLogic("Character Dead");
 		HealthDisplayWidgetComponent->SetVisibility(false);
 		PlayAnimMontage(AMDeath);
 	}
@@ -235,8 +252,10 @@ void ARGX_EnemyBase::HandleDeath()
 {
 	Super::HandleDeath();
 
+	UE_LOG(LogTemp, Log, TEXT("Entering HandleDeath()"));
 	OnHandleDeathEvent.Broadcast(ScoreValue);
-	OnHandleDeath();
+
+	UE_LOG(LogTemp, Log, TEXT("Destroying actor..."));
 	Destroy();
 }
 

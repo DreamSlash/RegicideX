@@ -76,10 +76,10 @@ class REGICIDEX_API ARGX_PlayerCharacter : public ARGX_CharacterBase
 public:
 	ARGX_PlayerCharacter();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseTurnRate;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseLookUpRate;
 
 	bool bComboFlag = false;
@@ -190,6 +190,10 @@ protected:
 	 */
 	void LookUpAtRate(float Rate);
 
+	virtual void AddControllerYawInput(float Val) override;
+
+	virtual void AddControllerPitchInput(float Val) override;
+
 	//** Animation Functions */
 	FRGX_LeanInfo CalculateLeanAmount();
 
@@ -241,11 +245,6 @@ protected:
 	// ----------------
 
 public:
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-
 	/** GameplayTagAssetInterface methods */
 	void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
 	bool HasMatchingGameplayTag(FGameplayTag TagToCheck) const override;
@@ -267,4 +266,11 @@ public:
 	/* Input Handler calls this to let the player handle the action */
 	UFUNCTION()
 	void HandleAction(const ERGX_PlayerActions Action);
+
+public:
+	/** Returns CameraBoom subobject **/
+	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	/** Returns FollowCamera subobject **/
+	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	FORCEINLINE float GetLeanAmount() const { return LeanAmount; }
 };

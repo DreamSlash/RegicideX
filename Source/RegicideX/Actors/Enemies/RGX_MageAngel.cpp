@@ -41,8 +41,3 @@ void ARGX_MageAngel::HandleDamage(float DamageAmount
 {
 	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser);
 }
-
-void ARGX_MageAngel::HandleDeath()
-{
-	Super::HandleDeath();
-}

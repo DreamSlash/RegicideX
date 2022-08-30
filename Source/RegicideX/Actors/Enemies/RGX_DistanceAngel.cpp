@@ -227,4 +227,5 @@ void ARGX_DistanceAngel::ApplyForceFieldEffects(AActor* OtherActor)
 void ARGX_DistanceAngel::HandleDeath()
 {
 	Super::HandleDeath();
+	OnHandleDeath();
 }

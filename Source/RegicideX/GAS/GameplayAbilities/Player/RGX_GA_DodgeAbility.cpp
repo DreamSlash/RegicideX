@@ -1,10 +1,11 @@
 #include "RGX_GA_DodgeAbility.h"
 #include "GameFramework/Character.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "RegicideX/Character/RGX_PlayerCharacter.h"
 #include "AbilitySystemComponent.h"
 #include "AbilitySystemGlobals.h"
 #include "GameplayEffect.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Components/CapsuleComponent.h"
 
 void URGX_DodgeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
@@ -21,6 +22,13 @@ void URGX_DodgeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 
 		Character->GetCharacterMovement()->GravityScale = 0.0f;
 		Character->GetCharacterMovement()->MaxWalkSpeed = 0.0f;
+		Character->DisableMovementInput();
+
+		UCapsuleComponent* CapsuleComponent = Character->GetCapsuleComponent();
+		if (CapsuleComponent)
+		{
+			CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+		}
 	}
 	else
 	{
@@ -41,11 +49,16 @@ void URGX_DodgeAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, cons
 	}
 
 	ARGX_PlayerCharacter* Character = Cast<ARGX_PlayerCharacter>(ActorInfo->AvatarActor);
-	URGX_CombatAssistComponent* CombatAssistComponent = Character->FindComponentByClass<URGX_CombatAssistComponent>();
+	if (Character)
+	{
+		Character->GetCharacterMovement()->MaxWalkSpeed = 800.0f;
+		Character->GetCharacterMovement()->GravityScale = Character->DefaultGravity;
+		Character->EnableMovementInput();
 
-	Character->GetCharacterMovement()->MaxWalkSpeed = 800.0f;
-	Character->GetCharacterMovement()->GravityScale = Character->DefaultGravity;
-	CombatAssistComponent->DisableMovementVector();
-	CombatAssistComponent->RemoveMovementVector();
-	Character->EnableMovementInput();
+		UCapsuleComponent* CapsuleComponent = Character->GetCapsuleComponent();
+		if (CapsuleComponent)
+		{
+			CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+		}
+	}
 }
