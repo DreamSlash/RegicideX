@@ -5,7 +5,8 @@
 void URGX_ANS_JumpComboSection::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
 {
 	ARGX_PlayerCharacter* Player = Cast<ARGX_PlayerCharacter>(MeshComp->GetOwner());
-	if (Player) {
+	if (Player) 
+	{
 		Player->bCanCombo = true;
 		Player->JumpComboNotifyState = this;
 	}
@@ -13,6 +14,7 @@ void URGX_ANS_JumpComboSection::NotifyBegin(USkeletalMeshComponent* MeshComp, UA
 
 void URGX_ANS_JumpComboSection::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime)
 {
+
 }
 
 void URGX_ANS_JumpComboSection::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
@@ -20,13 +22,11 @@ void URGX_ANS_JumpComboSection::NotifyEnd(USkeletalMeshComponent* MeshComp, UAni
 	ARGX_PlayerCharacter* Player = Cast<ARGX_PlayerCharacter>(MeshComp->GetOwner());
 	if (Player) 
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("Jump Combo Section End. ComboFlag: %s"), Player->bComboFlag ? TEXT("TRUE") : TEXT("FALSE"));
-		if (Player->bComboFlag == false)
+		if (Player->bCanCombo == false)
 		{
 			Player->OnInterrupted();
 		}
 
-		Player->bComboFlag = false;
 		Player->bCanCombo = false;
 		Player->JumpComboNotifyState = nullptr;
 	}

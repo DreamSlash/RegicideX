@@ -68,6 +68,9 @@ class REGICIDEX_API ARGX_PlayerCharacter : public ARGX_CharacterBase
 	/** Check if player is attacking, meaning the player has an active ability with Ability.Melee tag on it. */
 	bool IsAttacking();
 
+	/** Check if during an attack, an input to carry on with the combo has been pressed. */
+	bool bContinueCombo = false;
+
 	// Attributes ---------------
 	UPROPERTY()
 	URGX_MovementAttributeSet* MovementAttributeSet = nullptr;
@@ -82,8 +85,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseLookUpRate;
 
-	bool bComboFlag = false;
-
 	// TODO [REFACTOR]: Move this to AbilitySystemComponent.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<FGameplayTag> PowerSkills;
@@ -95,7 +96,7 @@ public:
 	FGameplayTag CurrentSkillTag;
 
 	/** If ture, it is in window to keep on with the current combo. */
-	UPROPERTY()
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bCanCombo = false;
 
 	/** Holds the AnimNotifyState of the current attack, which has the information for the combo to follow. */

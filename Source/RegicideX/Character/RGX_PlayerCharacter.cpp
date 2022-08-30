@@ -148,7 +148,7 @@ void ARGX_PlayerCharacter::ManageLightAttackInput()
 			// Jump Section for combo
 			if (JumpComboNotifyState->InputID == ERGX_ComboTokenID::LightAttackToken)
 			{
-				bComboFlag = true;
+				bCanCombo = true;
 				/** TODO:
 					Check bIsInAir
 					If in air, if current combo is air combo, try to jump to next attack
@@ -171,7 +171,7 @@ void ARGX_PlayerCharacter::ManageLightAttackInput()
 			// clean state if ability was not activated
 			if (TriggeredAbilities == 0)
 			{
-				bComboFlag = false;
+				bCanCombo = false;
 				ComboSystemComponent->OnEndCombo();
 			}
 			else
@@ -190,7 +190,7 @@ void ARGX_PlayerCharacter::ManageLightAttackInput()
 			// clean state if ability was not activated
 			if (TriggeredAbilities == 0)
 			{
-				bComboFlag = false;
+				bCanCombo = false;
 				ComboSystemComponent->OnEndCombo();
 			}
 		}
@@ -354,7 +354,7 @@ void ARGX_PlayerCharacter::PerformHeavyAttack()
 			// Jump Section for combo
 			if (JumpComboNotifyState->InputID == ERGX_ComboTokenID::HeavyAttackToken)
 			{
-				bComboFlag = true;
+				bCanCombo = true;
 				GetMesh()->GetAnimInstance()->Montage_JumpToSection(JumpComboNotifyState->SectionName);
 			}
 			else
@@ -370,7 +370,7 @@ void ARGX_PlayerCharacter::PerformHeavyAttack()
 		// clean state if ability was not activated
 		if (TriggeredAbilities == 0)
 		{
-			bComboFlag = false;
+			bCanCombo = false;
 			ComboSystemComponent->OnEndCombo();
 		}
 	}
@@ -486,7 +486,7 @@ void ARGX_PlayerCharacter::RemoveGameplayTag(const FGameplayTag& TagToRemove)
 
 void ARGX_PlayerCharacter::OnInterrupted()
 {
-	bComboFlag = false;
+	bCanCombo = false;
 	ComboSystemComponent->OnEndCombo();
 	InputHandlerComponent->ResetAirState();
 	InputHandlerComponent->ResetInputState();
