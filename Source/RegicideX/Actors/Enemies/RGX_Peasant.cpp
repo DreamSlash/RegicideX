@@ -21,6 +21,7 @@ void ARGX_Peasant::BeginPlay()
 
 	AddGameplayTag(FGameplayTag::RequestGameplayTag(TEXT("Status.Alive")));
 	SetActorEnableCollision(true);
+	bDefaultFocusPlayer = true;
 }
 
 void ARGX_Peasant::Tick(float DeltaTime)

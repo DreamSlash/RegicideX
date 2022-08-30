@@ -17,7 +17,6 @@ public:
 
 protected:
 	virtual void OnPossess(APawn* pawn) override;
-	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
 public:
@@ -27,11 +26,6 @@ public:
 
 	UPROPERTY(transient)
 	UBehaviorTreeComponent* BTComponent = nullptr;
-
-	bool bFocusPlayer = true;
-
-	UFUNCTION(BlueprintCallable)
-	void SetFocusPlayer(bool bFocus);
 
 	// Blackboard key ids
 	uint8 TargetActorID;

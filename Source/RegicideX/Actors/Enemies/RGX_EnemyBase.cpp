@@ -67,6 +67,17 @@ void ARGX_EnemyBase::BeginPlay()
 	// For initializing health bar
 	AddStartupGameplayAbilities();
 	HandleHealthChanged(0.0f, FGameplayTagContainer());
+
+	TargetActor = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+
+	if (bDefaultFocusPlayer == true) 
+	{
+		SetFocusPlayer(true);
+	}
+	else
+	{
+		SetFocusPlayer(false);
+	}
 }
 
 void ARGX_EnemyBase::PossessedBy(AController* NewController)
@@ -130,6 +141,25 @@ void ARGX_EnemyBase::StopLogic(const FString& Reason)
 		{
 			BrainComponent->StopLogic(Reason);
 		}
+	}
+}
+
+void ARGX_EnemyBase::SetFocusPlayer(bool bFocus)
+{
+	AAIController* AiController = Cast<AAIController>(GetController());
+
+	if (AiController == nullptr) return;
+
+	if (bFocus == true)
+	{
+		if (TargetActor)
+		{
+			AiController->SetFocus(TargetActor);
+		}
+	}
+	else
+	{
+		AiController->SetFocus(nullptr);
 	}
 }
 

@@ -139,8 +139,14 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void StopLogic(const FString& Reason);
 
+	UFUNCTION(BlueprintCallable)
+	void SetFocusPlayer(bool bFocus);
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bWeak = false;
+
+	UPROPERTY(EditAnywhere)
+	bool bDefaultFocusPlayer = false;
 
 	UFUNCTION(BlueprintCallable)
 	bool IsWeak();

@@ -39,13 +39,6 @@ void ARGX_PeasantController::OnPossess(APawn* pawn)
 	}
 }
 
-void ARGX_PeasantController::BeginPlay()
-{
-	Super::BeginPlay();
-
-	SetFocusPlayer(true);
-}
-
 void ARGX_PeasantController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -62,25 +55,5 @@ void ARGX_PeasantController::Tick(float DeltaTime)
 		BBComponent->SetValueAsFloat("DistanceToPlayer", Peasant->GetDistanceToTarget());
 		BBComponent->SetValueAsInt("IdleAction", Peasant->IdleAction);
 		BBComponent->SetValueAsBool("bFrenzied", bFrenzied);
-	}
-}
-
-void ARGX_PeasantController::SetFocusPlayer(bool bFocus)
-{
-	bFocusPlayer = bFocus;
-	const ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(GetPawn());
-
-	if (Peasant == nullptr) return;
-
-	if (bFocus == true)
-	{
-		if (Peasant->TargetActor)
-		{
-			SetFocus(Peasant->TargetActor);
-		}
-	}
-	else
-	{
-		SetFocus(nullptr);
 	}
 }
