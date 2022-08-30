@@ -101,6 +101,11 @@ void ARGX_EnemyBase::CheckIfWeak(float DamageAmount)
 			EnableInteraction();
 
 		bWeak = true;
+
+		if (HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("Status.Enemy.Weakened")) == false)
+		{
+			AddGameplayTag(FGameplayTag::RequestGameplayTag("Status.Enemy.Weakened"));
+		}
 	}
 }
 
@@ -216,6 +221,7 @@ void ARGX_EnemyBase::HandleDamage(
 	{
 		// If damage killed the actor, we should kill its AI Logic and clean weak status as it is already dead.
 		bWeak = false;
+		RemoveGameplayTag(FGameplayTag::RequestGameplayTag("Status.Enemy.Weakened"));
 		StopAnimMontage(); // If dead, make sure nothing is executing in order to execute death animation from AnimBP.
 		StopLogic("Character Dead");
 		HealthDisplayWidgetComponent->SetVisibility(false);
