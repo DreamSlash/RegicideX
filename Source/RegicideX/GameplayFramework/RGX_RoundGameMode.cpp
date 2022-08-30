@@ -40,20 +40,19 @@ int ARGX_RoundGameMode::GetRound() const
 	return GetGameState<ARGX_ScoreGameState>()->GetRound();
 }
 
-void ARGX_RoundGameMode::StartPlay()
-{
-	StartPlayEvent();
-	TargetActor = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	StartEnemySpawn();
-	Super::StartPlay(); //Must be at the end
-}
-
 void ARGX_RoundGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
 	GetGameState<ARGX_ScoreGameState>()->SetStateDefaults();
-	StartPlay();
+}
+
+void ARGX_RoundGameMode::StartPlay()
+{
+	Super::StartPlay();
+	StartPlayEvent();
+	TargetActor = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	StartEnemySpawn();
 }
 
 void ARGX_RoundGameMode::StartWaveEvent_Implementation()
@@ -65,6 +64,10 @@ void ARGX_RoundGameMode::EndWaveEvent_Implementation()
 }
 
 void ARGX_RoundGameMode::EndGameEvent_Implementation()
+{
+}
+
+void ARGX_RoundGameMode::EnemyDeadEvent_Implementation()
 {
 }
 
@@ -83,16 +86,15 @@ void ARGX_RoundGameMode::StartEnemySpawn()
 		}
 	}
 
+	//UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARGX_PoolSpawner::StaticClass(), EnemySpawners);
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARGX_EnemySpawner::StaticClass(), EnemySpawners);
-
 	GetWorld()->GetTimerManager().SetTimer(SpawnTimerHandle, this, &ARGX_RoundGameMode::StartNewWave, 4.0f, false);
-	//StartNewWave();
 }
+
 void ARGX_RoundGameMode::IncreaseKillCount()
 {
 	KillCount++;
 	SpawnedEnemies--;
-	UE_LOG(LogTemp, Warning, TEXT("Spawned Enemies: %d"), SpawnedEnemies);
 	CheckCurrentWave();
 }
 
@@ -156,7 +158,6 @@ void ARGX_RoundGameMode::SpawnEnemyGroups()
 			SpawnEnemy(DTEnemies->FindRow<FRGX_EnemiesDataTable>(EnemyWaveNames[i], "")->EnemyInfo);
 		}
 	}
-	UE_LOG(LogTemp, Warning, TEXT("Spanwed Enemies in this Rounds: %d"), SpawnedEnemies);
 }
 
 void ARGX_RoundGameMode::SpawnEnemy(UDataAsset* EnemyInfo)
@@ -168,20 +169,23 @@ void ARGX_RoundGameMode::SpawnEnemy(UDataAsset* EnemyInfo)
 		const int Rand = FMath::RandRange(0, EnemySpawners.Num() - 1);
 		if (EnemySpawners[Rand])
 		{
+			//if (ARGX_EnemyBase* Enemy = (Cast<ARGX_PoolSpawner>(EnemySpawners[Rand])->Spawn(EnemyInfoCasted->TypeName)))
 			if (ARGX_EnemyBase* Enemy = (Cast<ARGX_EnemySpawner>(EnemySpawners[Rand])->Spawn(EnemyInfoCasted->EnemyBP)))
 			{
+				Enemy->OnHandleDeathEvent.AddUObject(this, &ARGX_RoundGameMode::OnEnemyDestroyed);
 				Enemy->TargetActor = TargetActor;
 				SpawnedEnemies++;
 			}
 		}
-
 	}
 }
 
-void ARGX_RoundGameMode::OnEnemyDestroyed()
+void ARGX_RoundGameMode::OnEnemyDestroyed(const int EnemyScoreValue)
 {
-	// TODO bind this function to an spawned enemy to be called when destroyed.
 	IncreaseKillCount();
+	ARGX_ScoreGameState* GameStateTemp = GetGameState<ARGX_ScoreGameState>();
+	GameStateTemp->SetScore(GameStateTemp->GetScore() + EnemyScoreValue);
+	EnemyDeadEvent();
 }
 
 void ARGX_RoundGameMode::OnWaveFinished()

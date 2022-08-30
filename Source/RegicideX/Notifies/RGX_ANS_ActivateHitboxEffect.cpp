@@ -13,7 +13,7 @@ void URGX_ANS_ActivateHitboxEffect::NotifyBegin(USkeletalMeshComponent* MeshComp
 	if (HitboxesManagerComponent)
 	{
 		URGX_HitboxComponent* Hitbox = HitboxesManagerComponent->GetHitboxByTag(HitboxTag);
-		Hitbox->ActivateEffect();
+		//Hitbox->ActivateEffect();
 	}
 }
 
@@ -25,6 +25,6 @@ void URGX_ANS_ActivateHitboxEffect::NotifyEnd(USkeletalMeshComponent* MeshComp, 
 	if (HitboxesManagerComponent)
 	{
 		URGX_HitboxComponent* Hitbox = HitboxesManagerComponent->GetHitboxByTag(HitboxTag);
-		Hitbox->DeactivateEffect();
+		//Hitbox->DeactivateEffect();
 	}
 }

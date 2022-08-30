@@ -2,7 +2,7 @@
 #include "RGX_BurstBullet.h"
 #include "AIController.h"
 #include "RegicideX\Actors\Enemies\RGX_Peasant.h"
-#include "RegicideX\Actors\Weapons\RGX_ClusteredBullet.h"
+#include "RegicideX/Actors/Projectiles/RGX_SimpleProjectile.h"
 #include "Kismet/KismetMathLibrary.h"
 
 void URGX_BurstBullet::ActivateAbility(
@@ -34,7 +34,8 @@ void URGX_BurstBullet::OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData
 	if (Counter > NumberProjectilesToFire && Character)
 	{
 		Counter = 0;
-		Character->PlayAnimMontage(MontageToPlay, 1.0f, FName("EndBurstShoot"));
+		//Character->PlayAnimMontage(MontageToPlay, 1.0f, FName("EndBurstShoot"));
+		MontageJumpToSection(FName("EndBurstShoot"));
 	}
 }
 
@@ -50,7 +51,10 @@ void URGX_BurstBullet::EndAbility(
 
 void URGX_BurstBullet::SpawnBullet()
 {
-	ARGX_ClusteredBullet* Bullet = GetWorld()->SpawnActor<ARGX_ClusteredBullet>(BulletBP, Transform);
+	ARGX_Projectile* Bullet = GetWorld()->SpawnActor<ARGX_Projectile>(BulletBP, Transform);
 	if(Bullet)
+	{
 		Bullet->SetGenericTeamId(TeamIdToApply);
+		Bullet->Instigator = GetAvatarActorFromActorInfo();
+	}
 }

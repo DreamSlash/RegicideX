@@ -3,11 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
-#include "AbilitySystemInterface.h"
-#include "GenericTeamAgentInterface.h"
-#include "RegicideX/Interfaces/RGX_GameplayTagInterface.h"
-#include "RegicideX/Interfaces/RGX_InteractInterface.h"
+#include "Blueprint/UserWidget.h"
+#include "GameplayEffect.h"
+#include "RegicideX/Actors/RGX_PoolActor.h"
 #include "RGX_EnemyBase.generated.h"
 
 USTRUCT()
@@ -32,19 +30,29 @@ struct FAttackInfo {
 
 };
 
-class UMCV_AbilitySystemComponent;
-class URGX_HealthAttributeSet;
-class URGX_CombatAttributeSet;
 class USphereComponent;
 class UWidgetComponent;
 class URGX_HitboxesManagerComponent;
 
-UCLASS()
-class REGICIDEX_API ARGX_EnemyBase : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface, public IGenericTeamAgentInterface, public IRGX_InteractInterface
+DECLARE_MULTICAST_DELEGATE_OneParam(FOnHandleDeath, int)
+
+/* Struct to inform about when the attack was received*/
+UCLASS(BlueprintType)
+class REGICIDEX_API ARGX_EnemyBase : public ARGX_PoolActor, public IRGX_InteractInterface
 {
 	GENERATED_BODY()
 
 public:
+	// Sets default values for this character's properties
+	ARGX_EnemyBase();
+
+	virtual void Activate() override;
+	virtual void Deactivate() override;
+
+public:
+	
+	FOnHandleDeath OnHandleDeathEvent;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	AActor* TargetActor;
 
@@ -57,29 +65,30 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float AttackRadius = 700.0f;
 
+	/** The base score all enemies will give to the player when they die. Each class should change its value accordingly. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	int ScoreValue = 10;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	URGX_HitboxesManagerComponent* HitboxesManager = nullptr;
 
 protected:
 
+	/** Target widget component to notify the player this is the enemy on target. */
 	UPROPERTY(VisibleAnywhere)
 	UWidgetComponent* CombatTargetWidgetComponent = nullptr;
-
-	/** Ability System Component to be used */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
-	UMCV_AbilitySystemComponent* AbilitySystemComponent = nullptr;
-
-	UPROPERTY(EditAnywhere)
-	URGX_HealthAttributeSet* HealthAttributeSet = nullptr;
-
-	UPROPERTY(EditAnywhere)
-	URGX_CombatAttributeSet* CombatAttributeSet = nullptr;
-
-	/** Collider used for interacting with this actor */
-	UPROPERTY(EditAnywhere)
-	USphereComponent* InteractionShapeComponent = nullptr;
 
 	/** Health Display Widget */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UWidgetComponent* HealthDisplayWidgetComponent = nullptr;
+
+	/* Percentage of health player must apply as recent damage to weaken enemy */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Abilities)
+	float WeakenPercentage = 0.3f;
+
+	/** Collider used for interacting with this actor */
+	UPROPERTY(EditAnywhere)
+	USphereComponent* InteractionShapeComponent = nullptr;
 
 	// Debug
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
@@ -88,26 +97,31 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float HealthBarHideDistance = 800.0f;
 
-public:
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FGenericTeamId CharacterTeam;
+	float RecentDamageSeconds = 2.0f;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-	URGX_HitboxesManagerComponent* HitboxesManager = nullptr;
+	float RecentDamage;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool bCanBeKnockup = true;
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* AMReactionHit = nullptr;
 
-public:
-	// Sets default values for this character's properties
-	ARGX_EnemyBase();
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* AMAirReactionHit = nullptr;
+
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* AMDeath = nullptr;
 
 protected:
+
 	// Called when the game starts or when spawned
 	void BeginPlay() override;
 
 	void PossessedBy(AController* NewController) override;
+
+	UFUNCTION()
+	void EraseRecentDamage(const float DamageAmount);
+
+	void CheckIfWeak(float DamageAmount);
 
 	// FGenericTeamId interface
 	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
@@ -122,43 +136,34 @@ public:
 	virtual void MoveToTarget(float DeltaTime, FVector TargetPos);
 	// ---------------------
 
+	UFUNCTION(BlueprintCallable)
+	void StopLogic(const FString& Reason);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bWeak = false;
+
+	UFUNCTION(BlueprintCallable)
+	bool IsWeak();
+
 	void EnableInteraction();
+
+	UFUNCTION(BlueprintCallable)
 	void DisableInteraction();
 
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override; 
-
-	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
-
-	virtual void HandleDamage(FAttackInfo info); //TODO: what is this
-
 	/** Events called from attribute set changes to decouple the logic. They call BP events. */
-	virtual void HandleDamage(float DamageAmount, AActor* DamageCauser);
-	virtual void HandleHealthChanged(float DeltaValue);
-	virtual void HandleDeath();
+	virtual void HandleDamage(
+		float DamageAmount,
+		const FHitResult& HitInfo,
+		const struct FGameplayTagContainer& DamageTags,
+		ARGX_CharacterBase* InstigatorCharacter,
+		AActor* DamageCauser) override;
 
-	/* BP events */
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnHandleDamage(float DamageAmount, AActor* DamageCauser);
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnHandleHealthChanged(float DeltaValue);
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnHandleDeath();
-
-	/** GameplayTagAssetInterface methods */
-	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
-	virtual bool HasMatchingGameplayTag(FGameplayTag TagToCheck) const override;
-	virtual bool HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
-	virtual bool HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
-
-	/** RX_GameplayTagInterface methods */
-	virtual void AddGameplayTag(const FGameplayTag& TagToAdd) override;
-
-	virtual void RemoveGameplayTag(const FGameplayTag& TagToRemove) override;
+	virtual void HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags) override;
+	virtual void HandleDeath() override;
 
 	/** Combat assist widget functions */
 	void ShowCombatTargetWidget();

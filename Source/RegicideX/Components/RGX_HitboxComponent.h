@@ -11,6 +11,8 @@
 #include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RGX_HitboxComponent.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRGX_HitboxOverlapDelegate, class AActor*, HitActor);
+
 USTRUCT()
 struct FRGX_HitboxGameplayEvent
 {
@@ -45,63 +47,64 @@ public:
 	URGX_HitboxComponent();
 
 	void BeginPlay() override;
-	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 	void EndPlay(EEndPlayReason::Type EndPlayReason) override;
+	void TickComponent(float DeltaTime, enum ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	/** Activate hitbox for detecting overlaps and set collision preset to dodgeable. */
 	UFUNCTION(BlueprintCallable)
-	void ActivateHitbox();
+	void ActivateHitbox(bool bActivateEffect);
 
+	/** Deactivate hitbox. */
 	UFUNCTION(BlueprintCallable)
 	void DeactivateHitbox();
-	
-	UFUNCTION(BlueprintCallable)
-	void ActivateEffect();
 
-	UFUNCTION(BlueprintCallable)
-	void DeactivateEffect();
-
+	/** Add the tag to the list to activate */
 	UFUNCTION()
-	void SetAbilityEffectsInfo(const FRGX_AbilityEffectsInfo& NewAbilityEffectsInfo);
+	void AddEventTag(const FGameplayTag& NewTag);
 
+	/** Remove the tag from the list to activate */
 	UFUNCTION()
-	void RemoveAbilityEffectsInfo();
-
-	UFUNCTION()
-	void SetGameplayEffectContextHandle(FGameplayEffectContextHandle Handle);
+	void RemoveEventTag(const FGameplayTag& NewTag);
 
 	/* Check if the collider is going to hit the actor in the next frames taking into account 
 		its velocity and position of both actors*/
 	UFUNCTION()
 	bool IsGoingToOverlapActor(AActor* Actor);
 
+public:
+	FRGX_HitboxOverlapDelegate OnHitboxOverlap;
+
 protected:
 
-	void ApplyEffects(AActor* OtherActor);
+	//void ApplyEffects(AActor* OtherActor);
 
 	UFUNCTION(BlueprintCallable)
-	void OnComponentOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
+	void OnComponentOverlap(
+		UPrimitiveComponent* OverlappedComponent, 
+		AActor* OtherActor, 
+		UPrimitiveComponent* OtherComp, 
+		int32 OtherBodyIndex, 
+		bool bFromSweep, 
+		const FHitResult& SweepResult);
+
+	UFUNCTION()
+	void OnComponentEndOverlap(
+		UPrimitiveComponent* OverlappedComponent, 
+		AActor* OtherActor, 
+		UPrimitiveComponent* OtherComp, 
+		int32 OtherBodyIndex);
 
 	void DestroyOwnerOnOverlap();
 
 protected:
 
+	/** Array to store all actors hit by the Hitbox. */
 	UPROPERTY()
 	TArray<AActor*> ActorsHit;
 
+	/** All shapes forming the hitbox component. */
 	UPROPERTY()
 	TArray<UShapeComponent*> Shapes;
-
-	UPROPERTY(EditDefaultsOnly, Category = HitboxComponent)
-	TSubclassOf<UGameplayEffect> DefaultEffectToApply;
-
-	UPROPERTY()
-	TArray<FRGX_HitboxGameplayEvent> DefaultEventsToApply;
-
-	UPROPERTY()
-	FGameplayEffectContextHandle DefaultGameplayEffectContextHandle;
-
-	UPROPERTY()
-	FRGX_AbilityEffectsInfo AbilityEffectsInfo;
 
 	UPROPERTY(EditDefaultsOnly, Category = HitboxComponent)
 	TEnumAsByte<ETeamAttitude::Type> TeamToApply = ETeamAttitude::Hostile;
@@ -115,6 +118,10 @@ protected:
 	UPROPERTY()
 	bool bEffectActivated = false;
 
+	/** Map of gameplay tags to trigger events. */
+	UPROPERTY(/*EditDefaultsOnly, BlueprintReadOnly, Category = HitboxComponent*/)
+	TArray<FGameplayTag> EffectTags;
+
 	/** "This tags do not allow the hitbox effect to get applied to the actor if owned by him." */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = HitboxComponent)
 	FGameplayTagContainer TagsToBlockTheHit;
@@ -126,9 +133,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = HitboxComponent)
 	FName SocketName;
 
-	/* Only used if it has socket*/
+	/* Only used if it has socket. */
 	FVector LastSocketPosition;
 
+	/** Radius to check all actors around and if is going to overlap them. */
 	UPROPERTY(EditDefaultsOnly, Category = HitboxComponent)
 	float CastSphereRadius = 22.0f;	
 
@@ -136,7 +144,6 @@ protected:
 	TEnumAsByte<EObjectTypeQuery> TargetObjectType;
 
 private:
-	bool CheckIfEffectIsApplied(AActor* TargetActor);
 
 	void ResetCustomTimeDilation();
 
@@ -144,3 +151,5 @@ private:
 	TArray<AActor*> ActorsWithTimeDilation;
 	FTimerHandle PunchTimerHandle;
 };
+
+DECLARE_LOG_CATEGORY_EXTERN(LogHitbox, Log, All);

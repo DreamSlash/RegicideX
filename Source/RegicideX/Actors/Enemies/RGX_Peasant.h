@@ -7,6 +7,7 @@
 #include "RGX_EnemyBase.h"
 #include "RGX_Peasant.generated.h"
 
+class URGX_MovementAssistComponent;
 class UBehaviorTree;
 class ARGX_GroupManager;
 
@@ -18,18 +19,11 @@ public:
 
 	ARGX_Peasant();
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	URGX_MovementAssistComponent* MovementAssistComponent;
+
 	UPROPERTY(EditAnywhere)
 	UBehaviorTree* BTree = nullptr;
-
-	// String to show the status in the Text RenderComponent
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FString TextStatusString;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool bInCombat = true;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	int IdleAction;
 
 	UPROPERTY(EditDefaultsOnly)
 	float WanderSpeed = 100.0f;
@@ -37,12 +31,10 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	float MaxSpeed = 400.0f;
 
-	float GetDistanceToTarget() const;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	int IdleAction;
 
-	// Bool to signal if actor is going to get destroyed.
-	bool ToBeDestroyed = false;
-	void HandleDeath() override;
-	void DestroyPeasant();
+	float GetDistanceToTarget() const;
 
 protected:
 
@@ -52,5 +44,9 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
-private:
+	virtual void Activate() override;
+	virtual void Deactivate() override;
+
+	// Bool to signal if actor is going to get destroyed.
+	virtual void HandleDeath() override;
 };

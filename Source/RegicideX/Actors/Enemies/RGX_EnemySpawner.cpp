@@ -27,10 +27,7 @@ void ARGX_EnemySpawner::BeginPlay()
 
 ARGX_EnemyBase* ARGX_EnemySpawner::Spawn(const TSubclassOf<ARGX_EnemyBase> EnemyBP)
 {
-
-	// @todo: Make spawner smarter -> get parameters from Data Asset and preset actor parameters
-	
-	GEngine->AddOnScreenDebugMessage(-1, 20.0f, FColor::Blue, TEXT("Spawning enemy"));
+	// @todo: Make spawner smarter -> get parameters from Data Asset and preset actor parameter
 
 	const FVector Location = FMath::RandPointInBox(SpawnBox) + FVector(150.0f, 150.0f, 300.0f);
 	const FRotator Rotation(0.0f, 0.0f, 0.0f);

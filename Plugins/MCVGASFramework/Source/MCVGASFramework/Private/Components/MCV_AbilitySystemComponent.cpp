@@ -4,23 +4,23 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "AttributeSets/MCV_AttributeSet.h"
 
-void UMCV_AbilitySystemComponent::InitAbilityActorInfo(AActor* InOwnerActor, AActor* InAvatarActor)
-{
-	Super::InitAbilityActorInfo(InOwnerActor, InAvatarActor);
-	
-	if (AbilityActorInfo)
-	{
-		if (UGameInstance* GameInstance = InOwnerActor->GetGameInstance())
-		{
-			// Sign up for possess/unpossess events so that we can update the cached AbilityActorInfo accordingly
-			GameInstance->GetOnPawnControllerChanged().AddDynamic(this, &UMCV_AbilitySystemComponent::OnPawnControllerChanged);
-		}
-	}
-
-	GrantDefaultAbilitiesAndAttributes();
-
-	bIsInitialized = true;
-}
+//void UMCV_AbilitySystemComponent::InitAbilityActorInfo(AActor* InOwnerActor, AActor* InAvatarActor)
+//{
+//	Super::InitAbilityActorInfo(InOwnerActor, InAvatarActor);
+//	
+//	if (AbilityActorInfo)
+//	{
+//		if (UGameInstance* GameInstance = InOwnerActor->GetGameInstance())
+//		{
+//			// Sign up for possess/unpossess events so that we can update the cached AbilityActorInfo accordingly
+//			GameInstance->GetOnPawnControllerChanged().AddDynamic(this, &UMCV_AbilitySystemComponent::OnPawnControllerChanged);
+//		}
+//	}
+//
+//	GrantDefaultAbilitiesAndAttributes();
+//
+//	bIsInitialized = true;
+//}
 
 void UMCV_AbilitySystemComponent::BeginDestroy()
 {

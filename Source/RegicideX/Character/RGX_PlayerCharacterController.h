@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -6,9 +5,6 @@
 #include "GameFramework/PlayerController.h"
 #include "RGX_PlayerCharacterController.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class REGICIDEX_API ARGX_PlayerCharacterController : public APlayerController
 {

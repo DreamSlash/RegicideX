@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "RGX_EnemyBase.h"
 #include "GameFramework/Actor.h"
+//#include "RegicideX/Components/RGX_PoolComponent.h"
 #include "RGX_EnemySpawner.generated.h"
 
 class ARGX_GroupManager;

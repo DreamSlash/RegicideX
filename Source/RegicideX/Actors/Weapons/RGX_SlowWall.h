@@ -48,4 +48,6 @@ private:
 	FTimerHandle DestroyTimerHandle;
 	FTimeline RiseTimeLine;
 
+	float InitialZ = 0.0f;
+
 };

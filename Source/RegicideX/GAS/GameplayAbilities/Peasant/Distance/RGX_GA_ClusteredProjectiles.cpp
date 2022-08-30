@@ -5,7 +5,7 @@
 #include "AIController.h"
 #include "DrawDebugHelpers.h"
 #include "RegicideX\Actors\Enemies\RGX_Peasant.h"
-#include "RegicideX\Actors\Weapons\RGX_ClusteredBullet.h"
+#include "RegicideX/Actors/Projectiles/RGX_Projectile.h"
 
 void URGX_GA_ClusteredProjectiles::ActivateAbility(
 	const FGameplayAbilitySpecHandle Handle, 
@@ -48,8 +48,9 @@ void URGX_GA_ClusteredProjectiles::OnReceivedEvent(
 	for (const auto& Point : PointsToSpawn)
 	{
 		Transform.SetTranslation(Point);
-		ARGX_ClusteredBullet* Bullet = GetWorld()->SpawnActor<ARGX_ClusteredBullet>(BulletBP, Transform);
+		ARGX_Projectile* Bullet = GetWorld()->SpawnActor<ARGX_Projectile>(BulletBP, Transform);
 		Bullet->SetGenericTeamId(TeamIdToApply);
+		Bullet->Instigator = GetAvatarActorFromActorInfo();
 	}
 	PointsToSpawn.Empty();
 }

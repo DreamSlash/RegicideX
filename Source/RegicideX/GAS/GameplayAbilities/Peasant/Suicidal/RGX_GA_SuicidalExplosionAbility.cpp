@@ -10,6 +10,8 @@
 #include "AbilitySystemGlobals.h"
 #include "AbilitySystemComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraFunctionLibrary.h"
+#include "NiagaraComponent.h"
 
 URGX_GA_SuicidalExplosionAbility::URGX_GA_SuicidalExplosionAbility()
 {
@@ -51,6 +53,16 @@ void URGX_GA_SuicidalExplosionAbility::OnFailedAbilityMontage(FGameplayTag Event
 }
 
 void URGX_GA_SuicidalExplosionAbility::OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData)
+{
+	Super::OnReceivedEvent(EventTag, EventData);
+
+	if (EventTag.MatchesTagExact(ExplosionTag))
+	{
+		Explode();
+	}
+}
+
+void URGX_GA_SuicidalExplosionAbility::Explode()
 {
 	const FVector SpawnLocation = CurrentActorInfo->AvatarActor->GetActorLocation();
 	const FRotator SpawnRotation = FRotator(0.0f);
@@ -94,14 +106,21 @@ void URGX_GA_SuicidalExplosionAbility::OnReceivedEvent(FGameplayTag EventTag, FG
 		EventPayload.Instigator = CurrentActorInfo->AvatarActor.Get();
 		EventPayload.OptionalObject = LaunchEventData;
 
-		UAbilitySystemComponent* ACS = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Actor);
-		if (ACS)
+		UAbilitySystemComponent* SourceACS = GetAbilitySystemComponentFromActorInfo();
+		UAbilitySystemComponent* TargetACS = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Actor);
+		if (TargetACS)
 		{
-			ACS->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Launched")), &EventPayload);
+			FGameplayEffectContextHandle ContextHandle = SourceACS->MakeEffectContext();
+			FRGX_GameplayEffectContext* FRGXContext = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
+			FRGXContext->AddInstigator(CurrentActorInfo->AvatarActor.Get(), CurrentActorInfo->AvatarActor.Get());
+			FRGXContext->OptionalObject = Payload;
+
+			TargetACS->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Launched")), &EventPayload);
+			SourceACS->ApplyGameplayEffectToTarget(EffectToApply->GetDefaultObject<UGameplayEffect>(), TargetACS, 1.0f, ContextHandle);
 		}
 	}
 
-	UGameplayStatics::SpawnEmitterAtLocation(CurrentActorInfo->AvatarActor->GetWorld(), ExplosionVFX, CurrentActorInfo->AvatarActor->GetTransform());
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionVFX, SpawnLocation, SpawnRotation);
 
 	FGameplayEventData DeadEventPayload;
 	GetAbilitySystemComponentFromActorInfo()->ApplyGameplayEffectToSelf(InstantDeathEffect->GetDefaultObject<UGameplayEffect>(), 1, GetAbilitySystemComponentFromActorInfo()->MakeEffectContext());

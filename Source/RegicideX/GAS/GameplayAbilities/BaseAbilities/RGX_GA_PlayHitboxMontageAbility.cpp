@@ -4,7 +4,6 @@
 #include "RGX_GA_PlayHitboxMontageAbility.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "RegicideX/Components/RGX_HitboxesManagerComponent.h"
 #include "RegicideX/Components/RGX_CombatAssistComponent.h"
 #include "RegicideX/Character/RGX_PlayerCharacter.h"
@@ -12,7 +11,7 @@
 
 URGX_PlayHitboxMontageAbility::URGX_PlayHitboxMontageAbility()
 {
-
+	//EventTagContainer.AddTag(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Montage")));
 }
 
 bool URGX_PlayHitboxMontageAbility::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const
@@ -36,58 +35,67 @@ void URGX_PlayHitboxMontageAbility::ActivateAbility(
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData); // Parent already calls CommitAbility function
 
-	URGX_HitboxesManagerComponent* HitboxManagerComponent = ActorInfo->AvatarActor->FindComponentByClass<URGX_HitboxesManagerComponent>();
-
-	URGX_HitboxComponent* Hitbox = HitboxManagerComponent->GetHitboxByTag(HitboxTag);
-	if (Hitbox)
-	{
-		// TODO: Use this line to create a context with the ability spec so the effects can access its information, like ability level or a struct with custom information
-		FGameplayEffectContextHandle ContextHandle = MakeEffectContext(GetCurrentAbilitySpecHandle(), ActorInfo);
-		FRGX_GameplayEffectContext* Context = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
-		PopulateGameplayEffectContext(*Context);
-
-		FRGX_AbilityEffectsInfo AbilityEffectsInfo;
-		AbilityEffectsInfo.EffectContextHandle = ContextHandle;
-		AbilityEffectsInfo.GameplayEffectsToTarget = EffectsToApplyToTarget;
-		AbilityEffectsInfo.GameplayEffectsToOwner = EffectsToApplyToOwner;
-		AbilityEffectsInfo.GameplayEventsToTarget = EventsToApplyToTarget;
-		AbilityEffectsInfo.GameplayEventsToOwner = EventsToApplyToOwner;
-		Hitbox->SetAbilityEffectsInfo(AbilityEffectsInfo);
-	}
-	else
-	{
-		UE_LOG(LogTemp, Error, TEXT("Hitbox sent to ability does not exist"));
-		EndAbility(Handle, ActorInfo, ActivationInfo, false, true);
-	}
-
-	UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, MontageToPlay, PlayRatio, StartSectionName, true);
-	PlayMontageTask->OnBlendOut.AddDynamic(this, &URGX_PlayHitboxMontageAbility::OnMontageFinished);
-	PlayMontageTask->OnCancelled.AddDynamic(this, &URGX_PlayHitboxMontageAbility::OnMontageFinished);
-	PlayMontageTask->OnCompleted.AddDynamic(this, &URGX_PlayHitboxMontageAbility::OnMontageFinished);
-	PlayMontageTask->OnInterrupted.AddDynamic(this, &URGX_PlayHitboxMontageAbility::OnMontageFinished);
-	PlayMontageTask->ReadyForActivation();
+	// Play a montage that will trigger OnReceivedEvent callback if a GameplayEvent.Montage tag is called to be handled.
+	PlayMontageAndWaitForEventTask = URGX_PlayMontageAndWaitForEvent::PlayMontageAndWaitForEvent(
+		this, NAME_None, MontageToPlay, EventTagContainer, PlayRate, StartSectionName, true);
+	PlayMontageAndWaitForEventTask->OnInterrupted.AddDynamic(this, &URGX_PlayHitboxMontageAbility::OnMontageFinished);
+	PlayMontageAndWaitForEventTask->OnBlendOut.AddDynamic(this, &URGX_PlayHitboxMontageAbility::OnMontageFinished);
+	PlayMontageAndWaitForEventTask->OnCancelled.AddDynamic(this, &URGX_PlayHitboxMontageAbility::OnMontageFinished);
+	PlayMontageAndWaitForEventTask->OnCompleted.AddDynamic(this, &URGX_PlayHitboxMontageAbility::OnMontageFinished);
+	PlayMontageAndWaitForEventTask->EventReceived.AddDynamic(this, &URGX_PlayHitboxMontageAbility::OnReceivedEvent);
+	PlayMontageAndWaitForEventTask->ReadyForActivation();
 }
 
 void URGX_PlayHitboxMontageAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	URGX_HitboxesManagerComponent* HitboxManagerComponent = ActorInfo->AvatarActor->FindComponentByClass<URGX_HitboxesManagerComponent>();
-	URGX_HitboxComponent* Hitbox = HitboxManagerComponent->GetHitboxByTag(HitboxTag);
-	if (Hitbox)
-	{
-		Hitbox->RemoveAbilityEffectsInfo();
-	}
-
-	//UE_LOG(LogTemp, Warning, TEXT("Remove Ability Effects\n"));
-
 	Super::EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
-void URGX_PlayHitboxMontageAbility::OnMontageFinished()
+void URGX_PlayHitboxMontageAbility::OnMontageFinished(FGameplayTag EventTag, FGameplayEventData EventData)
 {
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
 }
 
+void URGX_PlayHitboxMontageAbility::OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData)
+{
+	AActor* OwnerActor = GetOwningActorFromActorInfo();
+	ARGX_CharacterBase* OwnerCharacter = Cast<ARGX_CharacterBase>(OwnerActor);
+	UAbilitySystemComponent* OwnerACS = OwnerCharacter->GetAbilitySystemComponent();
+	const ARGX_CharacterBase* TargetCharacter = Cast<ARGX_CharacterBase>(EventData.Target);
+	UAbilitySystemComponent* TargetACS = TargetCharacter ? TargetCharacter->GetAbilitySystemComponent() : nullptr;
+
+	// TODO: Correct the ACS that apply the effects
+	// Find the effect mapped to the triggering event tag to apply to target.
+	if (EffectToApplyToTargetWithPayload.Contains(EventTag) && TargetACS)
+	{
+		TSubclassOf<UGameplayEffect> GameplayEffectToApply = EffectToApplyToTargetWithPayload.Find(EventTag)->EffectToApply;
+		FGameplayEffectSpecHandle GameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(GameplayEffectToApply, OwnerCharacter->GetCharacterLevel());
+
+		FGameplayEffectContextHandle EffectContext = MakeEffectContext(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo());
+		FRGX_GameplayEffectContext* GameplayEffectContext = static_cast<FRGX_GameplayEffectContext*>(EffectContext.Get());
+		GameplayEffectContext->OptionalObject = EffectToApplyToTargetWithPayload.Find(EventTag)->Payload;
+
+		FGameplayEffectSpec* GESpec = GameplayEffectSpecHandle.Data.Get();
+		GESpec->SetContext(EffectContext);
+		TargetACS->ApplyGameplayEffectSpecToSelf(*GESpec);
+	}
+
+	// Apply own effects, such as cooldowns.
+	if (EffectToApplyToOwnerWithPayload.Contains(EventTag) && OwnerACS)
+	{
+		TSubclassOf<UGameplayEffect> GameplayEffectToApply = EffectToApplyToOwnerWithPayload.Find(EventTag)->EffectToApply;
+		FGameplayEffectSpecHandle GameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(GameplayEffectToApply, OwnerCharacter->GetCharacterLevel());
+
+		FGameplayEffectContextHandle EffectContext = MakeEffectContext(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo());
+		FRGX_GameplayEffectContext* GameplayEffectContext = static_cast<FRGX_GameplayEffectContext*>(EffectContext.Get());
+		GameplayEffectContext->OptionalObject = EffectToApplyToOwnerWithPayload.Find(EventTag)->Payload;
+
+		FGameplayEffectSpec* GESpec = GameplayEffectSpecHandle.Data.Get();
+		GESpec->SetContext(EffectContext);
+		OwnerACS->ApplyGameplayEffectSpecToSelf(*GESpec);
+	}
+}
+
 void URGX_PlayHitboxMontageAbility::PopulateGameplayEffectContext(FRGX_GameplayEffectContext& GameplayEffectContext)
 {
-
 }

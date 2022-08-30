@@ -3,15 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "RegicideX/GAS/GameplayAbilities/RGX_GameplayAbility.h"
+#include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GameplayAbility.h"
+#include "RegicideX/GAS/AbilityTasks/RGX_AT_PlayMontageAndWaitForEvent.h"
 #include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RegicideX/GAS/RGX_GameplayEffectContext.h"
 #include "RGX_GA_PlayHitboxMontageAbility.generated.h"
 
-//struct FRGX_GameplayEffectContext;
-/**
- * 
- */
 UCLASS()
 class REGICIDEX_API URGX_PlayHitboxMontageAbility : public URGX_GameplayAbility
 {
@@ -22,6 +19,8 @@ public:
 	URGX_PlayHitboxMontageAbility();
 	virtual ~URGX_PlayHitboxMontageAbility() {}
 
+	UPROPERTY()
+	class URGX_PlayMontageAndWaitForEvent* PlayMontageAndWaitForEventTask = nullptr;
 
 protected:
 	bool CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags = nullptr, const FGameplayTagContainer* TargetTags = nullptr, OUT FGameplayTagContainer* OptionalRelevantTags = nullptr) const;
@@ -33,42 +32,40 @@ protected:
 protected:
 	/* If it is overriden, Base version sould be called at the end of the overrided version */
 	UFUNCTION()
-	virtual void OnMontageFinished();
+	virtual void OnMontageFinished(FGameplayTag EventTag, FGameplayEventData EventData);
+
+	UFUNCTION()
+	virtual void OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData);
 
 	UFUNCTION()
 	virtual void PopulateGameplayEffectContext(FRGX_GameplayEffectContext& GameplayEffectContext);
 
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FName DamageCurveName;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FName AttributeScalingCurveName;
-
-	UPROPERTY(EditAnywhere)
-	UCurveTable* DamageLevelCurve = nullptr;
-
+	// Montage ability will play.
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UAnimMontage* MontageToPlay;
 
+	// Section of the montage in case we do not want to play from the beginning.
 	UPROPERTY(EditAnywhere)
 	FName StartSectionName;
 
 	UPROPERTY(EditAnywhere)
-	float PlayRatio = 1.0f;
+	float PlayRate = 1.0f;
 
+	// The tag pointing to the hitbox component. This is the hitbox that will be affected by this ability.
 	UPROPERTY(EditAnywhere)
 	FGameplayTag HitboxTag;
 
-	UPROPERTY(EditDefaultsOnly)
-	TArray<TSubclassOf<UGameplayEffect>> EffectsToApplyToTarget;
+	// Review if the tag should be flexible or hardcoded to GameplayEvent.Montage
+	// The Tag for the montage to wait for. It may be hardcoded to GameplayEvent.Montage at the moment ...
+	UPROPERTY(EditAnywhere)
+	FGameplayTagContainer EventTagContainer; // = FGameplayTagContainer(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Montage")));
 
+	// A map of a tag that should trigger a gameplay effect with assigned payload to the target.
 	UPROPERTY(EditDefaultsOnly)
-	TArray<TSubclassOf<UGameplayEffect>> EffectsToApplyToOwner;
+	TMap<FGameplayTag, FRGX_EffectContextContainer> EffectToApplyToTargetWithPayload;
 
+	// A map of a tag that should trigger a gameplay effect with assigned payload to ability owner.
 	UPROPERTY(EditDefaultsOnly)
-	TArray<URGX_RGXEventDataAsset*> EventsToApplyToTarget;
-
-	UPROPERTY(EditDefaultsOnly)
-	TArray<URGX_RGXEventDataAsset*> EventsToApplyToOwner;
+	TMap<FGameplayTag, FRGX_EffectContextContainer> EffectToApplyToOwnerWithPayload;
 };

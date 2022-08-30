@@ -7,6 +7,7 @@
 #include "AbilitySystemGlobals.h"
 #include "Components/DecalComponent.h"
 #include "Components/SphereComponent.h"
+#include "DrawDebugHelpers.h"
 #include "GameplayTags.h"
 #include "Kismet/GameplayStatics.h"
 #include "Materials/MaterialInstanceDynamic.h"
@@ -15,7 +16,7 @@
 
 // Sets default values
 ARGX_GroundExplosion::ARGX_GroundExplosion()
-	: AActor()
+	: ARGX_EffectApplierActor()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -76,16 +77,22 @@ void ARGX_GroundExplosion::Explode()
 
 	for (AActor* Actor : OverlappedActors)
 	{
-		if (UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Actor, true))
+		if (OnPlayerOverlaps(Actor))
 		{
-			if (ASC->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("PossessedBy.Player")))
-			{
-				ASC->ApplyGameplayEffectToSelf(ExplosionEffect->GetDefaultObject<UGameplayEffect>(), 1.0, ASC->MakeEffectContext());
-			}
+
 		}
 	}
 
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionVFX, GetActorLocation(), GetActorRotation(), FVector(3.0f, 3.0f, 1.0f));
+	// Fix Z to hit the ground
+	FHitResult result;
+	FVector location = GetActorLocation();
+	DrawDebugLine(GetWorld(), location, location * FVector(1, 1, -1), FColor(255, 0, 0), true, 5.0f, 0, 5.0f);
+	if (GetWorld()->LineTraceSingleByChannel(result, location, location * FVector(1, 1, -1), ECollisionChannel::ECC_WorldStatic))
+	{
+		location.Z = result.ImpactPoint.Z;
+	}
+
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionVFX, location, GetActorRotation(), FVector(3.0f, 3.0f, 1.0f));
 
 	Destroy();
 }

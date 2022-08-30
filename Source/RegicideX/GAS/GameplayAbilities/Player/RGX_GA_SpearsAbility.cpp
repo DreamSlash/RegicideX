@@ -1,5 +1,6 @@
 #include "RGX_GA_SpearsAbility.h"
 #include "GameFramework/Character.h"
+#include "RegicideX/Character/RGX_PlayerCharacter.h"
 #include "RegicideX/Actors/RGX_SpearProjectile.h"
 #include "RegicideX/GAS/RGX_GameplayEffectContext.h"
 #include "Components/MCV_AbilitySystemComponent.h"
@@ -61,19 +62,17 @@ void URGX_SpearsAbility::CastSpearsAttack(AActor* CasterActor)
 
 		ARGX_SpearProjectile* SpawnedSpear = GetWorld()->SpawnActor<ARGX_SpearProjectile>(SpearProjectileClass, SpawnLocation, SpawnRotation);
 		SpawnedSpear->Angle = SpearAngle;
-		SpawnedSpear->Caster = CasterActor;
+		SpawnedSpear->Instigator = CasterActor;
 
 		FGameplayEffectContextHandle ContextHandle = MakeEffectContext(GetCurrentAbilitySpecHandle(), CurrentActorInfo);
 		FRGX_GameplayEffectContext* Context = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
-		Context->DamageAmount = SpawnedSpear->BaseDamage;
 		Context->ScalingAttributeFactor = 1.0f;
 
 		URGX_HitboxComponent* HitboxComponent = SpawnedSpear->FindComponentByClass<URGX_HitboxComponent>();
-		HitboxComponent->SetGameplayEffectContextHandle(ContextHandle);
 
 		if (const IGenericTeamAgentInterface* TeamAgent = Cast<IGenericTeamAgentInterface>(CasterActor))
 		{
-			SpawnedSpear->CharacterTeam = TeamAgent->GetGenericTeamId();
+			SpawnedSpear->SetGenericTeamId(TeamAgent->GetGenericTeamId());
 		}
 
 		SpearsArray.Add(SpawnedSpear);

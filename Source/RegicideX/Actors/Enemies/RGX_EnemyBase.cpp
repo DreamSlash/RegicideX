@@ -2,16 +2,20 @@
 
 
 #include "RGX_EnemyBase.h"
+#include "AIController.h"
+#include "BrainComponent.h"
 #include "Components/MCV_AbilitySystemComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
-#include "RegicideX/GAS/AttributeSets/RGX_HealthAttributeSet.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "RegicideX/GameplayFramework/RGX_RoundGameMode.h"
 #include "AbilitySystemGlobals.h"
 #include "RegicideX/Components/RGX_HitboxesManagerComponent.h"
 #include "RegicideX/UI/RGX_EnemyHealthBar.h"
+#include "RegicideX/Components/RGX_InteractComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "Animation/AnimInstance.h"
 
 // Sets default values
 ARGX_EnemyBase::ARGX_EnemyBase()
@@ -24,16 +28,30 @@ ARGX_EnemyBase::ARGX_EnemyBase()
 	HealthDisplayWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthDisplayWidgetComponent"));
 	HealthDisplayWidgetComponent->SetupAttachment(RootComponent);
 
-	AbilitySystemComponent = CreateDefaultSubobject<UMCV_AbilitySystemComponent>(TEXT("AbilitySystemComponent"));
 	InteractionShapeComponent = CreateDefaultSubobject<USphereComponent>(TEXT("InteractionShapeComponent"));
 	InteractionShapeComponent->SetupAttachment(RootComponent);
-
-	HealthAttributeSet = CreateDefaultSubobject<URGX_HealthAttributeSet>(TEXT("HealthAttributeSet"));
 
 	DebugAttributesWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("DebugAttributesWidgetComponent"));
 	DebugAttributesWidgetComponent->SetupAttachment(RootComponent);
 
 	HitboxesManager = CreateDefaultSubobject<URGX_HitboxesManagerComponent>(TEXT("HitboxesManager"));
+
+	bAbilitiesInitialized = false;
+}
+
+void ARGX_EnemyBase::Activate()
+{
+	Super::Activate();
+
+	//HealthDisplayWidgetComponent->SetVisibility(true);
+	//AddStartupGameplayAbilities();
+}
+
+void ARGX_EnemyBase::Deactivate()
+{
+	Super::Deactivate();
+	GetMesh()->bPauseAnims = true;
+	RemoveStartupGameplayAbilities();
 }
 
 // Called when the game starts or when spawned
@@ -47,13 +65,43 @@ void ARGX_EnemyBase::BeginPlay()
 	HideCombatTargetWidget();
 
 	// For initializing health bar
-	HandleHealthChanged(0.0f);
+	AddStartupGameplayAbilities();
+	HandleHealthChanged(0.0f, FGameplayTagContainer());
 }
 
 void ARGX_EnemyBase::PossessedBy(AController* NewController)
 {
 	Super::PossessedBy(NewController);
 	AddGameplayTag(FGameplayTag::RequestGameplayTag("RGXCharacter.Enemy"));
+}
+
+void ARGX_EnemyBase::EraseRecentDamage(const float DamageAmount)
+{
+	RecentDamage -= DamageAmount;
+}
+
+void ARGX_EnemyBase::CheckIfWeak(float DamageAmount)
+{
+	// Execution Damage percentage
+	RecentDamage += DamageAmount;
+
+	FTimerDelegate TimerDel;
+	FTimerHandle TimerHandle;
+	TimerDel.BindUFunction(this, FName("EraseRecentDamage"), DamageAmount);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, 2.f, false);
+
+	const float MaxHealth = AbilitySystemComponent->GetNumericAttribute(AttributeSet->GetMaxHealthAttribute());
+	const float CurrentHealth = AbilitySystemComponent->GetNumericAttribute(AttributeSet->GetHealthAttribute());
+	const float RecentDamageAsHealthPercentage = RecentDamage / MaxHealth;
+	const float HealthAsPercentage = CurrentHealth / MaxHealth;
+	UE_LOG(LogTemp, Warning, TEXT("Percentage Recent Damage: %f\n"), RecentDamageAsHealthPercentage);
+	if (/*RecentDamageAsHealthPercentage >= WeakenPercentage || */HealthAsPercentage < WeakenPercentage)
+	{
+		if (CanBeInteractedWith(nullptr) == false)
+			EnableInteraction();
+
+		bWeak = true;
+	}
 }
 
 void ARGX_EnemyBase::MoveToTarget(float DeltaTime, FVector TargetPos)
@@ -65,6 +113,24 @@ void ARGX_EnemyBase::MoveToTarget(float DeltaTime, FVector TargetPos)
 		FVector NewLocation = CurrentLocation + MyFront * MoveSpeed * DeltaTime;
 		this->SetActorLocation(NewLocation);
 	}
+}
+
+void ARGX_EnemyBase::StopLogic(const FString& Reason)
+{
+	AAIController* AiController = Cast<AAIController>(GetController());
+	if (AiController)
+	{
+		UBrainComponent* BrainComponent = AiController->GetBrainComponent();
+		if (BrainComponent)
+		{
+			BrainComponent->StopLogic(Reason);
+		}
+	}
+}
+
+bool ARGX_EnemyBase::IsWeak()
+{
+	return bWeak;
 }
 
 void ARGX_EnemyBase::EnableInteraction()
@@ -97,8 +163,7 @@ void ARGX_EnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	const bool bIsDead = HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.Dead")));
-	if (bIsDead == true)
+	if (IsAlive() == false)
 		return;
 
 	if (TargetActor)
@@ -116,53 +181,76 @@ void ARGX_EnemyBase::Tick(float DeltaTime)
 	}
 }
 
-// Called to bind functionality to input
-void ARGX_EnemyBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void ARGX_EnemyBase::HandleDamage(
+	float DamageAmount,
+	const FHitResult& HitInfo,
+	const struct FGameplayTagContainer& DamageTags,
+	ARGX_CharacterBase* InstigatorCharacter,
+	AActor* DamageCauser)
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
+	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser);
+
+	if (IsAlive())
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Is Alive"));
+		CheckIfWeak(DamageAmount);
+
+		if (IsWeak())
+		{
+			StopAnimMontage();
+		}
+		else
+		{
+			// Play reaction hit animation.
+			if (GetMovementComponent()->IsFalling())
+			{
+				PlayAnimMontage(AMAirReactionHit);
+			}
+			else
+			{
+				PlayAnimMontage(AMReactionHit);
+			}
+		}
+	}
+	else
+	{
+		// If damage killed the actor, we should kill its AI Logic and clean weak status as it is already dead.
+		bWeak = false;
+		StopAnimMontage(); // If dead, make sure nothing is executing in order to execute death animation from AnimBP.
+		StopLogic("Character Dead");
+		HealthDisplayWidgetComponent->SetVisibility(false);
+		PlayAnimMontage(AMDeath);
+	}
 }
 
-UAbilitySystemComponent* ARGX_EnemyBase::GetAbilitySystemComponent() const
+void ARGX_EnemyBase::HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags)
 {
-	return AbilitySystemComponent;
-}
+	Super::HandleHealthChanged(DeltaValue, EventTags);
 
-void ARGX_EnemyBase::HandleDamage(FAttackInfo info)
-{
-}
-
-void ARGX_EnemyBase::HandleDamage(float DamageAmount, AActor* DamageCauser)
-{
-	OnHandleDamage(DamageAmount, DamageCauser);
-}
-
-void ARGX_EnemyBase::HandleHealthChanged(float DeltaValue)
-{
-	UMCV_AbilitySystemComponent* ACS = Cast<UMCV_AbilitySystemComponent>(AbilitySystemComponent);
-	URGX_EnemyHealthBar* HealthBar = Cast<URGX_EnemyHealthBar>(HealthDisplayWidgetComponent->GetWidget());
+	UMCV_AbilitySystemComponent* ACS	= Cast<UMCV_AbilitySystemComponent>(AbilitySystemComponent);
+	URGX_EnemyHealthBar* HealthBar		= Cast<URGX_EnemyHealthBar>(HealthDisplayWidgetComponent->GetWidget());
 	if (HealthBar)
 	{
-		HealthBar->MaxHealth = ACS->GetNumericAttribute(HealthAttributeSet->GetMaxHealthAttribute());
-		HealthBar->CurrentHealth = ACS->GetNumericAttribute(HealthAttributeSet->GetHealthAttribute());
+		HealthBar->MaxHealth		= ACS->GetNumericAttribute(AttributeSet->GetMaxHealthAttribute());
+		HealthBar->CurrentHealth	= ACS->GetNumericAttribute(AttributeSet->GetHealthAttribute());
 	}
 
 	// Only call BP event if ACS is initialized
 	if (ACS->bIsInitialized == true)
 	{
-		OnHandleHealthChanged(DeltaValue);
+		OnHealthChanged(DeltaValue, EventTags);
 	}
 }
 
 void ARGX_EnemyBase::HandleDeath()
 {
-	OnHandleDeath();
-	ARGX_RoundGameMode* RoundGameMode = Cast<ARGX_RoundGameMode>(UGameplayStatics::GetGameMode(GetWorld()));
-	if (RoundGameMode)
-	{
-		RoundGameMode->IncreaseKillCount();
-	}
-	//RoundGameMode->WaveManager->OnEnemyDestroyed();
-	HealthDisplayWidgetComponent->SetVisibility(false);
+	Super::HandleDeath();
+
+	UE_LOG(LogTemp, Log, TEXT("Entering HandleDeath()"));
+	OnHandleDeathEvent.Broadcast(ScoreValue);
+
+	UE_LOG(LogTemp, Log, TEXT("Destroying actor..."));
+	Destroy();
 }
 
 void ARGX_EnemyBase::SetGenericTeamId(const FGenericTeamId& TeamID)
@@ -173,36 +261,6 @@ void ARGX_EnemyBase::SetGenericTeamId(const FGenericTeamId& TeamID)
 FGenericTeamId ARGX_EnemyBase::GetGenericTeamId() const
 {
 	return CharacterTeam;
-}
-
-void ARGX_EnemyBase::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
-{
-	AbilitySystemComponent->GetOwnedGameplayTags(TagContainer);
-}
-
-bool ARGX_EnemyBase::HasMatchingGameplayTag(FGameplayTag TagToCheck) const
-{
-	return AbilitySystemComponent->HasMatchingGameplayTag(TagToCheck);
-}
-
-bool ARGX_EnemyBase::HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const
-{
-	return AbilitySystemComponent->HasAllMatchingGameplayTags(TagContainer);
-}
-
-bool ARGX_EnemyBase::HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const
-{
-	return AbilitySystemComponent->HasAnyMatchingGameplayTags(TagContainer);
-}
-
-void ARGX_EnemyBase::AddGameplayTag(const FGameplayTag& TagToAdd)
-{
-	AbilitySystemComponent->AddLooseGameplayTag(TagToAdd);
-}
-
-void ARGX_EnemyBase::RemoveGameplayTag(const FGameplayTag& TagToRemove)
-{
-	AbilitySystemComponent->RemoveLooseGameplayTag(TagToRemove);
 }
 
 void ARGX_EnemyBase::ShowCombatTargetWidget()
@@ -231,18 +289,22 @@ void ARGX_EnemyBase::Interact(AActor* ActorInteracting)
 
 void ARGX_EnemyBase::StartCanInteract(AActor* ActorInteracting)
 {
-	// TODO: Show Widget
+	URGX_InteractComponent* InteractComponent = ActorInteracting->FindComponentByClass<URGX_InteractComponent>();
+	FString Text = "Execute";
+	InteractComponent->SetInteractionText(FText::FromString(Text));
+	InteractComponent->ShowInteractWidget();
 }
 
 void ARGX_EnemyBase::StopCanInteract(AActor* ActorInteracting)
 {
-	// TODO: Hide Widget
+	URGX_InteractComponent* InteractComponent = ActorInteracting->FindComponentByClass<URGX_InteractComponent>();
+	InteractComponent->HideInteractWidget();
 }
 
 bool ARGX_EnemyBase::CanBeInteractedWith(AActor* ActorInteracting)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Can be interacted with\n"));
-	return InteractionShapeComponent->IsCollisionEnabled();
+	return InteractionShapeComponent->IsCollisionEnabled() && IsAlive();
 }
 
 bool ARGX_EnemyBase::IsInFrustum()

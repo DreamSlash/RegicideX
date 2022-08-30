@@ -6,6 +6,7 @@
 #include "GameFramework/GameModeBase.h"
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 #include "RegicideX/Actors/Enemies/RGX_EnemySpawner.h"
+#include "RegicideX/Actors/RGX_PoolSpawner.h"
 #include "RegicideX/Data/RGX_RoundDataTable.h"
 
 #include "RGX_RoundGameMode.generated.h"
@@ -77,13 +78,16 @@ public:
 	void StartPlayEvent();
 
 	UFUNCTION(BlueprintNativeEvent, DisplayName = "StartWaveEvent")
-		void StartWaveEvent();
+	void StartWaveEvent();
 
 	UFUNCTION(BlueprintNativeEvent, DisplayName = "EndWaveEvent")
-		void EndWaveEvent();
+	void EndWaveEvent();
 
 	UFUNCTION(BlueprintNativeEvent, DisplayName = "EndGameEvent")
-		void EndGameEvent();
+	void EndGameEvent();
+
+	UFUNCTION(BlueprintNativeEvent, DisplayName = "OnEnemyDeadEvent")
+	void EnemyDeadEvent();
 
 	UFUNCTION()
 	void StartEnemySpawn();
@@ -105,7 +109,8 @@ private:
 
 	void SpawnEnemy(UDataAsset* EnemyInfo);
 
-	void OnEnemyDestroyed();
+	UFUNCTION()
+	void OnEnemyDestroyed(int EnemyScoreValue);
 
 	void OnWaveFinished();
 };

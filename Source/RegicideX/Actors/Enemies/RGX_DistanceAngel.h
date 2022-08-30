@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "RGX_EnemyBase.h"
+#include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RGX_DistanceAngel.generated.h"
 
 /**
@@ -15,6 +16,8 @@ class UStaticMeshComponent;
 class USphereComponent;
 class UMaterialInterface;
 class UMaterialInstanceDynamic;
+class URGX_HitboxComponent;
+class UGameplayEffect;
 
 UCLASS()
 class REGICIDEX_API ARGX_DistanceAngel : public ARGX_EnemyBase
@@ -34,13 +37,26 @@ public:
 		UStaticMeshComponent* Ring_2_Mesh = nullptr;
 
 	UPROPERTY(EditAnywhere)
-		UStaticMeshComponent* Ring_3_Mesh = nullptr;
+		UStaticMeshComponent* BulletHellSphere = nullptr;
+
+	UPROPERTY(EditAnywhere)
+		USphereComponent* BulletHellSphereCollider = nullptr;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		URGX_HitboxComponent* BHHitboxComponent = nullptr;
 
 	UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* LaserEndPointMesh = nullptr;
 
+
+	UPROPERTY(EditAnywhere)
+		UStaticMeshComponent* BulletHellOutSphere = nullptr;
+
 	UPROPERTY(EditAnywhere)
 		USphereComponent* SphereCollider = nullptr;
+
+	UPROPERTY(EditAnywhere)
+		USceneComponent* FloorReturnPlace = nullptr;
 
 	UPROPERTY(EditAnywhere)
 		TArray<FVector> BombingPoints;
@@ -69,6 +85,10 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 		bool Invincible = false;
 
+	/* Effects the projectile applies when hitting a target */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+		TArray<FRGX_EffectContextContainer> ForceFieldEffectsToApply;
+
 	AActor* LaserBeamRef = nullptr;
 
 	UMaterialInterface* MaterialInterface = nullptr;
@@ -84,6 +104,8 @@ public:
 	void MoveToTarget(float DeltaTime, FVector TargetPos) override;
 
 	void RotateToTarget(float DeltaTime) override;
+
+	void ForceRotateToTarget();
 
 	void RotateRings(float DeltaTime);
 
@@ -112,4 +134,19 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void ChangeEyeColor(FLinearColor Color);
 
+	UFUNCTION(BlueprintCallable)
+		FVector GetEyeWorldLocation();
+
+	// Overridable Events
+	virtual void HandleDamage(
+		float DamageAmount,
+		const FHitResult& HitInfo,
+		const struct FGameplayTagContainer& DamageTags,
+		ARGX_CharacterBase* InstigatorCharacter,
+		AActor* DamageCauser) override;
+
+	UFUNCTION(BlueprintCallable)
+		void ApplyForceFieldEffects(AActor* OtherActor);
+
+	virtual void HandleDeath() override;
 };

@@ -1,29 +1,25 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GameFramework/Character.h"
-#include "GameplayTags.h"
-#include "AbilitySystemInterface.h"
 #include "Components/MCV_AbilitySystemComponent.h"
+#include "GameplayTags.h"
+#include "RegicideX/Actors/RGX_CharacterBase.h"
 #include "RegicideX/Components/RGX_CombatAssistComponent.h"
-#include "RegicideX/Interfaces/RGX_GameplayTagInterface.h"
 #include "RegicideX/Enums/RGX_InputEnums.h"
-#include "GenericTeamAgentInterface.h"
-
 #include "RGX_PlayerCharacter.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
 class URGX_AbilitySystemComponent;
+class URGX_ANS_JumpComboSection;
 class URGX_ComboSystemComponent;
 class URGX_CombatAssistComponent;
 class URGX_InputHandlerComponent;
-class URGX_HealthAttributeSet;
 class URGX_MovementAttributeSet;
-class URGX_CombatAttributeSet;
 class URGX_InteractComponent;
 class URGX_LaunchEventDataAsset;
 class UGameplayEffect;
+class UWidgetComponent;
 
 USTRUCT()
 struct FRGX_LeanInfo
@@ -39,7 +35,7 @@ public:
 };
 
 UCLASS(config = Game)
-class REGICIDEX_API ARGX_PlayerCharacter : public ACharacter, public IAbilitySystemInterface, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface, public IGenericTeamAgentInterface
+class REGICIDEX_API ARGX_PlayerCharacter : public ARGX_CharacterBase
 {
 	GENERATED_BODY()
 
@@ -48,10 +44,6 @@ class REGICIDEX_API ARGX_PlayerCharacter : public ACharacter, public IAbilitySys
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera = nullptr;
-
-	/** Ability System Component to be used */
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Abilities, meta = (AllowPrivateAccess = "true"))
-	UMCV_AbilitySystemComponent* AbilitySystemComponent = nullptr;
 
 	/** Combo System Component to manage player combos */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Combos, meta = (AllowPrivateAccess = "true"))
@@ -69,13 +61,14 @@ class REGICIDEX_API ARGX_PlayerCharacter : public ACharacter, public IAbilitySys
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Interaction, meta = (AllowPrivateAccess = "true"))
 	URGX_InteractComponent* InteractComponent = nullptr;
 
+	/** Interact Widget Component*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Interaction, meta = (AllowPrivateAccess = "true"))
+	UWidgetComponent* InteractWidgetComponent = nullptr;
+
+	/** Check if player is attacking, meaning the player has an active ability with Ability.Melee tag on it. */
+	bool IsAttacking();
+
 	// Attributes ---------------
-	UPROPERTY()
-	URGX_HealthAttributeSet* HealthAttributeSet = nullptr;
-
-	UPROPERTY()
-	URGX_CombatAttributeSet* CombatAttributeSet = nullptr;
-
 	UPROPERTY()
 	URGX_MovementAttributeSet* MovementAttributeSet = nullptr;
 
@@ -83,14 +76,13 @@ class REGICIDEX_API ARGX_PlayerCharacter : public ACharacter, public IAbilitySys
 public:
 	ARGX_PlayerCharacter();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseTurnRate;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseLookUpRate;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FGenericTeamId CharacterTeam;
+	bool bComboFlag = false;
 
 	// TODO [REFACTOR]: Move this to AbilitySystemComponent.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -101,11 +93,16 @@ public:
 
 	UPROPERTY()
 	FGameplayTag CurrentSkillTag;
-	//--------------------------
 
-	/* Level used to determine attributes and gameplay abilities stats */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, meta = (ClampMin = "0.0", UIMin = "0.0"))
-	int Level = 1;
+	/** If ture, it is in window to keep on with the current combo. */
+	UPROPERTY()
+	bool bCanCombo = false;
+
+	/** Holds the AnimNotifyState of the current attack, which has the information for the combo to follow. */
+	UPROPERTY()
+	URGX_ANS_JumpComboSection* JumpComboNotifyState;
+
+	//--------------------------
 
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EObjectTypeQuery> DodgeableObjectType;
@@ -158,15 +155,11 @@ protected:
 	UPROPERTY()
 	bool bTimeScale = false;
 
+	/** Check if player can perform an attack in the air */
 	bool bCanAirCombo = true;
 
-	/* Level Up variables */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TSubclassOf<UGameplayEffect> LevelUpEffect;
-
-	/* Full Health Recovery effect */
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TSubclassOf<UGameplayEffect> FullHealthEffect;
+	/** If player has been hit and thus cannot perform any action */
+	bool bStaggered = false;
 
 	UPROPERTY(EditAnywhere)
 	UCurveTable* MaxHealthLevelCurve = nullptr;
@@ -197,6 +190,10 @@ protected:
 	 */
 	void LookUpAtRate(float Rate);
 
+	virtual void AddControllerYawInput(float Val) override;
+
+	virtual void AddControllerPitchInput(float Val) override;
+
 	//** Animation Functions */
 	FRGX_LeanInfo CalculateLeanAmount();
 
@@ -225,16 +222,20 @@ protected:
 	void ManageHeavyAttackInput();
 	void ManageHeavyAttackInputRelease();
 
-	void ManagePowerSkillInput();
-	void TryToInteract();
-	// ----------------------------------
+	void ManageJumpInput();
+	void ManageJumpInputReleased();
 
 	void PerformFallAttack();
 	void PerformLaunchAttack();
+	void PerformHeavyAttack();
 	void ChangePowerSkill();
 
+	//void ManagePowerSkillInput();
+	void TryToInteract();
+	// ----------------------------------
+
 	/* Level and experience*/
-	void LevelUp(const float NewLevel);
+	//void LevelUp(const float NewLevel);
 	// ----------------------
 
 	// Debug
@@ -244,11 +245,6 @@ protected:
 	// ----------------
 
 public:
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-
 	/** GameplayTagAssetInterface methods */
 	void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
 	bool HasMatchingGameplayTag(FGameplayTag TagToCheck) const override;
@@ -259,6 +255,10 @@ public:
 	void AddGameplayTag(const FGameplayTag& TagToAdd) override;
 	void RemoveGameplayTag(const FGameplayTag& TagToRemove) override;
 
+	/** Stops any combo logic. It should be called at any action that interrupts an ongoing combo from the Combo system. */
+	UFUNCTION(BlueprintCallable)
+	void OnInterrupted();
+
 	/** Utility methods */
 	UFUNCTION(BlueprintCallable)
 	bool IsBeingAttacked();
@@ -266,4 +266,11 @@ public:
 	/* Input Handler calls this to let the player handle the action */
 	UFUNCTION()
 	void HandleAction(const ERGX_PlayerActions Action);
+
+public:
+	/** Returns CameraBoom subobject **/
+	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	/** Returns FollowCamera subobject **/
+	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	FORCEINLINE float GetLeanAmount() const { return LeanAmount; }
 };

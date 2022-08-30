@@ -81,19 +81,29 @@ void URGX_ExecutionAbility::OnFailedAbilityMontage(FGameplayTag EventTag, FGamep
 
 void URGX_ExecutionAbility::OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Tag: %s\n"), *EventTag.ToString());
-	UAbilitySystemComponent* ACS = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(TargetActor);
-	if (ACS)
+	if (EventTag == FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Action.Execution.Repost")))
 	{
-		FGameplayEventData EventDataPayload;
-		EventDataPayload.Instigator = CurrentActorInfo->AvatarActor.Get();
-		EventDataPayload.Target = TargetActor;
-		ACS->HandleGameplayEvent(EventTag, &EventDataPayload);
+		UAbilitySystemComponent* TargetACS = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(TargetActor);
+		if (TargetACS)
+		{
+			FGameplayEventData EventDataPayload;
+			EventDataPayload.Instigator = CurrentActorInfo->AvatarActor.Get();
+			EventDataPayload.Target = TargetActor;
+			TargetACS->HandleGameplayEvent(EventTag, &EventDataPayload);
+		}
 	}
 
 	// Error: Hardcoded because otherwise the montage delegates are never called.
 	if (EventTag == FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Action.Execution.Repost")))
 	{
+		UAbilitySystemComponent* SourceACS = CurrentActorInfo->AbilitySystemComponent.Get();
+		UAbilitySystemComponent* TargetACS = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(TargetActor);
+		if (TargetACS)
+		{
+			SourceACS->ApplyGameplayEffectToTarget(InstakillEffect->GetDefaultObject<UGameplayEffect>(), TargetACS, 1.0f, SourceACS->MakeEffectContext());
+			TargetACS->ApplyGameplayEffectToTarget(PlayerHealingEffect->GetDefaultObject<UGameplayEffect>(), SourceACS, 1.0f, TargetACS->MakeEffectContext());
+		}
+
 		EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
 	}
 }

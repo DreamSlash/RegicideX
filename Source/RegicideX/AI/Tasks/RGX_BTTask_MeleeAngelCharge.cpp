@@ -20,7 +20,7 @@ EBTNodeResult::Type URGX_BTTask_MeleeAngelCharge::ExecuteTask(UBehaviorTreeCompo
 
 	URGX_HitboxComponent* Hitbox = MeleeAngelPawn->HitboxesManager->GetHitboxByTag(HitboxTag);
 
-	Hitbox->ActivateEffect();
+	//Hitbox->ActivateEffect();
 
 	MeleeAngelPawn->bFlying = true;
 
@@ -59,31 +59,21 @@ void URGX_BTTask_MeleeAngelCharge::TickTask(UBehaviorTreeComponent& OwnerComp, u
 {
 	TaskTime += DeltaSeconds;
 	float dist = FVector::Distance(MeleeAngelPawn->GetActorLocation(), GoalLocation);
-	UE_LOG(LogTemp, Warning, TEXT("Dist to goal pos: %f"), dist);
-	if (TaskTime >= MaxTime || MeleeAngelPawn->bCharged || dist <= 30.0f)
+	//UE_LOG(LogTemp, Warning, TEXT("Dist to goal pos: %f"), dist);
+	if (TaskTime >= MaxTime || MeleeAngelPawn->bCharging || dist <= 30.0f)
 	{
 		TaskTime = 0.0f;
 		MeleeAngelPawn->SetGravityScale(1.0);
 		MeleeAngelPawn->bFlying = false;
-		MeleeAngelPawn->bCharged = false;
+		MeleeAngelPawn->bCharging = false;
 		MeleeAngelPawn->MoveSpeed = MoveSpeed;
 		FRotator Rotation = MeleeAngelPawn->GetActorRotation();
 		Rotation.Pitch = 0.0;
 		MeleeAngelPawn->SetActorRotation(Rotation);
 		URGX_HitboxComponent* Hitbox = MeleeAngelPawn->HitboxesManager->GetHitboxByTag(HitboxTag);
-		Hitbox->DeactivateEffect();
+		//Hitbox->DeactivateEffect();
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 	MeleeAngelPawn->MoveSpeed += TaskTime * AccelerationMultiplier;
 	MeleeAngelPawn->MoveToTarget(DeltaSeconds, FVector());
 }
-
-
-
-
-
-
-
-
-
-

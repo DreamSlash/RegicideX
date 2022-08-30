@@ -29,7 +29,6 @@ public:
 	// Blackboard key ids
 	uint8 TargetActorID;
 	uint8 DistanceToPlayerID;
-	uint8 InCombatID;
 	uint8 IdleActionID;
-	uint8 ToDestroyID;
+	bool bFrenzied = false;
 };

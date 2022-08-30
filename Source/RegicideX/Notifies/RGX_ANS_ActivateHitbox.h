@@ -1,4 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
@@ -7,9 +6,6 @@
 #include "GameplayTags.h"
 #include "RGX_ANS_ActivateHitbox.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class REGICIDEX_API URGX_ANS_ActivateHitbox : public UAnimNotifyState
 {
@@ -21,4 +17,10 @@ class REGICIDEX_API URGX_ANS_ActivateHitbox : public UAnimNotifyState
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FGameplayTag HitboxTag;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FGameplayTag> EventTag;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bActivateEffects;
 };

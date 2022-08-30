@@ -9,11 +9,18 @@ void URGX_ANS_ActivateHitbox::NotifyBegin(USkeletalMeshComponent* MeshComp, UAni
 {
 	AActor* Owner = MeshComp->GetOwner();
 
-	URGX_HitboxesManagerComponent* HitboxesManagerComponent = Owner->FindComponentByClass<URGX_HitboxesManagerComponent>();
+	URGX_HitboxesManagerComponent* HitboxesManagerComponent = Owner ? Owner->FindComponentByClass<URGX_HitboxesManagerComponent>() : nullptr;
 	if (HitboxesManagerComponent)
 	{
 		URGX_HitboxComponent* Hitbox = HitboxesManagerComponent->GetHitboxByTag(HitboxTag);
-		Hitbox->ActivateHitbox();
+		if (Hitbox)
+		{
+			for (const auto& Tag : EventTag)
+			{
+				Hitbox->AddEventTag(Tag);
+			}
+			Hitbox->ActivateHitbox(bActivateEffects);
+		}
 	}
 }
 
@@ -21,10 +28,17 @@ void URGX_ANS_ActivateHitbox::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimS
 {
 	AActor* Owner = MeshComp->GetOwner();
 
-	URGX_HitboxesManagerComponent* HitboxesManagerComponent = Owner->FindComponentByClass<URGX_HitboxesManagerComponent>();
+	URGX_HitboxesManagerComponent* HitboxesManagerComponent = Owner ? Owner->FindComponentByClass<URGX_HitboxesManagerComponent>() : nullptr;
 	if (HitboxesManagerComponent)
 	{
 		URGX_HitboxComponent* Hitbox = HitboxesManagerComponent->GetHitboxByTag(HitboxTag);
-		Hitbox->DeactivateHitbox();
+		if (Hitbox)
+		{
+			for (const auto& Tag : EventTag)
+			{
+				Hitbox->RemoveEventTag(Tag);
+			}
+			Hitbox->DeactivateHitbox();
+		}
 	}
 }

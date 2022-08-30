@@ -1,14 +1,11 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
 #pragma once
 
 #include "CoreMinimal.h"
-#include "RegicideX/GAS/GameplayAbilities/RGX_GameplayAbility.h"
+#include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GameplayAbility.h"
+#include "RegicideX/GAS/RGX_GameplayEffectContext.h"
+#include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RGX_GA_CastSkillAbility.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class REGICIDEX_API URGX_CastSkillAbility : public URGX_GameplayAbility
 {
@@ -34,6 +31,8 @@ protected:
 	UFUNCTION()
 	virtual void OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData); // Must be overriden by child classes
 
+	void PlayMontageBySectionName(const FName& SectionName);
+
 protected:
 	UPROPERTY(EditAnywhere)
 	class UAnimMontage* MontageToPlay = nullptr;
@@ -46,4 +45,11 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	FGameplayTagContainer WaitForEventTags;
+
+	// A map of a tag that should trigger a gameplay effect with assigned payload to ability owner.
+	UPROPERTY(EditDefaultsOnly)
+	TMap<FGameplayTag, FRGX_EffectContextContainer> EffectToApplyToOwnerWithPayload;
+
+	UPROPERTY()
+	class URGX_PlayMontageAndWaitForEvent* PlayMontageAndWaitForEventTask = nullptr;
 };

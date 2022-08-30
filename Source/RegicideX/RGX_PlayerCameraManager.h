@@ -31,7 +31,7 @@ public:
 
 	void SetTargetAngle(const FRotator TargetAngle, const float RotationSpeed, const bool bOverrideRoll, const bool bOverridePitch, const bool bOverrideYaw);
 
-	void ProcessViewRotation(float DeltaTime, FRotator& OutViewRotation, FRotator& OutDeltaRot);
+	void ProcessViewRotation(float DeltaTime, FRotator& OutViewRotation, FRotator& OutDeltaRot) override;
 
 protected:
 	void UpdateViewTarget(FTViewTarget& OutVT, float DeltaTime);

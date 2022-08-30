@@ -1,13 +1,17 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 #include "RGX_Peasant.h"
+#include "AIController.h"
+#include "BrainComponent.h"
 #include "Components/MCV_AbilitySystemComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 #include "EngineUtils.h"
-#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "RegicideX/Components/RGX_MovementAssistComponent.h"
 
 ARGX_Peasant::ARGX_Peasant()
 {
+	MovementAssistComponent = CreateDefaultSubobject<URGX_MovementAssistComponent>(TEXT("MovementAssistComponent"));
 }
 
 void ARGX_Peasant::BeginPlay()
@@ -16,29 +20,38 @@ void ARGX_Peasant::BeginPlay()
 	Super::BeginPlay();
 
 	AddGameplayTag(FGameplayTag::RequestGameplayTag(TEXT("Status.Alive")));
+	SetActorEnableCollision(true);
 }
 
 void ARGX_Peasant::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
 
-	UAbilitySystemComponent* ASC = GetAbilitySystemComponent();
-	ToBeDestroyed = ASC->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.Dead")));
+void ARGX_Peasant::Activate()
+{
+	Super::Activate();
 
-	// TODO Managed by Manager
-	GetCharacterMovement()->MaxWalkSpeed = bInCombat ? MaxSpeed : WanderSpeed;
+	//SetActorEnableCollision(true);
+	//GetMesh()->SetScalarParameterValueOnMaterials(FName("Amount (S)"), 0.0f); // Recover from evaporation effect when dying
+	//GetMesh()->bPauseAnims = false; // Recover from pausing anims in GA_PeasantDeath
+
+	//AAIController* PeasantController = Cast<AAIController>(GetController());
+	//if (PeasantController)
+	//{
+	//	PeasantController->GetBrainComponent()->StartLogic();
+	//}
+}
+
+void ARGX_Peasant::Deactivate()
+{
+	Super::Deactivate();
 }
 
 void ARGX_Peasant::HandleDeath()
 {
 	UE_LOG(LogTemp, Display, TEXT("Handling Peasant death ..."));
 	Super::HandleDeath();
-}
-
-void ARGX_Peasant::DestroyPeasant()
-{
-	// Handle particles and stuff before dying ...
-	this->Destroy();
 }
 
 // TODO Make it in EnemyBase --> Make it 2D??

@@ -2,9 +2,10 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "GameplayTagContainer.h"
+#include "GameplayEffectTypes.h"
+#include "GameplayEffect.h"
 #include "RGX_PayloadObjects.generated.h"
-
-struct FGameplayEffectContextHandle;
 
 UCLASS()
 class REGICIDEX_API URGX_LaunchEventPayload : public UObject
@@ -38,10 +39,25 @@ class URGX_RGXEventDataAsset : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
 
-public:
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+protected:
+	UPROPERTY()
 	FGameplayTag EventTag;
+
+public:
+	FGameplayTag GetEventTag() { return EventTag; }
+};
+
+USTRUCT(BlueprintType)
+struct FRGX_EffectContextContainer
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UGameplayEffect> EffectToApply;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	URGX_RGXEventDataAsset* Payload = nullptr;
 };
 
 USTRUCT()
@@ -67,9 +83,31 @@ public:
 };
 
 UCLASS(BlueprintType)
+class URGX_DamageEventDataAsset : public URGX_RGXEventDataAsset
+{
+	GENERATED_BODY()
+
+public:
+	URGX_DamageEventDataAsset();
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName DamageCurveName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName AttributeScalingCurveName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UCurveTable* DamageLevelCurve = nullptr;
+};
+
+UCLASS(BlueprintType)
 class URGX_LaunchEventDataAsset : public URGX_RGXEventDataAsset
 {
 	GENERATED_BODY()
+
+public:
+	URGX_LaunchEventDataAsset();
 
 public:
 
@@ -84,6 +122,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bOverrideVertical;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bInstigatorOrigin;
 };
 
 UCLASS(BlueprintType)

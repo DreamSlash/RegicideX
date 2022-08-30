@@ -1,14 +1,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Abilities/MCV_GameplayAbility.h"
+#include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GA_CastSkillAbility.h"
 #include "RGX_GA_DodgeAbility.generated.h"
 
 class UGameplayEffect;
 class ACharacter;
 
 UCLASS()
-class REGICIDEX_API URGX_DodgeAbility : public UMCV_GameplayAbility
+class REGICIDEX_API URGX_DodgeAbility : public URGX_CastSkillAbility
 {
 	GENERATED_BODY()
 
@@ -19,22 +19,5 @@ class REGICIDEX_API URGX_DodgeAbility : public UMCV_GameplayAbility
 protected:
 
 	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* MontageToPlay = nullptr;
-
-	UPROPERTY(EditAnywhere)
-	FName BackDodgeSection;
-
-	UPROPERTY(EditAnywhere)
-	FName SideDodgeSection;
-
-	UPROPERTY(EditDefaultsOnly)
-	float DodgeSpeed = 900.0f;
-
-	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UGameplayEffect> InvulnerabilityEffect;
-
-protected:
-
-	UFUNCTION()
-	void FinishDodge();
 };
