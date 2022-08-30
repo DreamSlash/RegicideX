@@ -146,7 +146,7 @@ void ARGX_PlayerCharacter::ManageLightAttackInput()
 			// Jump Section for combo
 			if (JumpComboNotifyState->InputID == ERGX_ComboTokenID::LightAttackToken && bCanCombo)
 			{
-				bJumpToComboSection = true;
+				bCanJumpToComboSection = true;
 				/** TODO:
 					Check bIsInAir
 					If in air, if current combo is air combo, try to jump to next attack

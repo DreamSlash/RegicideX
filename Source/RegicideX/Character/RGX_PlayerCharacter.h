@@ -68,9 +68,6 @@ class REGICIDEX_API ARGX_PlayerCharacter : public ARGX_CharacterBase
 	/** Check if player is attacking, meaning the player has an active ability with Ability.Melee tag on it. */
 	bool IsAttacking();
 
-	/** Check if during an attack, an input to carry on with the combo has been pressed. */
-	bool bContinueCombo = false;
-
 	// Attributes ---------------
 	UPROPERTY()
 	URGX_MovementAttributeSet* MovementAttributeSet = nullptr;
