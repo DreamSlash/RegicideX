@@ -86,7 +86,7 @@ void ARGX_DistanceAngel::RotateToTarget(float DeltaTime)
 		const FVector MyLocation = GetEyeWorldLocation();
 		const FVector TargetLocation = TargetActor->GetActorLocation();
 		const FRotator RotOffset = UKismetMathLibrary::FindLookAtRotation(MyLocation, TargetLocation);
-		FRotator NewRotation = FMath::Lerp(this->GetActorRotation(), RotOffset, DeltaTime * InterpSpeed);
+		FRotator NewRotation = FMath::Lerp(this->GetActorRotation(), RotOffset, DeltaTime * RotationInterpSpeed);
 		SphereCollider->SetWorldRotation(NewRotation);
 	}
 }

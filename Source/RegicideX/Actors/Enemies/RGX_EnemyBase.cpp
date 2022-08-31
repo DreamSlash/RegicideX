@@ -69,15 +69,6 @@ void ARGX_EnemyBase::BeginPlay()
 	HandleHealthChanged(0.0f, FGameplayTagContainer());
 
 	TargetActor = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-
-	if (bDefaultFocusPlayer == true) 
-	{
-		SetFocusPlayer(true);
-	}
-	else
-	{
-		SetFocusPlayer(false);
-	}
 }
 
 void ARGX_EnemyBase::PossessedBy(AController* NewController)
@@ -144,25 +135,6 @@ void ARGX_EnemyBase::StopLogic(const FString& Reason)
 	}
 }
 
-void ARGX_EnemyBase::SetFocusPlayer(bool bFocus)
-{
-	AAIController* AiController = Cast<AAIController>(GetController());
-
-	if (AiController == nullptr) return;
-
-	if (bFocus == true)
-	{
-		if (TargetActor)
-		{
-			AiController->SetFocus(TargetActor);
-		}
-	}
-	else
-	{
-		AiController->SetFocus(nullptr);
-	}
-}
-
 bool ARGX_EnemyBase::IsWeak()
 {
 	return bWeak;
@@ -184,6 +156,8 @@ void ARGX_EnemyBase::RotateToTarget(float DeltaTime)
 {
 	if (TargetActor)
 	{
+		const float InterpSpeed = HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("GameplayEvent.Action.Melee")) ? AttackRotationInterpSpeed : RotationInterpSpeed;
+		UE_LOG(LogTemp, Warning, TEXT("InterpSpeed: %f"), InterpSpeed);
 		const FVector MyLocation = this->GetActorLocation();
 		const FVector TargetLocation = TargetActor->GetActorLocation();
 		const FRotator RotOffset = UKismetMathLibrary::FindLookAtRotation(MyLocation, TargetLocation);
@@ -203,6 +177,11 @@ void ARGX_EnemyBase::Tick(float DeltaTime)
 
 	if (TargetActor)
 	{
+		if (bCanRotate && bDefaultFocusPlayer)
+		{
+			RotateToTarget(DeltaTime);
+		}
+
 		const FVector VectorToTarget = TargetActor->GetActorLocation() - GetActorLocation();
 		const float DistanceToTarget = VectorToTarget.Size();
 		if (DistanceToTarget > HealthBarHideDistance)

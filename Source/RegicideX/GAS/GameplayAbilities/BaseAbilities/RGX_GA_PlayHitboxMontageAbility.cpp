@@ -51,10 +51,10 @@ void URGX_PlayHitboxMontageAbility::EndAbility(const FGameplayAbilitySpecHandle 
 {
 	Super::EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicateEndAbility, bWasCancelled);
 
-	ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(GetAvatarActorFromActorInfo());
-	if (Enemy)
+	ARGX_CharacterBase* Character = Cast<ARGX_CharacterBase>(GetAvatarActorFromActorInfo());
+	if (Character)
 	{
-		Enemy->SetFocusPlayer(Enemy->bDefaultFocusPlayer);
+		Character->bCanRotate = true;
 	}
 }
 

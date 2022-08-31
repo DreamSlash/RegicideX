@@ -57,7 +57,10 @@ public:
 	AActor* TargetActor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float InterpSpeed = 1.0f;
+	float RotationInterpSpeed = 10.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float AttackRotationInterpSpeed = 20.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float MoveSpeed = 100.0f;
@@ -115,7 +118,6 @@ protected:
 
 	// Called when the game starts or when spawned
 	void BeginPlay() override;
-
 	void PossessedBy(AController* NewController) override;
 
 	UFUNCTION()
@@ -138,9 +140,6 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void StopLogic(const FString& Reason);
-
-	UFUNCTION(BlueprintCallable)
-	void SetFocusPlayer(bool bFocus);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bWeak = false;
