@@ -68,6 +68,8 @@ void ARGX_EnemyBase::BeginPlay()
 	AddStartupGameplayAbilities();
 	HandleHealthChanged(0.0f, FGameplayTagContainer());
 
+	GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
+
 	TargetActor = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 }
 
@@ -157,7 +159,6 @@ void ARGX_EnemyBase::RotateToTarget(float DeltaTime)
 	if (TargetActor)
 	{
 		const float InterpSpeed = HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("GameplayEvent.Action.Melee")) ? AttackRotationInterpSpeed : RotationInterpSpeed;
-		UE_LOG(LogTemp, Warning, TEXT("InterpSpeed: %f"), InterpSpeed);
 		const FVector MyLocation = this->GetActorLocation();
 		const FVector TargetLocation = TargetActor->GetActorLocation();
 		const FRotator RotOffset = UKismetMathLibrary::FindLookAtRotation(MyLocation, TargetLocation);

@@ -25,12 +25,6 @@ public:
 	UPROPERTY(EditAnywhere)
 	UBehaviorTree* BTree = nullptr;
 
-	UPROPERTY(EditDefaultsOnly)
-	float WanderSpeed = 100.0f;
-
-	UPROPERTY(EditDefaultsOnly)
-	float MaxSpeed = 400.0f;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	int IdleAction;
 
