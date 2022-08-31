@@ -12,8 +12,14 @@ ARGX_Peasant_Shield::ARGX_Peasant_Shield()
 
 }
 
-void ARGX_Peasant_Shield::HandleDamage(float DamageAmount, const FHitResult& HitInfo, const FGameplayTagContainer& DamageTags, ARGX_CharacterBase* InstigatorCharacter, AActor* DamageCauser)
+float ARGX_Peasant_Shield::HandleDamageMitigation(float DamageAmount, const FHitResult& HitInfo, const FGameplayTagContainer& DamageTags, ARGX_CharacterBase* InstigatorCharacter, AActor* DamageCauser)
 {
+	if (ShieldAmount > 0.0f == false)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Shield did not mitigate damage"));
+		return DamageAmount;
+	}
+
 	const FVector StartPos = GetActorLocation() + GetActorForwardVector() * 200.0f;
 	const FVector EndPos = StartPos + GetActorForwardVector() * 2000.0f;
 	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray;
@@ -22,18 +28,19 @@ void ARGX_Peasant_Shield::HandleDamage(float DamageAmount, const FHitResult& Hit
 	FHitResult OutHit;
 	bool Hitted = UKismetSystemLibrary::SphereTraceSingleForObjects(GetWorld(), StartPos, EndPos, 100.0f, ObjectTypesArray, false, ActorsToIgnore, EDrawDebugTrace::None, OutHit, true);
 
-	if (ShieldAmount > 0.0f && Hitted && OutHit.Actor == TargetActor)
+	if (Hitted && OutHit.Actor == TargetActor)
 	{
-
+		UE_LOG(LogTemp, Warning, TEXT("Shield mitigated damage"));
 		ShieldAmount -= 50.0f;
 		AAIController* AICont = Cast<AAIController>(this->GetController());
-		UBlackboardComponent* BB = AICont->GetBlackboardComponent(); 
+		UBlackboardComponent* BB = AICont->GetBlackboardComponent();
 		BB->SetValueAsBool("bWasHit", true);
-		PlayAnimMontage(AMShieldBlock); 
-
+		PlayAnimMontage(AMShieldBlock);
+		return 0.0f;
 	}
-	else 
+	else
 	{
-		Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser);
+		UE_LOG(LogTemp, Warning, TEXT("Shield did not mitigate damage"));
+		return DamageAmount;
 	}
 }

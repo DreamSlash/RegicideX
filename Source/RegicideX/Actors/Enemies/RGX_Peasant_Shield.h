@@ -24,7 +24,7 @@ public:
 		float ShieldAmount = 100.0f;
 
 protected:
-	virtual void HandleDamage(
+	virtual float HandleDamageMitigation(
 		float DamageAmount,
 		const FHitResult& HitInfo,
 		const struct FGameplayTagContainer& DamageTags,
