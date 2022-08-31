@@ -616,29 +616,25 @@ void ARGX_PlayerCharacter::MoveRight(float Value)
 void ARGX_PlayerCharacter::TurnAtRate(float Rate)
 {
 	// TODO: Only TurnAtRate or AddControllerYawInput should modify YawChange at a time, depending if the user is using mouse or controller
-	//UE_LOG(LogTemp, Warning, TEXT("Turn Rate: %f"), Rate);
 	YawChange = Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds();
-	//UE_LOG(LogTemp, Warning, TEXT("YawChange: %f"), YawChange);
 	Super::AddControllerYawInput(YawChange);
 }
 
 void ARGX_PlayerCharacter::LookUpAtRate(float Rate)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Look Up Rate: %f"), Rate);
 	PitchChange = Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds();
-	//UE_LOG(LogTemp, Warning, TEXT("PitchChange: %f"), PitchChange);
 	Super::AddControllerPitchInput(PitchChange);
 }
 
 void ARGX_PlayerCharacter::AddControllerYawInput(float Val)
 {
-	//Super::AddControllerYawInput(Val);
+	Super::AddControllerYawInput(Val);
 	//YawChange = Val;
 }
 
 void ARGX_PlayerCharacter::AddControllerPitchInput(float Val)
 {
-	//Super::AddControllerPitchInput(Val);
+	Super::AddControllerPitchInput(Val);
 }
 
 FRGX_LeanInfo ARGX_PlayerCharacter::CalculateLeanAmount()
@@ -669,8 +665,6 @@ void ARGX_PlayerCharacter::Landed(const FHitResult& Hit)
 	ECollisionChannel CollisionChannel = Hit.GetComponent()->GetCollisionObjectType();
 	if (CollisionChannel == ECollisionChannel::ECC_WorldStatic)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("Landed\n"));
-
 		InputHandlerComponent->ResetAirState();
 
 		AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
@@ -682,8 +676,6 @@ void ARGX_PlayerCharacter::Landed(const FHitResult& Hit)
 
 void ARGX_PlayerCharacter::OnCapsuleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("On Capsule Overlap\n"));
-
 	if (bIsFallingDown == true)
 	{
 		const FVector Normal = Hit.Normal;
