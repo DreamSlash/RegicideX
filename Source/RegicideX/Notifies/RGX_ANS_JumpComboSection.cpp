@@ -30,15 +30,15 @@ void URGX_ANS_JumpComboSection::NotifyEnd(USkeletalMeshComponent* MeshComp, UAni
 	ARGX_PlayerCharacter* Player = Cast<ARGX_PlayerCharacter>(MeshComp->GetOwner());
 	if (Player) 
 	{
-		if (Player->bCanCombo == false)
-		{
+		// If player does not continue the combo, reset the state.
+		if(Player->bContinueCombo == false)
 			Player->OnInterrupted();
-		}
 
 		// Reset flags.
 		Player->bCanCombo = false;
 		Player->bCanJumpToComboSection = false;
 		Player->bContinueCombo = false;
 		Player->JumpComboNotifyState = nullptr;
+
 	}
 }

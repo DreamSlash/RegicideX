@@ -478,7 +478,6 @@ void ARGX_PlayerCharacter::RemoveGameplayTag(const FGameplayTag& TagToRemove)
 
 void ARGX_PlayerCharacter::OnInterrupted()
 {
-	bCanCombo = false;
 	ComboSystemComponent->OnEndCombo();
 	InputHandlerComponent->ResetAirState();
 	InputHandlerComponent->ResetInputState();
@@ -519,8 +518,6 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 		InputHandlerComponent->ResetInputState();
 	}
 
-	//UE_LOG(LogTemp, Warning, TEXT("Character Speed: %f\n"), GetCharacterMovement()->GetMaxSpeed());
-
 	/*
 	if (bStaggered == true)
 	{
@@ -558,20 +555,13 @@ void ARGX_PlayerCharacter::OnFollowCombo()
 {
 	ComboSystemComponent->OnCombo();
 
-	//UE_LOG(LogTemp, Warning, TEXT("On Follow Combo\n"));
-
 	FGameplayTag NextAttack = ComboSystemComponent->GetNextAttack();
 	if (NextAttack != FGameplayTag::RequestGameplayTag("Combo.None"))
 	{
 		FString NextAttackString = NextAttack.ToString();
-		//UE_LOG(LogTemp, Warning, TEXT("Next Attack: %s\n"), *NextAttackString);
-		
 		// Fire next attack
 		FGameplayEventData EventData;
 		int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(NextAttack, &EventData);
-
-		//UE_LOG(LogTemp, Warning, TEXT("Triggered Abilities: %d\n"), TriggeredAbilities);
-
 		// Clear next attack status
 		ComboSystemComponent->CleanStatus(TriggeredAbilities);
 	}
