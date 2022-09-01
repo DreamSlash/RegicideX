@@ -66,6 +66,9 @@ public:
 	float MoveSpeed = 100.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float OrbitSpeed = 50.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float AttackRadius = 700.0f;
 
 	/** The base score all enemies will give to the player when they die. Each class should change its value accordingly. */
