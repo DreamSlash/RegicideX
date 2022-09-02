@@ -207,19 +207,17 @@ void ARGX_EnemyBase::HandleDamage(
 
 	if (IsAlive())
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Is Alive"));
-		CheckIfWeak(DamageAmount);
-
-		if (IsWeak())
+		// Play reaction hit animation.
+		if (GetMovementComponent()->IsFalling())
 		{
-			StopAnimMontage();
+			PlayAnimMontage(AMAirReactionHit);
 		}
 		else
 		{
-			// Play reaction hit animation.
-			if (GetMovementComponent()->IsFalling())
+			CheckIfWeak(DamageAmount);
+			if (IsWeak())
 			{
-				PlayAnimMontage(AMAirReactionHit);
+				StopAnimMontage();
 			}
 			else
 			{
