@@ -219,7 +219,7 @@ void ARGX_DistanceAngel::ApplyForceFieldEffects(AActor* OtherActor)
 			}
 		}
 	}
-	BHHitboxComponent->DeactivateHitbox();
+	//BHHitboxComponent->DeactivateHitbox();
 }
 
 void ARGX_DistanceAngel::HandleDeath()
