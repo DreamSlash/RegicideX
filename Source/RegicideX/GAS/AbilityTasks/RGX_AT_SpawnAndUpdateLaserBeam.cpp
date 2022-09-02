@@ -13,9 +13,14 @@ URGX_AT_SpawnAndUpdateLaserBeam::URGX_AT_SpawnAndUpdateLaserBeam()
 
 }
 
-FString URGX_AT_SpawnAndUpdateLaserBeam::GetDebugString() const
+URGX_AT_SpawnAndUpdateLaserBeam* URGX_AT_SpawnAndUpdateLaserBeam::SpawnAndUpdateLaserBeam(UGameplayAbility* OwningAbility, float Time, TSubclassOf<ARGX_LaserBeamWeapon> LaserBeamClass)
 {
-	return FString("Hi!");
+	UAbilitySystemGlobals::NonShipping_ApplyGlobalAbilityScaler_Duration(Time);
+	URGX_AT_SpawnAndUpdateLaserBeam* MyObj = NewAbilityTask<URGX_AT_SpawnAndUpdateLaserBeam>(OwningAbility);
+	MyObj->MaxTime = Time;
+	MyObj->Attacker = Cast<ARGX_DistanceAngel>(OwningAbility->GetAvatarActorFromActorInfo());
+	MyObj->LaserBeamWeaponSubclass = LaserBeamClass;
+	return MyObj;
 }
 
 void URGX_AT_SpawnAndUpdateLaserBeam::TickTask(float DeltaTime)
@@ -60,16 +65,6 @@ void URGX_AT_SpawnAndUpdateLaserBeam::TickTask(float DeltaTime)
 void URGX_AT_SpawnAndUpdateLaserBeam::OnDestroy(bool AbilityIsEnding)
 {
 	Super::OnDestroy(AbilityIsEnding);
-}
-
-URGX_AT_SpawnAndUpdateLaserBeam* URGX_AT_SpawnAndUpdateLaserBeam::SpawnAndUpdateLaserBeam(UGameplayAbility* OwningAbility, float Time, TSubclassOf<ARGX_LaserBeamWeapon> LaserBeamClass)
-{
-	UAbilitySystemGlobals::NonShipping_ApplyGlobalAbilityScaler_Duration(Time);
-	URGX_AT_SpawnAndUpdateLaserBeam* MyObj = NewAbilityTask<URGX_AT_SpawnAndUpdateLaserBeam>(OwningAbility);
-	MyObj->MaxTime = Time;
-	MyObj->Attacker = Cast<ARGX_DistanceAngel>(OwningAbility->GetAvatarActorFromActorInfo());
-	MyObj->LaserBeamWeaponSubclass = LaserBeamClass;
-	return MyObj;
 }
 
 void URGX_AT_SpawnAndUpdateLaserBeam::SpawnLaserBeamWeapon()

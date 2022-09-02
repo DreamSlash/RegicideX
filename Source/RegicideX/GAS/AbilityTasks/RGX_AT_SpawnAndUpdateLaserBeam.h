@@ -24,9 +24,6 @@ public:
 
 	URGX_AT_SpawnAndUpdateLaserBeam();
 
-	/** Return debug string describing task */
-	virtual FString GetDebugString() const override;
-
 	void TickTask(float DeltaTime) override;
 	void OnDestroy(bool AbilityIsEnding) override;
 
