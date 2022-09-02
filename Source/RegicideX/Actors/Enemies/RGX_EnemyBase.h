@@ -6,8 +6,6 @@
 #include "Blueprint/UserWidget.h"
 #include "GameplayEffect.h"
 #include "RegicideX/Actors/RGX_PoolActor.h"
-#include "RegicideX/Interfaces/RGX_GameplayTagInterface.h"
-#include "RegicideX/Interfaces/RGX_InteractInterface.h"
 #include "RGX_EnemyBase.generated.h"
 
 USTRUCT()
@@ -40,7 +38,7 @@ DECLARE_MULTICAST_DELEGATE_OneParam(FOnHandleDeath, int)
 
 /* Struct to inform about when the attack was received*/
 UCLASS(BlueprintType)
-class REGICIDEX_API ARGX_EnemyBase : public ARGX_PoolActor, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface, public IRGX_InteractInterface
+class REGICIDEX_API ARGX_EnemyBase : public ARGX_PoolActor, public IRGX_InteractInterface
 {
 	GENERATED_BODY()
 
@@ -59,10 +57,16 @@ public:
 	AActor* TargetActor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float InterpSpeed = 1.0f;
+	float RotationInterpSpeed = 10.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float AttackRotationInterpSpeed = 20.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float MoveSpeed = 100.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float OrbitSpeed = 50.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float AttackRadius = 700.0f;
@@ -73,9 +77,6 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	URGX_HitboxesManagerComponent* HitboxesManager = nullptr;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool bCanBeKnockup = true;
 
 protected:
 
@@ -107,15 +108,25 @@ protected:
 
 	float RecentDamage;
 
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* AMReactionHit = nullptr;
+
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* AMAirReactionHit = nullptr;
+
+	UPROPERTY(EditDefaultsOnly)
+	UAnimMontage* AMDeath = nullptr;
+
 protected:
 
 	// Called when the game starts or when spawned
 	void BeginPlay() override;
-
 	void PossessedBy(AController* NewController) override;
 
 	UFUNCTION()
 	void EraseRecentDamage(const float DamageAmount);
+
+	void CheckIfWeak(float DamageAmount);
 
 	// FGenericTeamId interface
 	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
@@ -130,8 +141,14 @@ public:
 	virtual void MoveToTarget(float DeltaTime, FVector TargetPos);
 	// ---------------------
 
+	UFUNCTION(BlueprintCallable)
+	void StopLogic(const FString& Reason);
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bWeak = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bDefaultFocusPlayer = false;
 
 	UFUNCTION(BlueprintCallable)
 	bool IsWeak();
@@ -145,9 +162,6 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override; 
-
 	/** Events called from attribute set changes to decouple the logic. They call BP events. */
 	virtual void HandleDamage(
 		float DamageAmount,
@@ -158,17 +172,6 @@ public:
 
 	virtual void HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags) override;
 	virtual void HandleDeath() override;
-
-	/** GameplayTagAssetInterface methods */
-	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
-	virtual bool HasMatchingGameplayTag(FGameplayTag TagToCheck) const override;
-	virtual bool HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
-	virtual bool HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
-
-	/** RX_GameplayTagInterface methods */
-	virtual void AddGameplayTag(const FGameplayTag& TagToAdd) override;
-
-	virtual void RemoveGameplayTag(const FGameplayTag& TagToRemove) override;
 
 	/** Combat assist widget functions */
 	void ShowCombatTargetWidget();

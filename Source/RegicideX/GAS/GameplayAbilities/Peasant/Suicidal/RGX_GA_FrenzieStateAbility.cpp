@@ -6,6 +6,7 @@
 #include "RegicideX/Actors/Enemies/RGX_PeasantController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/MeshComponent.h"
+#include "NiagaraComponent.h"
 
 URGX_GA_FrenzieStateAbility::URGX_GA_FrenzieStateAbility()
 {
@@ -39,6 +40,12 @@ void URGX_GA_FrenzieStateAbility::OnReceivedEvent(FGameplayTag EventTag, FGamepl
                 ARGX_PeasantController* PeasantController = Cast<ARGX_PeasantController>(Peasant->GetController());
                 UMeshComponent* Mesh = Peasant->GetMesh();
                 Mesh->SetMaterial(0, FrenziedMaterial);
+                UNiagaraComponent* NiagaraComponent = Peasant->FindComponentByClass<UNiagaraComponent>();
+                if (NiagaraComponent)
+                {
+                    NiagaraComponent->Activate();
+                }
+
                 PeasantController->bFrenzied = true;
             }
         }

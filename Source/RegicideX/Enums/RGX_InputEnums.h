@@ -37,5 +37,6 @@ enum class ERGX_PlayerActions : uint8
 {
 	None				UMETA(DisplayName = "None"),
 	LaunchAttack		UMETA(DisplayName = "LaunchAttackAction"),
-	FallAttack			UMETA(DisplayName = "FallAttackAction")
+	FallAttack			UMETA(DisplayName = "FallAttackAction"),
+	HeavyAttack			UMETA(DisplayName = "HeavyAttackAction")
 };

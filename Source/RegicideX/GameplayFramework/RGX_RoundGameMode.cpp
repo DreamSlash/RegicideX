@@ -40,20 +40,19 @@ int ARGX_RoundGameMode::GetRound() const
 	return GetGameState<ARGX_ScoreGameState>()->GetRound();
 }
 
-void ARGX_RoundGameMode::StartPlay()
-{
-	StartPlayEvent();
-	TargetActor = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	StartEnemySpawn();
-	Super::StartPlay(); //Must be at the end
-}
-
 void ARGX_RoundGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
 	GetGameState<ARGX_ScoreGameState>()->SetStateDefaults();
-	StartPlay();
+}
+
+void ARGX_RoundGameMode::StartPlay()
+{
+	Super::StartPlay();
+	StartPlayEvent();
+	TargetActor = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	StartEnemySpawn();
 }
 
 void ARGX_RoundGameMode::StartWaveEvent_Implementation()

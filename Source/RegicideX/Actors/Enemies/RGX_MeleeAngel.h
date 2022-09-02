@@ -27,7 +27,7 @@ public:
 	bool bFlying = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bCharged = false;
+	bool bCharging = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bSweeping = false;
@@ -35,8 +35,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	URGX_MovementAssistComponent* MovementAssistComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector DivineDescentTargetLocation = FVector::ZeroVector;
 protected:
 	FVector ChargeVelocity;
+
 
 public:
 	void RotateToTarget(float DeltaTime) override;

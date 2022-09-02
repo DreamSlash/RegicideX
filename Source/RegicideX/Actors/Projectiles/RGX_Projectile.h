@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "GenericTeamAgentInterface.h"
+#include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RGX_Projectile.generated.h"
 
 class UGameplayEffect;
@@ -43,7 +44,7 @@ public:
 protected:
 	/* Effects the projectile applies when hitting a target */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TArray<TSubclassOf<UGameplayEffect>> EffectsToApply;
+	TArray<FRGX_EffectContextContainer> EffectContextsToApply;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FGenericTeamId ProjectileTeam;

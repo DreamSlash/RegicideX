@@ -40,7 +40,7 @@ void URGX_InteractComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 
 	bool bHitAnything = UKismetSystemLibrary::SphereOverlapActors(
 		GetWorld(), OverlapLocation, Radius, TraceObjectTypes, nullptr, IgnoreActors, OutActors);
-	::DrawDebugSphere(GetWorld(), OverlapLocation, Radius, 24.0f, FColor::Red);
+	//::DrawDebugSphere(GetWorld(), OverlapLocation, Radius, 24.0f, FColor::Red);
 
 	TWeakObjectPtr<AActor> NewActor = nullptr;
 	IRGX_InteractInterface* NewInteract = nullptr;
@@ -60,14 +60,14 @@ void URGX_InteractComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 		}
 	}
 
-	if (bHitAnything == true)
-	{
-		//UE_LOG(LogInteract, Display, TEXT("Interacting with actor.\n"));
-	}
-
 	// Did we change anything?
 	if (NewActor == CurrentActor)
 	{
+		if (NewActor == nullptr)
+		{
+			HideInteractWidget();
+		}
+
 		return;
 	}
 

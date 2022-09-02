@@ -1,5 +1,4 @@
 #include "RGX_PlayerCharacter.h"
-
 #include "Animation/AnimInstance.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -89,6 +88,9 @@ void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAction("HeavyAttack", IE_Pressed, this, &ARGX_PlayerCharacter::ManageHeavyAttackInput);
 	PlayerInputComponent->BindAction("HeavyAttack", IE_Released, this, &ARGX_PlayerCharacter::ManageHeavyAttackInputRelease);
 
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ARGX_PlayerCharacter::ManageJumpInput);
+	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ARGX_PlayerCharacter::ManageJumpInputReleased);
+
 	PlayerInputComponent->BindAction("SwitchPowerSkill", IE_Pressed, this, &ARGX_PlayerCharacter::ChangePowerSkill);
 	PlayerInputComponent->BindAction("TimeScale", IE_Pressed, this, &ARGX_PlayerCharacter::ChangeTimeScale);
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ARGX_PlayerCharacter::TryToInteract);
@@ -147,21 +149,23 @@ void ARGX_PlayerCharacter::ManageLightAttackInput()
 
 	InputHandlerComponent->HandleInput(ERGX_PlayerInputID::LightAttackInput, false, GetCharacterMovement()->IsFalling());
 
-	//FGameplayTag NextAttack = ComboSystemComponent->ManageInputToken(ERGX_ComboTokenID::LightAttackToken, GetCharacterMovement()->IsFalling(), bCanAirCombo);
-
 	// If we are performing an attack, try to follow the combo
 	if (IsAttacking())
 	{
 		if (JumpComboNotifyState != nullptr)
 		{
-			// Jump Section for combo
-			if (JumpComboNotifyState->InputID == ERGX_ComboTokenID::LightAttackToken)
-				GetMesh()->GetAnimInstance()->Montage_JumpToSection(JumpComboNotifyState->SectionName);
+			// If Input and CanCombo, signal player has pressed input.
+			if (JumpComboNotifyState->InputID == ERGX_ComboTokenID::LightAttackToken && bCanCombo)
+			{
+				bContinueCombo = true;
+			}
 			else
-				UE_LOG(LogTemp, Warning, TEXT("ComboTokenID was not LightAttackToken"))
+			{
+				UE_LOG(LogTemp, Warning, TEXT("ComboTokenID was not LightAttackToken"));
+			}
 		}
 	}
-	else //if (NextAttack == FGameplayTag::RequestGameplayTag(FName("Combo.Light")) || NextAttack == FGameplayTag::RequestGameplayTag(FName("Combo.Air.Light")))
+	else
 	{
 		if (GetCharacterMovement()->IsFalling() && bCanAirCombo == true)
 		{
@@ -171,6 +175,7 @@ void ARGX_PlayerCharacter::ManageLightAttackInput()
 			// clean state if ability was not activated
 			if (TriggeredAbilities == 0)
 			{
+				bCanCombo = false;
 				ComboSystemComponent->OnEndCombo();
 			}
 			else
@@ -182,13 +187,14 @@ void ARGX_PlayerCharacter::ManageLightAttackInput()
 				GetCharacterMovement()->GravityScale = 0.0f;
 			}
 		}
-		else
+		else if (GetCharacterMovement()->IsFalling() == false)
 		{
 			FGameplayEventData EventData;
 			int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("Combo.Light")), &EventData);
 			// clean state if ability was not activated
 			if (TriggeredAbilities == 0)
 			{
+				bCanCombo = false;
 				ComboSystemComponent->OnEndCombo();
 			}
 		}
@@ -209,29 +215,6 @@ void ARGX_PlayerCharacter::ManageHeavyAttackInput()
 		return;
 
 	InputHandlerComponent->HandleInput(ERGX_PlayerInputID::HeavyAttackInput, false, GetCharacterMovement()->IsFalling());
-
-	// If we are performing an attack, try to follow the combo
-	if (IsAttacking())
-	{
-		if (JumpComboNotifyState != nullptr)
-		{
-			// Jump Section for combo
-			if (JumpComboNotifyState->InputID == ERGX_ComboTokenID::HeavyAttackToken)
-				GetMesh()->GetAnimInstance()->Montage_JumpToSection(JumpComboNotifyState->SectionName);
-			else
-				UE_LOG(LogTemp, Warning, TEXT("ComboTokenID was not HeavyAttackToken"))
-		}
-	}
-	else
-	{
-		FGameplayEventData EventData;
-		int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("Combo.Heavy")), &EventData);
-		// clean state if ability was not activated
-		if (TriggeredAbilities == 0)
-		{
-			ComboSystemComponent->OnEndCombo();
-		}
-	}
 }
 
 void ARGX_PlayerCharacter::ManageHeavyAttackInputRelease()
@@ -240,17 +223,17 @@ void ARGX_PlayerCharacter::ManageHeavyAttackInputRelease()
 		return;
 
 	InputHandlerComponent->HandleInput(ERGX_PlayerInputID::HeavyAttackInput, true, GetCharacterMovement()->IsFalling());
+}
 
-	/*
-	if (GetCharacterMovement()->IsFalling() == false && bHeavyInputFlag == true)
-	{
-		// Launch Attack
-		FGameplayEventData EventData;
-		int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("Combo.Launch")), &EventData);
+void ARGX_PlayerCharacter::ManageJumpInput()
+{
+	Jump();
+	OnJump();
+}
 
-		UE_LOG(LogTemp, Warning, TEXT("Triggered Abilities: %d\n"), TriggeredAbilities);
-	}
-	*/
+void ARGX_PlayerCharacter::ManageJumpInputReleased()
+{
+	StopJumping();
 }
 
 /*
@@ -339,6 +322,9 @@ void ARGX_PlayerCharacter::HandleAction(const ERGX_PlayerActions Action)
 		//UE_LOG(LogTemp, Warning, TEXT("FallAttack\n"));
 		PerformFallAttack();
 		break;
+	case ERGX_PlayerActions::HeavyAttack:
+		PerformHeavyAttack();
+		break;
 	default:
 		//UE_LOG(LogTemp, Warning, TEXT("Manuela\n"));
 		break;
@@ -362,6 +348,37 @@ void ARGX_PlayerCharacter::PerformLaunchAttack()
 	//UE_LOG(LogTemp, Warning, TEXT("Triggered Abilities: %d\n"), TriggeredAbilities);
 }
 
+void ARGX_PlayerCharacter::PerformHeavyAttack()
+{
+	// If we are performing an attack, try to follow the combo
+	if (IsAttacking())
+	{
+		if (JumpComboNotifyState != nullptr)
+		{
+			// Jump Section for combo
+			if (JumpComboNotifyState->InputID == ERGX_ComboTokenID::HeavyAttackToken && bCanCombo)
+			{
+				bContinueCombo = true;
+			}
+			else
+			{
+				UE_LOG(LogTemp, Warning, TEXT("ComboTokenID was not HeavyAttackToken"))
+			}
+		}
+	}
+	else
+	{
+		FGameplayEventData EventData;
+		int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("Combo.Heavy")), &EventData);
+		// clean state if ability was not activated
+		if (TriggeredAbilities == 0)
+		{
+			bCanCombo = false;
+			ComboSystemComponent->OnEndCombo();
+		}
+	}
+}
+
 void ARGX_PlayerCharacter::ChangePowerSkill()
 {
 	if (PowerSkills.Num() < 2)
@@ -378,7 +395,7 @@ void ARGX_PlayerCharacter::ChangePowerSkill()
 	AddGameplayTag(PowerSkills[CurrentSkillSelected]);
 
 	FString SkillName = PowerSkills[CurrentSkillSelected].ToString();
-	UE_LOG(LogTemp, Warning, TEXT("Power Skill Selected: %s\n"), *SkillName);
+	//UE_LOG(LogTemp, Warning, TEXT("Power Skill Selected: %s\n"), *SkillName);
 }
 
 void ARGX_PlayerCharacter::EnableTargeting()
@@ -532,8 +549,6 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 		InputHandlerComponent->ResetInputState();
 	}
 
-	//UE_LOG(LogTemp, Warning, TEXT("Character Speed: %f\n"), GetCharacterMovement()->GetMaxSpeed());
-
 	/*
 	if (bStaggered == true)
 	{
@@ -549,7 +564,7 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 	LeanAmount = UKismetMathLibrary::FInterpTo(LeanAmount, LeanInfo.LeanAmount, DeltaTime, LeanInfo.InterSpeed);
 	// ------------------
 
-	UKismetSystemLibrary::DrawDebugCircle(GetWorld(), GetActorLocation(), 100.0f, 24, FLinearColor::Green, 0.0f, 0.0f, FVector(0.0f, 1.0f, 0.0f), FVector(1.0f, 0.0f, 0.0f));
+	//UKismetSystemLibrary::DrawDebugCircle(GetWorld(), GetActorLocation(), 100.0f, 24, FLinearColor::Green, 0.0f, 0.0f, FVector(0.0f, 1.0f, 0.0f), FVector(1.0f, 0.0f, 0.0f));
 }
 
 UAbilitySystemComponent* ARGX_PlayerCharacter::GetAbilitySystemComponent() const
@@ -571,20 +586,13 @@ void ARGX_PlayerCharacter::OnFollowCombo()
 {
 	ComboSystemComponent->OnCombo();
 
-	//UE_LOG(LogTemp, Warning, TEXT("On Follow Combo\n"));
-
 	FGameplayTag NextAttack = ComboSystemComponent->GetNextAttack();
 	if (NextAttack != FGameplayTag::RequestGameplayTag("Combo.None"))
 	{
 		FString NextAttackString = NextAttack.ToString();
-		//UE_LOG(LogTemp, Warning, TEXT("Next Attack: %s\n"), *NextAttackString);
-		
 		// Fire next attack
 		FGameplayEventData EventData;
 		int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(NextAttack, &EventData);
-
-		//UE_LOG(LogTemp, Warning, TEXT("Triggered Abilities: %d\n"), TriggeredAbilities);
-
 		// Clear next attack status
 		ComboSystemComponent->CleanStatus(TriggeredAbilities);
 	}
@@ -628,14 +636,26 @@ void ARGX_PlayerCharacter::MoveRight(float Value)
 
 void ARGX_PlayerCharacter::TurnAtRate(float Rate)
 {
+	// TODO: Only TurnAtRate or AddControllerYawInput should modify YawChange at a time, depending if the user is using mouse or controller
 	YawChange = Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds();
-	AddControllerYawInput(YawChange);
+	Super::AddControllerYawInput(YawChange);
 }
 
 void ARGX_PlayerCharacter::LookUpAtRate(float Rate)
 {
 	PitchChange = Rate * BaseLookUpRate * GetWorld()->GetDeltaSeconds();
-	AddControllerPitchInput(PitchChange);
+	Super::AddControllerPitchInput(PitchChange);
+}
+
+void ARGX_PlayerCharacter::AddControllerYawInput(float Val)
+{
+	Super::AddControllerYawInput(Val);
+	//YawChange = Val;
+}
+
+void ARGX_PlayerCharacter::AddControllerPitchInput(float Val)
+{
+	Super::AddControllerPitchInput(Val);
 }
 
 FRGX_LeanInfo ARGX_PlayerCharacter::CalculateLeanAmount()
@@ -666,12 +686,10 @@ void ARGX_PlayerCharacter::Landed(const FHitResult& Hit)
 	ECollisionChannel CollisionChannel = Hit.GetComponent()->GetCollisionObjectType();
 	if (CollisionChannel == ECollisionChannel::ECC_WorldStatic)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Landed\n"));
-
 		InputHandlerComponent->ResetAirState();
 
 		AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
-		//RemoveGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.HasAirDashed")));
+		RemoveGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.HasAirDashed")));
 		bCanAirCombo = true;
 		bIsFallingDown = false;
 	}
@@ -679,8 +697,6 @@ void ARGX_PlayerCharacter::Landed(const FHitResult& Hit)
 
 void ARGX_PlayerCharacter::OnCapsuleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	//UE_LOG(LogTemp, Warning, TEXT("On Capsule Overlap\n"));
-
 	if (bIsFallingDown == true)
 	{
 		const FVector Normal = Hit.Normal;

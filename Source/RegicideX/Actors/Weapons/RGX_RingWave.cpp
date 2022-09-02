@@ -9,7 +9,7 @@
 
 // Sets default values
 ARGX_RingWave::ARGX_RingWave()
-	: AActor()
+	: ARGX_EffectApplierActor()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -47,17 +47,8 @@ void ARGX_RingWave::DamageActor(UPrimitiveComponent* OverlappedComponent
 	, bool bFromSweep
 	, const FHitResult& SweepResult)
 {
-	if (UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OtherActor, true))
+	if (OnPlayerOverlaps(OtherActor))
 	{
-		if (ASC->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("PossessedBy.Player")))
-		{
-			FGameplayEffectContextHandle ContextHandle = ASC->MakeEffectContext();
-			FRGX_GameplayEffectContext* FRGXContext = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
-			FRGXContext->DamageAmount = 30.0f;
-			FRGXContext->ScalingAttributeFactor = 1.0f;
-
-			ASC->ApplyGameplayEffectToSelf(RingWaveEffect->GetDefaultObject<UGameplayEffect>(), 1.0, ContextHandle);
-			//ASC->ApplyGameplayEffectToSelf(WallEffect->GetDefaultObject<UGameplayEffect>(), 1.0, ASC->MakeEffectContext());
-		}
+		// Do something
 	}
 }

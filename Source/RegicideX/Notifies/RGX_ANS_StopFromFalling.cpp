@@ -3,25 +3,32 @@
 #include "AIController.h"
 #include "BrainComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "RegicideX/Actors/RGX_CharacterBase.h"
+#include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
+#include "RegicideX/Character/RGX_PlayerCharacter.h"
 
 void URGX_ANS_StopFromFalling::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
-{
-	ARGX_CharacterBase* OwnerCharacter = Cast<ARGX_CharacterBase>(MeshComp->GetOwner());
-	AAIController* OwnerController = OwnerCharacter ? Cast<AAIController>(OwnerCharacter->GetController()) : nullptr;
+{		
+	ARGX_EnemyBase* OwnerCharacter = Cast<ARGX_EnemyBase>(MeshComp->GetOwner());
 	if (OwnerCharacter)
 	{
-		if (OwnerController)
-		{
-			OwnerController->GetBrainComponent()->StopLogic(FString("On should not be doing any logic."));
-			//OwnerController->SetFocus(nullptr);
-		}
+		ARGX_PlayerCharacter* PlayerCharacter = nullptr;
+		if(OwnerCharacter->TargetActor != nullptr)
+			 PlayerCharacter = Cast<ARGX_PlayerCharacter>(OwnerCharacter->TargetActor);
 
-		if (OwnerCharacter->GetMovementComponent()->IsFalling())
+		if (OwnerCharacter)
 		{
-			OwnerCharacter->GetCharacterMovement()->GravityScale = 0.0f;
-			ACharacter* Character = Cast<ACharacter>(OwnerCharacter);
-			Character->LaunchCharacter(FVector(0.0f, 0.0f, -1.0f), true, true);
+			AAIController* OwnerController = Cast<AAIController>(OwnerCharacter->GetController());
+			if (OwnerController)
+			{
+				OwnerController->GetBrainComponent()->StopLogic(FString("On should not be doing any logic."));
+			}
+
+			if (OwnerCharacter->GetMovementComponent()->IsFalling())
+			{
+				OwnerCharacter->GetCharacterMovement()->GravityScale = 0.0f;
+				ACharacter* Character = Cast<ACharacter>(OwnerCharacter);
+				Character->LaunchCharacter(FVector(0.0f, 0.0f, -1.0f), true, true);
+			}
 		}
 	}
 }

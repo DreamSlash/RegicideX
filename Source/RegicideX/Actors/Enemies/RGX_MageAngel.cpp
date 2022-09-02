@@ -31,7 +31,13 @@ void ARGX_MageAngel::BeginPlay()
 void ARGX_MageAngel::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
 
-	if (bToBeDestroyed)
-		Destroy();
+void ARGX_MageAngel::HandleDamage(float DamageAmount
+	, const FHitResult& HitInfo
+	, const struct FGameplayTagContainer& DamageTags
+	, ARGX_CharacterBase* InstigatorCharacter
+	, AActor* DamageCauser)
+{
+	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser);
 }

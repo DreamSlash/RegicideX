@@ -8,6 +8,7 @@
 #include "RegicideX/Components/RGX_CombatAssistComponent.h"
 #include "RegicideX/Character/RGX_PlayerCharacter.h"
 #include "RegicideX/Components/RGX_HitboxComponent.h"
+#include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 
 URGX_PlayHitboxMontageAbility::URGX_PlayHitboxMontageAbility()
 {
@@ -42,13 +43,19 @@ void URGX_PlayHitboxMontageAbility::ActivateAbility(
 	PlayMontageAndWaitForEventTask->OnBlendOut.AddDynamic(this, &URGX_PlayHitboxMontageAbility::OnMontageFinished);
 	PlayMontageAndWaitForEventTask->OnCancelled.AddDynamic(this, &URGX_PlayHitboxMontageAbility::OnMontageFinished);
 	PlayMontageAndWaitForEventTask->OnCompleted.AddDynamic(this, &URGX_PlayHitboxMontageAbility::OnMontageFinished);
-	PlayMontageAndWaitForEventTask->EventReceived.AddDynamic(this, &URGX_PlayHitboxMontageAbility::OnReceivedEvent);
+	PlayMontageAndWaitForEventTask->EventReceived.AddDynamic(this, &URGX_PlayHitboxMontageAbility::HandleReceivedEvent);
 	PlayMontageAndWaitForEventTask->ReadyForActivation();
 }
 
 void URGX_PlayHitboxMontageAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
 	Super::EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, bReplicateEndAbility, bWasCancelled);
+
+	ARGX_CharacterBase* Character = Cast<ARGX_CharacterBase>(GetAvatarActorFromActorInfo());
+	if (Character)
+	{
+		Character->bCanRotate = true;
+	}
 }
 
 void URGX_PlayHitboxMontageAbility::OnMontageFinished(FGameplayTag EventTag, FGameplayEventData EventData)
@@ -56,14 +63,17 @@ void URGX_PlayHitboxMontageAbility::OnMontageFinished(FGameplayTag EventTag, FGa
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
 }
 
-void URGX_PlayHitboxMontageAbility::OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData)
+void URGX_PlayHitboxMontageAbility::HandleReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData)
 {
+	bool bWasHandled = false;
+
 	AActor* OwnerActor = GetOwningActorFromActorInfo();
 	ARGX_CharacterBase* OwnerCharacter = Cast<ARGX_CharacterBase>(OwnerActor);
 	UAbilitySystemComponent* OwnerACS = OwnerCharacter->GetAbilitySystemComponent();
 	const ARGX_CharacterBase* TargetCharacter = Cast<ARGX_CharacterBase>(EventData.Target);
 	UAbilitySystemComponent* TargetACS = TargetCharacter ? TargetCharacter->GetAbilitySystemComponent() : nullptr;
 
+	// TODO: Correct the ACS that apply the effects
 	// Find the effect mapped to the triggering event tag to apply to target.
 	if (EffectToApplyToTargetWithPayload.Contains(EventTag) && TargetACS)
 	{
@@ -77,6 +87,7 @@ void URGX_PlayHitboxMontageAbility::OnReceivedEvent(FGameplayTag EventTag, FGame
 		FGameplayEffectSpec* GESpec = GameplayEffectSpecHandle.Data.Get();
 		GESpec->SetContext(EffectContext);
 		TargetACS->ApplyGameplayEffectSpecToSelf(*GESpec);
+		bWasHandled = true;
 	}
 
 	// Apply own effects, such as cooldowns.
@@ -92,7 +103,11 @@ void URGX_PlayHitboxMontageAbility::OnReceivedEvent(FGameplayTag EventTag, FGame
 		FGameplayEffectSpec* GESpec = GameplayEffectSpecHandle.Data.Get();
 		GESpec->SetContext(EffectContext);
 		OwnerACS->ApplyGameplayEffectSpecToSelf(*GESpec);
+		bWasHandled = true;
 	}
+	
+	// TODO: can this be called before child overrides?
+	OnHandleReceivedEvent(EventTag, EventData, bWasHandled);
 }
 
 void URGX_PlayHitboxMontageAbility::PopulateGameplayEffectContext(FRGX_GameplayEffectContext& GameplayEffectContext)

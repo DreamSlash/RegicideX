@@ -88,7 +88,7 @@ void URGX_AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 			HitResult = *Context.GetHitResult();
 		}
 
-		const float LocalDamage = GetDamage();
+		const float LocalDamage = TargetCharacter->HandleDamageMitigation(GetDamage(), HitResult, SourceTags, SourceCharacter, SourceActor);
 		SetDamage(0.0f);
 
 		if (LocalDamage > 0.0f)

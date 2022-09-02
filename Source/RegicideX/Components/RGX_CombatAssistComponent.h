@@ -57,6 +57,9 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FRGX_TargetUpdatedDelegate OnTargetUpdated;
 
+	UFUNCTION(BlueprintCallable)
+	void SetMovementSpeed(const float Speed);
+
 protected:
 
 	void UpdateTarget();
