@@ -92,7 +92,7 @@ void URGX_HitboxComponent::GetOverlappingActors(TSet<AActor*>& OverlappingActors
 		shape->GetOverlappingActors(OverlappingActors, ClassFilter);
 	}
 
-	UE_LOG(LogTemp, Warning, TEXT("Num of overlapped actors: %d"), OverlappingActors.Num());
+	//UE_LOG(LogTemp, Warning, TEXT("Num of overlapped actors: %d"), OverlappingActors.Num());
 }
 
 void URGX_HitboxComponent::ActivateHitbox(bool bActivateEffect)

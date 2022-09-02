@@ -130,7 +130,7 @@ void ARGX_DistanceAngel::TPToOriginalHeight()
 	const FVector UpVector = GetActorUpVector();
 	if (GetWorld()->LineTraceSingleByChannel(Result, ActorLocation + UpVector * UpRaySrcOffset, ActorLocation + UpVector * UpRayEndOffset, ECollisionChannel::ECC_WorldStatic))
 	{
-		NewHeight = Result.ImpactPoint.Z + ActorMidHeight;
+		NewHeight = Result.ImpactPoint.Z - ActorMidHeight;
 	}
 	ActorLocation.Z = NewHeight;
 	SphereCollider->SetWorldLocation(ActorLocation);
