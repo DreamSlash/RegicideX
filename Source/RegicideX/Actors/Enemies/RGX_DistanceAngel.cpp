@@ -21,8 +21,8 @@ ARGX_DistanceAngel::ARGX_DistanceAngel() : ARGX_EnemyBase()
 {
 	Ring_1_Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ring1"));
 	Ring_2_Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ring2"));
-	BulletHellSphere = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletHellSphere"));
-	BulletHellOutSphere = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BulletHellOutSphere"));
+	ForceFieldSphere = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ForceFieldSphere"));
+	ForceFieldOutSphere = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ForceFieldOutSphere"));
 
 	SphereCollider = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollider"));
 
@@ -34,21 +34,21 @@ ARGX_DistanceAngel::ARGX_DistanceAngel() : ARGX_EnemyBase()
 	Ring_2_Mesh->SetRelativeLocation(FVector(0.0));
 	Ring_1_Mesh->SetupAttachment(SphereCollider);
 	Ring_2_Mesh->SetupAttachment(Ring_1_Mesh);
-	BulletHellSphere->SetupAttachment(SphereCollider);
+	ForceFieldSphere->SetupAttachment(SphereCollider);
 
 	FloorReturnPlace->SetRelativeLocation(FVector(0.0));
 	FloorReturnPlace->SetupAttachment(RootComponent);
 
 	HealthDisplayWidgetComponent->SetupAttachment(SphereCollider);
 	CombatTargetWidgetComponent->SetupAttachment(SphereCollider);
-	BulletHellOutSphere->SetupAttachment(SphereCollider);
+	ForceFieldOutSphere->SetupAttachment(SphereCollider);
 
 	BHHitboxComponent = CreateDefaultSubobject<URGX_HitboxComponent>(TEXT("BHHitboxComponent"));
 	BHHitboxComponent->SetupAttachment(SphereCollider);
 
-	BulletHellSphereCollider = CreateDefaultSubobject<USphereComponent>(TEXT("BulletHellSphereCollider"));
-	BulletHellSphereCollider->SetupAttachment(BHHitboxComponent);
-	BulletHellSphere->SetHiddenInGame(true);
+	ForceFieldSphereCollider = CreateDefaultSubobject<USphereComponent>(TEXT("ForceFieldSphereCollider"));
+	ForceFieldSphereCollider->SetupAttachment(BHHitboxComponent);
+	ForceFieldSphere->SetHiddenInGame(true);
 
 	BHHitboxComponent->DeactivateHitbox();
 	BHHitboxComponent->OnHitboxOverlap.AddDynamic(this, &ARGX_DistanceAngel::ApplyForceFieldEffects);
@@ -75,8 +75,6 @@ void ARGX_DistanceAngel::MoveToTarget(float DeltaTime, FVector TargetPos)
 	Super::MoveToTarget(DeltaTime, TargetPos);
 	SetLocationHeight(HeightPos);
 }
-
-
 
 void ARGX_DistanceAngel::RotateToTarget(float DeltaTime)
 {
@@ -221,7 +219,7 @@ void ARGX_DistanceAngel::ApplyForceFieldEffects(AActor* OtherActor)
 			}
 		}
 	}
-	BHHitboxComponent->DeactivateHitbox();
+	//BHHitboxComponent->DeactivateHitbox();
 }
 
 void ARGX_DistanceAngel::HandleDeath()
