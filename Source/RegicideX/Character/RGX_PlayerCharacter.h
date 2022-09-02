@@ -226,8 +226,10 @@ protected:
 	void PerformLaunchAttack();
 	void ChangePowerSkill();
 
-	void EnableTargetting();
-	void DisableTargetting();
+	void EnableTargeting();
+	void DisableTargeting();
+	void TargetLeft();
+	void TargetRight();
 
 	//void ManagePowerSkillInput();
 	void TryToInteract();

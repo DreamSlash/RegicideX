@@ -74,7 +74,7 @@ ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 	InteractComponent			= CreateDefaultSubobject<URGX_InteractComponent>(TEXT("InteractComponent"));
 	InteractComponent->InteractWidgetComponent = InteractWidgetComponent;
 
-	CombatAssistComponent->OnTargetUpdated.__Internal_AddDynamic(CameraControllerComponent, &URGX_CameraControllerComponent::SetTarget, "SetTarget");
+	//CombatAssistComponent->OnTargetUpdated.__Internal_AddDynamic(CameraControllerComponent, &URGX_CameraControllerComponent::SetTarget, "SetTarget");
 }
 
 void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -92,8 +92,10 @@ void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAction("SwitchPowerSkill", IE_Pressed, this, &ARGX_PlayerCharacter::ChangePowerSkill);
 	PlayerInputComponent->BindAction("TimeScale", IE_Pressed, this, &ARGX_PlayerCharacter::ChangeTimeScale);
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ARGX_PlayerCharacter::TryToInteract);
-	PlayerInputComponent->BindAction("EnableTargetting", IE_Pressed, this, &ARGX_PlayerCharacter::EnableTargetting);
-	PlayerInputComponent->BindAction("EnableTargetting", IE_Released, this, &ARGX_PlayerCharacter::DisableTargetting);
+	PlayerInputComponent->BindAction("EnableTargeting", IE_Pressed, this, &ARGX_PlayerCharacter::EnableTargeting);
+	PlayerInputComponent->BindAction("EnableTargeting", IE_Released, this, &ARGX_PlayerCharacter::DisableTargeting);
+	PlayerInputComponent->BindAction("TargetLeft", IE_Pressed, this, &ARGX_PlayerCharacter::TargetLeft);
+	PlayerInputComponent->BindAction("TargetRight", IE_Pressed, this, &ARGX_PlayerCharacter::TargetRight);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ARGX_PlayerCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ARGX_PlayerCharacter::MoveRight);
@@ -379,14 +381,24 @@ void ARGX_PlayerCharacter::ChangePowerSkill()
 	UE_LOG(LogTemp, Warning, TEXT("Power Skill Selected: %s\n"), *SkillName);
 }
 
-void ARGX_PlayerCharacter::EnableTargetting()
+void ARGX_PlayerCharacter::EnableTargeting()
 {
-	CameraControllerComponent->EnableTargetting();
+	CameraControllerComponent->EnableTargeting();
 }
 
-void ARGX_PlayerCharacter::DisableTargetting()
+void ARGX_PlayerCharacter::DisableTargeting()
 {
-	CameraControllerComponent->DisableTargetting();
+	CameraControllerComponent->DisableTargeting();
+}
+
+void ARGX_PlayerCharacter::TargetLeft()
+{
+	CameraControllerComponent->TargetLeft();
+}
+
+void ARGX_PlayerCharacter::TargetRight()
+{
+	CameraControllerComponent->TargetRight();
 }
 
 //void ARGX_PlayerCharacter::LevelUp(const float NewLevel)
