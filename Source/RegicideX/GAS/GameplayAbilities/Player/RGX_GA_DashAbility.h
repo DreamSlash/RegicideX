@@ -16,4 +16,7 @@ class REGICIDEX_API URGX_DashAbility : public URGX_CastSkillAbility
 	void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 protected:
+
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UGameplayEffect> InvulnerabilityEffect;
 };

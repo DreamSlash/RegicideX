@@ -22,7 +22,6 @@ FORCEINLINE bool operator< (const FRGX_ActorAngle& lhs, const FRGX_ActorAngle& r
 {
 	return lhs.Angle < rhs.Angle;
 }
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRGX_TargetUpdatedDelegate, const ARGX_EnemyBase*, Enemy);
 
 UCLASS(meta = (BlueprintSpawnableComponent))
 class REGICIDEX_API URGX_CombatAssistComponent : public UActorComponent
@@ -54,11 +53,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetAttackMoveDuration(float Duration);
 
-	UPROPERTY(BlueprintAssignable)
-	FRGX_TargetUpdatedDelegate OnTargetUpdated;
-
 	UFUNCTION(BlueprintCallable)
 	void SetMovementSpeed(const float Speed);
+
+	UFUNCTION(BlueprintCallable)
+	void SetTargetFromOutside(ARGX_EnemyBase* NewTarget);
 
 protected:
 
@@ -91,7 +90,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float CheckCameraAngle = 30.0f;
 
-	uint32 NumEnemiesInsideFrustum = 0;
 	// --------------------------
 
 	/** Auto Assit Attack */
@@ -103,9 +101,6 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	float MaxAutoassistMove = 200.0f;
-	// ---------------------
-	ARGX_EnemyBase* Target = nullptr;
-	// ----------------------
 
 	/** Attack Movement */
 	UPROPERTY(EditAnywhere)
@@ -114,19 +109,20 @@ protected:
 	UPROPERTY()
 	FVector MoveVectorDirection = FVector(0.0f);
 
-	float MoveVectorSpeed = 0.0f;
-
-	float AutoAssistMove = 0.0f;
-
-	bool bIsAttacking = false;
-
 	UPROPERTY()
 	bool bAddMoveVector = false;
 
+	bool bIsAttacking = false;
 	bool bMoveVectorEnabled = false;
+	bool bIsUpdateTargetEnabled = true;
 
+	TWeakObjectPtr<ARGX_EnemyBase> Target;
+
+	float MoveVectorSpeed = 0.0f;
+	float AutoAssistMove = 0.0f;
 	float AttackMoveDuration = 0.0f;
-
 	float AttackMoveDurationLeft = 0.0f;
-	// ------------------------------
+
+	uint32 NumEnemiesInsideFrustum = 0;
+
 };

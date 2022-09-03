@@ -73,7 +73,7 @@ ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 	InteractComponent			= CreateDefaultSubobject<URGX_InteractComponent>(TEXT("InteractComponent"));
 	InteractComponent->InteractWidgetComponent = InteractWidgetComponent;
 
-	//CombatAssistComponent->OnTargetUpdated.__Internal_AddDynamic(CameraControllerComponent, &URGX_CameraControllerComponent::SetTarget, "SetTarget");
+	CameraControllerComponent->OnTargetUpdated.__Internal_AddDynamic(CombatAssistComponent, &URGX_CombatAssistComponent::SetTargetFromOutside, "SetTargetFromOutside");
 }
 
 void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

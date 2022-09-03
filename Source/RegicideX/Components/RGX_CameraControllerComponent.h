@@ -7,6 +7,8 @@
 
 class ARGX_EnemyBase;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRGX_TargetUpdatedDelegate, ARGX_EnemyBase*, Enemy);
+
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class REGICIDEX_API URGX_CameraControllerComponent : public UActorComponent
 {
@@ -42,6 +44,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float TargetingConeAngle = 30.0f;
+
+	UPROPERTY(BlueprintAssignable)
+		FRGX_TargetUpdatedDelegate OnTargetUpdated;
 
 protected:
 	// Called when the game starts
