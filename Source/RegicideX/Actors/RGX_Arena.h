@@ -90,4 +90,6 @@ private:
 
 	UPROPERTY(EditAnywhere, Category = Wave)
 	URGX_ArenaWaveDataAsset* WaveDataAsset = nullptr;
+
+	URGX_ArenaWaveDataAsset* CurrentWave = nullptr;
 };

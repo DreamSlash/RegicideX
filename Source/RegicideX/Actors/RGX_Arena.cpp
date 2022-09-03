@@ -26,6 +26,8 @@ void ARGX_Arena::BeginPlay()
 
 	ArenaArea->OnComponentBeginOverlap.AddDynamic(this, &ARGX_Arena::OnComponentBeginOverlap);
 	ArenaArea->OnComponentEndOverlap.AddDynamic(this, &ARGX_Arena::OnComponentEndOverlap);
+
+	CurrentWave = WaveDataAsset;
 }
 
 void ARGX_Arena::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -60,11 +62,11 @@ void ARGX_Arena::SpawnWave()
 
 	TArray<FName> EnemyWaveNames = DT_EnemyRefs->GetRowNames();
 
-	if (EnemyWaveNames.Num() != WaveDataAsset->NumEnemies.Num()) return;
+	if (EnemyWaveNames.Num() != CurrentWave->NumEnemies.Num()) return;
 
-	for (int i = 0; i < WaveDataAsset->NumEnemies.Num(); ++i)
+	for (int i = 0; i < CurrentWave->NumEnemies.Num(); ++i)
 	{
-		SpawnEnemyTypeGroup(EnemyWaveNames[i], WaveDataAsset->NumEnemies[i]);
+		SpawnEnemyTypeGroup(EnemyWaveNames[i], CurrentWave->NumEnemies[i]);
 	}
 
 	bEnemiesSpawned = true;
@@ -103,6 +105,19 @@ void ARGX_Arena::SpawnEnemy(TSubclassOf<ARGX_EnemyBase> EnemyClass, int32 Spawne
 
 void ARGX_Arena::HandleFinishWave()
 {
+	if (CurrentWave->ChildWaves.Num() > 0)
+	{
+		for (int i = 0; i < CurrentWave->ChildWaves.Num(); i++)
+		{
+			CurrentWave->ChildWaves[i];
+			bEnemiesSpawned;
+		}
+	}
+	else
+	{
+		HandleFinishArena();
+	}
+
 	UE_LOG(LogTemp, Warning, TEXT("Wave Finished"));
 }
 
@@ -168,4 +183,3 @@ void ARGX_Arena::Tick(float DeltaTime)
 	// Spawn Wave
 	SpawnWave();
 }
-
