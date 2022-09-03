@@ -8,6 +8,7 @@
 #include "GameFramework/Controller.h"
 #include "GenericTeamAgentInterface.h"
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
+#include "RegicideX/Components/RGX_CameraControllerComponent.h"
 #include "RegicideX/Components/RGX_ComboSystemComponent.h"
 #include "RegicideX/Components/RGX_HitboxComponent.h"
 #include "RegicideX/Components/RGX_InputHandlerComponent.h"
@@ -61,12 +62,18 @@ ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 	InteractWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("InteractWidgetComponent"));
 	InteractWidgetComponent->SetupAttachment(FollowCamera);
 
-	ComboSystemComponent	= CreateDefaultSubobject<URGX_ComboSystemComponent>(TEXT("ComboSystemComponent"));
-	CombatAssistComponent	= CreateDefaultSubobject<URGX_CombatAssistComponent>(TEXT("CombatAssistComponent"));
-	InputHandlerComponent	= CreateDefaultSubobject<URGX_InputHandlerComponent>(TEXT("InputHandlerComponent"));
-	MovementAttributeSet	= CreateDefaultSubobject<URGX_MovementAttributeSet>(TEXT("MovementAttributeSet"));
-	InteractComponent		= CreateDefaultSubobject<URGX_InteractComponent>(TEXT("InteractComponent"));
+	CameraControllerComponent	= CreateDefaultSubobject<URGX_CameraControllerComponent>(TEXT("CameraControllerComponent"));
+	CameraControllerComponent->Camera = FollowCamera;
+	CameraControllerComponent->SpringArm = CameraBoom;
+
+	ComboSystemComponent		= CreateDefaultSubobject<URGX_ComboSystemComponent>(TEXT("ComboSystemComponent"));
+	CombatAssistComponent		= CreateDefaultSubobject<URGX_CombatAssistComponent>(TEXT("CombatAssistComponent"));
+	InputHandlerComponent		= CreateDefaultSubobject<URGX_InputHandlerComponent>(TEXT("InputHandlerComponent"));
+	MovementAttributeSet		= CreateDefaultSubobject<URGX_MovementAttributeSet>(TEXT("MovementAttributeSet"));
+	InteractComponent			= CreateDefaultSubobject<URGX_InteractComponent>(TEXT("InteractComponent"));
 	InteractComponent->InteractWidgetComponent = InteractWidgetComponent;
+
+	//CombatAssistComponent->OnTargetUpdated.__Internal_AddDynamic(CameraControllerComponent, &URGX_CameraControllerComponent::SetTarget, "SetTarget");
 }
 
 void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -87,6 +94,10 @@ void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAction("SwitchPowerSkill", IE_Pressed, this, &ARGX_PlayerCharacter::ChangePowerSkill);
 	PlayerInputComponent->BindAction("TimeScale", IE_Pressed, this, &ARGX_PlayerCharacter::ChangeTimeScale);
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ARGX_PlayerCharacter::TryToInteract);
+	PlayerInputComponent->BindAction("EnableTargeting", IE_Pressed, this, &ARGX_PlayerCharacter::EnableTargeting);
+	PlayerInputComponent->BindAction("EnableTargeting", IE_Released, this, &ARGX_PlayerCharacter::DisableTargeting);
+	PlayerInputComponent->BindAction("TargetLeft", IE_Pressed, this, &ARGX_PlayerCharacter::TargetLeft);
+	PlayerInputComponent->BindAction("TargetRight", IE_Pressed, this, &ARGX_PlayerCharacter::TargetRight);
 
 	PlayerInputComponent->BindAxis("MoveForward", this, &ARGX_PlayerCharacter::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &ARGX_PlayerCharacter::MoveRight);
@@ -385,6 +396,26 @@ void ARGX_PlayerCharacter::ChangePowerSkill()
 
 	FString SkillName = PowerSkills[CurrentSkillSelected].ToString();
 	//UE_LOG(LogTemp, Warning, TEXT("Power Skill Selected: %s\n"), *SkillName);
+}
+
+void ARGX_PlayerCharacter::EnableTargeting()
+{
+	CameraControllerComponent->EnableTargeting();
+}
+
+void ARGX_PlayerCharacter::DisableTargeting()
+{
+	CameraControllerComponent->DisableTargeting();
+}
+
+void ARGX_PlayerCharacter::TargetLeft()
+{
+	CameraControllerComponent->TargetLeft();
+}
+
+void ARGX_PlayerCharacter::TargetRight()
+{
+	CameraControllerComponent->TargetRight();
 }
 
 //void ARGX_PlayerCharacter::LevelUp(const float NewLevel)

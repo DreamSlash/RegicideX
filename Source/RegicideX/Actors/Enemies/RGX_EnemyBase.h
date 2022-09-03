@@ -75,6 +75,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int ScoreValue = 10;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool Orbiting = false;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	URGX_HitboxesManagerComponent* HitboxesManager = nullptr;
 
