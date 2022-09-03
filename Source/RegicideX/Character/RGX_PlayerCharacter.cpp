@@ -637,6 +637,7 @@ void ARGX_PlayerCharacter::MoveRight(float Value)
 void ARGX_PlayerCharacter::TurnAtRate(float Rate)
 {
 	// TODO: Only TurnAtRate or AddControllerYawInput should modify YawChange at a time, depending if the user is using mouse or controller
+	CameraControllerComponent->CheckYawInput(Rate);
 	YawChange = Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds();
 	Super::AddControllerYawInput(YawChange);
 }
