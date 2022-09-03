@@ -6,9 +6,14 @@
 #include "AbilitySystemGlobals.h"
 #include "AbilitySystemComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
+#include "DrawDebugHelpers.h"
 #include "GameplayTags.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "NiagaraComponent.h"
 #include "NiagaraFunctionLibrary.h"
+
+#include "RegicideX/Character/RGX_PlayerCharacter.h"
 
 // Sets default values
 ARGX_ExplosivePillar::ARGX_ExplosivePillar()
@@ -19,27 +24,85 @@ ARGX_ExplosivePillar::ARGX_ExplosivePillar()
 	PillarCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("PillarCollider"));
 	PillarCollider->SetupAttachment(RootComponent);
 
-	PillarCollider->OnComponentBeginOverlap.AddUniqueDynamic(this, &ARGX_ExplosivePillar::Explode);
+	ActivationCollider = CreateDefaultSubobject<UCapsuleComponent>(TEXT("ActivationCollider"));
+	ActivationCollider->SetupAttachment(RootComponent);
+
+	ExplosionSource = CreateDefaultSubobject<USceneComponent>(TEXT("ExplosionSource"));
+	ExplosionSource->SetupAttachment(RootComponent);
+
+	ActivationCollider->OnComponentBeginOverlap.AddUniqueDynamic(this, &ARGX_ExplosivePillar::Activate);
+	PillarCollider->OnComponentBeginOverlap.AddUniqueDynamic(this, &ARGX_ExplosivePillar::Detonate);
 }
 
 // Called when the game starts or when spawned
 void ARGX_ExplosivePillar::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	GetWorld()->GetTimerManager().SetTimer(ActivationTimerHandle, [this]() { Activate(); }, TimeToActivate, false);
 
-	SetLifeSpan(LifeTime);
+	DrawDebugCapsule(GetWorld(), ActivationCollider->GetComponentLocation(), ActivationCollider->GetScaledCapsuleHalfHeight(), ActivationCollider->GetScaledCapsuleRadius(), ActivationCollider->GetComponentRotation().Quaternion(), FColor::Yellow, false, TimeToActivate);
 }
 
-void ARGX_ExplosivePillar::Explode(UPrimitiveComponent* OverlappedComponent
+void ARGX_ExplosivePillar::Activate(UPrimitiveComponent* OverlappedComponent
 	, AActor* OtherActor
 	, UPrimitiveComponent* OtherComp
 	, int32 OtherBodyIndex
 	, bool bFromSweep
 	, const FHitResult& SweepResult)
 {
-	if (OnPlayerOverlaps(OtherActor))
+	if (IsPlayerOverlapping(OtherActor))
 	{
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionVFX, GetActorLocation(), GetActorRotation(), FVector(3.0f, 3.0f, 1.0f));
-		Destroy();
+		// If is already activated, do nothing
+		if (ExplosionTimerHandle.IsValid() == false)
+		{
+			GetWorld()->GetTimerManager().ClearTimer(ActivationTimerHandle);
+			Activate();
+		}
 	}
+}
+
+void ARGX_ExplosivePillar::Detonate(UPrimitiveComponent* OverlappedComponent
+	, AActor* OtherActor
+	, UPrimitiveComponent* OtherComp
+	, int32 OtherBodyIndex
+	, bool bFromSweep
+	, const FHitResult& SweepResult)
+{
+	if (IsPlayerOverlapping(OtherActor))
+	{
+		if (ExplosionTimerHandle.IsValid())
+		{
+			GetWorld()->GetTimerManager().ClearTimer(ExplosionTimerHandle);
+		}
+
+		Explode();
+	}
+}
+
+void ARGX_ExplosivePillar::Activate()
+{
+	GetWorld()->GetTimerManager().SetTimer(ExplosionTimerHandle, [this]() { Explode(); }, TimeToExplode, false);
+
+	DrawDebugSphere(GetWorld(), ExplosionSource->GetComponentLocation(), ExplosionRadius, 16, FColor::Red, false, TimeToExplode);
+}
+
+void ARGX_ExplosivePillar::Explode()
+{
+	TArray<TEnumAsByte<EObjectTypeQuery>> traceObjectTypes; traceObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Pawn));
+	UClass* targetClass = ARGX_PlayerCharacter::StaticClass();
+	TArray<AActor*> ignoredActors;
+	TArray<AActor*> targets;
+	UKismetSystemLibrary::SphereOverlapActors(GetWorld(), ExplosionSource->GetComponentLocation(), ExplosionRadius, traceObjectTypes, targetClass, ignoredActors, targets);
+
+	if (targets.Num() > 0)
+	{
+		if (OnPlayerOverlaps(targets[0]))
+		{
+			// Do something if player was overlapping
+		}
+	}
+
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionVFX, ExplosionSource->GetComponentLocation(), GetActorRotation(), FVector(3.0f, 3.0f, 1.0f));
+	Destroy();
 }

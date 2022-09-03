@@ -26,25 +26,33 @@ FGenericTeamId ARGX_EffectApplierActor::GetGenericTeamId() const
 	return ActorTeam;
 }
 
+bool ARGX_EffectApplierActor::IsPlayerOverlapping(AActor* Actor)
+{
+	if (UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Actor, true))
+	{
+		return ASC->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("PossessedBy.Player"));
+	}
+
+	return false;
+}
+
 bool ARGX_EffectApplierActor::OnPlayerOverlaps(AActor* Player)
 {
-	if (UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Player, true))
+	if (IsPlayerOverlapping(Player))
 	{
-		if (ASC->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("PossessedBy.Player")))
+		UAbilitySystemComponent* ASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Player, true);
+		for (const FRGX_EffectContextContainer& effectContextContainer : EffectToApplyToTargetWithPayload)
 		{
-			for (const FRGX_EffectContextContainer& effectContextContainer : EffectToApplyToTargetWithPayload)
-			{
-				FGameplayEffectContextHandle effectContext = ASC->MakeEffectContext();
-				FRGX_GameplayEffectContext* gameplayEffectContext = static_cast<FRGX_GameplayEffectContext*>(effectContext.Get());
-				gameplayEffectContext->OptionalObject = effectContextContainer.Payload;
+			FGameplayEffectContextHandle effectContext = ASC->MakeEffectContext();
+			FRGX_GameplayEffectContext* gameplayEffectContext = static_cast<FRGX_GameplayEffectContext*>(effectContext.Get());
+			gameplayEffectContext->OptionalObject = effectContextContainer.Payload;
 
-				const UGameplayEffect* gameplayEffect = effectContextContainer.EffectToApply->GetDefaultObject<UGameplayEffect>();
-				constexpr int32 level = 0;
-				ASC->ApplyGameplayEffectToSelf(gameplayEffect, level, effectContext);
-			}
-
-			return true;
+			const UGameplayEffect* gameplayEffect = effectContextContainer.EffectToApply->GetDefaultObject<UGameplayEffect>();
+			constexpr int32 level = 0;
+			ASC->ApplyGameplayEffectToSelf(gameplayEffect, level, effectContext);
 		}
+
+		return true;
 	}
 
 	return false;
