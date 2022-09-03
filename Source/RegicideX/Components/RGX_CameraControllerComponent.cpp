@@ -315,4 +315,6 @@ void URGX_CameraControllerComponent::SetTarget(ARGX_EnemyBase* NewTarget)
 	{
 		SpringArm->bUsePawnControlRotation = true;
 	}
+
+	OnTargetUpdated.Broadcast(CurrentTarget.Get());
 }
