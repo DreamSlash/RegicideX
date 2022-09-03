@@ -8,6 +8,15 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FArenaActivateSignature, class ARGX_Arena*, ArenaActivated);
 
+USTRUCT()
+struct FRGX_Wave
+{
+	GENERATED_BODY()
+
+public:
+	TArray<class ARGX_EnemyBase*> Enemies;
+};
+
 /* This class has a shape which represents the arena where the player will fight. All actors that add logic to said arena
 * must be inside this shape (like spawners) to have an effect. The arena is activated by event when the player enters
 * the shape, and there should be some guarantee the player does not leave until the arena is finished.
@@ -32,6 +41,10 @@ private:
 	/* Get all spawners overlapping shape and initialize the EnemySpawners array */
 	void InitializeSpawners();
 
+	void SpawnWave();
+	void SpawnEnemy(int32 SpawnerNum);
+	void HandleFinishWave();
+
 	UFUNCTION()
 	void OnComponentBeginOverlap(
 		UPrimitiveComponent* OverlappedComponent,
@@ -48,6 +61,9 @@ private:
 		UPrimitiveComponent* OtherComp,
 		int32 OtherBodyIndex);
 
+	UFUNCTION()
+	void OnEnemyDeath(int32 Score);
+
 public:
 	FArenaActivateSignature OnArenaActivated;
 
@@ -55,12 +71,23 @@ private:
 	bool bActivated = false;
 	bool bFinished = false;
 	bool bIsInitialized = false;
+	bool bEnemiesSpawned = false;
+
+	UPROPERTY(EditAnywhere, Category = Spawn)
+	int32 NumEnemiesToSpawn;
+
+	int32 EnemiesLeft;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<class ARGX_EnemyBase> EnemyClass;
 
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* ArenaArea;
 
-	UPROPERTY(EditDefaultsOnly, Category = Spawner)
+	UPROPERTY(EditDefaultsOnly, Category = Spawn)
 	TSubclassOf<class ARGX_EnemySpawner> EnemySpawnerClass;
 
 	TArray<ARGX_EnemySpawner*>  EnemySpawners;
+
+	class ARGX_PlayerCharacter* PlayerCharacter;
 };
