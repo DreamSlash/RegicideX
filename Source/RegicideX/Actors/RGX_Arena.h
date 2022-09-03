@@ -10,6 +10,20 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FArenaActivatedSignature, class ARGX_Arena*, ArenaActivated);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FArenaDeactivatedSignature, class ARGX_Arena*, ArenaDeactivated);
 
+UCLASS()
+class REGICIDEX_API URGX_OutgoingWave : public UObject
+{
+	GENERATED_BODY()
+
+public:
+	URGX_ArenaWaveDataAsset* WaveData;
+	int32 EnemiesLeft = 0;
+
+public:
+	UFUNCTION()
+	void OnEnemyDeath(int32 Score);
+};
+
 /* This class has a shape which represents the arena where the player will fight. All actors that add logic to said arena
 * must be inside this shape (like spawners) to have an effect. The arena is activated by event when the player enters
 * the shape, and there should be some guarantee the player does not leave until the arena is finished.
@@ -91,5 +105,5 @@ private:
 	UPROPERTY(EditAnywhere, Category = Wave)
 	URGX_ArenaWaveDataAsset* WaveDataAsset = nullptr;
 
-	URGX_ArenaWaveDataAsset* CurrentWave = nullptr;
+	URGX_OutgoingWave* CurrentWave;
 };

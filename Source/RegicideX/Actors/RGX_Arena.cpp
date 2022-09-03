@@ -27,7 +27,15 @@ void ARGX_Arena::BeginPlay()
 	ArenaArea->OnComponentBeginOverlap.AddDynamic(this, &ARGX_Arena::OnComponentBeginOverlap);
 	ArenaArea->OnComponentEndOverlap.AddDynamic(this, &ARGX_Arena::OnComponentEndOverlap);
 
-	CurrentWave = WaveDataAsset;
+	CurrentWave = NewObject<URGX_OutgoingWave>(this, URGX_OutgoingWave::StaticClass());
+	if (CurrentWave)
+	{
+		CurrentWave->WaveData = WaveDataAsset;
+	}
+	else
+	{
+		UE_LOG(LogTemp, Log, TEXT("Failed to create OutgoingWave class"));
+	}
 }
 
 void ARGX_Arena::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -61,12 +69,13 @@ void ARGX_Arena::SpawnWave()
 	if (EnemySpawners.Num() <= 0) return;
 
 	TArray<FName> EnemyWaveNames = DT_EnemyRefs->GetRowNames();
+	URGX_ArenaWaveDataAsset* CurrentWaveData = CurrentWave->WaveData;
 
-	if (EnemyWaveNames.Num() != CurrentWave->NumEnemies.Num()) return;
+	if (EnemyWaveNames.Num() != CurrentWaveData->NumEnemies.Num()) return;
 
-	for (int i = 0; i < CurrentWave->NumEnemies.Num(); ++i)
+	for (int i = 0; i < CurrentWaveData->NumEnemies.Num(); ++i)
 	{
-		SpawnEnemyTypeGroup(EnemyWaveNames[i], CurrentWave->NumEnemies[i]);
+		SpawnEnemyTypeGroup(EnemyWaveNames[i], CurrentWaveData->NumEnemies[i]);
 	}
 
 	bEnemiesSpawned = true;
@@ -97,7 +106,9 @@ void ARGX_Arena::SpawnEnemy(TSubclassOf<ARGX_EnemyBase> EnemyClass, int32 Spawne
 		if (ARGX_EnemyBase* Enemy = (Cast<ARGX_EnemySpawner>(EnemySpawners[SpawnerNum])->Spawn(EnemyClass)))
 		{
 			Enemy->OnHandleDeathEvent.AddUObject(this, &ARGX_Arena::OnEnemyDeath);
+			Enemy->OnHandleDeathEvent.AddUObject(CurrentWave, &URGX_OutgoingWave::OnEnemyDeath);
 			Enemy->TargetActor = PlayerCharacter;
+			CurrentWave->EnemiesLeft++;
 			EnemiesLeft++;
 		}
 	}
@@ -105,24 +116,28 @@ void ARGX_Arena::SpawnEnemy(TSubclassOf<ARGX_EnemyBase> EnemyClass, int32 Spawne
 
 void ARGX_Arena::HandleFinishWave()
 {
-	if (CurrentWave->ChildWaves.Num() > 0)
+	UE_LOG(LogTemp, Warning, TEXT("Wave Finished"));
+
+	URGX_ArenaWaveDataAsset* CurrentWaveData = CurrentWave->WaveData;
+
+	if (CurrentWaveData->ChildWaves.Num() > 0)
 	{
-		for (int i = 0; i < CurrentWave->ChildWaves.Num(); i++)
+		for (int i = 0; i < CurrentWaveData->ChildWaves.Num(); i++)
 		{
-			CurrentWave->ChildWaves[i];
-			bEnemiesSpawned;
+			CurrentWave->WaveData = CurrentWaveData->ChildWaves[i];
+			bEnemiesSpawned = false;
 		}
 	}
 	else
 	{
 		HandleFinishArena();
 	}
-
-	UE_LOG(LogTemp, Warning, TEXT("Wave Finished"));
 }
 
 void ARGX_Arena::HandleFinishArena()
 {
+	UE_LOG(LogTemp, Warning, TEXT("Arena Finished"));
+
 	bFinished = true;
 
 	if (OnArenaDeactivated.IsBound())
@@ -182,4 +197,13 @@ void ARGX_Arena::Tick(float DeltaTime)
 
 	// Spawn Wave
 	SpawnWave();
+}
+
+void URGX_OutgoingWave::OnEnemyDeath(int32 Score)
+{
+	UE_LOG(LogTemp, Log, TEXT("OutgoingWave OnEnemyDeath"));
+
+	EnemiesLeft--;
+
+	// If enemies are 0, trigger event
 }
