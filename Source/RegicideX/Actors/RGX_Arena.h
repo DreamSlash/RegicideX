@@ -19,10 +19,41 @@ class REGICIDEX_API ARGX_Arena : public AActor
 public:	
 	ARGX_Arena();
 
-protected:
-	virtual void BeginPlay() override;
-
-public:	
+public:
 	virtual void Tick(float DeltaTime) override;
 
+protected:
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+private:
+	/* Get all spawners overlapping shape and initialize the EnemySpawners array */
+	void InitializeSpawners();
+
+	UFUNCTION()
+	void OnComponentBeginOverlap(
+		UPrimitiveComponent* OverlappedComponent,
+		AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult& SweepResult);
+
+	UFUNCTION()
+		void OnComponentEndOverlap(
+			UPrimitiveComponent* OverlappedComponent,
+			AActor* OtherActor,
+			UPrimitiveComponent* OtherComp,
+			int32 OtherBodyIndex);
+
+private:
+	bool bIsInitialized = false;
+
+	UPROPERTY(EditAnywhere)
+	class UBoxComponent* ArenaArea;
+
+	UPROPERTY(EditDefaultsOnly, Category = Spawner)
+	TSubclassOf<class ARGX_EnemySpawner> EnemySpawnerClass;
+
+	TArray<ARGX_EnemySpawner*>  EnemySpawners;
 };
