@@ -56,6 +56,8 @@ public:
 	void EnableTargeting();
 	void DisableTargeting();
 
+	void CheckYawInput(float Rate);
+
 	void TargetLeft();
 	void TargetRight();
 
@@ -76,5 +78,6 @@ private:
 	float OriginalArmLength;
 
 	bool bIsActive = false;
+	bool bFindNearestTargetExecuted = false;
 
 };
