@@ -19,7 +19,14 @@ public:
 
 protected:
 	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 private:
+	UFUNCTION()
+	void OnArenaActivated(class ARGX_Arena* ActivatedArena);
 
+private:
+	ARGX_Arena* CurrentArena;
+
+	TArray<ARGX_Arena*> Arenas;
 };

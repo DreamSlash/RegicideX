@@ -53,6 +53,12 @@ void ARGX_Arena::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponen
 	ARGX_PlayerCharacter* Player = Cast<ARGX_PlayerCharacter>(OtherActor);
 	if (Player)
 	{
+		bActivated = true;
+		if (OnArenaActivated.IsBound())
+		{
+			OnArenaActivated.Broadcast(this);
+		}
+
 		UE_LOG(LogTemp, Warning, TEXT("Player Begin Overlap"));
 	}
 }
