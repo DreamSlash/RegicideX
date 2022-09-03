@@ -36,8 +36,8 @@ EBTNodeResult::Type URGX_BTTask_OrbitAroundTarget::ExecuteTask(UBehaviorTreeComp
 		return EBTNodeResult::Failed;
 	}
 
-	const float OrbitMinTime = OwnerComp.GetBlackboardComponent()->GetValueAsFloat(OrbitMinTimeName);
-	const float OrbitMaxTime = OwnerComp.GetBlackboardComponent()->GetValueAsFloat(OrbitMaxTimeName);
+	/*const float OrbitMinTime = OwnerComp.GetBlackboardComponent()->GetValueAsFloat(OrbitMinTimeName);
+	const float OrbitMaxTime = OwnerComp.GetBlackboardComponent()->GetValueAsFloat(OrbitMaxTimeName);*/
 
 	// Set orbit time for this task execution
 	const float OrbitTime = UKismetMathLibrary::RandomFloatInRange(OrbitMinTime, OrbitMaxTime);
@@ -47,6 +47,8 @@ EBTNodeResult::Type URGX_BTTask_OrbitAroundTarget::ExecuteTask(UBehaviorTreeComp
 	OwnerComp.GetBlackboardComponent()->SetValueAsFloat(OrbitDirectionName, OrbitDirection);
 
 	bNotifyTick = true;
+
+	Enemy->Orbiting = true;
 
 	return EBTNodeResult::InProgress;
 }
@@ -138,10 +140,14 @@ void URGX_BTTask_OrbitAroundTarget::TickTask(UBehaviorTreeComponent& OwnerComp, 
 
 	const float OrbitTime = OwnerComp.GetBlackboardComponent()->GetValueAsFloat(OrbitTimeName);
 
+	Enemy->RotateToTarget(DeltaSeconds);
+
 	if (CurrentOrbitTime > OrbitTime)
 	{
 		CurrentOrbitTime = 0.0f;
 		OwnerComp.GetBlackboardComponent()->SetValueAsFloat(CurrentOrbitTimeName, CurrentOrbitTime);
+		Enemy->Orbiting = false;
+		Enemy->GetCharacterMovement()->MaxWalkSpeed = Enemy->MoveSpeed;
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 	else
@@ -150,30 +156,19 @@ void URGX_BTTask_OrbitAroundTarget::TickTask(UBehaviorTreeComponent& OwnerComp, 
 	}
 }
 
-void URGX_BTTask_OrbitAroundTarget::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult)
-{
-	Super::OnTaskFinished(OwnerComp, NodeMemory, TaskResult);
-
-	AAIController* AIController = OwnerComp.GetAIOwner();
-	if (AIController == nullptr)
-	{
-		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
-		return;
-	}
-
-	APawn* ControlledPawn = AIController->GetPawn();
-	if (ControlledPawn == nullptr)
-	{
-		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
-		return;
-	}
-
-	ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(ControlledPawn);
-	if (Enemy == nullptr)
-	{
-		FinishLatentTask(OwnerComp, EBTNodeResult::Failed);
-		return;
-	}
-
-	Enemy->GetCharacterMovement()->MaxWalkSpeed = Enemy->MoveSpeed;
-}
+//void URGX_BTTask_OrbitAroundTarget::OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult)
+//{
+//	Super::OnTaskFinished(OwnerComp, NodeMemory, TaskResult);
+//
+//	AAIController* AIController = OwnerComp.GetAIOwner();
+//	if (AIController == nullptr) return;
+//
+//	APawn* ControlledPawn = AIController->GetPawn();
+//	if (ControlledPawn == nullptr) return;
+//
+//	ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(ControlledPawn);
+//	if (Enemy == nullptr) return;
+//
+//	Enemy->Orbiting = false;
+//	Enemy->GetCharacterMovement()->MaxWalkSpeed = Enemy->MoveSpeed;
+//}

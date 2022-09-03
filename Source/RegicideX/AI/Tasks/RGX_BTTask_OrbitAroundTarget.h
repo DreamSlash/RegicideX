@@ -29,6 +29,12 @@ class REGICIDEX_API URGX_BTTask_OrbitAroundTarget : public UBTTask_BlackboardBas
 public:
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float OrbitMinTime = 0.0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float OrbitMaxTime = 5.0;
+
 private:
 	// TODO: La guarrada padre. Should use node instances or node memory
 	const FName OrbitMinTimeName = "OrbitMinTime";
@@ -38,5 +44,5 @@ private:
 	const FName CurrentOrbitTimeName = "CurrentOrbitTime";
 protected:
 	virtual void TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
-	virtual void OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult) override;
+	/*virtual void OnTaskFinished(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, EBTNodeResult::Type TaskResult) override;*/
 };

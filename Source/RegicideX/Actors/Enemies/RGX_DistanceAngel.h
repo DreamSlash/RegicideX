@@ -31,63 +31,62 @@ public:
 	ARGX_DistanceAngel();
 
 	UPROPERTY(EditAnywhere)
-		UStaticMeshComponent* Ring_1_Mesh = nullptr;
+	UStaticMeshComponent* Ring_1_Mesh = nullptr;
 
 	UPROPERTY(EditAnywhere)
-		UStaticMeshComponent* Ring_2_Mesh = nullptr;
+	UStaticMeshComponent* Ring_2_Mesh = nullptr;
 
 	UPROPERTY(EditAnywhere)
-		UStaticMeshComponent* BulletHellSphere = nullptr;
+	UStaticMeshComponent* ForceFieldSphere = nullptr;
 
 	UPROPERTY(EditAnywhere)
-		USphereComponent* BulletHellSphereCollider = nullptr;
+	USphereComponent* ForceFieldSphereCollider = nullptr;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		URGX_HitboxComponent* BHHitboxComponent = nullptr;
+	URGX_HitboxComponent* BHHitboxComponent = nullptr;
 
 	UPROPERTY(EditAnywhere)
-		UStaticMeshComponent* LaserEndPointMesh = nullptr;
-
-
-	UPROPERTY(EditAnywhere)
-		UStaticMeshComponent* BulletHellOutSphere = nullptr;
+	UStaticMeshComponent* LaserEndPointMesh = nullptr;
 
 	UPROPERTY(EditAnywhere)
-		USphereComponent* SphereCollider = nullptr;
+	UStaticMeshComponent* ForceFieldOutSphere = nullptr;
 
 	UPROPERTY(EditAnywhere)
-		USceneComponent* FloorReturnPlace = nullptr;
+	USphereComponent* SphereCollider = nullptr;
 
 	UPROPERTY(EditAnywhere)
-		TArray<FVector> BombingPoints;
+	USceneComponent* FloorReturnPlace = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	TArray<FVector> BombingPoints;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float RingOriginalRotatingSpeed = 50.0f;
+	float RingOriginalRotatingSpeed = 50.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float RingRotatingSpeed = 50.0f;
+	float RingRotatingSpeed = 50.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float FullBodyRotatingSpeed = 10000.0f;
+	float FullBodyRotatingSpeed = 10000.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float HeightPos = 500.0f;
+	float HeightPos = 500.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		int SimpleBombsCount = 5;
+	int SimpleBombsCount = 5;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float SimpleBombsOffset = 50.f;
+	float SimpleBombsOffset = 50.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float ActorMidHeight = 50.0f;
+	float ActorMidHeight = 50.0f;
 
 	UPROPERTY(BlueprintReadWrite)
-		bool Invincible = false;
+	bool Invincible = false;
 
 	/* Effects the projectile applies when hitting a target */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-		TArray<FRGX_EffectContextContainer> ForceFieldEffectsToApply;
+	TArray<FRGX_EffectContextContainer> ForceFieldEffectsToApply;
 
 	AActor* LaserBeamRef = nullptr;
 
@@ -120,22 +119,22 @@ public:
 	/** Attack methods */
 
 	UFUNCTION(BlueprintCallable)
-		float GetDistanceToTarget() const;
+	float GetDistanceToTarget() const;
 
 	UFUNCTION(BlueprintImplementableEvent)
-		void SpawnSimpleBullet(FTransform Transform, AActor* MyOwner);
+	void SpawnSimpleBullet(FTransform Transform, AActor* MyOwner);
 
 	UFUNCTION()
-		void SetLocationHeight(float Height);
+	void SetLocationHeight(float Height);
 
 	UFUNCTION()
-		void DestroyMyself(float Time);
+	void DestroyMyself(float Time);
 
 	UFUNCTION(BlueprintCallable)
-		void ChangeEyeColor(FLinearColor Color);
+	void ChangeEyeColor(FLinearColor Color);
 
 	UFUNCTION(BlueprintCallable)
-		FVector GetEyeWorldLocation();
+	FVector GetEyeWorldLocation();
 
 	// Overridable Events
 	virtual void HandleDamage(
@@ -146,7 +145,7 @@ public:
 		AActor* DamageCauser) override;
 
 	UFUNCTION(BlueprintCallable)
-		void ApplyForceFieldEffects(AActor* OtherActor);
+	void ApplyForceFieldEffects(AActor* OtherActor);
 
 	virtual void HandleDeath() override;
 };
