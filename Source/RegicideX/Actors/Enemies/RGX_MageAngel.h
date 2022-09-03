@@ -35,6 +35,4 @@ public:
 		const struct FGameplayTagContainer& DamageTags,
 		ARGX_CharacterBase* InstigatorCharacter,
 		AActor* DamageCauser) override;
-
-	virtual void HandleDeath() override;
 };

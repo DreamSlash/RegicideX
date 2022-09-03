@@ -17,5 +17,11 @@
 				"UMG"
 			]
 		}
+	],
+	"Plugins": [
+		{
+			"Name": "RawInput",
+			"Enabled": true
+		}
 	]
 }

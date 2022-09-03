@@ -12,4 +12,7 @@ class REGICIDEX_API UExecution_Launch : public UGameplayEffectExecutionCalculati
 	UExecution_Launch();
 
 	void Execute_Implementation(const FGameplayEffectCustomExecutionParameters& ExecutionParams, FGameplayEffectCustomExecutionOutput& OutExecutionOutput) const override;
+
+private:
+	void LaunchToLocation(const FVector& Location);
 };

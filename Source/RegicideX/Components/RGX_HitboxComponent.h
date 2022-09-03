@@ -88,11 +88,7 @@ protected:
 		const FHitResult& SweepResult);
 
 	UFUNCTION()
-	void OnComponentEndOverlap(
-		UPrimitiveComponent* OverlappedComponent, 
-		AActor* OtherActor, 
-		UPrimitiveComponent* OtherComp, 
-		int32 OtherBodyIndex);
+	void GetOverlappingActors(TSet<AActor*>& OverlappingActors, TSubclassOf<AActor> ClassFilter = nullptr) const;
 
 	void DestroyOwnerOnOverlap();
 
@@ -142,6 +138,27 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = HitboxComponent)
 	TEnumAsByte<EObjectTypeQuery> TargetObjectType;
+
+	/* True if the hitbox should send collision event continously, for example to apply the effects every some miliseconds.
+		* Should not be changed in runtime*/
+	UPROPERTY(EditDefaultsOnly, Category = HitboxComponent)
+	bool bContinuousCollision;
+
+	/* Rate at which the collision event is fired while an actor is overlapping */
+	UPROPERTY(EditDefaultsOnly, Category = HitboxComponent)
+	float ContinuousCollisionRate = 1.0f;
+
+	float TimeSinceLastCollision = 0.0f;
+
+	void HandleOverlappedActor(AActor* OtherActor,
+		UPrimitiveComponent* OtherComp,
+		int32 OtherBodyIndex,
+		bool bFromSweep,
+		const FHitResult& SweepResult);
+
+	bool CheckCanApplyEffect(const AActor* OtherActor);
+	void SendCollisionEvents(AActor* OwnerActor, AActor* OtherActor, bool bFromSweep, const FHitResult& SweepResult);
+	void HandleDestroyOnOverlap(AActor* OtherActor, ETeamAttitude::Type Attitude, bool bCanApplyEffects);
 
 private:
 

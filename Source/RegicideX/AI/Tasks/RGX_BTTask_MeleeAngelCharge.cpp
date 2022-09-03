@@ -60,12 +60,12 @@ void URGX_BTTask_MeleeAngelCharge::TickTask(UBehaviorTreeComponent& OwnerComp, u
 	TaskTime += DeltaSeconds;
 	float dist = FVector::Distance(MeleeAngelPawn->GetActorLocation(), GoalLocation);
 	//UE_LOG(LogTemp, Warning, TEXT("Dist to goal pos: %f"), dist);
-	if (TaskTime >= MaxTime || MeleeAngelPawn->bCharged || dist <= 30.0f)
+	if (TaskTime >= MaxTime || MeleeAngelPawn->bCharging || dist <= 30.0f)
 	{
 		TaskTime = 0.0f;
 		MeleeAngelPawn->SetGravityScale(1.0);
 		MeleeAngelPawn->bFlying = false;
-		MeleeAngelPawn->bCharged = false;
+		MeleeAngelPawn->bCharging = false;
 		MeleeAngelPawn->MoveSpeed = MoveSpeed;
 		FRotator Rotation = MeleeAngelPawn->GetActorRotation();
 		Rotation.Pitch = 0.0;

@@ -2,7 +2,9 @@
 
 
 #include "RGX_EnemyBase.h"
+#include "AbilitySystemGlobals.h"
 #include "AIController.h"
+#include "Animation/AnimInstance.h"
 #include "BrainComponent.h"
 #include "Components/MCV_AbilitySystemComponent.h"
 #include "Components/SphereComponent.h"
@@ -10,12 +12,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "RegicideX/GameplayFramework/RGX_RoundGameMode.h"
-#include "AbilitySystemGlobals.h"
 #include "RegicideX/Components/RGX_HitboxesManagerComponent.h"
 #include "RegicideX/UI/RGX_EnemyHealthBar.h"
 #include "RegicideX/Components/RGX_InteractComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Animation/AnimInstance.h"
 
 // Sets default values
 ARGX_EnemyBase::ARGX_EnemyBase()
@@ -67,6 +67,10 @@ void ARGX_EnemyBase::BeginPlay()
 	// For initializing health bar
 	AddStartupGameplayAbilities();
 	HandleHealthChanged(0.0f, FGameplayTagContainer());
+
+	GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
+
+	TargetActor = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 }
 
 void ARGX_EnemyBase::PossessedBy(AController* NewController)
@@ -101,6 +105,11 @@ void ARGX_EnemyBase::CheckIfWeak(float DamageAmount)
 			EnableInteraction();
 
 		bWeak = true;
+
+		if (HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("Status.Enemy.Weakened")) == false)
+		{
+			AddGameplayTag(FGameplayTag::RequestGameplayTag("Status.Enemy.Weakened"));
+		}
 	}
 }
 
@@ -112,6 +121,19 @@ void ARGX_EnemyBase::MoveToTarget(float DeltaTime, FVector TargetPos)
 		const FVector CurrentLocation = this->GetActorLocation();
 		FVector NewLocation = CurrentLocation + MyFront * MoveSpeed * DeltaTime;
 		this->SetActorLocation(NewLocation);
+	}
+}
+
+void ARGX_EnemyBase::StopLogic(const FString& Reason)
+{
+	AAIController* AiController = Cast<AAIController>(GetController());
+	if (AiController)
+	{
+		UBrainComponent* BrainComponent = AiController->GetBrainComponent();
+		if (BrainComponent)
+		{
+			BrainComponent->StopLogic(Reason);
+		}
 	}
 }
 
@@ -136,6 +158,7 @@ void ARGX_EnemyBase::RotateToTarget(float DeltaTime)
 {
 	if (TargetActor)
 	{
+		const float InterpSpeed = HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("GameplayEvent.Action.Melee")) ? AttackRotationInterpSpeed : RotationInterpSpeed;
 		const FVector MyLocation = this->GetActorLocation();
 		const FVector TargetLocation = TargetActor->GetActorLocation();
 		const FRotator RotOffset = UKismetMathLibrary::FindLookAtRotation(MyLocation, TargetLocation);
@@ -155,6 +178,11 @@ void ARGX_EnemyBase::Tick(float DeltaTime)
 
 	if (TargetActor)
 	{
+		if (bCanRotate && bDefaultFocusPlayer)
+		{
+			RotateToTarget(DeltaTime);
+		}
+
 		const FVector VectorToTarget = TargetActor->GetActorLocation() - GetActorLocation();
 		const float DistanceToTarget = VectorToTarget.Size();
 		if (DistanceToTarget > HealthBarHideDistance)
@@ -179,18 +207,17 @@ void ARGX_EnemyBase::HandleDamage(
 
 	if (IsAlive())
 	{
-		CheckIfWeak(DamageAmount);
-
-		if (IsWeak())
+		// Play reaction hit animation.
+		if (GetMovementComponent()->IsFalling())
 		{
-			StopAnimMontage();
+			PlayAnimMontage(AMAirReactionHit);
 		}
 		else
 		{
-			// Play reaction hit animation.
-			if (GetMovementComponent()->IsFalling())
+			CheckIfWeak(DamageAmount);
+			if (IsWeak())
 			{
-				PlayAnimMontage(AMAirReactionHit);
+				StopAnimMontage();
 			}
 			else
 			{
@@ -202,12 +229,9 @@ void ARGX_EnemyBase::HandleDamage(
 	{
 		// If damage killed the actor, we should kill its AI Logic and clean weak status as it is already dead.
 		bWeak = false;
+		RemoveGameplayTag(FGameplayTag::RequestGameplayTag("Status.Enemy.Weakened"));
 		StopAnimMontage(); // If dead, make sure nothing is executing in order to execute death animation from AnimBP.
-		AAIController* AiController = Cast<AAIController>(GetController());
-		if (AiController)
-		{
-			AiController->GetBrainComponent()->StopLogic(FString("Character dead."));
-		}
+		StopLogic("Character Dead");
 		HealthDisplayWidgetComponent->SetVisibility(false);
 		PlayAnimMontage(AMDeath);
 	}
@@ -236,6 +260,10 @@ void ARGX_EnemyBase::HandleDeath()
 {
 	Super::HandleDeath();
 
+	// TODO Make it random
+	const int Quantity = FMath::RandRange(3.0f, 5.0f);
+	SpawnSouls(Quantity);
+
 	UE_LOG(LogTemp, Log, TEXT("Entering HandleDeath()"));
 	OnHandleDeathEvent.Broadcast(ScoreValue);
 
@@ -246,6 +274,20 @@ void ARGX_EnemyBase::HandleDeath()
 void ARGX_EnemyBase::SetGenericTeamId(const FGenericTeamId& TeamID)
 {
 	CharacterTeam = TeamID;
+}
+
+void ARGX_EnemyBase::SpawnSouls(const int Quantity)
+{
+	// Create box
+	const FVector ActorLocation = GetActorLocation();
+
+	// Spawn n quantity of souls at random points
+	for (int i = 0; i < Quantity; i++)
+	{
+		const FVector Location = UKismetMathLibrary::RandomPointInBoundingBox(ActorLocation, FVector(40.0f));
+		const FRotator Rotation = FRotator(0.0f);
+		GetWorld()->SpawnActor<AActor>(SoulParticleActor, ActorLocation, Rotation);
+	}
 }
 
 FGenericTeamId ARGX_EnemyBase::GetGenericTeamId() const

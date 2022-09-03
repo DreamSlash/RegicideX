@@ -136,6 +136,12 @@ void ARGX_CharacterBase::HandleHealthChanged(float DeltaValue, const FGameplayTa
 	OnHealthChanged(DeltaValue, EventTags);
 }
 
+float ARGX_CharacterBase::HandleDamageMitigation(float DamageAmount, const FHitResult& HitInfo, const FGameplayTagContainer& DamageTags, ARGX_CharacterBase* InstigatorCharacter, AActor* DamageCauser)
+{
+	UE_LOG(LogTemp, Warning, TEXT("Damage Mitigation"));
+	return DamageAmount;
+}
+
 void ARGX_CharacterBase::NotifyDeath()
 {
 	OnHandleDeath();

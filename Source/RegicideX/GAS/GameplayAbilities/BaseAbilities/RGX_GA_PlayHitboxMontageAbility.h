@@ -35,7 +35,10 @@ protected:
 	virtual void OnMontageFinished(FGameplayTag EventTag, FGameplayEventData EventData);
 
 	UFUNCTION()
-	virtual void OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData);
+	virtual void HandleReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnHandleReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData, bool bWasHandled);
 
 	UFUNCTION()
 	virtual void PopulateGameplayEffectContext(FRGX_GameplayEffectContext& GameplayEffectContext);

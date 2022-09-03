@@ -62,6 +62,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	bool bCanBeKnockup = true;
 
+	UPROPERTY(BlueprintReadWrite)
+	bool bCanRotate = true;
+
 protected:
 	/** The level of this character, should not be modified directly once it has already spawned */
 	UPROPERTY(EditAnywhere, Category = Abilities)
@@ -92,6 +95,8 @@ protected:
 	bool bAbilitiesInitialized = false;
 
 	/** Events called from attribute set changes to decouple the logic. They call BP events. */
+
+	/** Called after health attribute has been modified after an incoming damage */
 	virtual void HandleDamage(
 		float DamageAmount,
 		const FHitResult& HitInfo,
@@ -99,7 +104,19 @@ protected:
 		ARGX_CharacterBase* InstigatorCharacter,
 		AActor* DamageCauser);
 
+	/** Called after health attribute has been modified */
 	virtual void HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags);
+
+	/** 
+	* Called when Damage attribute is modified and before changing the Health attribute.
+	* Returns the total damage after mitigation modifications have been applied.
+	*/
+	virtual float HandleDamageMitigation(
+		float DamageAmount,
+		const FHitResult& HitInfo,
+		const struct FGameplayTagContainer& DamageTags,
+		ARGX_CharacterBase* InstigatorCharacter,
+		AActor* DamageCauser);
 
 	/** Call this from Montage Notify.
 	* This will call the OnHandleDeath BP event which should in turn
