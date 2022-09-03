@@ -222,6 +222,8 @@ void URGX_CameraControllerComponent::FindNearestTargetUsingSphere(bool RightDire
 			SetTarget(enemy);
 		}
 	}
+
+	bFindNearestTargetExecuted = true;
 }
 
 TArray<AActor*> URGX_CameraControllerComponent::GetNearbyActorsUsingSphere(const TArray<AActor*>& IgnoredActors) const
@@ -257,6 +259,32 @@ void URGX_CameraControllerComponent::DisableTargeting()
 {
 	bIsActive = false;
 	SetTarget(nullptr);
+}
+
+void URGX_CameraControllerComponent::CheckYawInput(float Rate)
+{
+	if (bIsActive)
+	{
+		if (bFindNearestTargetExecuted)
+		{
+			const float absRate = abs(Rate);
+			if (absRate < 0.1)
+			{
+				bFindNearestTargetExecuted = false;
+			}
+		}
+		else
+		{
+			if (Rate > 0.8)
+			{
+				FindNearestTargetUsingSphere(true);
+			}
+			else if (Rate < -0.8)
+			{
+				FindNearestTargetUsingSphere(false);
+			}
+		}
+	}
 }
 
 void URGX_CameraControllerComponent::TargetLeft()
