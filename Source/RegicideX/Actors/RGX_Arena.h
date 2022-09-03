@@ -36,7 +36,7 @@ private:
 
 	void SpawnWave();
 	void SpawnEnemyTypeGroup(const FName& EnemyWaveName, int32 NumEnemies);
-	void SpawnEnemy(TSubclassOf<class ARGX_EnemyBase> Enemy, int32 SpawnerNum);
+	void SpawnEnemy(TSubclassOf<class ARGX_EnemyBase> EnemyClass, int32 SpawnerNum);
 	void HandleFinishWave();
 	void HandleFinishArena();
 
@@ -73,9 +73,6 @@ private:
 	//int32 NumEnemiesToSpawn;
 
 	int32 EnemiesLeft;
-
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<class ARGX_EnemyBase> EnemyClass;
 
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* ArenaArea;

@@ -60,7 +60,9 @@ void ARGX_Arena::SpawnWave()
 
 	TArray<FName> EnemyWaveNames = DT_EnemyRefs->GetRowNames();
 
-	for (int i = 0; i < EnemyWaveNames.Num(); ++i)
+	if (EnemyWaveNames.Num() != WaveDataAsset->NumEnemies.Num()) return;
+
+	for (int i = 0; i < WaveDataAsset->NumEnemies.Num(); ++i)
 	{
 		SpawnEnemyTypeGroup(EnemyWaveNames[i], WaveDataAsset->NumEnemies[i]);
 	}
@@ -86,7 +88,7 @@ void ARGX_Arena::SpawnEnemyTypeGroup(const FName& EnemyWaveName, int32 NumEnemie
 	}
 }
 
-void ARGX_Arena::SpawnEnemy(TSubclassOf<ARGX_EnemyBase> Enemy, int32 SpawnerNum)
+void ARGX_Arena::SpawnEnemy(TSubclassOf<ARGX_EnemyBase> EnemyClass, int32 SpawnerNum)
 {
 	if (EnemySpawners[SpawnerNum])
 	{
