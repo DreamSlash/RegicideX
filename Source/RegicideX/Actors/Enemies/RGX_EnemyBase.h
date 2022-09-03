@@ -117,6 +117,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	UAnimMontage* AMDeath = nullptr;
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AActor> SoulParticleActor = nullptr;
+
 protected:
 
 	// Called when the game starts or when spawned
@@ -131,6 +134,8 @@ protected:
 	// FGenericTeamId interface
 	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
 	// End of FGenericTeamId interface
+
+	void SpawnSouls(const int Quantity);
 
 public:
 	virtual FGenericTeamId GetGenericTeamId() const override;

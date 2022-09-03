@@ -2,7 +2,9 @@
 
 
 #include "RGX_EnemyBase.h"
+#include "AbilitySystemGlobals.h"
 #include "AIController.h"
+#include "Animation/AnimInstance.h"
 #include "BrainComponent.h"
 #include "Components/MCV_AbilitySystemComponent.h"
 #include "Components/SphereComponent.h"
@@ -10,12 +12,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "RegicideX/GameplayFramework/RGX_RoundGameMode.h"
-#include "AbilitySystemGlobals.h"
 #include "RegicideX/Components/RGX_HitboxesManagerComponent.h"
 #include "RegicideX/UI/RGX_EnemyHealthBar.h"
 #include "RegicideX/Components/RGX_InteractComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "Animation/AnimInstance.h"
 
 // Sets default values
 ARGX_EnemyBase::ARGX_EnemyBase()
@@ -260,6 +260,10 @@ void ARGX_EnemyBase::HandleDeath()
 {
 	Super::HandleDeath();
 
+	// TODO Make it random
+	const int Quantity = FMath::RandRange(3.0f, 5.0f);
+	SpawnSouls(Quantity);
+
 	UE_LOG(LogTemp, Log, TEXT("Entering HandleDeath()"));
 	OnHandleDeathEvent.Broadcast(ScoreValue);
 
@@ -270,6 +274,20 @@ void ARGX_EnemyBase::HandleDeath()
 void ARGX_EnemyBase::SetGenericTeamId(const FGenericTeamId& TeamID)
 {
 	CharacterTeam = TeamID;
+}
+
+void ARGX_EnemyBase::SpawnSouls(const int Quantity)
+{
+	// Create box
+	const FVector ActorLocation = GetActorLocation();
+
+	// Spawn n quantity of souls at random points
+	for (int i = 0; i < Quantity; i++)
+	{
+		const FVector Location = UKismetMathLibrary::RandomPointInBoundingBox(ActorLocation, FVector(40.0f));
+		const FRotator Rotation = FRotator(0.0f);
+		GetWorld()->SpawnActor<AActor>(SoulParticleActor, ActorLocation, Rotation);
+	}
 }
 
 FGenericTeamId ARGX_EnemyBase::GetGenericTeamId() const
