@@ -4,18 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "RegicideX/Data/RGX_EnemiesDataTable.h"
 #include "RGX_Arena.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FArenaActivateSignature, class ARGX_Arena*, ArenaActivated);
-
-USTRUCT()
-struct FRGX_Wave
-{
-	GENERATED_BODY()
-
-public:
-	TArray<class ARGX_EnemyBase*> Enemies;
-};
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FArenaActivatedSignature, class ARGX_Arena*, ArenaActivated);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FArenaDeactivatedSignature, class ARGX_Arena*, ArenaDeactivated);
 
 /* This class has a shape which represents the arena where the player will fight. All actors that add logic to said arena
 * must be inside this shape (like spawners) to have an effect. The arena is activated by event when the player enters
@@ -42,8 +35,10 @@ private:
 	void InitializeSpawners();
 
 	void SpawnWave();
-	void SpawnEnemy(int32 SpawnerNum);
+	void SpawnEnemyTypeGroup(const FName& EnemyWaveName, int32 NumEnemies);
+	void SpawnEnemy(TSubclassOf<class ARGX_EnemyBase> Enemy, int32 SpawnerNum);
 	void HandleFinishWave();
+	void HandleFinishArena();
 
 	UFUNCTION()
 	void OnComponentBeginOverlap(
@@ -65,7 +60,8 @@ private:
 	void OnEnemyDeath(int32 Score);
 
 public:
-	FArenaActivateSignature OnArenaActivated;
+	FArenaActivatedSignature OnArenaActivated;
+	FArenaDeactivatedSignature OnArenaDeactivated;
 
 private:
 	bool bActivated = false;
@@ -73,8 +69,8 @@ private:
 	bool bIsInitialized = false;
 	bool bEnemiesSpawned = false;
 
-	UPROPERTY(EditAnywhere, Category = Spawn)
-	int32 NumEnemiesToSpawn;
+	//UPROPERTY(EditAnywhere, Category = Spawn)
+	//int32 NumEnemiesToSpawn;
 
 	int32 EnemiesLeft;
 
@@ -90,4 +86,11 @@ private:
 	TArray<ARGX_EnemySpawner*>  EnemySpawners;
 
 	class ARGX_PlayerCharacter* PlayerCharacter;
+
+	// TODO: Pass this info to game mode or some static class
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	const UDataTable* DT_EnemyRefs = nullptr;
+
+	UPROPERTY(EditAnywhere, Category = Wave)
+	URGX_ArenaWaveDataAsset* WaveDataAsset = nullptr;
 };

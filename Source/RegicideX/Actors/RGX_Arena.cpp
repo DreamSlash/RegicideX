@@ -7,6 +7,8 @@
 #include "RegicideX/Character/RGX_PlayerCharacter.h"
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 #include "Kismet/GameplayStatics.h"
+#include "RegicideX/Data/RGX_RoundDataTable.h"
+#include "RegicideX/Data/RGX_EnemyDataAsset.h"
 
 ARGX_Arena::ARGX_Arena()
 {
@@ -55,17 +57,36 @@ void ARGX_Arena::InitializeSpawners()
 void ARGX_Arena::SpawnWave()
 {
 	if (EnemySpawners.Num() <= 0) return;
-	
-	for (int i = 0; i < NumEnemiesToSpawn; i++)
+
+	TArray<FName> EnemyWaveNames = DT_EnemyRefs->GetRowNames();
+
+	for (int i = 0; i < EnemyWaveNames.Num(); ++i)
 	{
-		const int Rand = FMath::RandRange(0, EnemySpawners.Num() - 1);
-		SpawnEnemy(Rand);
+		SpawnEnemyTypeGroup(EnemyWaveNames[i], WaveDataAsset->NumEnemies[i]);
 	}
 
 	bEnemiesSpawned = true;
 }
 
-void ARGX_Arena::SpawnEnemy(int32 SpawnerNum)
+// TODO: Petar-se lu de EnemyWaveName. Amb idx ja es pot accedir a la info d'un enemic
+void ARGX_Arena::SpawnEnemyTypeGroup(const FName& EnemyWaveName, int32 NumEnemies)
+{
+	for (int j = 0; j < NumEnemies; ++j)
+	{
+		UDataAsset* EnemyInfo = DT_EnemyRefs->FindRow<FRGX_EnemiesDataTable>(EnemyWaveName, "")->EnemyInfo;
+		const URGX_EnemyDataAsset* EnemyInfoCasted = Cast<URGX_EnemyDataAsset>(EnemyInfo);
+		if (EnemyInfoCasted)
+		{
+			if (EnemyInfoCasted->EnemyBP)
+			{
+				const int SpawnerIdx = FMath::RandRange(0, EnemySpawners.Num() - 1);
+				SpawnEnemy(EnemyInfoCasted->EnemyBP, SpawnerIdx);
+			}
+		}
+	}
+}
+
+void ARGX_Arena::SpawnEnemy(TSubclassOf<ARGX_EnemyBase> Enemy, int32 SpawnerNum)
 {
 	if (EnemySpawners[SpawnerNum])
 	{
@@ -81,6 +102,16 @@ void ARGX_Arena::SpawnEnemy(int32 SpawnerNum)
 void ARGX_Arena::HandleFinishWave()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Wave Finished"));
+}
+
+void ARGX_Arena::HandleFinishArena()
+{
+	bFinished = true;
+
+	if (OnArenaDeactivated.IsBound())
+	{
+		OnArenaDeactivated.Broadcast(this);
+	}
 }
 
 void ARGX_Arena::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
