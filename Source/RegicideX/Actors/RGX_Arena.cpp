@@ -27,14 +27,19 @@ void ARGX_Arena::BeginPlay()
 	ArenaArea->OnComponentBeginOverlap.AddDynamic(this, &ARGX_Arena::OnComponentBeginOverlap);
 	ArenaArea->OnComponentEndOverlap.AddDynamic(this, &ARGX_Arena::OnComponentEndOverlap);
 
-	CurrentWave = NewObject<URGX_OutgoingWave>(this, URGX_OutgoingWave::StaticClass());
-	if (CurrentWave)
+	for (int i = 0; i < InitialWavesDataAssets.Num(); i++)
 	{
-		CurrentWave->WaveData = WaveDataAsset;
-	}
-	else
-	{
-		UE_LOG(LogTemp, Log, TEXT("Failed to create OutgoingWave class"));
+		URGX_OutgoingWave* CurrentWave = NewObject<URGX_OutgoingWave>(this, URGX_OutgoingWave::StaticClass());
+		if (CurrentWave)
+		{
+			CurrentWave->WaveData = InitialWavesDataAssets[0];
+			CurrentWave->OnWaveFinished.AddDynamic(this, &ARGX_Arena::OnHandleFinishWave);
+			CurrentWaves.Add(CurrentWave);
+		}
+		else
+		{
+			UE_LOG(LogTemp, Log, TEXT("Failed to create OutgoingWave class"));
+		}
 	}
 }
 
@@ -64,25 +69,40 @@ void ARGX_Arena::InitializeSpawners()
 	}
 }
 
-void ARGX_Arena::SpawnWave()
+void ARGX_Arena::SpawnInitialWaves()
+{
+	for (int i = 0; i < CurrentWaves.Num(); i++)
+	{
+		SpawnWave(CurrentWaves[i]);
+	}
+
+	for (int j = 0; j < InitialConstantPeasants; j++)
+	{
+		SpawnConstantPeasant();
+	}
+
+	bInitialWavesSpawned = true;
+}
+
+void ARGX_Arena::SpawnWave(URGX_OutgoingWave* Wave)
 {
 	if (EnemySpawners.Num() <= 0) return;
 
 	TArray<FName> EnemyWaveNames = DT_EnemyRefs->GetRowNames();
-	URGX_ArenaWaveDataAsset* CurrentWaveData = CurrentWave->WaveData;
+	URGX_ArenaWaveDataAsset* CurrentWaveData = Wave->WaveData;
 
 	if (EnemyWaveNames.Num() != CurrentWaveData->NumEnemies.Num()) return;
 
 	for (int i = 0; i < CurrentWaveData->NumEnemies.Num(); ++i)
 	{
-		SpawnEnemyTypeGroup(EnemyWaveNames[i], CurrentWaveData->NumEnemies[i]);
+		SpawnWaveEnemyTypeGroup(EnemyWaveNames[i], CurrentWaveData->NumEnemies[i], Wave);
 	}
 
-	bEnemiesSpawned = true;
+	Wave->bEnemiesSpawned = true;
 }
 
 // TODO: Petar-se lu de EnemyWaveName. Amb idx ja es pot accedir a la info d'un enemic
-void ARGX_Arena::SpawnEnemyTypeGroup(const FName& EnemyWaveName, int32 NumEnemies)
+void ARGX_Arena::SpawnWaveEnemyTypeGroup(const FName& EnemyWaveName, int32 NumEnemies, URGX_OutgoingWave* Wave)
 {
 	for (int j = 0; j < NumEnemies; ++j)
 	{
@@ -93,49 +113,76 @@ void ARGX_Arena::SpawnEnemyTypeGroup(const FName& EnemyWaveName, int32 NumEnemie
 			if (EnemyInfoCasted->EnemyBP)
 			{
 				const int SpawnerIdx = FMath::RandRange(0, EnemySpawners.Num() - 1);
-				SpawnEnemy(EnemyInfoCasted->EnemyBP, SpawnerIdx);
+				SpawnWaveEnemy(EnemyInfoCasted->EnemyBP, SpawnerIdx, Wave);
 			}
 		}
 	}
 }
 
-void ARGX_Arena::SpawnEnemy(TSubclassOf<ARGX_EnemyBase> EnemyClass, int32 SpawnerNum)
+void ARGX_Arena::SpawnWaveEnemy(TSubclassOf<ARGX_EnemyBase> EnemyClass, int32 SpawnerIdx, URGX_OutgoingWave* Wave)
 {
-	if (EnemySpawners[SpawnerNum])
+	if (EnemySpawners[SpawnerIdx])
 	{
-		if (ARGX_EnemyBase* Enemy = (Cast<ARGX_EnemySpawner>(EnemySpawners[SpawnerNum])->Spawn(EnemyClass)))
+		if (ARGX_EnemyBase* Enemy = (Cast<ARGX_EnemySpawner>(EnemySpawners[SpawnerIdx])->Spawn(EnemyClass)))
 		{
 			Enemy->OnHandleDeathEvent.AddUObject(this, &ARGX_Arena::OnEnemyDeath);
-			Enemy->OnHandleDeathEvent.AddUObject(CurrentWave, &URGX_OutgoingWave::OnEnemyDeath);
+			Enemy->OnHandleDeathEvent.AddUObject(Wave, &URGX_OutgoingWave::OnEnemyDeath);
 			Enemy->TargetActor = PlayerCharacter;
-			CurrentWave->EnemiesLeft++;
+			Wave->EnemiesLeft++;
 			EnemiesLeft++;
 		}
 	}
 }
 
-void ARGX_Arena::HandleFinishWave()
+void ARGX_Arena::SpawnConstantPeasant()
+{
+	if (PeasantClass.Get() == nullptr) return;
+
+	const int SpawnerIdx = FMath::RandRange(0, EnemySpawners.Num() - 1);
+	if (EnemySpawners[SpawnerIdx])
+	{
+		if (ARGX_EnemyBase* Enemy = (Cast<ARGX_EnemySpawner>(EnemySpawners[SpawnerIdx])->Spawn(PeasantClass)))
+		{
+			Enemy->OnHandleDeathEvent.AddUObject(this, &ARGX_Arena::OnConstantPeasantDeath);
+			Enemy->TargetActor = PlayerCharacter;
+			CurrentNumberConstantPeasant++;
+			EnemiesLeft++;
+		}
+	}
+}
+
+void ARGX_Arena::OnHandleFinishWave(URGX_OutgoingWave* FinishedWave)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Wave Finished"));
 
-	URGX_ArenaWaveDataAsset* CurrentWaveData = CurrentWave->WaveData;
+	URGX_ArenaWaveDataAsset* CurrentWaveData = FinishedWave->WaveData;
 
 	if (CurrentWaveData->ChildWaves.Num() > 0)
 	{
 		for (int i = 0; i < CurrentWaveData->ChildWaves.Num(); i++)
 		{
-			CurrentWave->WaveData = CurrentWaveData->ChildWaves[i];
-			bEnemiesSpawned = false;
+			// TODO: Like this only the last child will work correctly
+			// Reuse wave
+			FinishedWave->WaveData = CurrentWaveData->ChildWaves[i];
+			FinishedWave->EnemiesLeft = 0;
+			FinishedWave->bEnemiesSpawned = false;
+			SpawnWave(FinishedWave);
 		}
 	}
 	else
 	{
-		HandleFinishArena();
+		CurrentWaves.Remove(FinishedWave);
+		if (CurrentWaves.Num() == 0 && EnemiesLeft == 0)
+		{
+			HandleFinishArena();
+		}
 	}
 }
 
 void ARGX_Arena::HandleFinishArena()
 {
+	if (bFinished == true) return;
+
 	UE_LOG(LogTemp, Warning, TEXT("Arena Finished"));
 
 	bFinished = true;
@@ -174,9 +221,18 @@ void ARGX_Arena::OnEnemyDeath(int32 Score)
 {
 	UE_LOG(LogTemp, Warning, TEXT("On Enemy Death"));
 	EnemiesLeft--;
-	if (EnemiesLeft == 0)
+
+	// TODO: If enemies left == 0 and there are no more waves left, finish arena
+}
+
+void ARGX_Arena::OnConstantPeasantDeath(int32 Score)
+{
+	EnemiesLeft--;
+	CurrentNumberConstantPeasant--;
+
+	if (EnemiesLeft == 0 && CurrentWaves.Num() == 0)
 	{
-		HandleFinishWave();
+		HandleFinishArena();
 	}
 }
 
@@ -193,10 +249,25 @@ void ARGX_Arena::Tick(float DeltaTime)
 
 	if (bActivated == false || bFinished == true) return;
 
-	if (bEnemiesSpawned == true) return;
+	if (bInitialWavesSpawned != true)
+	{
+		SpawnInitialWaves();
+	}
 
-	// Spawn Wave
-	SpawnWave();
+	// Do not spawn constant peasants if the waves are finished
+	if (CurrentNumberConstantPeasant < MaxNumConstantPeasants && CurrentWaves.Num() > 0)
+	{
+		UWorld* World = GetWorld();
+		if (World)
+		{
+			const float CurrentTime = World->GetTimeSeconds();
+			if (CurrentTime - ConstantPeasantLastSpawnTime > ConstantPeasantSpawnRate)
+			{
+				SpawnConstantPeasant();
+				ConstantPeasantLastSpawnTime = CurrentTime;
+			}
+		}
+	}
 }
 
 void URGX_OutgoingWave::OnEnemyDeath(int32 Score)
@@ -205,5 +276,11 @@ void URGX_OutgoingWave::OnEnemyDeath(int32 Score)
 
 	EnemiesLeft--;
 
-	// If enemies are 0, trigger event
+	if (EnemiesLeft == 0 && bEnemiesSpawned == true)
+	{
+		if (OnWaveFinished.IsBound())
+		{
+			OnWaveFinished.Broadcast(this);
+		}
+	}
 }

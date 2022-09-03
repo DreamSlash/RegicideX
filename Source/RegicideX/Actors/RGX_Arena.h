@@ -9,6 +9,7 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FArenaActivatedSignature, class ARGX_Arena*, ArenaActivated);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FArenaDeactivatedSignature, class ARGX_Arena*, ArenaDeactivated);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWaveFinishedSignature, class URGX_OutgoingWave*, FinishedWave);
 
 UCLASS()
 class REGICIDEX_API URGX_OutgoingWave : public UObject
@@ -18,6 +19,9 @@ class REGICIDEX_API URGX_OutgoingWave : public UObject
 public:
 	URGX_ArenaWaveDataAsset* WaveData;
 	int32 EnemiesLeft = 0;
+	bool bEnemiesSpawned = false;
+
+	FWaveFinishedSignature OnWaveFinished;
 
 public:
 	UFUNCTION()
@@ -48,10 +52,15 @@ private:
 	/* Get all spawners overlapping shape and initialize the EnemySpawners array */
 	void InitializeSpawners();
 
-	void SpawnWave();
-	void SpawnEnemyTypeGroup(const FName& EnemyWaveName, int32 NumEnemies);
-	void SpawnEnemy(TSubclassOf<class ARGX_EnemyBase> EnemyClass, int32 SpawnerNum);
-	void HandleFinishWave();
+	void SpawnInitialWaves();
+	void SpawnWave(URGX_OutgoingWave* Wave);
+	void SpawnWaveEnemyTypeGroup(const FName& EnemyWaveName, int32 NumEnemies, URGX_OutgoingWave* Wave);
+	void SpawnWaveEnemy(TSubclassOf<class ARGX_EnemyBase> EnemyClass, int32 SpawnerIdx, URGX_OutgoingWave* Wave);
+	void SpawnConstantPeasant();
+
+	UFUNCTION()
+	void OnHandleFinishWave(URGX_OutgoingWave* FinishedWave);
+
 	void HandleFinishArena();
 
 	UFUNCTION()
@@ -73,6 +82,9 @@ private:
 	UFUNCTION()
 	void OnEnemyDeath(int32 Score);
 
+	UFUNCTION()
+	void OnConstantPeasantDeath(int32 Score);
+
 public:
 	FArenaActivatedSignature OnArenaActivated;
 	FArenaDeactivatedSignature OnArenaDeactivated;
@@ -81,10 +93,25 @@ private:
 	bool bActivated = false;
 	bool bFinished = false;
 	bool bIsInitialized = false;
-	bool bEnemiesSpawned = false;
+	bool bInitialWavesSpawned = false;
 
-	//UPROPERTY(EditAnywhere, Category = Spawn)
-	//int32 NumEnemiesToSpawn;
+	// Constant Spawn of Zombies
+	UPROPERTY(EditAnywhere, Category = "Constant Spawn")
+	TSubclassOf<ARGX_EnemyBase> PeasantClass;
+
+	// Max number of constant peasants that can be in the arena at any time
+	UPROPERTY(EditAnywhere, Category = "Constant Spawn")
+	int32 MaxNumConstantPeasants;
+
+	// Initial number of constant peasants that will spawn when the arena is activated
+	UPROPERTY(EditAnywhere, Category = "Constant Spawn")
+	int32 InitialConstantPeasants;
+
+	UPROPERTY(EditAnywhere, Category = "Constant Spawn")
+	float ConstantPeasantSpawnRate;
+
+	float ConstantPeasantLastSpawnTime;
+	int32 CurrentNumberConstantPeasant;
 
 	int32 EnemiesLeft;
 
@@ -103,7 +130,8 @@ private:
 	const UDataTable* DT_EnemyRefs = nullptr;
 
 	UPROPERTY(EditAnywhere, Category = Wave)
-	URGX_ArenaWaveDataAsset* WaveDataAsset = nullptr;
+	TArray<URGX_ArenaWaveDataAsset*> InitialWavesDataAssets;
 
-	URGX_OutgoingWave* CurrentWave;
+	// TODO: Make it a linked list or make use again of the objects instead of destroying them
+	TArray<URGX_OutgoingWave*> CurrentWaves;
 };
