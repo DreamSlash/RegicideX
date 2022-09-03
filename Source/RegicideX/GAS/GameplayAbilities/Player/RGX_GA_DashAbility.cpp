@@ -38,6 +38,14 @@ void URGX_DashAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 		{
 			CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 		}
+
+		UAbilitySystemComponent* ASC = Character->GetAbilitySystemComponent();
+		if (ASC != nullptr)
+		{
+			FGameplayEffectSpecHandle GameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(InvulnerabilityEffect, 1);
+			FGameplayEffectContextHandle EffectContext = MakeEffectContext(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo());
+			ASC->ApplyGameplayEffectToSelf(InvulnerabilityEffect->GetDefaultObject<UGameplayEffect>(), 0.0f, ASC->MakeEffectContext());
+		}
 	}
 	else
 	{
