@@ -214,7 +214,7 @@ void ARGX_EnemyBase::HandleDamage(
 		}
 		else
 		{
-			CheckIfWak(DamageAmount);
+			CheckIfWeak(DamageAmount);
 			if (IsWeak())
 			{
 				StopAnimMontage();
