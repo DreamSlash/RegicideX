@@ -8,7 +8,8 @@
 #include "RGX_Arena.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FArenaActivatedSignature, class ARGX_Arena*, ArenaActivated);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FArenaDeactivatedSignature, class ARGX_Arena*, ArenaDeactivated);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FArenaDeactivatedSignature, ARGX_Arena*, ArenaDeactivated);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FArenaOnEnemyKilledSignature, class ARGX_EnemyBase*, EnemyKilled);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWaveFinishedSignature, class URGX_OutgoingWave*, FinishedWave);
 
 UCLASS()
@@ -25,7 +26,7 @@ public:
 
 public:
 	UFUNCTION()
-	void OnEnemyDeath(int32 Score);
+	void OnEnemyDeath(ARGX_EnemyBase* Enemy);
 };
 
 /* This class has a shape which represents the arena where the player will fight. All actors that add logic to said arena
@@ -88,14 +89,15 @@ private:
 		int32 OtherBodyIndex);
 
 	UFUNCTION()
-	void OnEnemyDeath(int32 Score);
+	void OnEnemyDeath(ARGX_EnemyBase* Enemy);
 
 	UFUNCTION()
-	void OnConstantPeasantDeath(int32 Score);
+	void OnConstantPeasantDeath(ARGX_EnemyBase* Enemy);
 
 public:
 	FArenaActivatedSignature OnArenaActivated;
 	FArenaDeactivatedSignature OnArenaDeactivated;
+	FArenaOnEnemyKilledSignature OnArenaEnemyKilled;
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))

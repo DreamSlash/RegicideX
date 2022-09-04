@@ -8,6 +8,19 @@
 #include "RegicideX/Actors/RGX_PoolActor.h"
 #include "RGX_EnemyBase.generated.h"
 
+UENUM(BlueprintType)
+enum class ERGX_EnemyType : uint8
+{
+	None				UMETA(DisplayName = "None"),
+	MeleeAngel			UMETA(DisplayName = "MeleeAngel"),
+	DistanceAngel		UMETA(DisplayName = "DistanceAngel"),
+	MageAngel			UMETA(DisplayName = "MageAngel"),
+	MeleePeasant		UMETA(DisplayName = "MeleePeasant"),
+	ShieldPeasant		UMETA(DisplayName = "ShieldPeasant"),
+	DistancePeasant		UMETA(DisplayName = "DistancePeasant"),
+	SuicidalPeasant		UMETA(DisplayName = "SuicidalPeasant")
+};
+
 USTRUCT()
 struct FAttackInfo {
 
@@ -34,7 +47,7 @@ class USphereComponent;
 class UWidgetComponent;
 class URGX_HitboxesManagerComponent;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHandleDeathSignature, int, Score);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHandleDeathSignature, class ARGX_EnemyBase*, EnemyKilled);
 
 /* Struct to inform about when the attack was received*/
 UCLASS(BlueprintType)
@@ -48,6 +61,9 @@ public:
 
 	virtual void Activate() override;
 	virtual void Deactivate() override;
+
+	UFUNCTION(BlueprintCallable)
+	ERGX_EnemyType GetEnemyType() const;
 
 public:
 	
@@ -123,8 +139,10 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AActor> SoulParticleActor = nullptr;
 
-protected:
+	UPROPERTY(EditDefaultsOnly)
+	ERGX_EnemyType EnemyType;
 
+protected:
 	// Called when the game starts or when spawned
 	void BeginPlay() override;
 	void PossessedBy(AController* NewController) override;

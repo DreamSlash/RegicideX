@@ -54,6 +54,11 @@ void ARGX_EnemyBase::Deactivate()
 	RemoveStartupGameplayAbilities();
 }
 
+ERGX_EnemyType ARGX_EnemyBase::GetEnemyType() const
+{
+	return EnemyType;
+}
+
 // Called when the game starts or when spawned
 void ARGX_EnemyBase::BeginPlay()
 {
@@ -267,7 +272,7 @@ void ARGX_EnemyBase::HandleDeath()
 	UE_LOG(LogTemp, Log, TEXT("Entering HandleDeath()"));
 	if (OnHandleDeathEvent.IsBound())
 	{
-		OnHandleDeathEvent.Broadcast(ScoreValue);
+		OnHandleDeathEvent.Broadcast(this);
 	}
 
 	UE_LOG(LogTemp, Log, TEXT("Destroying actor..."));

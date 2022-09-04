@@ -180,11 +180,11 @@ void ARGX_RoundGameMode::SpawnEnemy(UDataAsset* EnemyInfo)
 	}
 }
 
-void ARGX_RoundGameMode::OnEnemyDestroyed(const int EnemyScoreValue)
+void ARGX_RoundGameMode::OnEnemyDestroyed(ARGX_EnemyBase* Enemy)
 {
 	IncreaseKillCount();
 	ARGX_ScoreGameState* GameStateTemp = GetGameState<ARGX_ScoreGameState>();
-	GameStateTemp->SetScore(GameStateTemp->GetScore() + EnemyScoreValue);
+	//GameStateTemp->SetScore(GameStateTemp->GetScore() + EnemyScoreValue);
 	EnemyDeadEvent();
 }
 

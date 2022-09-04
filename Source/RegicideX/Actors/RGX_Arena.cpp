@@ -165,17 +165,13 @@ void ARGX_Arena::HandleFinishWave(URGX_OutgoingWave* FinishedWave)
 {
 	URGX_ArenaWaveDataAsset* CurrentWaveData = FinishedWave->WaveData;
 
-	if (CurrentWaveData->ChildWaves.Num() > 0)
+	if (CurrentWaveData->ChildWave)
 	{
-		for (int i = 0; i < CurrentWaveData->ChildWaves.Num(); i++)
-		{
-			// TODO: Like this only the last child will work correctly
-			// Reuse wave
-			FinishedWave->WaveData = CurrentWaveData->ChildWaves[i];
-			FinishedWave->EnemiesLeft = 0;
-			FinishedWave->bEnemiesSpawned = false;
-			SpawnWave(FinishedWave);
-		}
+		// Reuse wave
+		FinishedWave->WaveData = CurrentWaveData->ChildWave;
+		FinishedWave->EnemiesLeft = 0;
+		FinishedWave->bEnemiesSpawned = false;
+		SpawnWave(FinishedWave);
 	}
 	else
 	{
@@ -227,10 +223,15 @@ void ARGX_Arena::OnComponentEndOverlap(UPrimitiveComponent* OverlappedComponent,
 	}
 }
 
-void ARGX_Arena::OnEnemyDeath(int32 Score)
+void ARGX_Arena::OnEnemyDeath(ARGX_EnemyBase* Enemy)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Arena On Enemy Death"));
 	EnemiesLeft--;
+
+	if (OnArenaEnemyKilled.IsBound())
+	{
+		OnArenaEnemyKilled.Broadcast(Enemy);
+	}
 
 	if (CurrentWaves.Num() == 0)
 	{
@@ -242,10 +243,15 @@ void ARGX_Arena::OnEnemyDeath(int32 Score)
 	}
 }
 
-void ARGX_Arena::OnConstantPeasantDeath(int32 Score)
+void ARGX_Arena::OnConstantPeasantDeath(ARGX_EnemyBase* Enemy)
 {
 	EnemiesLeft--;
 	CurrentNumberConstantPeasant--;
+
+	if (OnArenaEnemyKilled.IsBound())
+	{
+		OnArenaEnemyKilled.Broadcast(Enemy);
+	}
 
 	if (EnemiesLeft == 0 && CurrentWaves.Num() == 0)
 	{
@@ -305,7 +311,7 @@ void ARGX_Arena::DeactivateArena()
 	HandleFinishArena();
 }
 
-void URGX_OutgoingWave::OnEnemyDeath(int32 Score)
+void URGX_OutgoingWave::OnEnemyDeath(ARGX_EnemyBase* Enemy)
 {
 	EnemiesLeft--;
 
