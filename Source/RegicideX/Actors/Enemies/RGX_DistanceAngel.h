@@ -143,7 +143,7 @@ public:
 		const struct FGameplayTagContainer& DamageTags,
 		ARGX_CharacterBase* InstigatorCharacter,
 		AActor* DamageCauser,
-		ERGX_HitReact HitReactFlag) override;
+		ERGX_AnimEvent HitReactFlag) override;
 
 	UFUNCTION(BlueprintCallable)
 	void ApplyForceFieldEffects(AActor* OtherActor);

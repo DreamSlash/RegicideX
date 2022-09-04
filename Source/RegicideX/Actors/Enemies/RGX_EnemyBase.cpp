@@ -202,7 +202,7 @@ void ARGX_EnemyBase::HandleDamage(
 	const struct FGameplayTagContainer& DamageTags,
 	ARGX_CharacterBase* InstigatorCharacter,
 	AActor* DamageCauser,
-	ERGX_HitReact HitReactFlag)
+	ERGX_AnimEvent HitReactFlag)
 {
 	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser, HitReactFlag);
 
@@ -211,7 +211,18 @@ void ARGX_EnemyBase::HandleDamage(
 		// Play reaction hit animation.
 		if (GetMovementComponent()->IsFalling())
 		{
-			PlayAnimMontage(AMAirReactionHit);
+			UAnimMontage* AnimToPlay = nullptr;
+			const FAnimationArray AnimationList = *AnimMontageMap.Find(ERGX_AnimEvent::AirHitReact);
+			if (AnimationList.Animations.Num() > 1)
+			{
+				int32 Index = UKismetMathLibrary::RandomIntegerInRange(0, AnimationList.Animations.Num() - 1);
+				AnimToPlay = AnimationList.Animations[Index];
+			}
+			else
+			{
+				AnimToPlay = AnimationList.Animations[0];
+			}
+			PlayAnimMontage(AnimToPlay);
 		}
 		else
 		{
@@ -222,7 +233,7 @@ void ARGX_EnemyBase::HandleDamage(
 			}
 			else
 			{
-				const FAnimationArray AnimationList = *AMReactionHitMap.Find(HitReactFlag);
+				const FAnimationArray AnimationList = *AnimMontageMap.Find(HitReactFlag);
 				UAnimMontage* AnimToPlay = nullptr;
 				if (AnimationList.Animations.Num() > 1)
 				{
@@ -252,7 +263,18 @@ void ARGX_EnemyBase::HandleDamage(
 		StopAnimMontage(); // If dead, make sure nothing is executing in order to execute death animation from AnimBP.
 		StopLogic("Character Dead");
 		HealthDisplayWidgetComponent->SetVisibility(false);
-		PlayAnimMontage(AMDeath);
+		UAnimMontage* AnimToPlay = nullptr;
+		const FAnimationArray AnimationList = *AnimMontageMap.Find(ERGX_AnimEvent::Death);
+		if (AnimationList.Animations.Num() > 1)
+		{
+			int32 Index = UKismetMathLibrary::RandomIntegerInRange(0, AnimationList.Animations.Num() - 1);
+			AnimToPlay = AnimationList.Animations[Index];
+		}
+		else
+		{
+			AnimToPlay = AnimationList.Animations[0];
+		}
+		PlayAnimMontage(AnimToPlay);
 	}
 }
 

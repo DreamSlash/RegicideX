@@ -103,7 +103,7 @@ protected:
 		const struct FGameplayTagContainer& DamageTags,
 		ARGX_CharacterBase* InstigatorCharacter,
 		AActor* DamageCauser,
-		ERGX_HitReact HitReactFlag);
+		ERGX_AnimEvent HitReactFlag);
 
 	/** Called after health attribute has been modified */
 	virtual void HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags);

@@ -83,13 +83,14 @@ public:
 };
 
 UENUM()
-enum class ERGX_HitReact: uint8
+enum class ERGX_AnimEvent: uint8
 {
 	None				UMETA(DisplayName = "None"),
-	HitReact			UMETA(DisplayName = "HitReact"),
+	BasicHitReact		UMETA(DisplayName = "BasicHitReact"),
 	KnockbackHitReact	UMETA(DisplayName = "KnockbackHitReact"),
 	LaunchHitReact		UMETA(DisplayName = "LaunchHitReact"),
-	AirHitReact			UMETA(DisplayName = "AirHitReact")
+	AirHitReact			UMETA(DisplayName = "AirHitReact"),
+	Death				UMETA(DisplayName = "Death")
 };
 
 UCLASS(BlueprintType)
@@ -111,7 +112,7 @@ public:
 	UCurveTable* DamageLevelCurve = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	ERGX_HitReact HitReactFlag = ERGX_HitReact::None;
+	ERGX_AnimEvent HitReactFlag = ERGX_AnimEvent::None;
 };
 
 UCLASS(BlueprintType)

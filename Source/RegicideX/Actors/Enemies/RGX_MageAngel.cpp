@@ -38,7 +38,7 @@ void ARGX_MageAngel::HandleDamage(float DamageAmount
 	, const struct FGameplayTagContainer& DamageTags
 	, ARGX_CharacterBase* InstigatorCharacter
 	, AActor* DamageCauser
-	, ERGX_HitReact HitReactFlag)
+	, ERGX_AnimEvent HitReactFlag)
 {
 	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser, HitReactFlag);
 }

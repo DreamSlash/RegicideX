@@ -121,13 +121,7 @@ protected:
 	float RecentDamage;
 
 	UPROPERTY(EditDefaultsOnly)
-	TMap<ERGX_HitReact, FAnimationArray> AMReactionHitMap;
-
-	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* AMAirReactionHit = nullptr;
-
-	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* AMDeath = nullptr;
+	TMap<ERGX_AnimEvent, FAnimationArray> AnimMontageMap;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AActor> SoulParticleActor = nullptr;
@@ -186,7 +180,7 @@ public:
 		const struct FGameplayTagContainer& DamageTags,
 		ARGX_CharacterBase* InstigatorCharacter,
 		AActor* DamageCauser,
-		ERGX_HitReact HitReactFlag) override;
+		ERGX_AnimEvent HitReactFlag) override;
 
 	virtual void HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags) override;
 	virtual void HandleDeath() override;
