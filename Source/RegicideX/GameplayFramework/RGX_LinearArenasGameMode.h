@@ -21,11 +21,29 @@ protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
+public:
+	UFUNCTION(BlueprintImplementableEvent)
+	void BP_OnArenaActivated(ARGX_Arena* ActivatedArena);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BP_OnArenaDeactivated(ARGX_Arena* DeactivatedArena);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BP_OnPlayerWins();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BP_OnPlayerLoses();
+
 private:
 	UFUNCTION()
 	void OnArenaActivated(class ARGX_Arena* ActivatedArena);
 
+	UFUNCTION()
+	void OnArenaDeactivated(ARGX_Arena* DeactivatedArena);
+
 private:
+	bool bWinCondition = false;
+
 	ARGX_Arena* CurrentArena;
 
 	TArray<ARGX_Arena*> Arenas;

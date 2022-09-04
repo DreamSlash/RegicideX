@@ -23,6 +23,7 @@ void ARGX_LinearArenasGameMode::BeginPlay()
 		{
 			Arenas.Add(Arena);
 			Arena->OnArenaActivated.AddDynamic(this, &ARGX_LinearArenasGameMode::OnArenaActivated);
+			Arena->OnArenaDeactivated.AddDynamic(this, &ARGX_LinearArenasGameMode::OnArenaDeactivated);
 		}
 	}
 }
@@ -34,10 +35,23 @@ void ARGX_LinearArenasGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason
 	for (ARGX_Arena* Arena : Arenas)
 	{
 		Arena->OnArenaActivated.RemoveDynamic(this, &ARGX_LinearArenasGameMode::OnArenaActivated);
+		Arena->OnArenaDeactivated.RemoveDynamic(this, &ARGX_LinearArenasGameMode::OnArenaDeactivated);
 	}
 }
 
 void ARGX_LinearArenasGameMode::OnArenaActivated(ARGX_Arena* ActivatedArena)
 {
 	CurrentArena = ActivatedArena;
+	BP_OnArenaActivated(ActivatedArena);
+}
+
+void ARGX_LinearArenasGameMode::OnArenaDeactivated(ARGX_Arena* DeactivatedArena)
+{
+	CurrentArena = nullptr;
+	BP_OnArenaDeactivated(DeactivatedArena);
+
+	if(DeactivatedArena->GetIsFinalArena() == true)
+	{
+		BP_OnPlayerWins();
+	}
 }

@@ -66,6 +66,8 @@ private:
 
 	UFUNCTION()
 	void OnHandleFinishWave(URGX_OutgoingWave* FinishedWave);
+	UFUNCTION()
+	void HandleFinishWave(URGX_OutgoingWave* FinishedWave);
 
 	void HandleFinishArena();
 
@@ -96,6 +98,7 @@ public:
 	FArenaDeactivatedSignature OnArenaDeactivated;
 
 private:
+	bool bIsFinalArena = false;
 	bool bActivated = false;
 	bool bFinished = false;
 	bool bIsInitialized = false;
@@ -141,9 +144,13 @@ private:
 	// TODO: Make it a linked list or make use again of the objects instead of destroying them or only allow one child wave
 	TArray<URGX_OutgoingWave*> CurrentWaves;
 
+	float TimeBetweenWaves = 2.0f;
+
 public:
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool GetArenaActivated() const { return bActivated; }
 	UFUNCTION(BlueprintCallable)
 	FORCEINLINE bool GetArenaFinished() const { return bFinished; }
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE bool GetIsFinalArena() const { return bIsFinalArena; }
 };

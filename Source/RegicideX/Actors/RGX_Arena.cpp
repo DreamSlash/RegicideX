@@ -155,6 +155,14 @@ void ARGX_Arena::OnHandleFinishWave(URGX_OutgoingWave* FinishedWave)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Wave Finished"));
 
+	FTimerDelegate TimerDel;
+	FTimerHandle TimerHandle;
+	TimerDel.BindUFunction(this, FName("HandleFinishWave"), FinishedWave);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, TimeBetweenWaves, false);
+}
+
+void ARGX_Arena::HandleFinishWave(URGX_OutgoingWave* FinishedWave)
+{
 	URGX_ArenaWaveDataAsset* CurrentWaveData = FinishedWave->WaveData;
 
 	if (CurrentWaveData->ChildWaves.Num() > 0)
