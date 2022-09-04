@@ -112,7 +112,7 @@ protected:
 	float RecentDamage;
 
 	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* AMReactionHit = nullptr;
+	TArray<UAnimMontage*> AMReactionHit;
 
 	UPROPERTY(EditDefaultsOnly)
 	UAnimMontage* AMAirReactionHit = nullptr;
