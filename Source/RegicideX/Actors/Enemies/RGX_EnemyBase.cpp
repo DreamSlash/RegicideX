@@ -201,9 +201,10 @@ void ARGX_EnemyBase::HandleDamage(
 	const FHitResult& HitInfo,
 	const struct FGameplayTagContainer& DamageTags,
 	ARGX_CharacterBase* InstigatorCharacter,
-	AActor* DamageCauser)
+	AActor* DamageCauser,
+	ERGX_HitReact HitReactFlag)
 {
-	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser);
+	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser, HitReactFlag);
 
 	if (IsAlive())
 	{
@@ -221,8 +222,25 @@ void ARGX_EnemyBase::HandleDamage(
 			}
 			else
 			{
-				int32 Index = UKismetMathLibrary::RandomIntegerInRange(0, AMReactionHit.Num() - 1);
-				PlayAnimMontage(AMReactionHit[Index]);
+				const FAnimationArray AnimationList = *AMReactionHitMap.Find(HitReactFlag);
+				UAnimMontage* AnimToPlay = nullptr;
+				if (AnimationList.Animations.Num() > 1)
+				{
+					int32 Index = UKismetMathLibrary::RandomIntegerInRange(0, AnimationList.Animations.Num() - 1);
+					AnimToPlay = AnimationList.Animations[Index];
+				}
+				else
+				{
+					AnimToPlay = AnimationList.Animations[0];
+				}
+
+				if (AnimToPlay == nullptr)
+				{
+					UE_LOG(LogTemp, Error, TEXT("No AnimToPlay found!"));
+					return;
+				}
+
+				PlayAnimMontage(AnimToPlay);
 			}
 		}
 	}

@@ -1,8 +1,9 @@
 
 #include "RGX_AttributeSet.h"
-#include "RegicideX/Actors/RGX_CharacterBase.h"
 #include "GameplayEffect.h"
 #include "GameplayEffectExtension.h"
+#include "RegicideX/Actors/RGX_CharacterBase.h"
+#include "RegicideX/GAS/RGX_GameplayEffectContext.h"
 
 URGX_AttributeSet::URGX_AttributeSet()
 	: Health(100.0f)
@@ -26,9 +27,9 @@ void URGX_AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 {
 	Super::PostGameplayEffectExecute(Data);
 
-	const FGameplayEffectContextHandle Context	= Data.EffectSpec.GetContext();
-	const UAbilitySystemComponent* Source		= Context.GetOriginalInstigatorAbilitySystemComponent();
-	const FGameplayTagContainer& SourceTags		= *Data.EffectSpec.CapturedSourceTags.GetAggregatedTags();
+	FGameplayEffectContextHandle Context	= Data.EffectSpec.GetContext();
+	const UAbilitySystemComponent* Source	= Context.GetOriginalInstigatorAbilitySystemComponent();
+	const FGameplayTagContainer& SourceTags	= *Data.EffectSpec.CapturedSourceTags.GetAggregatedTags();
 
 	// Compute delta between new and old if available.
 	float DeltaValue = 0;
@@ -93,10 +94,14 @@ void URGX_AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 
 		if (LocalDamage > 0.0f)
 		{
+
+			FRGX_GameplayEffectContext* FRGXContext = static_cast<FRGX_GameplayEffectContext*>(Context.Get());
+			const URGX_DamageEventDataAsset* DamageEventData = Cast<URGX_DamageEventDataAsset>(FRGXContext->OptionalObject);
+
 			const float OldHealth = GetHealth();
 			SetHealth(FMath::Clamp(OldHealth - LocalDamage, 0.0f, GetMaxHealth()));
 
-			TargetCharacter->HandleDamage(LocalDamage, HitResult, SourceTags, SourceCharacter, SourceActor);
+			TargetCharacter->HandleDamage(LocalDamage, HitResult, SourceTags, SourceCharacter, SourceActor, DamageEventData->HitReactFlag);
 			TargetCharacter->HandleHealthChanged(-LocalDamage, SourceTags);
 		}
 	}

@@ -34,5 +34,6 @@ public:
 		const FHitResult& HitInfo,
 		const struct FGameplayTagContainer& DamageTags,
 		ARGX_CharacterBase* InstigatorCharacter,
-		AActor* DamageCauser) override;
+		AActor* DamageCauser,
+		ERGX_HitReact HitReactFlag) override;
 };

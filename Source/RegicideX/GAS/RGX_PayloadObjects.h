@@ -82,6 +82,16 @@ public:
 	TArray<TSubclassOf<UGameplayEffect>> GameplayEffectsToOwner;
 };
 
+UENUM()
+enum class ERGX_HitReact: uint8
+{
+	None				UMETA(DisplayName = "None"),
+	HitReact			UMETA(DisplayName = "HitReact"),
+	KnockbackHitReact	UMETA(DisplayName = "KnockbackHitReact"),
+	LaunchHitReact		UMETA(DisplayName = "LaunchHitReact"),
+	AirHitReact			UMETA(DisplayName = "AirHitReact")
+};
+
 UCLASS(BlueprintType)
 class URGX_DamageEventDataAsset : public URGX_RGXEventDataAsset
 {
@@ -99,6 +109,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UCurveTable* DamageLevelCurve = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	ERGX_HitReact HitReactFlag = ERGX_HitReact::None;
 };
 
 UCLASS(BlueprintType)

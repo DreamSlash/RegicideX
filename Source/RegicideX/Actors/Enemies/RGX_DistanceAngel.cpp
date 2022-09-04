@@ -177,9 +177,10 @@ void ARGX_DistanceAngel::HandleDamage(
 	const FHitResult& HitInfo,
 	const struct FGameplayTagContainer& DamageTags,
 	ARGX_CharacterBase* InstigatorCharacter,
-	AActor* DamageCauser)
+	AActor* DamageCauser,
+	ERGX_HitReact HitReactFlag)
 {
-	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser);
+	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser, HitReactFlag);
 
 	if (IsAlive() == false)
 	{
