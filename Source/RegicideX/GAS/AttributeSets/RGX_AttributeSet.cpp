@@ -26,9 +26,9 @@ void URGX_AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 {
 	Super::PostGameplayEffectExecute(Data);
 
-	FGameplayEffectContextHandle Context	= Data.EffectSpec.GetContext();
-	UAbilitySystemComponent* Source			= Context.GetOriginalInstigatorAbilitySystemComponent();
-	const FGameplayTagContainer& SourceTags = *Data.EffectSpec.CapturedSourceTags.GetAggregatedTags();
+	const FGameplayEffectContextHandle Context	= Data.EffectSpec.GetContext();
+	const UAbilitySystemComponent* Source		= Context.GetOriginalInstigatorAbilitySystemComponent();
+	const FGameplayTagContainer& SourceTags		= *Data.EffectSpec.CapturedSourceTags.GetAggregatedTags();
 
 	// Compute delta between new and old if available.
 	float DeltaValue = 0;
@@ -47,7 +47,7 @@ void URGX_AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 		TargetCharacter		= Cast<ARGX_CharacterBase>(TargetActor);
 	}
 
-	if (Data.EvaluatedData.Attribute == GetDamageAttribute())
+	if (Data.EvaluatedData.Attribute == GetDamageAttribute() && TargetCharacter)
 	{
 		// Get the source actor
 		AActor*	SourceActor					= nullptr;
@@ -96,12 +96,8 @@ void URGX_AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 			const float OldHealth = GetHealth();
 			SetHealth(FMath::Clamp(OldHealth - LocalDamage, 0.0f, GetMaxHealth()));
 
-			if (TargetCharacter)
-			{
-				TargetCharacter->HandleDamage(LocalDamage, HitResult, SourceTags, SourceCharacter, SourceActor);
-
-				TargetCharacter->HandleHealthChanged(-LocalDamage, SourceTags);
-			}
+			TargetCharacter->HandleDamage(LocalDamage, HitResult, SourceTags, SourceCharacter, SourceActor);
+			TargetCharacter->HandleHealthChanged(-LocalDamage, SourceTags);
 		}
 	}
 	else if (Data.EvaluatedData.Attribute == GetHealthAttribute())
@@ -109,10 +105,7 @@ void URGX_AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 		// Handle other Health canges such as healing
 		// Clamp first
 		SetHealth(FMath::Clamp(GetHealth(), 0.0f, GetMaxHealth()));
-
-		// Call for health changes
-		if (TargetCharacter)
-			TargetCharacter->HandleHealthChanged(DeltaValue, SourceTags);
+		TargetCharacter->HandleHealthChanged(DeltaValue, SourceTags);
 	}
 }
 

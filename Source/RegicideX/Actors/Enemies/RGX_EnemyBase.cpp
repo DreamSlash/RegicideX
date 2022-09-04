@@ -221,7 +221,6 @@ void ARGX_EnemyBase::HandleDamage(
 			}
 			else
 			{
-
 				int32 Index = UKismetMathLibrary::RandomIntegerInRange(0, AMReactionHit.Num() - 1);
 				PlayAnimMontage(AMReactionHit[Index]);
 			}
