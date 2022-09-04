@@ -44,6 +44,12 @@ public:
 public:
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable)
+	void ActivateArena();
+
+	UFUNCTION(BlueprintCallable)
+	void DeactivateArena();
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
@@ -132,6 +138,12 @@ private:
 	UPROPERTY(EditAnywhere, Category = Wave)
 	TArray<URGX_ArenaWaveDataAsset*> InitialWavesDataAssets;
 
-	// TODO: Make it a linked list or make use again of the objects instead of destroying them
+	// TODO: Make it a linked list or make use again of the objects instead of destroying them or only allow one child wave
 	TArray<URGX_OutgoingWave*> CurrentWaves;
+
+public:
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE bool GetArenaActivated() const { return bActivated; }
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE bool GetArenaFinished() const { return bFinished; }
 };

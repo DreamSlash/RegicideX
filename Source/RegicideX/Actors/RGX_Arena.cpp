@@ -186,6 +186,7 @@ void ARGX_Arena::HandleFinishArena()
 	UE_LOG(LogTemp, Warning, TEXT("Arena Finished"));
 
 	bFinished = true;
+	bActivated = false;
 
 	if (OnArenaDeactivated.IsBound())
 	{
@@ -198,12 +199,13 @@ void ARGX_Arena::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponen
 	ARGX_PlayerCharacter* Player = Cast<ARGX_PlayerCharacter>(OtherActor);
 	if (Player)
 	{
+		/*
 		bActivated = true;
 		if (OnArenaActivated.IsBound())
 		{
 			OnArenaActivated.Broadcast(this);
 		}
-
+		*/
 		UE_LOG(LogTemp, Warning, TEXT("Player Begin Overlap"));
 	}
 }
@@ -221,8 +223,6 @@ void ARGX_Arena::OnEnemyDeath(int32 Score)
 {
 	UE_LOG(LogTemp, Warning, TEXT("On Enemy Death"));
 	EnemiesLeft--;
-
-	// TODO: If enemies left == 0 and there are no more waves left, finish arena
 }
 
 void ARGX_Arena::OnConstantPeasantDeath(int32 Score)
@@ -268,6 +268,24 @@ void ARGX_Arena::Tick(float DeltaTime)
 			}
 		}
 	}
+}
+
+void ARGX_Arena::ActivateArena()
+{
+	if (bActivated == true) return;
+
+	bActivated = true;
+	if (OnArenaActivated.IsBound())
+	{
+		OnArenaActivated.Broadcast(this);
+	}
+}
+
+void ARGX_Arena::DeactivateArena()
+{
+	if (bActivated == false) return;
+
+	HandleFinishArena();
 }
 
 void URGX_OutgoingWave::OnEnemyDeath(int32 Score)
