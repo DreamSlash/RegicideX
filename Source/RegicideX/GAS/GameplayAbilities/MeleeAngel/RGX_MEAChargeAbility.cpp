@@ -111,7 +111,7 @@ void URGX_MEAChargeAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, 
 	{
 		MEAngel->SetGravityScale(3.0);
 		MEAngel->bFlying = false;
-		MEAngel->bCharged = false;
+		MEAngel->bCharging = false;
 		FRotator Rotation = MEAngel->GetActorRotation();
 		Rotation.Pitch = 0.0;
 		MEAngel->SetActorRotation(Rotation);

@@ -1,5 +1,5 @@
 ﻿,1,10,20
-PeasantMelee_MaxHealth,250,500,750
+PeasantMelee_MaxHealth,500,750,1000
 PeasantMelee_AttackPower,10,15,20
 PeasantDistance_MaxHealth,370,740,1110
 PeasantDistance_AttackPower,10,15,20

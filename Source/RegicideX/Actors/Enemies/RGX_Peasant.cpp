@@ -21,6 +21,7 @@ void ARGX_Peasant::BeginPlay()
 
 	AddGameplayTag(FGameplayTag::RequestGameplayTag(TEXT("Status.Alive")));
 	SetActorEnableCollision(true);
+	bDefaultFocusPlayer = true;
 }
 
 void ARGX_Peasant::Tick(float DeltaTime)
@@ -52,7 +53,6 @@ void ARGX_Peasant::HandleDeath()
 {
 	UE_LOG(LogTemp, Display, TEXT("Handling Peasant death ..."));
 	Super::HandleDeath();
-	OnHandleDeath();
 }
 
 // TODO Make it in EnemyBase --> Make it 2D??

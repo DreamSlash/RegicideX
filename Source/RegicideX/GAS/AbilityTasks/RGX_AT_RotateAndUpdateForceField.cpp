@@ -29,9 +29,9 @@ void URGX_AT_RotateAndUpdateForceField::TickTask(float DeltaTime)
 	if (TaskTime >= MaxTime)
 	{
 		TaskTime = 0.0f;
-		Attacker->BulletHellSphere->SetRelativeScale3D(FVector(OriginalBulletHellSphereScale));
-		Attacker->BulletHellSphere->SetHiddenInGame(true);
-		Attacker->BulletHellSphereCollider->SetRelativeScale3D(FVector(6.5));
+		Attacker->ForceFieldSphere->SetRelativeScale3D(FVector(OriginalBulletHellSphereScale));
+		Attacker->ForceFieldSphere->SetHiddenInGame(true);
+		Attacker->ForceFieldSphereCollider->SetRelativeScale3D(FVector(6.5));
 		Attacker->BHHitboxComponent->DeactivateHitbox();
 		//Attacker->BHHitboxComponent->DeactivateEffect();
 		if (ShouldBroadcastAbilityTaskDelegates())
@@ -43,13 +43,13 @@ void URGX_AT_RotateAndUpdateForceField::TickTask(float DeltaTime)
 
 	Attacker->RotateMe(DeltaTime, 1.0 + TaskTime * RotationSpeedMultiplier);
 
-	FVector CurrentScale = Attacker->BulletHellSphere->GetRelativeScale3D();
+	FVector CurrentScale = Attacker->ForceFieldSphere->GetRelativeScale3D();
 	if (CurrentScale.Z < MaxSize)
 	{
-		FVector NewScale = Attacker->BulletHellSphere->GetRelativeScale3D() + FVector(TaskTime) * 0.5;
-		Attacker->BulletHellSphere->SetRelativeScale3D(NewScale);
-		FVector NewScale2 = Attacker->BulletHellSphereCollider->GetRelativeScale3D() + FVector(TaskTime) * 0.8;
-		Attacker->BulletHellSphereCollider->SetRelativeScale3D(NewScale2);
+		FVector NewScale = Attacker->ForceFieldSphere->GetRelativeScale3D() + FVector(TaskTime) * 0.5;
+		Attacker->ForceFieldSphere->SetRelativeScale3D(NewScale);
+		FVector NewScale2 = Attacker->ForceFieldSphereCollider->GetRelativeScale3D() + FVector(TaskTime) * 0.8;
+		Attacker->ForceFieldSphereCollider->SetRelativeScale3D(NewScale2);
 	}
 
 }
@@ -68,9 +68,9 @@ URGX_AT_RotateAndUpdateForceField* URGX_AT_RotateAndUpdateForceField::RotateAndU
 	MyObj->MaxTime = Time;
 	MyObj->Attacker = Cast<ARGX_DistanceAngel>(OwningAbility->GetAvatarActorFromActorInfo());
 	MyObj->MaxSize = MaxSize;
-	MyObj->Attacker->BulletHellSphereCollider->SetRelativeScale3D(FVector(10.0));
-	MyObj->Attacker->BulletHellSphere->SetHiddenInGame(false);
-	MyObj->Attacker->BulletHellOutSphere->SetRelativeScale3D(FVector(MaxSize));
+	MyObj->Attacker->ForceFieldSphereCollider->SetRelativeScale3D(FVector(10.0));
+	MyObj->Attacker->ForceFieldSphere->SetHiddenInGame(false);
+	MyObj->Attacker->ForceFieldOutSphere->SetRelativeScale3D(FVector(MaxSize));
 	MyObj->Attacker->BHHitboxComponent->ActivateHitbox(true);
 	//Attacker->BHHitboxComponent->ActivateEffect();
 	return MyObj;

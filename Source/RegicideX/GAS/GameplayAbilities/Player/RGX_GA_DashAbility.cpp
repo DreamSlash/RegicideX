@@ -13,8 +13,6 @@ void URGX_DashAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 
 	if (Character)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("Dash Ability"));
-
 		if (Character->GetCharacterMovement()->IsFalling())
 		{
 			if (bool bHasAirDashed = Character->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.HasAirDashed"))))
@@ -24,10 +22,9 @@ void URGX_DashAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 			}
 			else
 			{
-				//UE_LOG(LogTemp, Warning, TEXT("Air Dash\n"));
 				Character->StopJumping();
 				Character->LaunchCharacter(FVector(0.0f, 0.0f, 0.0f), false, true);
-				// TODO: This tag is never removed so air dash con only be made once
+				// This tag is never removed so air dash con only be made once
 				Character->AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.HasAirDashed")));
 			}
 		}
@@ -40,6 +37,14 @@ void URGX_DashAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 		if (CapsuleComponent)
 		{
 			CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+		}
+
+		UAbilitySystemComponent* ASC = Character->GetAbilitySystemComponent();
+		if (ASC != nullptr)
+		{
+			FGameplayEffectSpecHandle GameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(InvulnerabilityEffect, 1);
+			FGameplayEffectContextHandle EffectContext = MakeEffectContext(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo());
+			ASC->ApplyGameplayEffectToSelf(InvulnerabilityEffect->GetDefaultObject<UGameplayEffect>(), 0.0f, ASC->MakeEffectContext());
 		}
 	}
 	else
@@ -65,6 +70,4 @@ void URGX_DashAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const
 			CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
 		}
 	}
-
-	//UE_LOG(LogTemp, Warning, TEXT("Finish Dash. Current Gravity: %f\n"), Character->GetCharacterMovement()->GravityScale);
 }

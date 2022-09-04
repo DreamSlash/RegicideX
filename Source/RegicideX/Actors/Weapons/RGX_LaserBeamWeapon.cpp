@@ -159,21 +159,14 @@ void ARGX_LaserBeamWeapon::ApplyEffect(AActor* OtherActor)
 	{
 		FGameplayEffectContextHandle ContextHandle = SourceACS->MakeEffectContext();
 		FRGX_GameplayEffectContext* RGXContext = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
-		RGXContext->DamageAmount = 10.0;
-		RGXContext->ScalingAttributeFactor = 0.0f;
 
-		for (TSubclassOf<UGameplayEffect>& Effect : EffectsToApply)
+		for (FRGX_EffectContextContainer& EffectContextContainer : EffectToApplyContextContainer)
 		{
-			if (ensureMsgf(Effect.Get(), TEXT("[Error] %s Effect was nullptr"), *GetName()))
+			if (ensureMsgf(EffectContextContainer.EffectToApply.Get(), TEXT("[Error] %s Effect was nullptr"), *GetName()))
 			{
-				SourceACS->ApplyGameplayEffectToTarget(Effect->GetDefaultObject<UGameplayEffect>(), TargetACS, MyOwner->GetCharacterLevel(), ContextHandle);
+				RGXContext->OptionalObject = EffectContextContainer.Payload;
+				SourceACS->ApplyGameplayEffectToTarget(EffectContextContainer.EffectToApply->GetDefaultObject<UGameplayEffect>(), TargetACS, MyOwner->GetCharacterLevel(), ContextHandle);
 			}
 		}
 	}
 }
-
-
-
-
-
-

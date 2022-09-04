@@ -65,6 +65,10 @@ class REGICIDEX_API ARGX_PlayerCharacter : public ARGX_CharacterBase
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Interaction, meta = (AllowPrivateAccess = "true"))
 	UWidgetComponent* InteractWidgetComponent = nullptr;
 
+	/** Camera Targetting Component */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class URGX_CameraControllerComponent* CameraControllerComponent = nullptr;
+
 	/** Check if player is attacking, meaning the player has an active ability with Ability.Melee tag on it. */
 	bool IsAttacking();
 
@@ -76,13 +80,11 @@ class REGICIDEX_API ARGX_PlayerCharacter : public ARGX_CharacterBase
 public:
 	ARGX_PlayerCharacter();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseTurnRate;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseLookUpRate;
-
-	bool bComboFlag = false;
 
 	// TODO [REFACTOR]: Move this to AbilitySystemComponent.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
@@ -94,9 +96,17 @@ public:
 	UPROPERTY()
 	FGameplayTag CurrentSkillTag;
 
-	/** If ture, it is in window to keep on with the current combo. */
-	UPROPERTY()
+	/** If true, player is in window to carry on with the combo if appropiate input is pressed. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bCanCombo = false;
+
+	/** Signals if player has pressed an input to continue the on going combo. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bContinueCombo = false;
+
+	/** If true, we can jump to next section in the combo. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bCanJumpToComboSection = false;
 
 	/** Holds the AnimNotifyState of the current attack, which has the information for the combo to follow. */
 	UPROPERTY()
@@ -229,6 +239,11 @@ protected:
 	void PerformLaunchAttack();
 	void PerformHeavyAttack();
 	void ChangePowerSkill();
+
+	void EnableTargeting();
+	void DisableTargeting();
+	void TargetLeft();
+	void TargetRight();
 
 	//void ManagePowerSkillInput();
 	void TryToInteract();

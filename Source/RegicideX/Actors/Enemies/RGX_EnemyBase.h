@@ -57,10 +57,16 @@ public:
 	AActor* TargetActor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float InterpSpeed = 1.0f;
+	float RotationInterpSpeed = 10.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float AttackRotationInterpSpeed = 20.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float MoveSpeed = 100.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float OrbitSpeed = 50.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float AttackRadius = 700.0f;
@@ -68,6 +74,9 @@ public:
 	/** The base score all enemies will give to the player when they die. Each class should change its value accordingly. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int ScoreValue = 10;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool Orbiting = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	URGX_HitboxesManagerComponent* HitboxesManager = nullptr;
@@ -111,11 +120,13 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	UAnimMontage* AMDeath = nullptr;
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AActor> SoulParticleActor = nullptr;
+
 protected:
 
 	// Called when the game starts or when spawned
 	void BeginPlay() override;
-
 	void PossessedBy(AController* NewController) override;
 
 	UFUNCTION()
@@ -127,6 +138,8 @@ protected:
 	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
 	// End of FGenericTeamId interface
 
+	void SpawnSouls(const int Quantity);
+
 public:
 	virtual FGenericTeamId GetGenericTeamId() const override;
 
@@ -136,8 +149,14 @@ public:
 	virtual void MoveToTarget(float DeltaTime, FVector TargetPos);
 	// ---------------------
 
+	UFUNCTION(BlueprintCallable)
+	void StopLogic(const FString& Reason);
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bWeak = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bDefaultFocusPlayer = false;
 
 	UFUNCTION(BlueprintCallable)
 	bool IsWeak();
