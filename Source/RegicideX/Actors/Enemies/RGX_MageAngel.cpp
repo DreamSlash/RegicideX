@@ -5,6 +5,8 @@
 
 #include "GameFramework/CharacterMovementComponent.h"
 
+#include "RegicideX/AI/Controllers/RGX_MageAngelController.h"
+
 ARGX_MageAngel::ARGX_MageAngel()
 	: ARGX_EnemyBase()
 {

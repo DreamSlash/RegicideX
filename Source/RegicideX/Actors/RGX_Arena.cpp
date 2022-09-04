@@ -20,7 +20,7 @@ ARGX_Arena::ARGX_Arena()
 void ARGX_Arena::BeginPlay()
 {
 	Super::BeginPlay();
-	InitializeSpawners();
+	//InitializeSpawners();
 
 	PlayerCharacter = Cast<ARGX_PlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
@@ -32,13 +32,13 @@ void ARGX_Arena::BeginPlay()
 		URGX_OutgoingWave* CurrentWave = NewObject<URGX_OutgoingWave>(this, URGX_OutgoingWave::StaticClass());
 		if (CurrentWave)
 		{
-			CurrentWave->WaveData = InitialWavesDataAssets[0];
+			CurrentWave->WaveData = InitialWavesDataAssets[i];
 			CurrentWave->OnWaveFinished.AddDynamic(this, &ARGX_Arena::OnHandleFinishWave);
 			CurrentWaves.Add(CurrentWave);
 		}
 		else
 		{
-			UE_LOG(LogTemp, Log, TEXT("Failed to create OutgoingWave class"));
+			UE_LOG(LogTemp, Error, TEXT("Failed to create OutgoingWave class"));
 		}
 	}
 }
@@ -53,7 +53,8 @@ void ARGX_Arena::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 
 void ARGX_Arena::InitializeSpawners()
-{
+{	
+	// TODO: GetOverlappingActors does not return the correct result, just the first Spawner
 	TSet<AActor*> OverlappingActors;
 	ArenaArea->GetOverlappingActors(OverlappingActors, EnemySpawnerClass);
 	
@@ -125,8 +126,8 @@ void ARGX_Arena::SpawnWaveEnemy(TSubclassOf<ARGX_EnemyBase> EnemyClass, int32 Sp
 	{
 		if (ARGX_EnemyBase* Enemy = (Cast<ARGX_EnemySpawner>(EnemySpawners[SpawnerIdx])->Spawn(EnemyClass)))
 		{
-			Enemy->OnHandleDeathEvent.AddUObject(this, &ARGX_Arena::OnEnemyDeath);
-			Enemy->OnHandleDeathEvent.AddUObject(Wave, &URGX_OutgoingWave::OnEnemyDeath);
+			Enemy->OnHandleDeathEvent.AddDynamic(this, &ARGX_Arena::OnEnemyDeath);
+			Enemy->OnHandleDeathEvent.AddDynamic(Wave, &URGX_OutgoingWave::OnEnemyDeath);
 			Enemy->TargetActor = PlayerCharacter;
 			Wave->EnemiesLeft++;
 			EnemiesLeft++;
@@ -143,7 +144,7 @@ void ARGX_Arena::SpawnConstantPeasant()
 	{
 		if (ARGX_EnemyBase* Enemy = (Cast<ARGX_EnemySpawner>(EnemySpawners[SpawnerIdx])->Spawn(PeasantClass)))
 		{
-			Enemy->OnHandleDeathEvent.AddUObject(this, &ARGX_Arena::OnConstantPeasantDeath);
+			Enemy->OnHandleDeathEvent.AddDynamic(this, &ARGX_Arena::OnConstantPeasantDeath);
 			Enemy->TargetActor = PlayerCharacter;
 			CurrentNumberConstantPeasant++;
 			EnemiesLeft++;
@@ -155,19 +156,23 @@ void ARGX_Arena::OnHandleFinishWave(URGX_OutgoingWave* FinishedWave)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Wave Finished"));
 
+	FTimerDelegate TimerDel;
+	FTimerHandle TimerHandle;
+	TimerDel.BindUFunction(this, FName("HandleFinishWave"), FinishedWave);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, TimeBetweenWaves, false);
+}
+
+void ARGX_Arena::HandleFinishWave(URGX_OutgoingWave* FinishedWave)
+{
 	URGX_ArenaWaveDataAsset* CurrentWaveData = FinishedWave->WaveData;
 
-	if (CurrentWaveData->ChildWaves.Num() > 0)
+	if (CurrentWaveData->ChildWave)
 	{
-		for (int i = 0; i < CurrentWaveData->ChildWaves.Num(); i++)
-		{
-			// TODO: Like this only the last child will work correctly
-			// Reuse wave
-			FinishedWave->WaveData = CurrentWaveData->ChildWaves[i];
-			FinishedWave->EnemiesLeft = 0;
-			FinishedWave->bEnemiesSpawned = false;
-			SpawnWave(FinishedWave);
-		}
+		// Reuse wave
+		FinishedWave->WaveData = CurrentWaveData->ChildWave;
+		FinishedWave->EnemiesLeft = 0;
+		FinishedWave->bEnemiesSpawned = false;
+		SpawnWave(FinishedWave);
 	}
 	else
 	{
@@ -186,6 +191,7 @@ void ARGX_Arena::HandleFinishArena()
 	UE_LOG(LogTemp, Warning, TEXT("Arena Finished"));
 
 	bFinished = true;
+	bActivated = false;
 
 	if (OnArenaDeactivated.IsBound())
 	{
@@ -198,13 +204,14 @@ void ARGX_Arena::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponen
 	ARGX_PlayerCharacter* Player = Cast<ARGX_PlayerCharacter>(OtherActor);
 	if (Player)
 	{
+		/*
 		bActivated = true;
 		if (OnArenaActivated.IsBound())
 		{
 			OnArenaActivated.Broadcast(this);
 		}
-
-		UE_LOG(LogTemp, Warning, TEXT("Player Begin Overlap"));
+		*/
+		//UE_LOG(LogTemp, Warning, TEXT("Player Begin Overlap"));
 	}
 }
 
@@ -213,22 +220,39 @@ void ARGX_Arena::OnComponentEndOverlap(UPrimitiveComponent* OverlappedComponent,
 	ARGX_PlayerCharacter* Player = Cast<ARGX_PlayerCharacter>(OtherActor);
 	if (Player)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Player End Overlap"));
+		//UE_LOG(LogTemp, Warning, TEXT("Player End Overlap"));
 	}
 }
 
-void ARGX_Arena::OnEnemyDeath(int32 Score)
+void ARGX_Arena::OnEnemyDeath(ARGX_EnemyBase* Enemy)
 {
-	UE_LOG(LogTemp, Warning, TEXT("On Enemy Death"));
+	UE_LOG(LogTemp, Warning, TEXT("Arena On Enemy Death"));
 	EnemiesLeft--;
 
-	// TODO: If enemies left == 0 and there are no more waves left, finish arena
+	if (OnArenaEnemyKilled.IsBound())
+	{
+		OnArenaEnemyKilled.Broadcast(Enemy);
+	}
+
+	if (CurrentWaves.Num() == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Waves = 0"));
+	}
+	else if (CurrentWaves[0] == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Manuela"));
+	}
 }
 
-void ARGX_Arena::OnConstantPeasantDeath(int32 Score)
+void ARGX_Arena::OnConstantPeasantDeath(ARGX_EnemyBase* Enemy)
 {
 	EnemiesLeft--;
 	CurrentNumberConstantPeasant--;
+
+	if (OnArenaEnemyKilled.IsBound())
+	{
+		OnArenaEnemyKilled.Broadcast(Enemy);
+	}
 
 	if (EnemiesLeft == 0 && CurrentWaves.Num() == 0)
 	{
@@ -240,12 +264,16 @@ void ARGX_Arena::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//UE_LOG(LogTemp, Warning, TEXT("Num Spawners: %d"), EnemySpawners.Num());
+
 	// Overlaps do not work until iteration of overlaps
+	/*
 	if (bIsInitialized == false)
 	{
 		// Get spawners in area
 		InitializeSpawners();
 	}
+	*/
 
 	if (bActivated == false || bFinished == true) return;
 
@@ -270,11 +298,29 @@ void ARGX_Arena::Tick(float DeltaTime)
 	}
 }
 
-void URGX_OutgoingWave::OnEnemyDeath(int32 Score)
+void ARGX_Arena::ActivateArena()
 {
-	UE_LOG(LogTemp, Log, TEXT("OutgoingWave OnEnemyDeath"));
+	if (bActivated == true) return;
 
+	bActivated = true;
+	if (OnArenaActivated.IsBound())
+	{
+		OnArenaActivated.Broadcast(this);
+	}
+}
+
+void ARGX_Arena::DeactivateArena()
+{
+	if (bActivated == false) return;
+
+	HandleFinishArena();
+}
+
+void URGX_OutgoingWave::OnEnemyDeath(ARGX_EnemyBase* Enemy)
+{
 	EnemiesLeft--;
+
+	UE_LOG(LogTemp, Log, TEXT("OutgoingWave OnEnemyDeath. Remaining Wave Enemies: %d"), EnemiesLeft);
 
 	if (EnemiesLeft == 0 && bEnemiesSpawned == true)
 	{
