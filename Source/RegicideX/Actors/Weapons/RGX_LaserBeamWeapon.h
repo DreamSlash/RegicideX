@@ -51,6 +51,9 @@ public:
 	UParticleSystemComponent* EndPointParticle = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<UParticleSystemComponent*> RayParticles;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	USplineComponent* PathSplineComponent = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -60,6 +63,9 @@ public:
 	float RaySpeed = 700.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float RaySpeedMultiplier = 100.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float ForgetDistance = 150.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -67,6 +73,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float GoalDistance = 3000.0f;
+
+	FTimerHandle EffectApplyTimerhandle;
 
 	bool bHittingTarget = false;
 

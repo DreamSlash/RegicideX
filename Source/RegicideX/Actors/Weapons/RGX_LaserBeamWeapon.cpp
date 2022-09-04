@@ -52,13 +52,25 @@ void ARGX_LaserBeamWeapon::CheckRayTraces(FVector& NewLocation, float DeltaTime)
 
 	if (GetWorld()->LineTraceSingleByChannel(FrontRayTraceResult, FrontRaySrc, FrontRayEndPoint, ECollisionChannel::ECC_WorldStatic))
 	{
-		AActor* Actor = FrontRayTraceResult.GetActor();
-		if (bHittingTarget == false && Actor == TargetActor) {
+		AActor* Actor = FrontRayTraceResult.GetActor(); 
+		if (/*bHittingTarget == false && */Actor == TargetActor) {
 			//If actor hitting target, apply damage effect
 			bHittingTarget = true;
+			ApplyEffect(TargetActor);
+			/*GetWorld()->GetTimerManager().SetTimer(
+				EffectApplyTimerhandle, 
+				[this]() { this->ApplyEffect(this->TargetActor); },
+				0.5,
+				true
+			);*/
 			FTimerHandle Timerhandle;
-			GetWorld()->GetTimerManager().SetTimer(Timerhandle, [this]() {this->bHittingTarget = false; }, ForgetTime, false);
-			ApplyEffect(Actor);
+			GetWorld()->GetTimerManager().SetTimer(
+				Timerhandle, 
+				[this]() {this->bHittingTarget = false; GetWorld()->GetTimerManager().ClearTimer(EffectApplyTimerhandle); 
+				EndPointMesh->SetWorldLocation(OwnerActor->GetActorLocation() + OwnerActor->GetActorForwardVector() * 200.0f); },
+				ForgetTime, 
+				false
+			);
 		}
 	}
 
@@ -82,7 +94,12 @@ void ARGX_LaserBeamWeapon::CheckDistance()
 	if (FollowTarget && FVector::Distance(MyLocation, GoalPoint) <= ForgetDistance) {
 		FollowTarget = false;
 		FTimerHandle Timerhandle;
-		GetWorld()->GetTimerManager().SetTimer(Timerhandle, [this]() {this->FollowTarget = true; }, ForgetTime, false);
+		GetWorld()->GetTimerManager().SetTimer(
+			Timerhandle, 
+			[this]() {this->FollowTarget = true;},
+			ForgetTime, 
+			false
+		);
 	}
 }
 
@@ -101,14 +118,23 @@ void ARGX_LaserBeamWeapon::ComputeNewEndpoint(float DeltaTime)
 	const FVector MyForward = EndPointMesh->GetForwardVector();
 	FVector NewLocation = MyLocation + MyForward * RaySpeed * SpeedMult * DeltaTime;
 
-	CheckRayTraces(NewLocation, DeltaTime);
-
+	if (!bHittingTarget) 
+	{
+		CheckRayTraces(NewLocation, DeltaTime);
+	}
+	else 
+	{
+		NewLocation = GoalPoint;
+	}
+		
 	EndPointMesh->SetWorldLocation(NewLocation);
 }
 
 
 void ARGX_LaserBeamWeapon::MoveAndDrawRay(float DeltaTime)
 {
+	RaySpeed += DeltaTime * RaySpeedMultiplier;
+
 	CheckDistance();
 	ComputeNewEndpoint(DeltaTime);
 
