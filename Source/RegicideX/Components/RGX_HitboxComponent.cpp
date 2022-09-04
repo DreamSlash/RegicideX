@@ -117,7 +117,7 @@ void URGX_HitboxComponent::ActivateHitbox(bool bActivateEffect)
 
 void URGX_HitboxComponent::DeactivateHitbox()
 {
-	UE_LOG(LogTemp, Warning, TEXT("Deactivate Hitbox: %s"), *GetName());
+	//UE_LOG(LogTemp, Warning, TEXT("Deactivate Hitbox: %s"), *GetName());
 
 	bEffectActivated = false;
 

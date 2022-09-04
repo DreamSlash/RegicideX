@@ -54,6 +54,11 @@ void ARGX_EnemyBase::Deactivate()
 	RemoveStartupGameplayAbilities();
 }
 
+ERGX_EnemyType ARGX_EnemyBase::GetEnemyType() const
+{
+	return EnemyType;
+}
+
 // Called when the game starts or when spawned
 void ARGX_EnemyBase::BeginPlay()
 {
@@ -98,7 +103,7 @@ void ARGX_EnemyBase::CheckIfWeak(float DamageAmount)
 	const float CurrentHealth = AbilitySystemComponent->GetNumericAttribute(AttributeSet->GetHealthAttribute());
 	const float RecentDamageAsHealthPercentage = RecentDamage / MaxHealth;
 	const float HealthAsPercentage = CurrentHealth / MaxHealth;
-	UE_LOG(LogTemp, Warning, TEXT("Percentage Recent Damage: %f\n"), RecentDamageAsHealthPercentage);
+	//UE_LOG(LogTemp, Warning, TEXT("Percentage Recent Damage: %f\n"), RecentDamageAsHealthPercentage);
 	if (/*RecentDamageAsHealthPercentage >= WeakenPercentage || */HealthAsPercentage < WeakenPercentage)
 	{
 		if (CanBeInteractedWith(nullptr) == false)
@@ -145,13 +150,13 @@ bool ARGX_EnemyBase::IsWeak()
 void ARGX_EnemyBase::EnableInteraction()
 {
 	InteractionShapeComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	UE_LOG(LogTemp, Warning, TEXT("Enable Interaction\n"));
+	//UE_LOG(LogTemp, Warning, TEXT("Enable Interaction\n"));
 }
 
 void ARGX_EnemyBase::DisableInteraction()
 {
 	InteractionShapeComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	UE_LOG(LogTemp, Warning, TEXT("Disable Interaction\n"));
+	//UE_LOG(LogTemp, Warning, TEXT("Disable Interaction\n"));
 }
 
 void ARGX_EnemyBase::RotateToTarget(float DeltaTime)
@@ -265,7 +270,10 @@ void ARGX_EnemyBase::HandleDeath()
 	SpawnSouls(Quantity);
 
 	UE_LOG(LogTemp, Log, TEXT("Entering HandleDeath()"));
-	OnHandleDeathEvent.Broadcast(ScoreValue);
+	if (OnHandleDeathEvent.IsBound())
+	{
+		OnHandleDeathEvent.Broadcast(this);
+	}
 
 	UE_LOG(LogTemp, Log, TEXT("Destroying actor..."));
 	Destroy();

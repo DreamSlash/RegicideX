@@ -14,7 +14,7 @@ URGX_BTTask_ActivateAbility::URGX_BTTask_ActivateAbility()
 
 EBTNodeResult::Type URGX_BTTask_ActivateAbility::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	UE_LOG(LogTemp, Warning, TEXT("BT Activate Ability"));
+	//UE_LOG(LogTemp, Warning, TEXT("BT Activate Ability"));
 	EBTNodeResult::Type Result = EBTNodeResult::Failed;
 
 	const AAIController* AIController = OwnerComp.GetAIOwner();

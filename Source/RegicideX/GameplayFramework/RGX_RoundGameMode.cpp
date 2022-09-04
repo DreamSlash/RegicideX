@@ -172,7 +172,7 @@ void ARGX_RoundGameMode::SpawnEnemy(UDataAsset* EnemyInfo)
 			//if (ARGX_EnemyBase* Enemy = (Cast<ARGX_PoolSpawner>(EnemySpawners[Rand])->Spawn(EnemyInfoCasted->TypeName)))
 			if (ARGX_EnemyBase* Enemy = (Cast<ARGX_EnemySpawner>(EnemySpawners[Rand])->Spawn(EnemyInfoCasted->EnemyBP)))
 			{
-				Enemy->OnHandleDeathEvent.AddUObject(this, &ARGX_RoundGameMode::OnEnemyDestroyed);
+				Enemy->OnHandleDeathEvent.AddDynamic(this, &ARGX_RoundGameMode::OnEnemyDestroyed);
 				Enemy->TargetActor = TargetActor;
 				SpawnedEnemies++;
 			}
@@ -180,11 +180,11 @@ void ARGX_RoundGameMode::SpawnEnemy(UDataAsset* EnemyInfo)
 	}
 }
 
-void ARGX_RoundGameMode::OnEnemyDestroyed(const int EnemyScoreValue)
+void ARGX_RoundGameMode::OnEnemyDestroyed(ARGX_EnemyBase* Enemy)
 {
 	IncreaseKillCount();
 	ARGX_ScoreGameState* GameStateTemp = GetGameState<ARGX_ScoreGameState>();
-	GameStateTemp->SetScore(GameStateTemp->GetScore() + EnemyScoreValue);
+	//GameStateTemp->SetScore(GameStateTemp->GetScore() + EnemyScoreValue);
 	EnemyDeadEvent();
 }
 
