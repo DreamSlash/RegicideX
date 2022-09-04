@@ -45,6 +45,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float TargetingConeAngle = 30.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float MaxZoomOut = 1200.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float ZoomOutDistancePerUnseenGroup = 100.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float GroupNumEnemies = 1;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float CameraSpeed = 5.0f;
+
 	UPROPERTY(BlueprintAssignable)
 		FRGX_TargetUpdatedDelegate OnTargetUpdated;
 
@@ -55,8 +67,6 @@ protected:
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	void ToggleTargeting();
 
 	void EnableTargeting();
 	void DisableTargeting();
@@ -76,6 +86,9 @@ private:
 
 	TArray<AActor*> GetNearbyActorsUsingSphere(const TArray<AActor*>& IgnoredActors) const;
 	float CalculateDotProduct(const FVector& SourceLocation, const FVector& SourceDir, const AActor* Actor) const;
+
+	float CalculateDesiredDistance();
+	FRotator CalculateDesiredRotation(float DesiredDistance);
 
 private:
 	TWeakObjectPtr<ARGX_EnemyBase> CurrentTarget;
