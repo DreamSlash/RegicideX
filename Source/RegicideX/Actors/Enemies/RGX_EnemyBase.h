@@ -34,7 +34,7 @@ class USphereComponent;
 class UWidgetComponent;
 class URGX_HitboxesManagerComponent;
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnHandleDeath, int)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHandleDeathSignature, int, Score);
 
 /* Struct to inform about when the attack was received*/
 UCLASS(BlueprintType)
@@ -51,7 +51,7 @@ public:
 
 public:
 	
-	FOnHandleDeath OnHandleDeathEvent;
+	FOnHandleDeathSignature OnHandleDeathEvent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	AActor* TargetActor;

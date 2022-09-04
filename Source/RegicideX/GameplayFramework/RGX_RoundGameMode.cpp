@@ -172,7 +172,7 @@ void ARGX_RoundGameMode::SpawnEnemy(UDataAsset* EnemyInfo)
 			//if (ARGX_EnemyBase* Enemy = (Cast<ARGX_PoolSpawner>(EnemySpawners[Rand])->Spawn(EnemyInfoCasted->TypeName)))
 			if (ARGX_EnemyBase* Enemy = (Cast<ARGX_EnemySpawner>(EnemySpawners[Rand])->Spawn(EnemyInfoCasted->EnemyBP)))
 			{
-				Enemy->OnHandleDeathEvent.AddUObject(this, &ARGX_RoundGameMode::OnEnemyDestroyed);
+				Enemy->OnHandleDeathEvent.AddDynamic(this, &ARGX_RoundGameMode::OnEnemyDestroyed);
 				Enemy->TargetActor = TargetActor;
 				SpawnedEnemies++;
 			}

@@ -98,6 +98,7 @@ public:
 	FArenaDeactivatedSignature OnArenaDeactivated;
 
 private:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
 	bool bIsFinalArena = false;
 	bool bActivated = false;
 	bool bFinished = false;
@@ -142,6 +143,7 @@ private:
 	TArray<URGX_ArenaWaveDataAsset*> InitialWavesDataAssets;
 
 	// TODO: Make it a linked list or make use again of the objects instead of destroying them or only allow one child wave
+	UPROPERTY()
 	TArray<URGX_OutgoingWave*> CurrentWaves;
 
 	float TimeBetweenWaves = 2.0f;

@@ -32,13 +32,13 @@ void ARGX_Arena::BeginPlay()
 		URGX_OutgoingWave* CurrentWave = NewObject<URGX_OutgoingWave>(this, URGX_OutgoingWave::StaticClass());
 		if (CurrentWave)
 		{
-			CurrentWave->WaveData = InitialWavesDataAssets[0];
+			CurrentWave->WaveData = InitialWavesDataAssets[i];
 			CurrentWave->OnWaveFinished.AddDynamic(this, &ARGX_Arena::OnHandleFinishWave);
 			CurrentWaves.Add(CurrentWave);
 		}
 		else
 		{
-			UE_LOG(LogTemp, Log, TEXT("Failed to create OutgoingWave class"));
+			UE_LOG(LogTemp, Error, TEXT("Failed to create OutgoingWave class"));
 		}
 	}
 }
@@ -125,8 +125,8 @@ void ARGX_Arena::SpawnWaveEnemy(TSubclassOf<ARGX_EnemyBase> EnemyClass, int32 Sp
 	{
 		if (ARGX_EnemyBase* Enemy = (Cast<ARGX_EnemySpawner>(EnemySpawners[SpawnerIdx])->Spawn(EnemyClass)))
 		{
-			Enemy->OnHandleDeathEvent.AddUObject(this, &ARGX_Arena::OnEnemyDeath);
-			Enemy->OnHandleDeathEvent.AddUObject(Wave, &URGX_OutgoingWave::OnEnemyDeath);
+			Enemy->OnHandleDeathEvent.AddDynamic(this, &ARGX_Arena::OnEnemyDeath);
+			Enemy->OnHandleDeathEvent.AddDynamic(Wave, &URGX_OutgoingWave::OnEnemyDeath);
 			Enemy->TargetActor = PlayerCharacter;
 			Wave->EnemiesLeft++;
 			EnemiesLeft++;
@@ -143,7 +143,7 @@ void ARGX_Arena::SpawnConstantPeasant()
 	{
 		if (ARGX_EnemyBase* Enemy = (Cast<ARGX_EnemySpawner>(EnemySpawners[SpawnerIdx])->Spawn(PeasantClass)))
 		{
-			Enemy->OnHandleDeathEvent.AddUObject(this, &ARGX_Arena::OnConstantPeasantDeath);
+			Enemy->OnHandleDeathEvent.AddDynamic(this, &ARGX_Arena::OnConstantPeasantDeath);
 			Enemy->TargetActor = PlayerCharacter;
 			CurrentNumberConstantPeasant++;
 			EnemiesLeft++;
@@ -214,7 +214,7 @@ void ARGX_Arena::OnComponentBeginOverlap(UPrimitiveComponent* OverlappedComponen
 			OnArenaActivated.Broadcast(this);
 		}
 		*/
-		UE_LOG(LogTemp, Warning, TEXT("Player Begin Overlap"));
+		//UE_LOG(LogTemp, Warning, TEXT("Player Begin Overlap"));
 	}
 }
 
@@ -223,14 +223,23 @@ void ARGX_Arena::OnComponentEndOverlap(UPrimitiveComponent* OverlappedComponent,
 	ARGX_PlayerCharacter* Player = Cast<ARGX_PlayerCharacter>(OtherActor);
 	if (Player)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Player End Overlap"));
+		//UE_LOG(LogTemp, Warning, TEXT("Player End Overlap"));
 	}
 }
 
 void ARGX_Arena::OnEnemyDeath(int32 Score)
 {
-	UE_LOG(LogTemp, Warning, TEXT("On Enemy Death"));
+	UE_LOG(LogTemp, Warning, TEXT("Arena On Enemy Death"));
 	EnemiesLeft--;
+
+	if (CurrentWaves.Num() == 0)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Waves = 0"));
+	}
+	else if (CurrentWaves[0] == nullptr)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Manuela"));
+	}
 }
 
 void ARGX_Arena::OnConstantPeasantDeath(int32 Score)
@@ -298,9 +307,9 @@ void ARGX_Arena::DeactivateArena()
 
 void URGX_OutgoingWave::OnEnemyDeath(int32 Score)
 {
-	UE_LOG(LogTemp, Log, TEXT("OutgoingWave OnEnemyDeath"));
-
 	EnemiesLeft--;
+
+	UE_LOG(LogTemp, Log, TEXT("OutgoingWave OnEnemyDeath. Remaining Wave Enemies: %d"), EnemiesLeft);
 
 	if (EnemiesLeft == 0 && bEnemiesSpawned == true)
 	{
