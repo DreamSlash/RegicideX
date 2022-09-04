@@ -20,7 +20,7 @@ ARGX_Arena::ARGX_Arena()
 void ARGX_Arena::BeginPlay()
 {
 	Super::BeginPlay();
-	InitializeSpawners();
+	//InitializeSpawners();
 
 	PlayerCharacter = Cast<ARGX_PlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
@@ -53,7 +53,8 @@ void ARGX_Arena::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 
 void ARGX_Arena::InitializeSpawners()
-{
+{	
+	// TODO: GetOverlappingActors does not return the correct result, just the first Spawner
 	TSet<AActor*> OverlappingActors;
 	ArenaArea->GetOverlappingActors(OverlappingActors, EnemySpawnerClass);
 	
@@ -263,12 +264,16 @@ void ARGX_Arena::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	//UE_LOG(LogTemp, Warning, TEXT("Num Spawners: %d"), EnemySpawners.Num());
+
 	// Overlaps do not work until iteration of overlaps
+	/*
 	if (bIsInitialized == false)
 	{
 		// Get spawners in area
 		InitializeSpawners();
 	}
+	*/
 
 	if (bActivated == false || bFinished == true) return;
 

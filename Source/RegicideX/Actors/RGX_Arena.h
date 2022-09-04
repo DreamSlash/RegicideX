@@ -95,8 +95,11 @@ private:
 	void OnConstantPeasantDeath(ARGX_EnemyBase* Enemy);
 
 public:
+	UPROPERTY(BlueprintAssignable)
 	FArenaActivatedSignature OnArenaActivated;
+	UPROPERTY(BlueprintAssignable)
 	FArenaDeactivatedSignature OnArenaDeactivated;
+	UPROPERTY(BlueprintAssignable)
 	FArenaOnEnemyKilledSignature OnArenaEnemyKilled;
 
 private:
@@ -133,6 +136,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = Spawn)
 	TSubclassOf<class ARGX_EnemySpawner> EnemySpawnerClass;
 
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
 	TArray<ARGX_EnemySpawner*>  EnemySpawners;
 
 	class ARGX_PlayerCharacter* PlayerCharacter;
