@@ -54,6 +54,11 @@ void ARGX_EnemyBase::Deactivate()
 	RemoveStartupGameplayAbilities();
 }
 
+ERGX_EnemyType ARGX_EnemyBase::GetEnemyType() const
+{
+	return EnemyType;
+}
+
 // Called when the game starts or when spawned
 void ARGX_EnemyBase::BeginPlay()
 {
@@ -98,8 +103,7 @@ void ARGX_EnemyBase::CheckIfWeak(float DamageAmount)
 	const float CurrentHealth = AbilitySystemComponent->GetNumericAttribute(AttributeSet->GetHealthAttribute());
 	const float RecentDamageAsHealthPercentage = RecentDamage / MaxHealth;
 	const float HealthAsPercentage = CurrentHealth / MaxHealth;
-	UE_LOG(LogTemp, Warning, TEXT("Percentage Recent Damage: %f\n"), RecentDamageAsHealthPercentage);
-	if (/*RecentDamageAsHealthPercentage >= WeakenPercentage || */HealthAsPercentage < WeakenPercentage)
+	if (HealthAsPercentage < WeakenPercentage)
 	{
 		if (CanBeInteractedWith(nullptr) == false)
 			EnableInteraction();
@@ -145,13 +149,13 @@ bool ARGX_EnemyBase::IsWeak()
 void ARGX_EnemyBase::EnableInteraction()
 {
 	InteractionShapeComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	UE_LOG(LogTemp, Warning, TEXT("Enable Interaction\n"));
+	//UE_LOG(LogTemp, Warning, TEXT("Enable Interaction\n"));
 }
 
 void ARGX_EnemyBase::DisableInteraction()
 {
 	InteractionShapeComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	UE_LOG(LogTemp, Warning, TEXT("Disable Interaction\n"));
+	//UE_LOG(LogTemp, Warning, TEXT("Disable Interaction\n"));
 }
 
 void ARGX_EnemyBase::RotateToTarget(float DeltaTime)
@@ -201,16 +205,28 @@ void ARGX_EnemyBase::HandleDamage(
 	const FHitResult& HitInfo,
 	const struct FGameplayTagContainer& DamageTags,
 	ARGX_CharacterBase* InstigatorCharacter,
-	AActor* DamageCauser)
+	AActor* DamageCauser,
+	ERGX_AnimEvent HitReactFlag)
 {
-	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser);
+	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser, HitReactFlag);
 
 	if (IsAlive())
 	{
 		// Play reaction hit animation.
 		if (GetMovementComponent()->IsFalling())
 		{
-			PlayAnimMontage(AMAirReactionHit);
+			UAnimMontage* AnimToPlay = nullptr;
+			const FAnimationArray AnimationList = *AnimMontageMap.Find(ERGX_AnimEvent::AirHitReact);
+			if (AnimationList.Animations.Num() > 1)
+			{
+				int32 Index = UKismetMathLibrary::RandomIntegerInRange(0, AnimationList.Animations.Num() - 1);
+				AnimToPlay = AnimationList.Animations[Index];
+			}
+			else
+			{
+				AnimToPlay = AnimationList.Animations[0];
+			}
+			PlayAnimMontage(AnimToPlay);
 		}
 		else
 		{
@@ -221,7 +237,25 @@ void ARGX_EnemyBase::HandleDamage(
 			}
 			else
 			{
-				PlayAnimMontage(AMReactionHit);
+				const FAnimationArray AnimationList = *AnimMontageMap.Find(HitReactFlag);
+				UAnimMontage* AnimToPlay = nullptr;
+				if (AnimationList.Animations.Num() > 1)
+				{
+					int32 Index = UKismetMathLibrary::RandomIntegerInRange(0, AnimationList.Animations.Num() - 1);
+					AnimToPlay = AnimationList.Animations[Index];
+				}
+				else
+				{
+					AnimToPlay = AnimationList.Animations[0];
+				}
+
+				if (AnimToPlay == nullptr)
+				{
+					UE_LOG(LogTemp, Error, TEXT("No AnimToPlay found!"));
+					return;
+				}
+
+				PlayAnimMontage(AnimToPlay);
 			}
 		}
 	}
@@ -233,7 +267,18 @@ void ARGX_EnemyBase::HandleDamage(
 		StopAnimMontage(); // If dead, make sure nothing is executing in order to execute death animation from AnimBP.
 		StopLogic("Character Dead");
 		HealthDisplayWidgetComponent->SetVisibility(false);
-		PlayAnimMontage(AMDeath);
+		UAnimMontage* AnimToPlay = nullptr;
+		const FAnimationArray AnimationList = *AnimMontageMap.Find(ERGX_AnimEvent::Death);
+		if (AnimationList.Animations.Num() > 1)
+		{
+			int32 Index = UKismetMathLibrary::RandomIntegerInRange(0, AnimationList.Animations.Num() - 1);
+			AnimToPlay = AnimationList.Animations[Index];
+		}
+		else
+		{
+			AnimToPlay = AnimationList.Animations[0];
+		}
+		PlayAnimMontage(AnimToPlay);
 	}
 }
 
@@ -265,7 +310,10 @@ void ARGX_EnemyBase::HandleDeath()
 	SpawnSouls(Quantity);
 
 	UE_LOG(LogTemp, Log, TEXT("Entering HandleDeath()"));
-	OnHandleDeathEvent.Broadcast(ScoreValue);
+	if (OnHandleDeathEvent.IsBound())
+	{
+		OnHandleDeathEvent.Broadcast(this);
+	}
 
 	UE_LOG(LogTemp, Log, TEXT("Destroying actor..."));
 	Destroy();

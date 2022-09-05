@@ -8,7 +8,8 @@
 #include "RGX_Arena.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FArenaActivatedSignature, class ARGX_Arena*, ArenaActivated);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FArenaDeactivatedSignature, class ARGX_Arena*, ArenaDeactivated);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FArenaDeactivatedSignature, ARGX_Arena*, ArenaDeactivated);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FArenaOnEnemyKilledSignature, class ARGX_EnemyBase*, EnemyKilled);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWaveFinishedSignature, class URGX_OutgoingWave*, FinishedWave);
 
 UCLASS()
@@ -25,7 +26,7 @@ public:
 
 public:
 	UFUNCTION()
-	void OnEnemyDeath(int32 Score);
+	void OnEnemyDeath(ARGX_EnemyBase* Enemy);
 };
 
 /* This class has a shape which represents the arena where the player will fight. All actors that add logic to said arena
@@ -44,6 +45,12 @@ public:
 public:
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable)
+	void ActivateArena();
+
+	UFUNCTION(BlueprintCallable)
+	void DeactivateArena();
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
@@ -60,6 +67,8 @@ private:
 
 	UFUNCTION()
 	void OnHandleFinishWave(URGX_OutgoingWave* FinishedWave);
+	UFUNCTION()
+	void HandleFinishWave(URGX_OutgoingWave* FinishedWave);
 
 	void HandleFinishArena();
 
@@ -80,16 +89,22 @@ private:
 		int32 OtherBodyIndex);
 
 	UFUNCTION()
-	void OnEnemyDeath(int32 Score);
+	void OnEnemyDeath(ARGX_EnemyBase* Enemy);
 
 	UFUNCTION()
-	void OnConstantPeasantDeath(int32 Score);
+	void OnConstantPeasantDeath(ARGX_EnemyBase* Enemy);
 
 public:
+	UPROPERTY(BlueprintAssignable)
 	FArenaActivatedSignature OnArenaActivated;
+	UPROPERTY(BlueprintAssignable)
 	FArenaDeactivatedSignature OnArenaDeactivated;
+	UPROPERTY(BlueprintAssignable)
+	FArenaOnEnemyKilledSignature OnArenaEnemyKilled;
 
 private:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	bool bIsFinalArena = false;
 	bool bActivated = false;
 	bool bFinished = false;
 	bool bIsInitialized = false;
@@ -121,6 +136,7 @@ private:
 	UPROPERTY(EditDefaultsOnly, Category = Spawn)
 	TSubclassOf<class ARGX_EnemySpawner> EnemySpawnerClass;
 
+	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
 	TArray<ARGX_EnemySpawner*>  EnemySpawners;
 
 	class ARGX_PlayerCharacter* PlayerCharacter;
@@ -132,6 +148,17 @@ private:
 	UPROPERTY(EditAnywhere, Category = Wave)
 	TArray<URGX_ArenaWaveDataAsset*> InitialWavesDataAssets;
 
-	// TODO: Make it a linked list or make use again of the objects instead of destroying them
+	// TODO: Make it a linked list or make use again of the objects instead of destroying them or only allow one child wave
+	UPROPERTY()
 	TArray<URGX_OutgoingWave*> CurrentWaves;
+
+	float TimeBetweenWaves = 2.0f;
+
+public:
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE bool GetArenaActivated() const { return bActivated; }
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE bool GetArenaFinished() const { return bFinished; }
+	UFUNCTION(BlueprintCallable)
+	FORCEINLINE bool GetIsFinalArena() const { return bIsFinalArena; }
 };

@@ -110,7 +110,7 @@ private:
 	void SpawnEnemy(UDataAsset* EnemyInfo);
 
 	UFUNCTION()
-	void OnEnemyDestroyed(int EnemyScoreValue);
+	void OnEnemyDestroyed(ARGX_EnemyBase* Enemy);
 
 	void OnWaveFinished();
 };
