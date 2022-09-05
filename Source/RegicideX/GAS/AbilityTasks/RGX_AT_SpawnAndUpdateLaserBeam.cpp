@@ -30,7 +30,7 @@ void URGX_AT_SpawnAndUpdateLaserBeam::TickTask(float DeltaTime)
 		SpawnLaserBeamWeapon();
 	}
 
-	/*if (LaserBeamWeapon->bHittingTarget)
+	if (LaserBeamWeapon->bHittingTarget)
 	{
 		LaserBeamWeapon->Destroy();
 		if (ShouldBroadcastAbilityTaskDelegates())
@@ -38,7 +38,7 @@ void URGX_AT_SpawnAndUpdateLaserBeam::TickTask(float DeltaTime)
 			OnFinish.Broadcast();
 		}
 		EndTask();
-	}*/
+	}
 
 
 	TaskTime += DeltaTime;
