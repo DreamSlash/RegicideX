@@ -43,6 +43,15 @@ struct FAttackInfo {
 
 };
 
+USTRUCT(BlueprintType)
+struct FAnimationArray
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	TArray<UAnimMontage*> Animations;
+};
+
 class USphereComponent;
 class UWidgetComponent;
 class URGX_HitboxesManagerComponent;
@@ -128,13 +137,7 @@ protected:
 	float RecentDamage;
 
 	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* AMReactionHit = nullptr;
-
-	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* AMAirReactionHit = nullptr;
-
-	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* AMDeath = nullptr;
+	TMap<ERGX_AnimEvent, FAnimationArray> AnimMontageMap;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AActor> SoulParticleActor = nullptr;
@@ -194,7 +197,8 @@ public:
 		const FHitResult& HitInfo,
 		const struct FGameplayTagContainer& DamageTags,
 		ARGX_CharacterBase* InstigatorCharacter,
-		AActor* DamageCauser) override;
+		AActor* DamageCauser,
+		ERGX_AnimEvent HitReactFlag) override;
 
 	virtual void HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags) override;
 	virtual void HandleDeath() override;

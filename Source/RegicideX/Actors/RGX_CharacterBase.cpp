@@ -114,7 +114,8 @@ void ARGX_CharacterBase::HandleDamage(
 	const FHitResult& HitInfo, 
 	const FGameplayTagContainer& DamageTags, 
 	ARGX_CharacterBase* InstigatorCharacter, 
-	AActor* DamageCauser)
+	AActor* DamageCauser,
+	ERGX_AnimEvent HitReactFlag)
 {
 	// If it is already dead, return
 	if (IsAlive() && HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.Dead"))))

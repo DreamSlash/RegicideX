@@ -25,8 +25,7 @@ void URGX_CameraControllerComponent::BeginPlay()
 	Super::BeginPlay();
 	SpringArm->bEnableCameraRotationLag = true;
 
-	// ...
-
+	OriginalArmLength = SpringArm->TargetArmLength;
 }
 
 // Called every frame
@@ -36,33 +35,23 @@ void URGX_CameraControllerComponent::TickComponent(float DeltaTime, ELevelTick T
 
 	if (bIsActive)
 	{
-		const float CameraAngleToTarget = 15.0f;
-		const float CameraAngleSin = FMath::Sin(FMath::DegreesToRadians(CameraAngleToTarget));
-
 		if (CurrentTarget.IsValid())
 		{
-			const FVector& TargetLocation = CurrentTarget->GetActorLocation();
-			const FVector& PlayerLocation = SpringArm->GetComponentLocation();
-
-			const float PivotDistance = FVector::Distance(PlayerLocation, TargetLocation);
-
-			const float Height = SpringArm->TargetArmLength * CameraAngleSin;
-			const float Beta = FMath::Asin(Height / PivotDistance);
-			const float DesiredPitch = FMath::DegreesToRadians(CameraAngleToTarget) + Beta;
-
-			FRotator Rotation = FRotationMatrix::MakeFromX(TargetLocation - PlayerLocation).Rotator();
-			Rotation.Yaw -= FMath::RadiansToDegrees(DesiredPitch);
-
-			//FRotator Rotation = FRotationMatrix::MakeFromXZ((TargetLocation - SpringArm->GetComponentLocation()), FVector::UpVector).Rotator();
-			//FRotator Rotation = FRotationMatrix::MakeFromXY((TargetLocation - PlayerLocation).GetSafeNormal(), FVector::RightVector).Rotator();
-			//Rotation.Pitch = -FMath::RadiansToDegrees(DesiredPitch);
-			/*Rotation.Yaw = FMath::RadiansToDegrees(DesiredPitch);*/
-
-			if (APawn* OwnerPawn = GetOwner<APawn>()) {
-				OwnerPawn->GetController()->SetControlRotation(Rotation);
+			APawn* OwnerPawn = GetOwner<APawn>();
+			if (OwnerPawn == nullptr)
+			{
+				return;
 			}
 
-			SpringArm->SetWorldRotation(Rotation);
+			float desiredArmLength = CalculateDesiredDistance();
+			FRotator desiredRotation = CalculateDesiredRotation(desiredArmLength);
+
+			FRotator prevRotation = OwnerPawn->GetController()->GetControlRotation();
+			FRotator result = FMath::Lerp(prevRotation, desiredRotation, DeltaTime * CameraSpeed);
+			OwnerPawn->GetController()->SetControlRotation(result);
+			SpringArm->SetWorldRotation(result);
+
+			SpringArm->TargetArmLength = FMath::Lerp(SpringArm->TargetArmLength, desiredArmLength, DeltaTime * CameraSpeed);
 
 			//DrawDebugLine(GetWorld(), DesiredCameraLoc, TargetLocation, FColor::Blue);
 		}
@@ -72,16 +61,58 @@ void URGX_CameraControllerComponent::TickComponent(float DeltaTime, ELevelTick T
 			FindTargetUsingSphere();
 		}
 	}
+	else
+	{
+		SpringArm->TargetArmLength = FMath::Lerp(SpringArm->TargetArmLength, OriginalArmLength, DeltaTime * CameraSpeed);
+	}
 }
 
-void URGX_CameraControllerComponent::ToggleTargeting()
+float URGX_CameraControllerComponent::CalculateDesiredDistance()
 {
-	if (CurrentTarget.IsValid()) {
-		SetTarget(nullptr);
-	}
-	else {
-		
-	}
+	TArray<AActor*> ignoreActors; ignoreActors.Add(GetOwner());
+	TArray<AActor*> targets = GetNearbyActorsUsingSphere(ignoreActors);
+
+	/*int32 numActorsBehind = 0;
+	for (const AActor* target : targets)
+	{
+		const float dot = CalculateDotProduct(GetOwner()->GetActorLocation(), Camera->GetForwardVector(), target);
+		if (dot < 0.0)
+		{
+			++numActorsBehind;
+		}
+	}*/
+
+	const float desiredDistance = OriginalArmLength + (ZoomOutDistancePerUnseenGroup * (targets.Num()/GroupNumEnemies));
+	return std::min(desiredDistance, MaxZoomOut);;
+}
+
+FRotator URGX_CameraControllerComponent::CalculateDesiredRotation(float DesiredDistance)
+{
+	constexpr float CameraAngleToTarget = 15.0f;
+	const float CameraAngleSin = FMath::Sin(FMath::DegreesToRadians(CameraAngleToTarget));
+
+
+
+	const FVector TargetLocation = CurrentTarget->GetActorLocation();
+	const FVector PlayerLocation = SpringArm->GetComponentLocation();
+
+	const float PivotDistance = FVector::Distance(PlayerLocation, TargetLocation);
+
+	//const float Height = SpringArm->TargetArmLength * CameraAngleSin;
+	const float Height = DesiredDistance * CameraAngleSin;
+	const float Beta = FMath::Asin(Height / PivotDistance);
+	const float DesiredPitch = FMath::DegreesToRadians(CameraAngleToTarget) + Beta;
+
+	UE_LOG(LogTemp, Warning, TEXT("PD: %f - H: %f - B: %f - DP: %f"), PivotDistance, Height, Beta, DesiredPitch);
+
+	// [SM] Check better way to play with two altitude levels
+	FVector aux = TargetLocation - PlayerLocation;
+	aux.Z = 0.0;
+	FMatrix matrix = FRotationMatrix::MakeFromX(aux);
+	FRotator desiredRotation = matrix.Rotator();
+	desiredRotation.Yaw -= FMath::RadiansToDegrees(DesiredPitch);
+
+	return desiredRotation;
 }
 
 void URGX_CameraControllerComponent::FindTarget()
