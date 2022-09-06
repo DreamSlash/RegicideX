@@ -97,11 +97,12 @@ void URGX_AttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 
 			FRGX_GameplayEffectContext* FRGXContext = static_cast<FRGX_GameplayEffectContext*>(Context.Get());
 			const URGX_DamageEventDataAsset* DamageEventData = Cast<URGX_DamageEventDataAsset>(FRGXContext->OptionalObject);
+			ERGX_AnimEvent AnimEvent = DamageEventData ? DamageEventData->HitReactFlag : ERGX_AnimEvent::BasicHitReact;
 
 			const float OldHealth = GetHealth();
 			SetHealth(FMath::Clamp(OldHealth - LocalDamage, 0.0f, GetMaxHealth()));
 
-			TargetCharacter->HandleDamage(LocalDamage, HitResult, SourceTags, SourceCharacter, SourceActor, DamageEventData->HitReactFlag);
+			TargetCharacter->HandleDamage(LocalDamage, HitResult, SourceTags, SourceCharacter, SourceActor, AnimEvent);
 			TargetCharacter->HandleHealthChanged(-LocalDamage, SourceTags);
 		}
 	}
