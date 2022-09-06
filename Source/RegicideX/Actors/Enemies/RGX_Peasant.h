@@ -25,26 +25,10 @@ public:
 	UPROPERTY(EditAnywhere)
 	UBehaviorTree* BTree = nullptr;
 
-	UPROPERTY(EditDefaultsOnly)
-	float WanderSpeed = 100.0f;
-
-	UPROPERTY(EditDefaultsOnly)
-	float MaxSpeed = 400.0f;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	int IdleAction;
 
-	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* AMReactionHit = nullptr;
-
-	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* AMAirReactionHit = nullptr;
-
-	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* AMDeath = nullptr;
-
 	float GetDistanceToTarget() const;
-
 
 protected:
 
@@ -58,14 +42,5 @@ protected:
 	virtual void Deactivate() override;
 
 	// Bool to signal if actor is going to get destroyed.
-	void HandleDeath() override;
-
-	virtual void HandleDamage(
-		float DamageAmount,
-		const FHitResult& HitInfo,
-		const struct FGameplayTagContainer& DamageTags,
-		ARGX_CharacterBase* InstigatorCharacter,
-		AActor* DamageCauser) override;
-
-private:
+	virtual void HandleDeath() override;
 };

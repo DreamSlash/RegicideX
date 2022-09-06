@@ -5,9 +5,7 @@
 #include "GameplayTags.h"
 #include "RegicideX/Actors/RGX_CharacterBase.h"
 #include "RegicideX/Components/RGX_CombatAssistComponent.h"
-#include "RegicideX/Interfaces/RGX_GameplayTagInterface.h"
 #include "RegicideX/Enums/RGX_InputEnums.h"
-
 #include "RGX_PlayerCharacter.generated.h"
 
 class USpringArmComponent;
@@ -37,7 +35,7 @@ public:
 };
 
 UCLASS(config = Game)
-class REGICIDEX_API ARGX_PlayerCharacter : public ARGX_CharacterBase, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface
+class REGICIDEX_API ARGX_PlayerCharacter : public ARGX_CharacterBase
 {
 	GENERATED_BODY()
 
@@ -67,6 +65,10 @@ class REGICIDEX_API ARGX_PlayerCharacter : public ARGX_CharacterBase, public IGa
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Interaction, meta = (AllowPrivateAccess = "true"))
 	UWidgetComponent* InteractWidgetComponent = nullptr;
 
+	/** Camera Targetting Component */
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class URGX_CameraControllerComponent* CameraControllerComponent = nullptr;
+
 	/** Check if player is attacking, meaning the player has an active ability with Ability.Melee tag on it. */
 	bool IsAttacking();
 
@@ -78,10 +80,10 @@ class REGICIDEX_API ARGX_PlayerCharacter : public ARGX_CharacterBase, public IGa
 public:
 	ARGX_PlayerCharacter();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseTurnRate;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera)
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseLookUpRate;
 
 	// TODO [REFACTOR]: Move this to AbilitySystemComponent.
@@ -94,9 +96,17 @@ public:
 	UPROPERTY()
 	FGameplayTag CurrentSkillTag;
 
-	/** If ture, it is in window to keep on with the current combo. */
-	UPROPERTY()
+	/** If true, player is in window to carry on with the combo if appropiate input is pressed. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bCanCombo = false;
+
+	/** Signals if player has pressed an input to continue the on going combo. */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bContinueCombo = false;
+
+	/** If true, we can jump to next section in the combo. */
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bCanJumpToComboSection = false;
 
 	/** Holds the AnimNotifyState of the current attack, which has the information for the combo to follow. */
 	UPROPERTY()
@@ -190,6 +200,10 @@ protected:
 	 */
 	void LookUpAtRate(float Rate);
 
+	virtual void AddControllerYawInput(float Val) override;
+
+	virtual void AddControllerPitchInput(float Val) override;
+
 	//** Animation Functions */
 	FRGX_LeanInfo CalculateLeanAmount();
 
@@ -218,9 +232,18 @@ protected:
 	void ManageHeavyAttackInput();
 	void ManageHeavyAttackInputRelease();
 
+	void ManageJumpInput();
+	void ManageJumpInputReleased();
+
 	void PerformFallAttack();
 	void PerformLaunchAttack();
+	void PerformHeavyAttack();
 	void ChangePowerSkill();
+
+	void EnableTargeting();
+	void DisableTargeting();
+	void TargetLeft();
+	void TargetRight();
 
 	//void ManagePowerSkillInput();
 	void TryToInteract();
@@ -237,11 +260,6 @@ protected:
 	// ----------------
 
 public:
-	/** Returns CameraBoom subobject **/
-	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
-	/** Returns FollowCamera subobject **/
-	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-
 	/** GameplayTagAssetInterface methods */
 	void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
 	bool HasMatchingGameplayTag(FGameplayTag TagToCheck) const override;
@@ -263,4 +281,11 @@ public:
 	/* Input Handler calls this to let the player handle the action */
 	UFUNCTION()
 	void HandleAction(const ERGX_PlayerActions Action);
+
+public:
+	/** Returns CameraBoom subobject **/
+	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+	/** Returns FollowCamera subobject **/
+	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+	FORCEINLINE float GetLeanAmount() const { return LeanAmount; }
 };

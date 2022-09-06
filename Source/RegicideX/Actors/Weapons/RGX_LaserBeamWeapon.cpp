@@ -2,7 +2,6 @@
 
 
 #include "RGX_LaserBeamWeapon.h"
-
 #include "AbilitySystemGlobals.h"
 #include "AbilitySystemComponent.h"
 #include "Components/SplineComponent.h"
@@ -12,6 +11,9 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Kismet/GameplayStatics.h"
 
+#include "NavigationSystem.h"
+#include "RegicideX/GAS/RGX_GameplayEffectContext.h"
+#include "../RGX_CharacterBase.h"
 
 // Sets default values
 ARGX_LaserBeamWeapon::ARGX_LaserBeamWeapon()
@@ -73,10 +75,11 @@ void ARGX_LaserBeamWeapon::CheckRayTraces(FVector& NewLocation, float DeltaTime)
 
 void ARGX_LaserBeamWeapon::CheckDistance()
 {
-	const FVector MyLocation = EndPointMesh->K2_GetComponentLocation();
-	const FVector TargetLocation = TargetActor->GetActorLocation();
+	GoalPoint = TargetActor->GetActorLocation();
 
-	if (FollowTarget && FVector::Distance(MyLocation, TargetLocation) <= ForgetDistance) {
+	const FVector MyLocation = EndPointMesh->K2_GetComponentLocation();
+
+	if (FollowTarget && FVector::Distance(MyLocation, GoalPoint) <= ForgetDistance) {
 		FollowTarget = false;
 		FTimerHandle Timerhandle;
 		GetWorld()->GetTimerManager().SetTimer(Timerhandle, [this]() {this->FollowTarget = true; }, ForgetTime, false);
@@ -88,11 +91,10 @@ void ARGX_LaserBeamWeapon::ComputeNewEndpoint(float DeltaTime)
 	SpeedMult += DeltaTime * 0.1;
 
 	const FVector MyLocation = EndPointMesh->K2_GetComponentLocation();
-	const FVector TargetLocation = TargetActor->GetActorLocation();
 
 	if (FollowTarget)
 	{
-		const FRotator RotOffset = UKismetMathLibrary::FindLookAtRotation(MyLocation, TargetLocation);
+		const FRotator RotOffset = UKismetMathLibrary::FindLookAtRotation(MyLocation, GoalPoint);
 		EndPointMesh->SetWorldRotation(RotOffset);
 	}
 
@@ -138,6 +140,11 @@ void ARGX_LaserBeamWeapon::SetSourcePoint(FVector SP)
 	EndPointMesh->SetWorldLocation(SP);
 }
 
+void ARGX_LaserBeamWeapon::ComputeRayGoal()
+{
+	
+}
+
 void ARGX_LaserBeamWeapon::SetOwnerActor(AActor* OA)
 {
 	OwnerActor = OA;
@@ -145,28 +152,21 @@ void ARGX_LaserBeamWeapon::SetOwnerActor(AActor* OA)
 
 void ARGX_LaserBeamWeapon::ApplyEffect(AActor* OtherActor)
 {
-	if (ensureMsgf(EffectToApply.Get(), TEXT("URGX_HitboxComponent::ApplyEffects No valid effect to apply")))
+	UAbilitySystemComponent* SourceACS = OwnerActor->FindComponentByClass<UAbilitySystemComponent>();
+	UAbilitySystemComponent* TargetACS = OtherActor->FindComponentByClass<UAbilitySystemComponent>();
+	ARGX_CharacterBase* MyOwner = Cast<ARGX_CharacterBase>(OwnerActor);
+	if (SourceACS && TargetACS)
 	{
-		// Try to get owner ASC
-		UAbilitySystemComponent* ApplierASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OwnerActor);
-		UAbilitySystemComponent* TargetASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(OtherActor);
+		FGameplayEffectContextHandle ContextHandle = SourceACS->MakeEffectContext();
+		FRGX_GameplayEffectContext* RGXContext = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
 
-		// If not fallback to target
-		if (!ApplierASC)
+		for (FRGX_EffectContextContainer& EffectContextContainer : EffectToApplyContextContainer)
 		{
-			ApplierASC = TargetASC;
-		}
-
-		// Only apply if ASC valid
-		if (ApplierASC && TargetASC)
-		{
-			ApplierASC->ApplyGameplayEffectToTarget(EffectToApply->GetDefaultObject<UGameplayEffect>(), TargetASC, 1, ApplierASC->MakeEffectContext());
+			if (ensureMsgf(EffectContextContainer.EffectToApply.Get(), TEXT("[Error] %s Effect was nullptr"), *GetName()))
+			{
+				RGXContext->OptionalObject = EffectContextContainer.Payload;
+				SourceACS->ApplyGameplayEffectToTarget(EffectContextContainer.EffectToApply->GetDefaultObject<UGameplayEffect>(), TargetACS, MyOwner->GetCharacterLevel(), ContextHandle);
+			}
 		}
 	}
 }
-
-
-
-
-
-

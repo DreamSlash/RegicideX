@@ -1,7 +1,6 @@
 
 #include "RGX_CharacterBase.h"
 #include "Components/MCV_AbilitySystemComponent.h"
-#include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameplayAbilitySpec.h"
 
@@ -76,6 +75,7 @@ void ARGX_CharacterBase::OnBeingLaunched(
 	URGX_LaunchEventDataAsset* LaunchPayload,
 	float LaunchDelay)
 {
+	// Decompose payload
 	const FVector ActorLocation = GetActorLocation();
 	float VerticalForce = LaunchPayload->LaunchVerticalForce;
 	const float HorizontalForce = LaunchPayload->LaunchHorizontalForce;
@@ -84,6 +84,7 @@ void ARGX_CharacterBase::OnBeingLaunched(
 
 	FVector LaunchHorizontalDirection;
 
+	// Get force horizontal direction depending on the instigator origin or if the actor applies a force to itself
 	if (ActorInstigator && LaunchPayload->bInstigatorOrigin)
 	{
 		const FVector ForceOrigin = ActorInstigator->GetActorLocation();
@@ -96,25 +97,16 @@ void ARGX_CharacterBase::OnBeingLaunched(
 		LaunchHorizontalDirection = GetActorForwardVector();
 	}
 
-	// TODO may this be overriden in EnemyBase?
-	ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(this);
-	if (Enemy && Enemy->bCanBeKnockup == false)
+	if (bCanBeKnockup == false)
 	{
 		VerticalForce = 0.0f;
 	}
 
 	FVector LaunchForce = LaunchHorizontalDirection * HorizontalForce + FVector(0.0f, 0.0f, 1.0f) * VerticalForce;
-	bool bIsOnAir = GetCharacterMovement()->GravityScale == 0;
 
-	if (bIsOnAir)
-	{
-		//UAbilityTask_WaitDelay* TaskWaitDelay = UAbilityTask_WaitDelay::WaitDelay(this, LaunchDuration);
-		//TaskWaitDelay->OnFinish.AddDynamic(this, &URGX_LaunchedAbility::OnFinishDelay);
-		//TaskWaitDelay->ReadyForActivation();
-		LaunchCharacter(LaunchForce, bOverrideXY, bOverrideZ);
-	}
-	else
-		LaunchCharacter(LaunchForce, bOverrideXY, bOverrideZ);
+	LaunchCharacter(LaunchForce, bOverrideXY, bOverrideZ);
+
+	// TODO: If the character is in air maybe it is mandatory to apply a minimum Z force due to an Unreal bug
 }
 
 void ARGX_CharacterBase::HandleDamage(
@@ -122,11 +114,20 @@ void ARGX_CharacterBase::HandleDamage(
 	const FHitResult& HitInfo, 
 	const FGameplayTagContainer& DamageTags, 
 	ARGX_CharacterBase* InstigatorCharacter, 
-	AActor* DamageCauser)
+	AActor* DamageCauser,
+	ERGX_AnimEvent HitReactFlag)
 {
+	// If it is already dead, return
+	if (IsAlive() && HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.Dead"))))
+	{
+		return;
+	}
+
 	// Add the Status.Dead tag if not alive to avoid getting affected by Gameplay Effects.
 	if(IsAlive() == false)
+	{
 		GetAbilitySystemComponent()->AddLooseGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.Dead")));
+	}
 
 	OnDamaged(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser);
 }
@@ -136,9 +137,20 @@ void ARGX_CharacterBase::HandleHealthChanged(float DeltaValue, const FGameplayTa
 	OnHealthChanged(DeltaValue, EventTags);
 }
 
-void ARGX_CharacterBase::HandleDeath()
+float ARGX_CharacterBase::HandleDamageMitigation(float DamageAmount, const FHitResult& HitInfo, const FGameplayTagContainer& DamageTags, ARGX_CharacterBase* InstigatorCharacter, AActor* DamageCauser)
+{
+	//UE_LOG(LogTemp, Warning, TEXT("Damage Mitigation"));
+	return DamageAmount;
+}
+
+void ARGX_CharacterBase::NotifyDeath()
 {
 	OnHandleDeath();
+}
+
+void ARGX_CharacterBase::HandleDeath()
+{
+	//UE_LOG(LogTemp, Log, TEXT("RGX_CharacterBase: OnHandleDeath"));
 }
 
 void ARGX_CharacterBase::AddStartupGameplayAbilities()
@@ -220,4 +232,34 @@ FGenericTeamId ARGX_CharacterBase::GetGenericTeamId() const
 	static const FGenericTeamId PlayerTeam(0);
 	static const FGenericTeamId AITeam(1);
 	return Cast<APlayerController>(GetController()) ? PlayerTeam : AITeam;
+}
+
+void ARGX_CharacterBase::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
+{
+	AbilitySystemComponent->GetOwnedGameplayTags(TagContainer);
+}
+
+bool ARGX_CharacterBase::HasMatchingGameplayTag(FGameplayTag TagToCheck) const
+{
+	return AbilitySystemComponent->HasMatchingGameplayTag(TagToCheck);
+}
+
+bool ARGX_CharacterBase::HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const
+{
+	return AbilitySystemComponent->HasAllMatchingGameplayTags(TagContainer);
+}
+
+bool ARGX_CharacterBase::HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const
+{
+	return AbilitySystemComponent->HasAnyMatchingGameplayTags(TagContainer);
+}
+
+void ARGX_CharacterBase::AddGameplayTag(const FGameplayTag& TagToAdd)
+{
+	AbilitySystemComponent->AddLooseGameplayTag(TagToAdd);
+}
+
+void ARGX_CharacterBase::RemoveGameplayTag(const FGameplayTag& TagToRemove)
+{
+	AbilitySystemComponent->RemoveLooseGameplayTag(TagToRemove);
 }

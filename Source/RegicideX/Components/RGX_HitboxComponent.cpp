@@ -39,7 +39,7 @@ void URGX_HitboxComponent::BeginPlay()
 		shape->OnComponentBeginOverlap.AddDynamic(this, &URGX_HitboxComponent::OnComponentOverlap);
 	}
 	
-	bStartActive ? ActivateHitbox() : DeactivateHitbox();
+	bStartActive ? ActivateHitbox(true) : DeactivateHitbox();
 }
 
 void URGX_HitboxComponent::EndPlay(EEndPlayReason::Type EndPlayReason)
@@ -52,17 +52,29 @@ void URGX_HitboxComponent::EndPlay(EEndPlayReason::Type EndPlayReason)
 	}
 }
 
-void URGX_HitboxComponent::OnComponentEndOverlap(
-	UPrimitiveComponent* OverlappedComponent, 
-	AActor* OtherActor, 
-	UPrimitiveComponent* OtherComp, 
-	int32 OtherBodyIndex)
-{
-	UE_LOG(LogTemp, Warning, TEXT("OnComponentEndOverlap: %s - %s"), *GetOwner()->GetName(), *OtherActor->GetName());
-}
-
 void URGX_HitboxComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (bEffectActivated == false || bContinuousCollision == false) return;
+
+	UWorld* World = GetWorld();
+	if (World)
+	{
+		const float CurrentTime = World->GetTimeSeconds();
+		if (CurrentTime - TimeSinceLastCollision > ContinuousCollisionRate)
+		{
+			TimeSinceLastCollision = CurrentTime;
+			TSet<AActor*> OverlappingActors;
+			GetOverlappingActors(OverlappingActors, ARGX_CharacterBase::StaticClass());
+			for (AActor* OverlappedActor : OverlappingActors)
+			{
+				// TODO: Too much work to do a function who recovers all this info from all shapes in this hitboxcomponent
+				HandleOverlappedActor(OverlappedActor, nullptr, 0, false, FHitResult());
+			}
+		}
+	}
+	/*
 	if (bIsStatic)
 		return;
 
@@ -70,10 +82,24 @@ void URGX_HitboxComponent::TickComponent(float DeltaTime, ELevelTick TickType, F
 	const ECollisionEnabled::Type CollisionType = GetCollisionEnabled();
 	if (CollisionType == ECollisionEnabled::NoCollision)
 		return;
+		*/
 }
 
-void URGX_HitboxComponent::ActivateHitbox()
+void URGX_HitboxComponent::GetOverlappingActors(TSet<AActor*>& OverlappingActors, TSubclassOf<AActor> ClassFilter) const
 {
+	for (UShapeComponent* shape : Shapes)
+	{
+		shape->GetOverlappingActors(OverlappingActors, ClassFilter);
+	}
+
+	//UE_LOG(LogTemp, Warning, TEXT("Num of overlapped actors: %d"), OverlappingActors.Num());
+}
+
+void URGX_HitboxComponent::ActivateHitbox(bool bActivateEffect)
+{
+	// Changed before enabling collisions
+	bEffectActivated = bActivateEffect;
+
 	const USceneComponent* Parent = GetAttachParent();
 	AActor* OwnerActor = Parent->GetAttachmentRootActor();
 
@@ -91,11 +117,16 @@ void URGX_HitboxComponent::ActivateHitbox()
 
 void URGX_HitboxComponent::DeactivateHitbox()
 {
+	//UE_LOG(LogTemp, Warning, TEXT("Deactivate Hitbox: %s"), *GetName());
+
+	bEffectActivated = false;
+
 	for (UShapeComponent* Shape : Shapes)
 	{
 		Shape->SetCollisionProfileName("Dodgeable");
 		Shape->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
+
 	ActorsHit.Empty();
 }
 
@@ -159,6 +190,12 @@ void URGX_HitboxComponent::OnComponentOverlap(
 	bool bFromSweep, 
 	const FHitResult& SweepResult)
 {	
+	if (bEffectActivated == false)
+		return;
+
+	if (bContinuousCollision == true)
+		return;
+
 	// Check if the actor being hit has previously been hit. 
 	// It cannot be hit more than once by the same hitbox activation.
 	for (AActor* Hit : ActorsHit)
@@ -167,48 +204,73 @@ void URGX_HitboxComponent::OnComponentOverlap(
 			return;
 	}
 
-	const USceneComponent* Parent	= GetAttachParent();
-	AActor* OwnerActor				= Parent->GetAttachmentRootActor();
+	HandleOverlappedActor(OtherActor, OtherComp, OtherBodyIndex, bFromSweep, SweepResult);
+}
+
+void URGX_HitboxComponent::HandleOverlappedActor(AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	const USceneComponent* Parent = GetAttachParent();
+	AActor* OwnerActor = Parent->GetAttachmentRootActor();
 	if (!OwnerActor)
 	{
 		OwnerActor = GetOwner();
 	}
 
-	UE_LOG(LogHitbox, Display, TEXT("OnComponentOverlap: %s - %s"), *OwnerActor->GetName(), *OtherActor->GetName());
+	bool bCanApplyEffects = CheckCanApplyEffect(OtherActor);
+	ETeamAttitude::Type Attitude = FGenericTeamId::GetAttitude(OwnerActor, OtherActor);
 
+	if (Attitude == TeamToApply && bCanApplyEffects)
+	{
+		SendCollisionEvents(OwnerActor, OtherActor, bFromSweep, SweepResult);
+	}
+
+	HandleDestroyOnOverlap(OtherActor, Attitude, bCanApplyEffects);
+}
+
+bool URGX_HitboxComponent::CheckCanApplyEffect(const AActor* OtherActor)
+{
 	const FGameplayTagContainer BlockingTags = TagsToBlockTheHit;
-	IGameplayTagAssetInterface* TagInterface = Cast<IGameplayTagAssetInterface>(OtherActor);
-	bool CanApplyEffect = false;
-	if (TagInterface )
+	const IGameplayTagAssetInterface* TagInterface = Cast<IGameplayTagAssetInterface>(OtherActor);
+	if (TagInterface)
 	{
 		if (TagInterface->HasAllMatchingGameplayTags(BlockingTags) == false || BlockingTags.IsEmpty())
-			CanApplyEffect = true;
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 	}
 
-	ETeamAttitude::Type Attitude = FGenericTeamId::GetAttitude(OwnerActor, OtherActor);
-	if (Attitude == TeamToApply && CanApplyEffect)
+	return false;
+}
+
+void URGX_HitboxComponent::SendCollisionEvents(AActor* OwnerActor, AActor* OtherActor, bool bFromSweep, const FHitResult& SweepResult)
+{
+	const ARGX_CharacterBase* OwnerCharacter = Cast<ARGX_CharacterBase>(OwnerActor);
+	if (OwnerCharacter)
 	{
-		const ARGX_CharacterBase* OwnerCharacter = Cast<ARGX_CharacterBase>(OwnerActor);
-		if (OwnerCharacter)
-		{
-			UAbilitySystemComponent* OwnerAbilitySystemComponent = OwnerCharacter->GetAbilitySystemComponent();
+		UAbilitySystemComponent* OwnerAbilitySystemComponent = OwnerCharacter->GetAbilitySystemComponent();
 
-			FGameplayEventData* Payload = new FGameplayEventData();
-			Payload->Instigator	= OwnerActor;
-			Payload->Target		= OtherActor;
+		FGameplayEventData* Payload = new FGameplayEventData();
+		Payload->Instigator = OwnerActor;
+		Payload->Target = OtherActor;
 
-			for(const FGameplayTag Tag : EffectTags)
-				OwnerAbilitySystemComponent->HandleGameplayEvent(Tag, Payload);
+		for (const FGameplayTag Tag : EffectTags)
+			OwnerAbilitySystemComponent->HandleGameplayEvent(Tag, Payload);
 
-			ActorsHit.Add(OtherActor);
-		}
-
-		if (OnHitboxOverlap.IsBound())
-		{
-			OnHitboxOverlap.Broadcast(OtherActor);
-		}
+		ActorsHit.Add(OtherActor);
 	}
 
+	if (OnHitboxOverlap.IsBound())
+	{
+		OnHitboxOverlap.Broadcast(OtherActor);
+	}
+}
+
+void URGX_HitboxComponent::HandleDestroyOnOverlap(AActor* OtherActor, ETeamAttitude::Type Attitude, bool bCanApplyEffects)
+{
 	// TODO It probably should not be handled by hitbox component.
 	// Check the case where hitbox should destroy the object.
 	switch (DestroyOnOverlap)
@@ -225,7 +287,7 @@ void URGX_HitboxComponent::OnComponentOverlap(
 			DestroyOwnerOnOverlap();
 		break;
 	case ERGX_DestroyOnOverlapType::EffectApplied:
-		if (CanApplyEffect && Attitude == ETeamAttitude::Type::Hostile)
+		if (bCanApplyEffects && Attitude == ETeamAttitude::Type::Hostile)
 			DestroyOwnerOnOverlap();
 		break;
 	default:

@@ -77,10 +77,7 @@ void UExecution_Damage::Execute_Implementation(const FGameplayEffectCustomExecut
 	ExecutionParams.AttemptCalculateCapturedAttributeMagnitude(DamageStatics().AttackPowerDef, EvaluationParameters, AttackPower);
 
 	float FinalDamage = 0.0f;
-	//FinalDamage = DamageBase + AttackPower * ScalePower;
 	FinalDamage = DamageAmount + AttackPower * ScalingAttributeFactor;
-
-	UE_LOG(LogTemp, Warning, TEXT("Damage: %f"), FinalDamage);
 
 	if (FinalDamage > 0.0f)
 	{

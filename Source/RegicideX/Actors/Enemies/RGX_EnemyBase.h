@@ -6,9 +6,20 @@
 #include "Blueprint/UserWidget.h"
 #include "GameplayEffect.h"
 #include "RegicideX/Actors/RGX_PoolActor.h"
-#include "RegicideX/Interfaces/RGX_GameplayTagInterface.h"
-#include "RegicideX/Interfaces/RGX_InteractInterface.h"
 #include "RGX_EnemyBase.generated.h"
+
+UENUM(BlueprintType)
+enum class ERGX_EnemyType : uint8
+{
+	None				UMETA(DisplayName = "None"),
+	MeleeAngel			UMETA(DisplayName = "MeleeAngel"),
+	DistanceAngel		UMETA(DisplayName = "DistanceAngel"),
+	MageAngel			UMETA(DisplayName = "MageAngel"),
+	MeleePeasant		UMETA(DisplayName = "MeleePeasant"),
+	ShieldPeasant		UMETA(DisplayName = "ShieldPeasant"),
+	DistancePeasant		UMETA(DisplayName = "DistancePeasant"),
+	SuicidalPeasant		UMETA(DisplayName = "SuicidalPeasant")
+};
 
 USTRUCT()
 struct FAttackInfo {
@@ -32,15 +43,24 @@ struct FAttackInfo {
 
 };
 
+USTRUCT(BlueprintType)
+struct FAnimationArray
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	TArray<UAnimMontage*> Animations;
+};
+
 class USphereComponent;
 class UWidgetComponent;
 class URGX_HitboxesManagerComponent;
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnHandleDeath, int)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHandleDeathSignature, class ARGX_EnemyBase*, EnemyKilled);
 
 /* Struct to inform about when the attack was received*/
 UCLASS(BlueprintType)
-class REGICIDEX_API ARGX_EnemyBase : public ARGX_PoolActor, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface, public IRGX_InteractInterface
+class REGICIDEX_API ARGX_EnemyBase : public ARGX_PoolActor, public IRGX_InteractInterface
 {
 	GENERATED_BODY()
 
@@ -51,18 +71,27 @@ public:
 	virtual void Activate() override;
 	virtual void Deactivate() override;
 
+	UFUNCTION(BlueprintCallable)
+	ERGX_EnemyType GetEnemyType() const;
+
 public:
 	
-	FOnHandleDeath OnHandleDeathEvent;
+	FOnHandleDeathSignature OnHandleDeathEvent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	AActor* TargetActor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float InterpSpeed = 1.0f;
+	float RotationInterpSpeed = 10.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float AttackRotationInterpSpeed = 20.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float MoveSpeed = 100.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float OrbitSpeed = 50.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float AttackRadius = 700.0f;
@@ -71,11 +100,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int ScoreValue = 10;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool Orbiting = false;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	URGX_HitboxesManagerComponent* HitboxesManager = nullptr;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	bool bCanBeKnockup = true;
 
 protected:
 
@@ -107,19 +136,30 @@ protected:
 
 	float RecentDamage;
 
-protected:
+	UPROPERTY(EditDefaultsOnly)
+	TMap<ERGX_AnimEvent, FAnimationArray> AnimMontageMap;
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<AActor> SoulParticleActor = nullptr;
+
+	UPROPERTY(EditDefaultsOnly)
+	ERGX_EnemyType EnemyType;
+
+protected:
 	// Called when the game starts or when spawned
 	void BeginPlay() override;
-
 	void PossessedBy(AController* NewController) override;
 
 	UFUNCTION()
 	void EraseRecentDamage(const float DamageAmount);
 
+	void CheckIfWeak(float DamageAmount);
+
 	// FGenericTeamId interface
 	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
 	// End of FGenericTeamId interface
+
+	void SpawnSouls(const int Quantity);
 
 public:
 	virtual FGenericTeamId GetGenericTeamId() const override;
@@ -130,8 +170,14 @@ public:
 	virtual void MoveToTarget(float DeltaTime, FVector TargetPos);
 	// ---------------------
 
+	UFUNCTION(BlueprintCallable)
+	void StopLogic(const FString& Reason);
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bWeak = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bDefaultFocusPlayer = false;
 
 	UFUNCTION(BlueprintCallable)
 	bool IsWeak();
@@ -145,30 +191,17 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override; 
-
 	/** Events called from attribute set changes to decouple the logic. They call BP events. */
 	virtual void HandleDamage(
 		float DamageAmount,
 		const FHitResult& HitInfo,
 		const struct FGameplayTagContainer& DamageTags,
 		ARGX_CharacterBase* InstigatorCharacter,
-		AActor* DamageCauser) override;
+		AActor* DamageCauser,
+		ERGX_AnimEvent HitReactFlag) override;
 
 	virtual void HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags) override;
 	virtual void HandleDeath() override;
-
-	/** GameplayTagAssetInterface methods */
-	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
-	virtual bool HasMatchingGameplayTag(FGameplayTag TagToCheck) const override;
-	virtual bool HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
-	virtual bool HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
-
-	/** RX_GameplayTagInterface methods */
-	virtual void AddGameplayTag(const FGameplayTag& TagToAdd) override;
-
-	virtual void RemoveGameplayTag(const FGameplayTag& TagToRemove) override;
 
 	/** Combat assist widget functions */
 	void ShowCombatTargetWidget();

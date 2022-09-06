@@ -15,7 +15,17 @@ class REGICIDEX_API ARGX_MageAngelController : public AAIController
 {
 	GENERATED_BODY()
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float TimeConsecutiveHits = 1.0f;
+
+	UFUNCTION(BlueprintCallable)
+	void DamageTaken();
+
 protected:
 	void BeginPlay() override;
+
+private:
+	FTimerHandle TimerHandle;
 
 };

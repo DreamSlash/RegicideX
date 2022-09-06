@@ -78,16 +78,16 @@ public:
 	void StartPlayEvent();
 
 	UFUNCTION(BlueprintNativeEvent, DisplayName = "StartWaveEvent")
-		void StartWaveEvent();
+	void StartWaveEvent();
 
 	UFUNCTION(BlueprintNativeEvent, DisplayName = "EndWaveEvent")
-		void EndWaveEvent();
+	void EndWaveEvent();
 
 	UFUNCTION(BlueprintNativeEvent, DisplayName = "EndGameEvent")
-		void EndGameEvent();
+	void EndGameEvent();
 
 	UFUNCTION(BlueprintNativeEvent, DisplayName = "OnEnemyDeadEvent")
-		void EnemyDeadEvent();
+	void EnemyDeadEvent();
 
 	UFUNCTION()
 	void StartEnemySpawn();
@@ -110,7 +110,7 @@ private:
 	void SpawnEnemy(UDataAsset* EnemyInfo);
 
 	UFUNCTION()
-	void OnEnemyDestroyed(int EnemyScoreValue);
+	void OnEnemyDestroyed(ARGX_EnemyBase* Enemy);
 
 	void OnWaveFinished();
 };

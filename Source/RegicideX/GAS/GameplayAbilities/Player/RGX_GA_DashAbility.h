@@ -1,13 +1,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GameplayAbility.h"
+#include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GA_CastSkillAbility.h"
 #include "RGX_GA_DashAbility.generated.h"
 
 class ACharacter;
 
 UCLASS()
-class REGICIDEX_API URGX_DashAbility : public URGX_GameplayAbility
+class REGICIDEX_API URGX_DashAbility : public URGX_CastSkillAbility
 {
 	GENERATED_BODY()
 
@@ -17,14 +17,6 @@ class REGICIDEX_API URGX_DashAbility : public URGX_GameplayAbility
 
 protected:
 
-	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* MontageToPlay = nullptr;
-
-	UPROPERTY(EditDefaultsOnly)
-	float DashSpeed = 900.0f;
-
-protected:
-
-	UFUNCTION()
-	void FinishDash();
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UGameplayEffect> InvulnerabilityEffect;
 };

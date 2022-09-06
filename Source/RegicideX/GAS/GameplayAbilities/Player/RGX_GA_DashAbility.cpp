@@ -1,8 +1,9 @@
 #include "RGX_GA_DashAbility.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
-#include "../../../Character/RGX_PlayerCharacter.h"
+#include "RegicideX/Character/RGX_PlayerCharacter.h"
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
+#include "Components/CapsuleComponent.h"
 
 void URGX_DashAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
@@ -12,8 +13,6 @@ void URGX_DashAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 
 	if (Character)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Dash Ability"));
-
 		if (Character->GetCharacterMovement()->IsFalling())
 		{
 			if (bool bHasAirDashed = Character->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.HasAirDashed"))))
@@ -23,22 +22,30 @@ void URGX_DashAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 			}
 			else
 			{
-				UE_LOG(LogTemp, Warning, TEXT("Air Dash\n"));
 				Character->StopJumping();
 				Character->LaunchCharacter(FVector(0.0f, 0.0f, 0.0f), false, true);
+				// This tag is never removed so air dash con only be made once
 				Character->AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.HasAirDashed")));
 			}
 		}
 
 		Character->GetCharacterMovement()->GravityScale = 0.0f;
-		Character->GetCharacterMovement()->MaxWalkSpeed = DashSpeed;
+		Character->GetCharacterMovement()->MaxWalkSpeed = 0.0f;
+		Character->DisableMovementInput();
 
-		UAbilityTask_PlayMontageAndWait* PlayMontageTask = UAbilityTask_PlayMontageAndWait::CreatePlayMontageAndWaitProxy(this, NAME_None, MontageToPlay);
-		PlayMontageTask->OnBlendOut.AddDynamic(this, &URGX_DashAbility::FinishDash);
-		PlayMontageTask->OnCancelled.AddDynamic(this, &URGX_DashAbility::FinishDash);
-		PlayMontageTask->OnCompleted.AddDynamic(this, &URGX_DashAbility::FinishDash);
-		PlayMontageTask->OnInterrupted.AddDynamic(this, &URGX_DashAbility::FinishDash);
-		PlayMontageTask->ReadyForActivation();
+		UCapsuleComponent* CapsuleComponent = Character->GetCapsuleComponent();
+		if (CapsuleComponent)
+		{
+			CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+		}
+
+		UAbilitySystemComponent* ASC = Character->GetAbilitySystemComponent();
+		if (ASC != nullptr)
+		{
+			FGameplayEffectSpecHandle GameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(InvulnerabilityEffect, 1);
+			FGameplayEffectContextHandle EffectContext = MakeEffectContext(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo());
+			ASC->ApplyGameplayEffectToSelf(InvulnerabilityEffect->GetDefaultObject<UGameplayEffect>(), 0.0f, ASC->MakeEffectContext());
+		}
 	}
 	else
 	{
@@ -51,14 +58,16 @@ void URGX_DashAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 
 	ARGX_PlayerCharacter* Character = Cast<ARGX_PlayerCharacter>(ActorInfo->AvatarActor);
+	if (Character)
+	{
+		Character->GetCharacterMovement()->MaxWalkSpeed = 800.0f;
+		Character->GetCharacterMovement()->GravityScale = Character->DefaultGravity;
+		Character->EnableMovementInput();
 
-	Character->GetCharacterMovement()->GravityScale = Character->DefaultGravity;
-	Character->GetCharacterMovement()->MaxWalkSpeed = Character->MaxWalkSpeed;
-
-	UE_LOG(LogTemp, Warning, TEXT("Finish Dash. Current Gravity: %f\n"), Character->GetCharacterMovement()->GravityScale);
-}
-
-void URGX_DashAbility::FinishDash()
-{
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
+		UCapsuleComponent* CapsuleComponent = Character->GetCapsuleComponent();
+		if (CapsuleComponent)
+		{
+			CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+		}
+	}
 }

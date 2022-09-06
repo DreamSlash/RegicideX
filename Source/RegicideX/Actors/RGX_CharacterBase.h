@@ -9,6 +9,8 @@
 #include "RegicideX/GAS/AttributeSets/RGX_AttributeSet.h"
 #include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GameplayAbility.h"
 #include "RegicideX/GAS/RGX_PayloadObjects.h"
+#include "RegicideX/Interfaces/RGX_GameplayTagInterface.h"
+#include "RegicideX/Interfaces/RGX_InteractInterface.h"
 #include "RGX_CharacterBase.generated.h"
 
 class UMCV_AbilitySystemComponent; // TODO Change to RGX
@@ -17,7 +19,7 @@ class AActor;
 
 /** Base Class for al characters in the game */
 UCLASS()
-class REGICIDEX_API ARGX_CharacterBase : public ACharacter, public IAbilitySystemInterface, public IGenericTeamAgentInterface
+class REGICIDEX_API ARGX_CharacterBase : public ACharacter, public IAbilitySystemInterface, public IGenericTeamAgentInterface, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface
 {
 	GENERATED_BODY()
 
@@ -55,6 +57,14 @@ public:
 		URGX_LaunchEventDataAsset* LaunchPayload,
 		float LaunchDelay = 0.2f);
 
+public:
+	/** If vertical forces can be applied to the actor or not */
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	bool bCanBeKnockup = true;
+
+	UPROPERTY(BlueprintReadWrite)
+	bool bCanRotate = true;
+
 protected:
 	/** The level of this character, should not be modified directly once it has already spawned */
 	UPROPERTY(EditAnywhere, Category = Abilities)
@@ -73,7 +83,7 @@ protected:
 	TArray<TSubclassOf<UGameplayEffect>> PassiveGameplayEffects;
 
 	/** Gameplay Ability System components */
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	UMCV_AbilitySystemComponent* AbilitySystemComponent = nullptr;
 
 	/** Attributes forming and modifying the Ability System */
@@ -85,15 +95,39 @@ protected:
 	bool bAbilitiesInitialized = false;
 
 	/** Events called from attribute set changes to decouple the logic. They call BP events. */
+
+	/** Called after health attribute has been modified after an incoming damage */
 	virtual void HandleDamage(
+		float DamageAmount,
+		const FHitResult& HitInfo,
+		const struct FGameplayTagContainer& DamageTags,
+		ARGX_CharacterBase* InstigatorCharacter,
+		AActor* DamageCauser,
+		ERGX_AnimEvent HitReactFlag);
+
+	/** Called after health attribute has been modified */
+	virtual void HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags);
+
+	/** 
+	* Called when Damage attribute is modified and before changing the Health attribute.
+	* Returns the total damage after mitigation modifications have been applied.
+	*/
+	virtual float HandleDamageMitigation(
 		float DamageAmount,
 		const FHitResult& HitInfo,
 		const struct FGameplayTagContainer& DamageTags,
 		ARGX_CharacterBase* InstigatorCharacter,
 		AActor* DamageCauser);
 
-	virtual void HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags);
+	/** Call this from Montage Notify.
+	* This will call the OnHandleDeath BP event which should in turn
+	* call the HandleDeath function, which is the one that actually
+	* does the work.
+	*/
+	UFUNCTION(BlueprintCallable)
+	void NotifyDeath();
 
+	/** Call this from BP */
 	UFUNCTION(BlueprintCallable)
 	virtual void HandleDeath();
 
@@ -110,6 +144,7 @@ protected:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags);
 
+	/** Destroy function must be called inside this event using a delay. */
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnHandleDeath();
 
@@ -122,4 +157,16 @@ protected:
 	virtual FGenericTeamId GetGenericTeamId() const override;
 
 	friend URGX_AttributeSet;
+
+public:
+	/** GameplayTagAssetInterface methods */
+	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
+	virtual bool HasMatchingGameplayTag(FGameplayTag TagToCheck) const override;
+	virtual bool HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
+	virtual bool HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
+
+	/** RX_GameplayTagInterface methods */
+	virtual void AddGameplayTag(const FGameplayTag& TagToAdd) override;
+
+	virtual void RemoveGameplayTag(const FGameplayTag& TagToRemove) override;
 };

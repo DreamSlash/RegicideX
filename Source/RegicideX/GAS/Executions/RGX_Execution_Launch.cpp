@@ -31,5 +31,7 @@ void UExecution_Launch::Execute_Implementation(const FGameplayEffectCustomExecut
 	}
 
 	if (TargetCharacter && InstigatorCharacter)
+	{
 		TargetCharacter->OnBeingLaunched(InstigatorCharacter, LaunchEventData);
+	}
 }

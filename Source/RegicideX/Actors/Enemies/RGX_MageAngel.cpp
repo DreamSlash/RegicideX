@@ -5,6 +5,8 @@
 
 #include "GameFramework/CharacterMovementComponent.h"
 
+#include "RegicideX/AI/Controllers/RGX_MageAngelController.h"
+
 ARGX_MageAngel::ARGX_MageAngel()
 	: ARGX_EnemyBase()
 {
@@ -31,7 +33,14 @@ void ARGX_MageAngel::BeginPlay()
 void ARGX_MageAngel::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
 
-	if (bToBeDestroyed)
-		Destroy();
+void ARGX_MageAngel::HandleDamage(float DamageAmount
+	, const FHitResult& HitInfo
+	, const struct FGameplayTagContainer& DamageTags
+	, ARGX_CharacterBase* InstigatorCharacter
+	, AActor* DamageCauser
+	, ERGX_AnimEvent HitReactFlag)
+{
+	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser, HitReactFlag);
 }

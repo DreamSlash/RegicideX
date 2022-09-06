@@ -2,7 +2,9 @@
 
 
 #include "RGX_EnemyBase.h"
+#include "AbilitySystemGlobals.h"
 #include "AIController.h"
+#include "Animation/AnimInstance.h"
 #include "BrainComponent.h"
 #include "Components/MCV_AbilitySystemComponent.h"
 #include "Components/SphereComponent.h"
@@ -10,10 +12,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "RegicideX/GameplayFramework/RGX_RoundGameMode.h"
-#include "AbilitySystemGlobals.h"
 #include "RegicideX/Components/RGX_HitboxesManagerComponent.h"
 #include "RegicideX/UI/RGX_EnemyHealthBar.h"
 #include "RegicideX/Components/RGX_InteractComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 ARGX_EnemyBase::ARGX_EnemyBase()
@@ -52,6 +54,11 @@ void ARGX_EnemyBase::Deactivate()
 	RemoveStartupGameplayAbilities();
 }
 
+ERGX_EnemyType ARGX_EnemyBase::GetEnemyType() const
+{
+	return EnemyType;
+}
+
 // Called when the game starts or when spawned
 void ARGX_EnemyBase::BeginPlay()
 {
@@ -65,6 +72,10 @@ void ARGX_EnemyBase::BeginPlay()
 	// For initializing health bar
 	AddStartupGameplayAbilities();
 	HandleHealthChanged(0.0f, FGameplayTagContainer());
+
+	GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
+
+	TargetActor = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 }
 
 void ARGX_EnemyBase::PossessedBy(AController* NewController)
@@ -78,6 +89,34 @@ void ARGX_EnemyBase::EraseRecentDamage(const float DamageAmount)
 	RecentDamage -= DamageAmount;
 }
 
+void ARGX_EnemyBase::CheckIfWeak(float DamageAmount)
+{
+	// Execution Damage percentage
+	RecentDamage += DamageAmount;
+
+	FTimerDelegate TimerDel;
+	FTimerHandle TimerHandle;
+	TimerDel.BindUFunction(this, FName("EraseRecentDamage"), DamageAmount);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, 2.f, false);
+
+	const float MaxHealth = AbilitySystemComponent->GetNumericAttribute(AttributeSet->GetMaxHealthAttribute());
+	const float CurrentHealth = AbilitySystemComponent->GetNumericAttribute(AttributeSet->GetHealthAttribute());
+	const float RecentDamageAsHealthPercentage = RecentDamage / MaxHealth;
+	const float HealthAsPercentage = CurrentHealth / MaxHealth;
+	if (HealthAsPercentage < WeakenPercentage)
+	{
+		if (CanBeInteractedWith(nullptr) == false)
+			EnableInteraction();
+
+		bWeak = true;
+
+		if (HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("Status.Enemy.Weakened")) == false)
+		{
+			AddGameplayTag(FGameplayTag::RequestGameplayTag("Status.Enemy.Weakened"));
+		}
+	}
+}
+
 void ARGX_EnemyBase::MoveToTarget(float DeltaTime, FVector TargetPos)
 {
 	if (TargetActor)
@@ -89,6 +128,19 @@ void ARGX_EnemyBase::MoveToTarget(float DeltaTime, FVector TargetPos)
 	}
 }
 
+void ARGX_EnemyBase::StopLogic(const FString& Reason)
+{
+	AAIController* AiController = Cast<AAIController>(GetController());
+	if (AiController)
+	{
+		UBrainComponent* BrainComponent = AiController->GetBrainComponent();
+		if (BrainComponent)
+		{
+			BrainComponent->StopLogic(Reason);
+		}
+	}
+}
+
 bool ARGX_EnemyBase::IsWeak()
 {
 	return bWeak;
@@ -97,19 +149,20 @@ bool ARGX_EnemyBase::IsWeak()
 void ARGX_EnemyBase::EnableInteraction()
 {
 	InteractionShapeComponent->SetCollisionEnabled(ECollisionEnabled::QueryOnly);
-	UE_LOG(LogTemp, Warning, TEXT("Enable Interaction\n"));
+	//UE_LOG(LogTemp, Warning, TEXT("Enable Interaction\n"));
 }
 
 void ARGX_EnemyBase::DisableInteraction()
 {
 	InteractionShapeComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-	UE_LOG(LogTemp, Warning, TEXT("Disable Interaction\n"));
+	//UE_LOG(LogTemp, Warning, TEXT("Disable Interaction\n"));
 }
 
 void ARGX_EnemyBase::RotateToTarget(float DeltaTime)
 {
 	if (TargetActor)
 	{
+		const float InterpSpeed = HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("GameplayEvent.Action.Melee")) ? AttackRotationInterpSpeed : RotationInterpSpeed;
 		const FVector MyLocation = this->GetActorLocation();
 		const FVector TargetLocation = TargetActor->GetActorLocation();
 		const FRotator RotOffset = UKismetMathLibrary::FindLookAtRotation(MyLocation, TargetLocation);
@@ -124,12 +177,16 @@ void ARGX_EnemyBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	const bool bIsDead = HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.Dead")));
-	if (bIsDead == true)
+	if (IsAlive() == false)
 		return;
 
 	if (TargetActor)
 	{
+		if (bCanRotate && bDefaultFocusPlayer)
+		{
+			RotateToTarget(DeltaTime);
+		}
+
 		const FVector VectorToTarget = TargetActor->GetActorLocation() - GetActorLocation();
 		const float DistanceToTarget = VectorToTarget.Size();
 		if (DistanceToTarget > HealthBarHideDistance)
@@ -143,63 +200,86 @@ void ARGX_EnemyBase::Tick(float DeltaTime)
 	}
 }
 
-// Called to bind functionality to input
-void ARGX_EnemyBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-}
-
 void ARGX_EnemyBase::HandleDamage(
 	float DamageAmount,
 	const FHitResult& HitInfo,
 	const struct FGameplayTagContainer& DamageTags,
 	ARGX_CharacterBase* InstigatorCharacter,
-	AActor* DamageCauser)
+	AActor* DamageCauser,
+	ERGX_AnimEvent HitReactFlag)
 {
-	// Make sure they don't handle damage twice when dead.
-	if (GetAbilitySystemComponent()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.Dead"))))
+	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser, HitReactFlag);
+
+	if (IsAlive())
 	{
-		return;
-	}
+		// Play reaction hit animation.
+		if (GetMovementComponent()->IsFalling())
+		{
+			UAnimMontage* AnimToPlay = nullptr;
+			const FAnimationArray AnimationList = *AnimMontageMap.Find(ERGX_AnimEvent::AirHitReact);
+			if (AnimationList.Animations.Num() > 1)
+			{
+				int32 Index = UKismetMathLibrary::RandomIntegerInRange(0, AnimationList.Animations.Num() - 1);
+				AnimToPlay = AnimationList.Animations[Index];
+			}
+			else
+			{
+				AnimToPlay = AnimationList.Animations[0];
+			}
+			PlayAnimMontage(AnimToPlay);
+		}
+		else
+		{
+			CheckIfWeak(DamageAmount);
+			if (IsWeak())
+			{
+				StopAnimMontage();
+			}
+			else
+			{
+				const FAnimationArray AnimationList = *AnimMontageMap.Find(HitReactFlag);
+				UAnimMontage* AnimToPlay = nullptr;
+				if (AnimationList.Animations.Num() > 1)
+				{
+					int32 Index = UKismetMathLibrary::RandomIntegerInRange(0, AnimationList.Animations.Num() - 1);
+					AnimToPlay = AnimationList.Animations[Index];
+				}
+				else
+				{
+					AnimToPlay = AnimationList.Animations[0];
+				}
 
-	// TODO Show Damage Amount in C++ instead of Blueprints.
+				if (AnimToPlay == nullptr)
+				{
+					UE_LOG(LogTemp, Error, TEXT("No AnimToPlay found!"));
+					return;
+				}
 
-
-	// If damage killed the actor, we should kill its AI Logic and clean weak status as it is already dead.
-	if (IsAlive() == false)
-	{
-		bWeak = false;
-		StopAnimMontage(); // If dead, make sure nothing is executing in order to execute death animation from AnimBP.
-		AAIController* AiController = Cast<AAIController>(GetController());
-		AiController->GetBrainComponent()->StopLogic(FString("Character dead."));
-		//GetAbilitySystemComponent()->AddLooseGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.Dead")));
+				PlayAnimMontage(AnimToPlay);
+			}
+		}
 	}
 	else
 	{
-		// Execution Damage percentage
-		// TODO Make Execution logic into a function
-		RecentDamage += DamageAmount;
-
-		FTimerDelegate TimerDel;
-		FTimerHandle TimerHandle;
-		TimerDel.BindUFunction(this, FName("EraseRecentDamage"), DamageAmount);
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, 2.f, false);
-
-		const float MaxHealth		= AbilitySystemComponent->GetNumericAttribute(AttributeSet->GetMaxHealthAttribute());
-		const float CurrentHealth	= AbilitySystemComponent->GetNumericAttribute(AttributeSet->GetHealthAttribute());
-		const float RecentDamageAsHealthPercentage = RecentDamage / MaxHealth;
-		const float HealthAsPercentage = CurrentHealth / MaxHealth;
-		UE_LOG(LogTemp, Warning, TEXT("Percentage Recent Damage: %f\n"), RecentDamageAsHealthPercentage);
-		if (/*RecentDamageAsHealthPercentage >= WeakenPercentage || */ HealthAsPercentage < WeakenPercentage)
+		// If damage killed the actor, we should kill its AI Logic and clean weak status as it is already dead.
+		bWeak = false;
+		RemoveGameplayTag(FGameplayTag::RequestGameplayTag("Status.Enemy.Weakened"));
+		StopAnimMontage(); // If dead, make sure nothing is executing in order to execute death animation from AnimBP.
+		StopLogic("Character Dead");
+		HealthDisplayWidgetComponent->SetVisibility(false);
+		UAnimMontage* AnimToPlay = nullptr;
+		const FAnimationArray AnimationList = *AnimMontageMap.Find(ERGX_AnimEvent::Death);
+		if (AnimationList.Animations.Num() > 1)
 		{
-			if (CanBeInteractedWith(nullptr) == false)
-				EnableInteraction();
-
-			bWeak = true;
+			int32 Index = UKismetMathLibrary::RandomIntegerInRange(0, AnimationList.Animations.Num() - 1);
+			AnimToPlay = AnimationList.Animations[Index];
 		}
+		else
+		{
+			AnimToPlay = AnimationList.Animations[0];
+		}
+		PlayAnimMontage(AnimToPlay);
 	}
-
-	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser);
 }
 
 void ARGX_EnemyBase::HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags)
@@ -225,10 +305,17 @@ void ARGX_EnemyBase::HandleDeath()
 {
 	Super::HandleDeath();
 
-	OnHandleDeathEvent.Broadcast(ScoreValue);
-	OnHandleDeath();
-	HealthDisplayWidgetComponent->SetVisibility(false);
-	//Deactivate();
+	// TODO Make it random
+	const int Quantity = FMath::RandRange(3.0f, 5.0f);
+	SpawnSouls(Quantity);
+
+	UE_LOG(LogTemp, Log, TEXT("Entering HandleDeath()"));
+	if (OnHandleDeathEvent.IsBound())
+	{
+		OnHandleDeathEvent.Broadcast(this);
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("Destroying actor..."));
 	Destroy();
 }
 
@@ -237,39 +324,23 @@ void ARGX_EnemyBase::SetGenericTeamId(const FGenericTeamId& TeamID)
 	CharacterTeam = TeamID;
 }
 
+void ARGX_EnemyBase::SpawnSouls(const int Quantity)
+{
+	// Create box
+	const FVector ActorLocation = GetActorLocation();
+
+	// Spawn n quantity of souls at random points
+	for (int i = 0; i < Quantity; i++)
+	{
+		const FVector Location = UKismetMathLibrary::RandomPointInBoundingBox(ActorLocation, FVector(40.0f));
+		const FRotator Rotation = FRotator(0.0f);
+		GetWorld()->SpawnActor<AActor>(SoulParticleActor, ActorLocation, Rotation);
+	}
+}
+
 FGenericTeamId ARGX_EnemyBase::GetGenericTeamId() const
 {
 	return CharacterTeam;
-}
-
-void ARGX_EnemyBase::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
-{
-	AbilitySystemComponent->GetOwnedGameplayTags(TagContainer);
-}
-
-bool ARGX_EnemyBase::HasMatchingGameplayTag(FGameplayTag TagToCheck) const
-{
-	return AbilitySystemComponent->HasMatchingGameplayTag(TagToCheck);
-}
-
-bool ARGX_EnemyBase::HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const
-{
-	return AbilitySystemComponent->HasAllMatchingGameplayTags(TagContainer);
-}
-
-bool ARGX_EnemyBase::HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const
-{
-	return AbilitySystemComponent->HasAnyMatchingGameplayTags(TagContainer);
-}
-
-void ARGX_EnemyBase::AddGameplayTag(const FGameplayTag& TagToAdd)
-{
-	AbilitySystemComponent->AddLooseGameplayTag(TagToAdd);
-}
-
-void ARGX_EnemyBase::RemoveGameplayTag(const FGameplayTag& TagToRemove)
-{
-	AbilitySystemComponent->RemoveLooseGameplayTag(TagToRemove);
 }
 
 void ARGX_EnemyBase::ShowCombatTargetWidget()
@@ -313,7 +384,7 @@ void ARGX_EnemyBase::StopCanInteract(AActor* ActorInteracting)
 bool ARGX_EnemyBase::CanBeInteractedWith(AActor* ActorInteracting)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Can be interacted with\n"));
-	return InteractionShapeComponent->IsCollisionEnabled();
+	return InteractionShapeComponent->IsCollisionEnabled() && IsAlive();
 }
 
 bool ARGX_EnemyBase::IsInFrustum()

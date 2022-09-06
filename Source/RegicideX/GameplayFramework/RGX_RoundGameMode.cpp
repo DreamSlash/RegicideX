@@ -40,20 +40,19 @@ int ARGX_RoundGameMode::GetRound() const
 	return GetGameState<ARGX_ScoreGameState>()->GetRound();
 }
 
-void ARGX_RoundGameMode::StartPlay()
-{
-	StartPlayEvent();
-	TargetActor = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-	StartEnemySpawn();
-	Super::StartPlay(); //Must be at the end
-}
-
 void ARGX_RoundGameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
 	GetGameState<ARGX_ScoreGameState>()->SetStateDefaults();
-	StartPlay();
+}
+
+void ARGX_RoundGameMode::StartPlay()
+{
+	Super::StartPlay();
+	StartPlayEvent();
+	TargetActor = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	StartEnemySpawn();
 }
 
 void ARGX_RoundGameMode::StartWaveEvent_Implementation()
@@ -173,7 +172,7 @@ void ARGX_RoundGameMode::SpawnEnemy(UDataAsset* EnemyInfo)
 			//if (ARGX_EnemyBase* Enemy = (Cast<ARGX_PoolSpawner>(EnemySpawners[Rand])->Spawn(EnemyInfoCasted->TypeName)))
 			if (ARGX_EnemyBase* Enemy = (Cast<ARGX_EnemySpawner>(EnemySpawners[Rand])->Spawn(EnemyInfoCasted->EnemyBP)))
 			{
-				Enemy->OnHandleDeathEvent.AddUObject(this, &ARGX_RoundGameMode::OnEnemyDestroyed);
+				Enemy->OnHandleDeathEvent.AddDynamic(this, &ARGX_RoundGameMode::OnEnemyDestroyed);
 				Enemy->TargetActor = TargetActor;
 				SpawnedEnemies++;
 			}
@@ -181,11 +180,11 @@ void ARGX_RoundGameMode::SpawnEnemy(UDataAsset* EnemyInfo)
 	}
 }
 
-void ARGX_RoundGameMode::OnEnemyDestroyed(const int EnemyScoreValue)
+void ARGX_RoundGameMode::OnEnemyDestroyed(ARGX_EnemyBase* Enemy)
 {
 	IncreaseKillCount();
 	ARGX_ScoreGameState* GameStateTemp = GetGameState<ARGX_ScoreGameState>();
-	GameStateTemp->SetScore(GameStateTemp->GetScore() + EnemyScoreValue);
+	//GameStateTemp->SetScore(GameStateTemp->GetScore() + EnemyScoreValue);
 	EnemyDeadEvent();
 }
 

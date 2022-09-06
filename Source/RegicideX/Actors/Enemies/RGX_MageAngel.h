@@ -29,10 +29,11 @@ public:
 	void BeginPlay() override;
 	void Tick(float DeltaTime) override;
 
-public:
-	void SetToBeDestroyed() { bToBeDestroyed = true; }
-
-private:
-	bool bToBeDestroyed = false;
-
+	virtual void HandleDamage(
+		float DamageAmount,
+		const FHitResult& HitInfo,
+		const struct FGameplayTagContainer& DamageTags,
+		ARGX_CharacterBase* InstigatorCharacter,
+		AActor* DamageCauser,
+		ERGX_AnimEvent HitReactFlag) override;
 };
