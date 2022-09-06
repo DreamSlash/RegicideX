@@ -19,4 +19,7 @@ class REGICIDEX_API URGX_BlueprintLibrary : public UBlueprintFunctionLibrary
 public:
 	UFUNCTION(BlueprintCallable, Category = Ability)
 	static void ApplyGameplayEffectContextContainerToActor(const ARGX_CharacterBase* CharacterBase, TSubclassOf<UGameplayEffect> EffectToApply, URGX_RGXEventDataAsset* Payload);
+
+	UFUNCTION(BlueprintCallable, Category = Character)
+	static void LaunchCharacterToLocation(ARGX_CharacterBase* CharacterBase, const FVector& TargetLocation);
 };

@@ -114,7 +114,8 @@ void ARGX_CharacterBase::HandleDamage(
 	const FHitResult& HitInfo, 
 	const FGameplayTagContainer& DamageTags, 
 	ARGX_CharacterBase* InstigatorCharacter, 
-	AActor* DamageCauser)
+	AActor* DamageCauser,
+	ERGX_AnimEvent HitReactFlag)
 {
 	// If it is already dead, return
 	if (IsAlive() && HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.Dead"))))
@@ -136,6 +137,12 @@ void ARGX_CharacterBase::HandleHealthChanged(float DeltaValue, const FGameplayTa
 	OnHealthChanged(DeltaValue, EventTags);
 }
 
+float ARGX_CharacterBase::HandleDamageMitigation(float DamageAmount, const FHitResult& HitInfo, const FGameplayTagContainer& DamageTags, ARGX_CharacterBase* InstigatorCharacter, AActor* DamageCauser)
+{
+	//UE_LOG(LogTemp, Warning, TEXT("Damage Mitigation"));
+	return DamageAmount;
+}
+
 void ARGX_CharacterBase::NotifyDeath()
 {
 	OnHandleDeath();
@@ -143,7 +150,7 @@ void ARGX_CharacterBase::NotifyDeath()
 
 void ARGX_CharacterBase::HandleDeath()
 {
-	UE_LOG(LogTemp, Log, TEXT("RGX_CharacterBase: OnHandleDeath"));
+	//UE_LOG(LogTemp, Log, TEXT("RGX_CharacterBase: OnHandleDeath"));
 }
 
 void ARGX_CharacterBase::AddStartupGameplayAbilities()

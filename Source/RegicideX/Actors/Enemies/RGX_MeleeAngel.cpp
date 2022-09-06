@@ -30,7 +30,7 @@ void ARGX_MeleeAngel::RotateToTarget(float DeltaTime)
 		MyTargetRotation.Pitch = 0.0f;
 		MyTargetRotation.Roll = 0.0f;
 
-		const FRotator NewRotation = FMath::Lerp(this->GetActorRotation(), MyTargetRotation, DeltaTime * InterpSpeed);
+		const FRotator NewRotation = FMath::Lerp(this->GetActorRotation(), MyTargetRotation, DeltaTime * RotationInterpSpeed);
 		this->SetActorRotation(NewRotation);
 	}
 }

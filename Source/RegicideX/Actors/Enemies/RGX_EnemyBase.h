@@ -8,6 +8,19 @@
 #include "RegicideX/Actors/RGX_PoolActor.h"
 #include "RGX_EnemyBase.generated.h"
 
+UENUM(BlueprintType)
+enum class ERGX_EnemyType : uint8
+{
+	None				UMETA(DisplayName = "None"),
+	MeleeAngel			UMETA(DisplayName = "MeleeAngel"),
+	DistanceAngel		UMETA(DisplayName = "DistanceAngel"),
+	MageAngel			UMETA(DisplayName = "MageAngel"),
+	MeleePeasant		UMETA(DisplayName = "MeleePeasant"),
+	ShieldPeasant		UMETA(DisplayName = "ShieldPeasant"),
+	DistancePeasant		UMETA(DisplayName = "DistancePeasant"),
+	SuicidalPeasant		UMETA(DisplayName = "SuicidalPeasant")
+};
+
 USTRUCT()
 struct FAttackInfo {
 
@@ -30,11 +43,20 @@ struct FAttackInfo {
 
 };
 
+USTRUCT(BlueprintType)
+struct FAnimationArray
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	TArray<UAnimMontage*> Animations;
+};
+
 class USphereComponent;
 class UWidgetComponent;
 class URGX_HitboxesManagerComponent;
 
-DECLARE_MULTICAST_DELEGATE_OneParam(FOnHandleDeath, int)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHandleDeathSignature, class ARGX_EnemyBase*, EnemyKilled);
 
 /* Struct to inform about when the attack was received*/
 UCLASS(BlueprintType)
@@ -49,18 +71,27 @@ public:
 	virtual void Activate() override;
 	virtual void Deactivate() override;
 
+	UFUNCTION(BlueprintCallable)
+	ERGX_EnemyType GetEnemyType() const;
+
 public:
 	
-	FOnHandleDeath OnHandleDeathEvent;
+	FOnHandleDeathSignature OnHandleDeathEvent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	AActor* TargetActor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float InterpSpeed = 1.0f;
+	float RotationInterpSpeed = 10.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float AttackRotationInterpSpeed = 20.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float MoveSpeed = 100.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float OrbitSpeed = 50.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float AttackRadius = 700.0f;
@@ -68,6 +99,9 @@ public:
 	/** The base score all enemies will give to the player when they die. Each class should change its value accordingly. */
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int ScoreValue = 10;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool Orbiting = false;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	URGX_HitboxesManagerComponent* HitboxesManager = nullptr;
@@ -103,19 +137,17 @@ protected:
 	float RecentDamage;
 
 	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* AMReactionHit = nullptr;
+	TMap<ERGX_AnimEvent, FAnimationArray> AnimMontageMap;
 
 	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* AMAirReactionHit = nullptr;
+	TSubclassOf<AActor> SoulParticleActor = nullptr;
 
 	UPROPERTY(EditDefaultsOnly)
-	UAnimMontage* AMDeath = nullptr;
+	ERGX_EnemyType EnemyType;
 
 protected:
-
 	// Called when the game starts or when spawned
 	void BeginPlay() override;
-
 	void PossessedBy(AController* NewController) override;
 
 	UFUNCTION()
@@ -126,6 +158,8 @@ protected:
 	// FGenericTeamId interface
 	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
 	// End of FGenericTeamId interface
+
+	void SpawnSouls(const int Quantity);
 
 public:
 	virtual FGenericTeamId GetGenericTeamId() const override;
@@ -141,6 +175,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bWeak = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bDefaultFocusPlayer = false;
 
 	UFUNCTION(BlueprintCallable)
 	bool IsWeak();
@@ -160,7 +197,8 @@ public:
 		const FHitResult& HitInfo,
 		const struct FGameplayTagContainer& DamageTags,
 		ARGX_CharacterBase* InstigatorCharacter,
-		AActor* DamageCauser) override;
+		AActor* DamageCauser,
+		ERGX_AnimEvent HitReactFlag) override;
 
 	virtual void HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags) override;
 	virtual void HandleDeath() override;

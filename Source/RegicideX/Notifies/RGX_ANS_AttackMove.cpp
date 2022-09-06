@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "RegicideX/Notifies/RGX_ANS_AttackMove.h"
 #include "RegicideX/Components/RGX_CombatAssistComponent.h"
 

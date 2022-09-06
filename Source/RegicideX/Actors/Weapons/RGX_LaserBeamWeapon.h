@@ -2,6 +2,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RGX_LaserBeamWeapon.generated.h"
 
 class USplineComponent;
@@ -35,47 +36,48 @@ public:
 	ARGX_LaserBeamWeapon();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		FVector SourcePoint;
+	FVector SourcePoint;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		AActor* TargetActor = nullptr;
+	AActor* TargetActor = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		AActor* OwnerActor = nullptr;
+	AActor* OwnerActor = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UStaticMeshComponent* EndPointMesh = nullptr;
+	UStaticMeshComponent* EndPointMesh = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		UParticleSystemComponent* EndPointParticle = nullptr;
+	UParticleSystemComponent* EndPointParticle = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		USplineComponent* PathSplineComponent = nullptr;
+	USplineComponent* PathSplineComponent = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		TArray<USplineMeshComponent*> PathSplineMeshes;
+	TArray<USplineMeshComponent*> PathSplineMeshes;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float RaySpeed = 700.0f;
+	float RaySpeed = 700.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float ForgetDistance = 150.0f;
+	float ForgetDistance = 150.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float ForgetTime = 1.0f;
+	float ForgetTime = 1.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float GoalDistance = 3000.0f;
+	float GoalDistance = 3000.0f;
 
 	bool bHittingTarget = false;
 
 	FVector GoalPoint;
 
+	/* Effects the laser applies when hitting a target */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-		TArray<TSubclassOf<UGameplayEffect>> EffectsToApply;
+	TArray<FRGX_EffectContextContainer> EffectToApplyContextContainer;
 
 	UPROPERTY(EditDefaultsOnly)
-		ERayType RayType = ERayType::Follow;
+	ERayType RayType = ERayType::Follow;
 
 protected:
 	// Called when the game starts or when spawned
@@ -84,28 +86,28 @@ protected:
 public:	
 
 	UFUNCTION()
-		void ComputeNewEndpoint(float DeltaTime);
+	void ComputeNewEndpoint(float DeltaTime);
 
 	UFUNCTION()
-		void MoveAndDrawRay(float DeltaTime);
+	void MoveAndDrawRay(float DeltaTime);
 
 	UFUNCTION(BlueprintImplementableEvent)
-		void SpawnSplineMesh();
+	void SpawnSplineMesh();
 
 	UFUNCTION()
-		void SetSourcePoint(FVector SP);
+	void SetSourcePoint(FVector SP);
 
 	UFUNCTION()
-		void ComputeRayGoal();
+	void ComputeRayGoal();
 
 	UFUNCTION()
-		void SetOwnerActor(AActor* OA);
+	void SetOwnerActor(AActor* OA);
 
 	UFUNCTION()
-		void ApplyEffect(AActor* OtherActor);
+	void ApplyEffect(AActor* OtherActor);
 
 	UFUNCTION()
-		void CheckRayTraces(FVector& NewLocation, float DeltaTime);
+	void CheckRayTraces(FVector& NewLocation, float DeltaTime);
 
 	void CheckDistance();
 };

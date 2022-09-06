@@ -17,11 +17,11 @@ EBTNodeResult::Type URGX_BTTask_BulletHell::ExecuteTask(UBehaviorTreeComponent& 
 	DistAngelPawn = Cast<ARGX_DistanceAngel>(ControlledPawn);
 
 	OriginalBulletHellSphereScale = 10.0;
-	DistAngelPawn->BulletHellSphereCollider->SetRelativeScale3D(FVector(OriginalBulletHellSphereScale));
-	DistAngelPawn->BulletHellSphere->SetHiddenInGame(false);
+	DistAngelPawn->ForceFieldSphereCollider->SetRelativeScale3D(FVector(OriginalBulletHellSphereScale));
+	DistAngelPawn->ForceFieldSphere->SetHiddenInGame(false);
 	//DistAngelPawn->BulletHellOutSphere->SetHiddenInGame(false);
 	//DistAngelPawn->BHHitboxComponent->ActivateEffect();
-	DistAngelPawn->BulletHellOutSphere->SetRelativeScale3D(FVector(MaxSize));
+	DistAngelPawn->ForceFieldOutSphere->SetRelativeScale3D(FVector(MaxSize));
 	bNotifyTick = true;
 
 	return EBTNodeResult::InProgress;
@@ -35,23 +35,23 @@ void URGX_BTTask_BulletHell::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* 
 	if(TaskTime >= MaxTime)
 	{
 		TaskTime = 0.0f;
-		DistAngelPawn->BulletHellSphere->SetRelativeScale3D(FVector(OriginalBulletHellSphereScale));
-		DistAngelPawn->BulletHellSphere->SetHiddenInGame(true);
+		DistAngelPawn->ForceFieldSphere->SetRelativeScale3D(FVector(OriginalBulletHellSphereScale));
+		DistAngelPawn->ForceFieldSphere->SetHiddenInGame(true);
 		//DistAngelPawn->BulletHellOutSphere->SetHiddenInGame(true);
 		//DistAngelPawn->BHHitboxComponent->DeactivateEffect();
-		DistAngelPawn->BulletHellSphereCollider->SetRelativeScale3D(FVector(6.5));
+		DistAngelPawn->ForceFieldSphereCollider->SetRelativeScale3D(FVector(6.5));
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 
 	DistAngelPawn->RotateMe(DeltaSeconds, 1.0 + TaskTime * RotationSpeedMultiplier);
 
-	FVector CurrentScale = DistAngelPawn->BulletHellSphere->GetRelativeScale3D();
+	FVector CurrentScale = DistAngelPawn->ForceFieldSphere->GetRelativeScale3D();
 	if (CurrentScale.Z < MaxSize) 
 	{
-		FVector NewScale = DistAngelPawn->BulletHellSphere->GetRelativeScale3D() + FVector(TaskTime) * 0.5;
-		DistAngelPawn->BulletHellSphere->SetRelativeScale3D(NewScale);
-		FVector NewScale2 = DistAngelPawn->BulletHellSphereCollider->GetRelativeScale3D() + FVector(TaskTime)*0.8;
-		DistAngelPawn->BulletHellSphereCollider->SetRelativeScale3D(NewScale2);
+		FVector NewScale = DistAngelPawn->ForceFieldSphere->GetRelativeScale3D() + FVector(TaskTime) * 0.5;
+		DistAngelPawn->ForceFieldSphere->SetRelativeScale3D(NewScale);
+		FVector NewScale2 = DistAngelPawn->ForceFieldSphereCollider->GetRelativeScale3D() + FVector(TaskTime)*0.8;
+		DistAngelPawn->ForceFieldSphereCollider->SetRelativeScale3D(NewScale2);
 	}
 
 	FinishLatentTask(OwnerComp, EBTNodeResult::InProgress);

@@ -56,6 +56,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetMovementSpeed(const float Speed);
 
+	UFUNCTION(BlueprintCallable)
+	void SetTargetFromOutside(ARGX_EnemyBase* NewTarget);
+
 protected:
 
 	void UpdateTarget();
@@ -87,7 +90,6 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float CheckCameraAngle = 30.0f;
 
-	uint32 NumEnemiesInsideFrustum = 0;
 	// --------------------------
 
 	/** Auto Assit Attack */
@@ -99,9 +101,6 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	float MaxAutoassistMove = 200.0f;
-	// ---------------------
-	ARGX_EnemyBase* Target = nullptr;
-	// ----------------------
 
 	/** Attack Movement */
 	UPROPERTY(EditAnywhere)
@@ -110,19 +109,20 @@ protected:
 	UPROPERTY()
 	FVector MoveVectorDirection = FVector(0.0f);
 
-	float MoveVectorSpeed = 0.0f;
-
-	float AutoAssistMove = 0.0f;
-
-	bool bIsAttacking = false;
-
 	UPROPERTY()
 	bool bAddMoveVector = false;
 
+	bool bIsAttacking = false;
 	bool bMoveVectorEnabled = false;
+	bool bIsUpdateTargetEnabled = true;
 
+	TWeakObjectPtr<ARGX_EnemyBase> Target;
+
+	float MoveVectorSpeed = 0.0f;
+	float AutoAssistMove = 0.0f;
 	float AttackMoveDuration = 0.0f;
-
 	float AttackMoveDurationLeft = 0.0f;
-	// ------------------------------
+
+	uint32 NumEnemiesInsideFrustum = 0;
+
 };

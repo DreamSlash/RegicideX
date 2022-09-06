@@ -45,12 +45,6 @@ void ARGX_PeasantController::Tick(float DeltaTime)
 
 	const ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(GetPawn());
 
-	if (Peasant->TargetActor && bIsInFocus == false)
-	{
-		SetFocus(Peasant->TargetActor);
-		bIsInFocus = true;
-	}
-
 	if (Peasant)
 	{
 		// Update values for the BB of the BT.

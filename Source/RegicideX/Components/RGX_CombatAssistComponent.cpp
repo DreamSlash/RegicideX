@@ -30,7 +30,7 @@ void URGX_CombatAssistComponent::TickComponent(float DeltaTime, ELevelTick TickT
 	{
 		AActor* Owner = GetOwner();
 
-		if (Target)
+		if (Target.IsValid())
 		{
 			//UE_LOG(LogTemp, Warning, TEXT("Has Target\n"));
 			const float DistanceToTarget = FVector::Distance(Owner->GetActorLocation(), Target->GetActorLocation());
@@ -93,54 +93,55 @@ void URGX_CombatAssistComponent::UpdateTarget()
 {
 	// Check nearby potential targets
 	// TODO: Do not check this every frame.
-	AActor* PlayerActor = GetOwner();
-
-	const FVector PlayerLocation = PlayerActor->GetActorLocation();
-
-	TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjectTypes;
-	TraceObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Pawn));
-
-	UClass* SeekClass = ARGX_EnemyBase::StaticClass();
-
-	TArray<AActor*> IgnoreActors;
-	TArray<AActor*> OutActors;
-
-	ARGX_EnemyBase* NewTarget = nullptr;
-
-	TArray<AActor*> PotentialTargets = GetClosestEnemiesInRange(AutoAssistCloseRadius, true);
-	NewTarget = GetFrontEnemy(PotentialTargets);
-
-	for (AActor* Actor : PotentialTargets)
+	if (bIsUpdateTargetEnabled)
 	{
-		ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(Actor);
-		if (Enemy->IsInFrustum() == true)
+		AActor* PlayerActor = GetOwner();
+
+		const FVector PlayerLocation = PlayerActor->GetActorLocation();
+
+		TArray<TEnumAsByte<EObjectTypeQuery>> TraceObjectTypes;
+		TraceObjectTypes.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_Pawn));
+
+		UClass* SeekClass = ARGX_EnemyBase::StaticClass();
+
+		TArray<AActor*> IgnoreActors;
+		TArray<AActor*> OutActors;
+
+		ARGX_EnemyBase* NewTarget = nullptr;
+
+		TArray<AActor*> PotentialTargets = GetClosestEnemiesInRange(AutoAssistCloseRadius, true);
+		NewTarget = GetFrontEnemy(PotentialTargets);
+
+		for (AActor* Actor : PotentialTargets)
 		{
-			NumEnemiesInsideFrustum++;
+			ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(Actor);
+			if (Enemy->IsInFrustum() == true)
+			{
+				NumEnemiesInsideFrustum++;
+			}
+		}
+
+		//UE_LOG(LogTemp, Warning, TEXT("Num enemies in frustum: %d\n"), NumEnemiesInsideFrustum);
+
+		if (NewTarget)
+		{
+			SetNewTarget(NewTarget);
+			return;
+		}
+
+		PotentialTargets = GetClosestEnemiesInRange(AutoAssistMaxRadius, true);
+		NewTarget = GetFrontEnemy(PotentialTargets, MaxRadiusAngleDiscard);
+
+		if (NewTarget)
+		{
+			SetNewTarget(NewTarget);
+		}
+		else if (Target.IsValid())
+		{
+			Target->HideCombatTargetWidget();
+			Target = nullptr;
 		}
 	}
-
-	//UE_LOG(LogTemp, Warning, TEXT("Num enemies in frustum: %d\n"), NumEnemiesInsideFrustum);
-
-	if (NewTarget)
-	{
-		SetNewTarget(NewTarget);
-		return;
-	}
-
-	PotentialTargets = GetClosestEnemiesInRange(AutoAssistMaxRadius, true);
-	NewTarget = GetFrontEnemy(PotentialTargets, MaxRadiusAngleDiscard);
-
-	if (NewTarget)
-	{
-		SetNewTarget(NewTarget);
-	}
-	else if (Target)
-	{
-		Target->HideCombatTargetWidget();
-		Target = nullptr;
-	}
-
-	return;
 }
 
 TArray<AActor*> URGX_CombatAssistComponent::GetClosestEnemiesInRange(const float Range, const bool bSameFallingState) const
@@ -294,13 +295,23 @@ ARGX_EnemyBase* URGX_CombatAssistComponent::GetFrontEnemy(const TArray<AActor*>&
 
 void URGX_CombatAssistComponent::SetNewTarget(ARGX_EnemyBase* NewTarget)
 {
-	if (Target)
+	if (Target.IsValid())
 	{
 		Target->HideCombatTargetWidget();
 	}
 
-	NewTarget->ShowCombatTargetWidget();
+	if (NewTarget)
+	{
+		NewTarget->ShowCombatTargetWidget();
+	}
+
 	Target = NewTarget;
+}
+
+void URGX_CombatAssistComponent::SetTargetFromOutside(ARGX_EnemyBase* NewTarget)
+{
+	SetNewTarget(NewTarget);
+	bIsUpdateTargetEnabled = NewTarget == nullptr;
 }
 
 // TODO [REFACTOR]: Autoassist should give extra movement to the attack being done and not be a teleport
