@@ -1,0 +1,469 @@
+<html>
+<head>
+<title>API Reference | UFMODAudioComponent</title>
+<link rel="stylesheet" href="style/docs.css">
+<link rel="stylesheet" href="style/code_highlight.css">
+<script type="text/javascript" src="scripts/language-selector.js"></script></head>
+<body>
+<div class="docs-body">
+<div class="manual-toc">
+<p>Unreal Integration 2.02</p>
+<ul>
+<li><a href="welcome.html">Welcome to FMOD for Unreal</a></li>
+<li><a href="user-guide.html">User Guide</a></li>
+<li><a href="settings.html">Settings</a></li>
+<li><a href="plugins.html">Plugins</a></li>
+<li class="manual-current-chapter manual-inactive-chapter"><a href="api-reference.html">API Reference</a><ul class="subchapters"><li><a href="api-reference-ifmodstudiomodule.html">IFMODStudioModule</a></li><li><a href="api-reference-fmodutils.html">FMODUtils</a></li><li><a href="api-reference-ufmodblueprintstatics.html">UFMODBlueprintStatics</a></li><li class="manual-current-chapter manual-active-chapter"><a href="api-reference-ufmodaudiocomponent.html">UFMODAudioComponent</a></li><li><a href="api-reference-afmodambientsound.html">AFMODAmbientSound</a></li><li><a href="api-reference-ufmodanimnotifyplay.html">UFMODAnimNotifyPlay</a></li><li><a href="api-reference-ufmodbank.html">UFMODBank</a></li><li><a href="api-reference-ufmodbus.html">UFMODBus</a></li><li><a href="api-reference-ufmodvca.html">UFMODVCA</a></li><li><a href="api-reference-ufmodevent.html">UFMODEvent</a></li><li><a href="api-reference-ufmodsnapshot.html">UFMODSnapshot</a></li><li><a href="api-reference-ufmodsnapshotreverb.html">UFMODSnapshotReverb</a></li><li><a href="api-reference-ufmodasset.html">UFMODAsset</a></li><li><a href="api-reference-ufmodsettings.html">UFMODSettings</a></li></ul></li>
+<li><a href="blueprint-reference.html">Blueprint Reference</a></li>
+<li><a href="platform-specifics.html">Platform Specifics</a></li>
+<li><a href="troubleshooting.html">Troubleshooting</a></li>
+<li><a href="glossary.html">Glossary</a></li>
+</ul>
+</div>
+<div class="manual-content api">
+<h1>5. API Reference | UFMODAudioComponent</h1>
+<p>This class inherits from <a href="https://api.unrealengine.com/INT/API/Runtime/Engine/Components/USceneComponent/index.html">USceneComponent</a></p>
+<p><strong>Defines:</strong></p>
+<ul>
+<li><span class="dead-link" class="apilink" href="#efmodeventproperty" title="">EFMODEventProperty</span class="dead-link"> </li>
+<li><span class="dead-link" class="apilink" href="#ftimelinemarkerproperties" title="">FTimelineMarkerProperties</span class="dead-link"> </li>
+<li><span class="dead-link" class="apilink" href="#ftimelinebeatproperties" title="">FTimelineBeatProperties</span class="dead-link"> </li>
+<li><span class="dead-link" class="apilink" href="#ffmodattenuationdetails" title="">FFMODAttenuationDetails</span class="dead-link"> </li>
+<li><span class="dead-link" class="apilink" href="#ffmodocclusiondetails" title="">FFMODOcclusionDetails</span class="dead-link"> </li>
+</ul>
+<p><strong>Properties:</strong></p>
+<ul>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_event" title="The event asset to use for this sound.">UFMODAudioComponent::Event</a> The event asset to use for this sound.</li>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_parametercache" title="Cache of the current Events parameters.">UFMODAudioComponent::ParameterCache</a> Cache of the current Events parameters.</li>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_bdefaultparametervaluescached" title="Have the Event parameters default values been cached.">UFMODAudioComponent::bDefaultParameterValuesCached</a> Have the Event parameters default values been cached.</li>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_programmersoundname" title="Sound name used for programmer sound.">UFMODAudioComponent::ProgrammerSoundName</a> Sound name used for programmer sound.</li>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_benabletimelinecallbacks" title="Enable timeline callbacks for this sound, so that OnTimelineMarker and OnTimelineBeat can be used.">UFMODAudioComponent::bEnableTimelineCallbacks</a> Enable timeline callbacks for this sound, so that OnTimelineMarker and OnTimelineBeat can be used.</li>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_storedproperties" title="Stored properties to apply next time we create an instance.">UFMODAudioComponent::StoredProperties</a> Stored properties to apply next time we create an instance.</li>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_bautodestroy" title="Auto destroy this component on completion.">UFMODAudioComponent::bAutoDestroy</a> Auto destroy this component on completion.</li>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_bstopwhenownerdestroyed" title="Stop sound when owner is destroyed.">UFMODAudioComponent::bStopWhenOwnerDestroyed</a> Stop sound when owner is destroyed.</li>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_bapplyambientvolumes" title="Whether we apply gain and low-pass based on audio zones.">UFMODAudioComponent::bApplyAmbientVolumes</a> Whether we apply gain and low-pass based on audio zones.</li>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_bapplyocclusionparameter" title="Whether we apply gain and low-pass based on occlusion onto a parameter.">UFMODAudioComponent::bApplyOcclusionParameter</a> Whether we apply gain and low-pass based on occlusion onto a parameter.</li>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_oneventstopped" title="Called when an event stops, either because it played to completion or because a Stop() call turned it off early.">UFMODAudioComponent::OnEventStopped</a> Called when an event stops, either because it played to completion or because a Stop() call turned it off early.</li>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_ontimelinemarker" title="Called when we reach a named marker (if bEnableTimelineCallbacks is true).">UFMODAudioComponent::OnTimelineMarker</a> Called when we reach a named marker (if bEnableTimelineCallbacks is true).</li>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_ontimelinebeat" title="Called when we reach a beat of a tempo (if bEnableTimelineCallbacks is true).">UFMODAudioComponent::OnTimelineBeat</a> Called when we reach a beat of a tempo (if bEnableTimelineCallbacks is true).</li>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_attenuationdetails" title="FMOD Custom Attenuation Details.">UFMODAudioComponent::AttenuationDetails</a> FMOD Custom Attenuation Details.</li>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_occlusiondetails" title="FMOD Custom Occlusion Details.">UFMODAudioComponent::OcclusionDetails</a> FMOD Custom Occlusion Details.</li>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_studioinstance" title="Actual Studio instance handle.">UFMODAudioComponent::StudioInstance</a> Actual Studio instance handle.</li>
+</ul>
+<p><strong>Methods:</strong></p>
+<p>Additional BlueprintCallable public methods in <a href="blueprint-reference-component.html">Blueprint Reference</a></p>
+<ul>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_triggercue" title="Trigger a cue in an event.">UFMODAudioComponent::TriggerCue</a> Trigger a cue in an event.</li>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_onplaybackcompleted" title="Called when the event has finished stopping.">UFMODAudioComponent::OnPlaybackCompleted</a> Called when the event has finished stopping.</li>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_updateinteriorvolumes" title="Update gain and low-pass based on interior volumes.">UFMODAudioComponent::UpdateInteriorVolumes</a> Update gain and low-pass based on interior volumes.</li>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_setprogrammersound" title="Set a programmer sound to use for this audio component.  Lifetime of sound must exceed that of the audio component.">UFMODAudioComponent::SetProgrammerSound</a> Set a programmer sound to use for this audio component.  Lifetime of sound must exceed that of the audio component.</li>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_updateattenuation" title="Update attenuation if we have it set.">UFMODAudioComponent::UpdateAttenuation</a> Update attenuation if we have it set.</li>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_applyvolumelpf" title="Apply Volume and LPF to Event.">UFMODAudioComponent::ApplyVolumeLPF</a> Apply Volume and LPF to Event.</li>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_cachedefaultparametervalues" title="Cache default event parameter values">UFMODAudioComponent::CacheDefaultParameterValues</a> Cache default event parameter values</li>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_playinternal" title="Internal play function which can play Events in the editor.">UFMODAudioComponent::PlayInternal</a> Internal play function which can play Events in the editor.</li>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_eventcallbackaddmarker" title="Timeline Marker callback.">UFMODAudioComponent::EventCallbackAddMarker</a> Timeline Marker callback.</li>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_eventcallbackaddbeat" title="Timeline Beat callback.">UFMODAudioComponent::EventCallbackAddBeat</a> Timeline Beat callback.</li>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_eventcallbackcreateprogrammersound" title="Programmer Sound Create callback.">UFMODAudioComponent::EventCallbackCreateProgrammerSound</a> Programmer Sound Create callback.</li>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_eventcallbackdestroyprogrammersound" title="Programmer Sound Destroy callback.">UFMODAudioComponent::EventCallbackDestroyProgrammerSound</a> Programmer Sound Destroy callback.</li>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_activate" title="Activates the component.">UFMODAudioComponent::Activate</a> Activates the component.</li>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_deactivate" title="Deactivates the SceneComponent.">UFMODAudioComponent::Deactivate</a> Deactivates the SceneComponent.</li>
+<li><a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_onupdatetransform" title="Native callback when this component is moved.">UFMODAudioComponent::OnUpdateTransform</a> Native callback when this component is moved.</li>
+</ul>
+<h2 api="function" id="ufmodaudiocomponent_activate"><a href="#ufmodaudiocomponent_activate">UFMODAudioComponent::Activate</a></h2>
+<p>Activates the component.</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="k">virtual</span> <span class="kt">void</span> <span class="nf">Activate</span><span class="p">(</span>
+  <span class="kt">bool</span> <span class="n">bReset</span> <span class="o">=</span> <span class="nb">false</span>
+<span class="p">);</span>
+</pre></div>
+
+<dl>
+<dt>bReset</dt>
+<dd>Whether the activation should happen even if ShouldActivate returns false.</dd>
+</dl>
+<h2 api="function" id="ufmodaudiocomponent_applyvolumelpf"><a href="#ufmodaudiocomponent_applyvolumelpf">UFMODAudioComponent::ApplyVolumeLPF</a></h2>
+<p>Apply Volume and LPF to Event.</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="kt">void</span> <span class="nf">ApplyVolumeLPF</span><span class="p">();</span>
+</pre></div>
+
+<h2 api="struct" id="ufmodaudiocomponent_attenuationdetails"><a href="#ufmodaudiocomponent_attenuationdetails">UFMODAudioComponent::AttenuationDetails</a></h2>
+<p>FMOD Custom Attenuation Details.</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="k">struct</span> <span class="n">FFMODAttenuationDetails</span> <span class="n">AttenuationDetails</span><span class="p">;</span>
+</pre></div>
+
+<p><strong>See Also:</strong> <span class="dead-link" class="apilink" href="#ffmodattenuationdetails" title="">FFMODAttenuationDetails</span class="dead-link"></p>
+<h2 api="struct" id="ufmodaudiocomponent_bapplyambientvolumes"><a href="#ufmodaudiocomponent_bapplyambientvolumes">UFMODAudioComponent::bApplyAmbientVolumes</a></h2>
+<p>Whether we apply gain and low-pass based on audio zones.</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="n">uint32</span> <span class="nl">bApplyAmbientVolumes</span> <span class="p">:</span> <span class="mi">1</span><span class="p">;</span>
+</pre></div>
+
+<h2 api="struct" id="ufmodaudiocomponent_bapplyocclusionparameter"><a href="#ufmodaudiocomponent_bapplyocclusionparameter">UFMODAudioComponent::bApplyOcclusionParameter</a></h2>
+<p>Whether we apply gain and low-pass based on occlusion onto a parameter.</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="n">uint32</span> <span class="nl">bApplyOcclusionParameter</span> <span class="p">:</span> <span class="mi">1</span><span class="p">;</span>
+</pre></div>
+
+<h2 api="struct" id="ufmodaudiocomponent_bautodestroy"><a href="#ufmodaudiocomponent_bautodestroy">UFMODAudioComponent::bAutoDestroy</a></h2>
+<p>Auto destroy this component on completion.</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="n">uint32</span> <span class="nl">bAutoDestroy</span> <span class="p">:</span> <span class="mi">1</span><span class="p">;</span>
+</pre></div>
+
+<h2 api="struct" id="ufmodaudiocomponent_bdefaultparametervaluescached"><a href="#ufmodaudiocomponent_bdefaultparametervaluescached">UFMODAudioComponent::bDefaultParameterValuesCached</a></h2>
+<p>Have the Event parameters default values been cached.</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="kt">bool</span> <span class="n">bDefaultParameterValuesCached</span><span class="p">;</span>
+</pre></div>
+
+<h2 api="struct" id="ufmodaudiocomponent_benabletimelinecallbacks"><a href="#ufmodaudiocomponent_benabletimelinecallbacks">UFMODAudioComponent::bEnableTimelineCallbacks</a></h2>
+<p>Enable timeline callbacks for this sound, so that OnTimelineMarker and OnTimelineBeat can be used.</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="n">uint32</span> <span class="nl">bEnableTimelineCallbacks</span> <span class="p">:</span> <span class="mi">1</span><span class="p">;</span>
+</pre></div>
+
+<p><strong>See Also:</strong> <a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_ontimelinemarker" title="Called when we reach a named marker (if bEnableTimelineCallbacks is true).">UFMODAudioComponent::OnTimelineMarker</a>, <a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_ontimelinebeat" title="Called when we reach a beat of a tempo (if bEnableTimelineCallbacks is true).">UFMODAudioComponent::OnTimelineBeat</a></p>
+<h2 api="struct" id="ufmodaudiocomponent_bstopwhenownerdestroyed"><a href="#ufmodaudiocomponent_bstopwhenownerdestroyed">UFMODAudioComponent::bStopWhenOwnerDestroyed</a></h2>
+<p>Stop sound when owner is destroyed.</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="n">uint32</span> <span class="nl">bStopWhenOwnerDestroyed</span> <span class="p">:</span> <span class="mi">1</span><span class="p">;</span>
+</pre></div>
+
+<h2 api="function" id="ufmodaudiocomponent_cachedefaultparametervalues"><a href="#ufmodaudiocomponent_cachedefaultparametervalues">UFMODAudioComponent::CacheDefaultParameterValues</a></h2>
+<p>Cache default event parameter values</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="kt">void</span> <span class="n">CacheDefaultParameterValues</span><span class="p">()</span>
+</pre></div>
+
+<h2 api="function" id="ufmodaudiocomponent_deactivate"><a href="#ufmodaudiocomponent_deactivate">UFMODAudioComponent::Deactivate</a></h2>
+<p>Deactivates the SceneComponent.</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="k">virtual</span> <span class="kt">void</span> <span class="nf">Deactivate</span><span class="p">();</span>
+</pre></div>
+
+<h2 api="struct" id="ufmodaudiocomponent_event"><a href="#ufmodaudiocomponent_event">UFMODAudioComponent::Event</a></h2>
+<p>The event asset to use for this sound.</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="n">TAssetPtr</span><span class="o">&lt;</span><span class="k">class</span> <span class="nc">UFMODEvent</span><span class="o">&gt;</span> <span class="n">Event</span><span class="p">;</span>
+</pre></div>
+
+<p><strong>See Also:</strong> <a class="apilink" href="api-reference-ufmodevent.html" title="">UFMODEvent</a></p>
+<h2 api="function" id="ufmodaudiocomponent_eventcallback"><a href="#ufmodaudiocomponent_eventcallback">UFMODAudioComponent_EventCallback</a></h2>
+<p>Generic callback used for the Studio Instance.</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="n">FMOD_RESULT</span> <span class="n">F_CALLBACK</span> <span class="nf">UFMODAudioComponent_EventCallback</span><span class="p">(</span>
+  <span class="n">FMOD_STUDIO_EVENT_CALLBACK_TYPE</span> <span class="n">type</span><span class="p">,</span>
+  <span class="n">FMOD_STUDIO_EVENTINSTANCE</span> <span class="o">*</span><span class="n">event</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">parameters</span>
+<span class="p">);</span>
+</pre></div>
+
+<dl>
+<dt>type</dt>
+<dd>The type of callback being triggered.</dd>
+<dt>event</dt>
+<dd>Reference to the Studio Instance.</dd>
+<dt>parameters</dt>
+<dd>Info about the callback.</dd>
+</dl>
+<p>This is on set on the <a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_studioinstance" title="Actual Studio instance handle.">UFMODAudioComponent::StudioInstance</a> if <a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_benabletimelinecallbacks" title="Enable timeline callbacks for this sound, so that OnTimelineMarker and OnTimelineBeat can be used.">UFMODAudioComponent::bEnableTimelineCallbacks</a> is true or <a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_programmersoundname" title="Sound name used for programmer sound.">UFMODAudioComponent::ProgrammerSoundName</a> is not empty.</p>
+<p><strong>See Also:</strong> <a href="">FMOD_STUDIO_EVENT_CALLBACK_TYPE</a>, <a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_eventcallbackaddmarker" title="Timeline Marker callback.">UFMODAudioComponent::EventCallbackAddMarker</a>, <a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_eventcallbackaddbeat" title="Timeline Beat callback.">UFMODAudioComponent::EventCallbackAddBeat</a>, <a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_eventcallbackcreateprogrammersound" title="Programmer Sound Create callback.">UFMODAudioComponent::EventCallbackCreateProgrammerSound</a>, <a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_eventcallbackdestroyprogrammersound" title="Programmer Sound Destroy callback.">UFMODAudioComponent::EventCallbackDestroyProgrammerSound</a></p>
+<h2 api="function" id="ufmodaudiocomponent_eventcallbackaddbeat"><a href="#ufmodaudiocomponent_eventcallbackaddbeat">UFMODAudioComponent::EventCallbackAddBeat</a></h2>
+<p>Timeline Beat callback.</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="kt">void</span> <span class="nf">EventCallbackAddBeat</span><span class="p">(</span>
+  <span class="k">struct</span> <span class="n">FMOD_STUDIO_TIMELINE_BEAT_PROPERTIES</span> <span class="o">*</span><span class="n">props</span>
+<span class="p">);</span>
+</pre></div>
+
+<dl>
+<dt>props</dt>
+<dd>Callback properties.</dd>
+</dl>
+<p><strong>See Also:</strong> <a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_eventcallback" title="Generic callback used for the Studio Instance.">UFMODAudioComponent_EventCallback</a>, <a href="">FMOD_STUDIO_TIMELINE_BEAT_PROPERTIES</a></p>
+<h2 api="function" id="ufmodaudiocomponent_eventcallbackaddmarker"><a href="#ufmodaudiocomponent_eventcallbackaddmarker">UFMODAudioComponent::EventCallbackAddMarker</a></h2>
+<p>Timeline Marker callback.</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="kt">void</span> <span class="nf">EventCallbackAddMarker</span><span class="p">(</span>
+  <span class="k">struct</span> <span class="n">FMOD_STUDIO_TIMELINE_MARKER_PROPERTIES</span> <span class="o">*</span><span class="n">props</span>
+<span class="p">);</span>
+</pre></div>
+
+<dl>
+<dt>props</dt>
+<dd>Callback properties.</dd>
+</dl>
+<p><strong>See Also:</strong> <a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_eventcallback" title="Generic callback used for the Studio Instance.">UFMODAudioComponent_EventCallback</a>, <a href="">FMOD_STUDIO_TIMELINE_MARKER_PROPERTIES</a></p>
+<h2 api="function" id="ufmodaudiocomponent_eventcallbackcreateprogrammersound"><a href="#ufmodaudiocomponent_eventcallbackcreateprogrammersound">UFMODAudioComponent::EventCallbackCreateProgrammerSound</a></h2>
+<p>Programmer Sound Create callback.</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="kt">void</span> <span class="nf">EventCallbackCreateProgrammerSound</span><span class="p">(</span>
+  <span class="k">struct</span> <span class="n">FMOD_STUDIO_PROGRAMMER_SOUND_PROPERTIES</span> <span class="o">*</span><span class="n">props</span>
+<span class="p">);</span>
+</pre></div>
+
+<dl>
+<dt>props</dt>
+<dd>Callback properties.</dd>
+</dl>
+<p><strong>See Also:</strong> <a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_eventcallback" title="Generic callback used for the Studio Instance.">UFMODAudioComponent_EventCallback</a>, <a href="">FMOD_STUDIO_PROGRAMMER_SOUND_PROPERTIES</a></p>
+<h2 api="function" id="ufmodaudiocomponent_eventcallbackdestroyprogrammersound"><a href="#ufmodaudiocomponent_eventcallbackdestroyprogrammersound">UFMODAudioComponent::EventCallbackDestroyProgrammerSound</a></h2>
+<p>Programmer Sound Destroy callback.</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="kt">void</span> <span class="nf">EventCallbackDestroyProgrammerSound</span><span class="p">(</span>
+  <span class="k">struct</span> <span class="n">FMOD_STUDIO_PROGRAMMER_SOUND_PROPERTIES</span> <span class="o">*</span><span class="n">props</span>
+<span class="p">);</span>
+</pre></div>
+
+<dl>
+<dt>props</dt>
+<dd>Callback properties.</dd>
+</dl>
+<p><strong>See Also:</strong> <a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_eventcallback" title="Generic callback used for the Studio Instance.">UFMODAudioComponent_EventCallback</a>, <a href="">FMOD_STUDIO_PROGRAMMER_SOUND_PROPERTIES</a></p>
+<h2 api="struct" id="ufmodaudiocomponent_occlusiondetails"><a href="#ufmodaudiocomponent_occlusiondetails">UFMODAudioComponent::OcclusionDetails</a></h2>
+<p>FMOD Custom Occlusion Details.</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="k">struct</span> <span class="n">FFMODOcclusionDetails</span> <span class="n">OcclusionDetails</span><span class="p">;</span>
+</pre></div>
+
+<p><strong>See Also:</strong> <span class="dead-link" class="apilink" href="#ffmodocclusiondetails" title="">FFMODOcclusionDetails</span class="dead-link"></p>
+<h2 api="struct" id="ufmodaudiocomponent_oneventstopped"><a href="#ufmodaudiocomponent_oneventstopped">UFMODAudioComponent::OnEventStopped</a></h2>
+<p>Called when an event stops, either because it played to completion or because a Stop() call turned it off early.</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="n">FOnEventStopped</span> <span class="n">OnEventStopped</span><span class="p">;</span>
+</pre></div>
+
+<h2 api="function" id="ufmodaudiocomponent_onplaybackcompleted"><a href="#ufmodaudiocomponent_onplaybackcompleted">UFMODAudioComponent::OnPlaybackCompleted</a></h2>
+<p>Called when the event has finished stopping.</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="kt">void</span> <span class="nf">OnPlaybackCompleted</span><span class="p">();</span>
+</pre></div>
+
+<h2 api="struct" id="ufmodaudiocomponent_ontimelinebeat"><a href="#ufmodaudiocomponent_ontimelinebeat">UFMODAudioComponent::OnTimelineBeat</a></h2>
+<p>Called when we reach a beat of a tempo (if bEnableTimelineCallbacks is true).</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="n">FOnTimelineMarker</span> <span class="n">OnTimelineBeat</span><span class="p">;</span>
+</pre></div>
+
+<p><strong>See Also:</strong> <a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_benabletimelinecallbacks" title="Enable timeline callbacks for this sound, so that OnTimelineMarker and OnTimelineBeat can be used.">UFMODAudioComponent::bEnableTimelineCallbacks</a></p>
+<h2 api="struct" id="ufmodaudiocomponent_ontimelinemarker"><a href="#ufmodaudiocomponent_ontimelinemarker">UFMODAudioComponent::OnTimelineMarker</a></h2>
+<p>Called when we reach a named marker (if bEnableTimelineCallbacks is true).</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="n">FOnTimelineMarker</span> <span class="n">OnTimelineMarker</span><span class="p">;</span>
+</pre></div>
+
+<p><strong>See Also:</strong> <a class="apilink" href="api-reference-ufmodaudiocomponent.html#ufmodaudiocomponent_benabletimelinecallbacks" title="Enable timeline callbacks for this sound, so that OnTimelineMarker and OnTimelineBeat can be used.">UFMODAudioComponent::bEnableTimelineCallbacks</a></p>
+<h2 api="function" id="ufmodaudiocomponent_onupdatetransform"><a href="#ufmodaudiocomponent_onupdatetransform">UFMODAudioComponent::OnUpdateTransform</a></h2>
+<p>Native callback when this component is moved.</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="k">virtual</span> <span class="kt">void</span> <span class="nf">OnUpdateTransform</span><span class="p">(</span>
+  <span class="n">EUpdateTransformFlags</span> <span class="n">UpdateTransformFlags</span><span class="p">,</span>
+  <span class="n">ETeleportType</span> <span class="n">Teleport</span> <span class="o">=</span> <span class="n">ETeleportType</span><span class="o">::</span><span class="n">None</span>
+<span class="p">);</span>
+</pre></div>
+
+<p>Used to update the 3D positional information of the Event.</p>
+<h2 api="struct" id="ufmodaudiocomponent_parametercache"><a href="#ufmodaudiocomponent_parametercache">UFMODAudioComponent::ParameterCache</a></h2>
+<p>Cache of the current Events parameters.</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="n">TMap</span><span class="o">&lt;</span><span class="n">FName</span><span class="p">,</span> <span class="kt">float</span><span class="o">&gt;</span> <span class="n">ParameterCache</span><span class="p">;</span>
+</pre></div>
+
+<h2 api="function" id="ufmodaudiocomponent_playinternal"><a href="#ufmodaudiocomponent_playinternal">UFMODAudioComponent::PlayInternal</a></h2>
+<p>Internal play function which can play Events in the editor.</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="kt">void</span> <span class="nf">PlayInternal</span><span class="p">(</span>
+  <span class="n">EFMODSystemContext</span><span class="o">::</span><span class="n">Type</span> <span class="n">Context</span>
+<span class="p">);</span>
+</pre></div>
+
+<dl>
+<dt>Context</dt>
+<dd>Which FMOD Studio system to use.</dd>
+</dl>
+<p><strong>See Also:</strong> <span class="dead-link" class="apilink" href="#efmodsystemcontext" title="">EFMODSystemContext</span class="dead-link"></p>
+<h2 api="struct" id="ufmodaudiocomponent_programmersoundname"><a href="#ufmodaudiocomponent_programmersoundname">UFMODAudioComponent::ProgrammerSoundName</a></h2>
+<p>Sound name used for programmer sound.</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="n">FString</span> <span class="n">ProgrammerSoundName</span><span class="p">;</span>
+</pre></div>
+
+<p>The integration will look up the name in any loaded audio table.</p>
+<h2 api="function" id="ufmodaudiocomponent_setprogrammersound"><a href="#ufmodaudiocomponent_setprogrammersound">UFMODAudioComponent::SetProgrammerSound</a></h2>
+<p>Set a programmer sound to use for this audio component.  Lifetime of sound must exceed that of the audio component.</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="kt">void</span> <span class="nf">SetProgrammerSound</span><span class="p">(</span>
+  <span class="n">FMOD</span><span class="o">::</span><span class="n">Sound</span> <span class="o">*</span><span class="n">Sound</span>
+<span class="p">);</span>
+</pre></div>
+
+<dl>
+<dt>Sound</dt>
+<dd>User created sound to use.</dd>
+</dl>
+<p><strong>See Als:</strong> <a href="https://fmod.com/docs/2.02/api/core-api-sound.html">FMOD::Sound</a></p>
+<h2 api="struct" id="ufmodaudiocomponent_storedproperties"><a href="#ufmodaudiocomponent_storedproperties">UFMODAudioComponent::StoredProperties</a></h2>
+<p>Stored properties to apply next time we create an instance.</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="kt">float</span> <span class="n">StoredProperties</span><span class="p">[</span><span class="n">EFMODEventProperty</span><span class="o">::</span><span class="n">Count</span><span class="p">];</span>
+</pre></div>
+
+<p><strong>See Also:</strong> <span class="dead-link" class="apilink" href="#efmodeventproperty" title="">EFMODEventProperty</span class="dead-link"></p>
+<h2 api="struct" id="ufmodaudiocomponent_studioinstance"><a href="#ufmodaudiocomponent_studioinstance">UFMODAudioComponent::StudioInstance</a></h2>
+<p>Actual Studio instance handle.</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="n">FMOD</span><span class="o">::</span><span class="n">Studio</span><span class="o">::</span><span class="n">EventInstance</span> <span class="o">*</span><span class="n">StudioInstance</span><span class="p">;</span>
+</pre></div>
+
+<h2 api="struct" id="ufmodaudiocomponent_triggercue"><a href="#ufmodaudiocomponent_triggercue">UFMODAudioComponent::TriggerCue</a></h2>
+<p>Trigger a cue in an event.</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="kt">void</span> <span class="nf">TriggerCue</span><span class="p">();</span>
+</pre></div>
+
+<h2 api="function" id="ufmodaudiocomponent_updateattenuation"><a href="#ufmodaudiocomponent_updateattenuation">UFMODAudioComponent::UpdateAttenuation</a></h2>
+<p>Update attenuation if we have it set.</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="kt">void</span> <span class="nf">UpdateAttenuation</span><span class="p">();</span>
+</pre></div>
+
+<h2 api="struct" id="ufmodaudiocomponent_updateinteriorvolumes"><a href="#ufmodaudiocomponent_updateinteriorvolumes">UFMODAudioComponent::UpdateInteriorVolumes</a></h2>
+<p>Update gain and low-pass based on interior volumes.</p>
+<p>
+<div class="language-selector">
+<div class="language-tab" data-language="language-cpp">C++</div>
+</div>
+</p>
+<div class="highlight language-cpp"><pre><span></span><span class="kt">void</span> <span class="nf">UpdateInteriorVolumes</span><span class="p">();</span>
+</pre></div></div>
+
+<p class="manual-footer">Unreal Integration 2.02.08 (2022-08-15). &copy; 2022 Firelight Technologies Pty Ltd.</p>
+</body>
+</html>
+
+</div>
