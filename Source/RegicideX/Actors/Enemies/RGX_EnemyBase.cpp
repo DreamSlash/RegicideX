@@ -210,6 +210,7 @@ void ARGX_EnemyBase::HandleDamage(
 {
 	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser, HitReactFlag);
 
+	StopAnimMontage();
 	if (IsAlive())
 	{
 		// Play reaction hit animation.
@@ -231,11 +232,7 @@ void ARGX_EnemyBase::HandleDamage(
 		else
 		{
 			CheckIfWeak(DamageAmount);
-			if (IsWeak())
-			{
-				StopAnimMontage();
-			}
-			else
+			if (IsWeak() == false )
 			{
 				const FAnimationArray AnimationList = *AnimMontageMap.Find(HitReactFlag);
 				UAnimMontage* AnimToPlay = nullptr;
@@ -264,7 +261,7 @@ void ARGX_EnemyBase::HandleDamage(
 		// If damage killed the actor, we should kill its AI Logic and clean weak status as it is already dead.
 		bWeak = false;
 		RemoveGameplayTag(FGameplayTag::RequestGameplayTag("Status.Enemy.Weakened"));
-		StopAnimMontage();
+		//StopAnimMontage();
 		StopLogic("Character Dead");
 		HealthDisplayWidgetComponent->SetVisibility(false);
 		UAnimMontage* AnimToPlay = nullptr;
