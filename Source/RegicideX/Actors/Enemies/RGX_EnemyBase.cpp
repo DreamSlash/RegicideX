@@ -231,7 +231,9 @@ void ARGX_EnemyBase::HandleDamage(
 		}
 		else
 		{
-			CheckIfWeak(DamageAmount);
+			if(HitReactFlag == ERGX_AnimEvent::BasicHitReact)
+				CheckIfWeak(DamageAmount);
+
 			if (IsWeak() == false )
 			{
 				const FAnimationArray AnimationList = *AnimMontageMap.Find(HitReactFlag);
