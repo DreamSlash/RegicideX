@@ -218,14 +218,15 @@ void ARGX_EnemyBase::HandleDamage(
 		{
 			UAnimMontage* AnimToPlay = nullptr;
 			const FAnimationArray AnimationList = *AnimMontageMap.Find(ERGX_AnimEvent::AirHitReact);
-			if (AnimationList.Animations.Num() > 1)
+			if (AnimationList.Animations.Num() > 0)
 			{
 				int32 Index = UKismetMathLibrary::RandomIntegerInRange(0, AnimationList.Animations.Num() - 1);
 				AnimToPlay = AnimationList.Animations[Index];
 			}
 			else
 			{
-				AnimToPlay = AnimationList.Animations[0];
+				UE_LOG(LogTemp, Error, TEXT("Not animations assigned"));
+				return;
 			}
 			PlayAnimMontage(AnimToPlay);
 		}
@@ -238,19 +239,14 @@ void ARGX_EnemyBase::HandleDamage(
 			{
 				const FAnimationArray AnimationList = *AnimMontageMap.Find(HitReactFlag);
 				UAnimMontage* AnimToPlay = nullptr;
-				if (AnimationList.Animations.Num() > 1)
+				if (AnimationList.Animations.Num() > 0)
 				{
 					int32 Index = UKismetMathLibrary::RandomIntegerInRange(0, AnimationList.Animations.Num() - 1);
 					AnimToPlay = AnimationList.Animations[Index];
 				}
 				else
 				{
-					AnimToPlay = AnimationList.Animations[0];
-				}
-
-				if (AnimToPlay == nullptr)
-				{
-					UE_LOG(LogTemp, Error, TEXT("No AnimToPlay found!"));
+					UE_LOG(LogTemp, Error, TEXT("Not animations assigned"));
 					return;
 				}
 
@@ -263,19 +259,19 @@ void ARGX_EnemyBase::HandleDamage(
 		// If damage killed the actor, we should kill its AI Logic and clean weak status as it is already dead.
 		bWeak = false;
 		RemoveGameplayTag(FGameplayTag::RequestGameplayTag("Status.Enemy.Weakened"));
-		//StopAnimMontage();
 		StopLogic("Character Dead");
 		HealthDisplayWidgetComponent->SetVisibility(false);
 		UAnimMontage* AnimToPlay = nullptr;
 		const FAnimationArray AnimationList = *AnimMontageMap.Find(ERGX_AnimEvent::Death);
-		if (AnimationList.Animations.Num() > 1)
+		if (AnimationList.Animations.Num() > 0)
 		{
 			int32 Index = UKismetMathLibrary::RandomIntegerInRange(0, AnimationList.Animations.Num() - 1);
 			AnimToPlay = AnimationList.Animations[Index];
 		}
 		else
 		{
-			AnimToPlay = AnimationList.Animations[0];
+			UE_LOG(LogTemp, Error, TEXT("Not animations assigned"));
+			return;
 		}
 		PlayAnimMontage(AnimToPlay);
 	}
