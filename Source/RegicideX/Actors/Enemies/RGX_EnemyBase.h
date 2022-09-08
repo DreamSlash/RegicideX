@@ -165,6 +165,7 @@ public:
 	virtual FGenericTeamId GetGenericTeamId() const override;
 
 	/** Movement methods */
+	UFUNCTION(BlueprintCallable)
 	virtual void RotateToTarget(float DeltaTime);
 
 	virtual void MoveToTarget(float DeltaTime, FVector TargetPos);
