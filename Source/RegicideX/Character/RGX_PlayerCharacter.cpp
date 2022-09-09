@@ -502,7 +502,7 @@ void ARGX_PlayerCharacter::AddGameplayTag(const FGameplayTag& TagToAdd)
 	AbilitySystemComponent->AddLooseGameplayTag(TagToAdd);
 }
 
-void ARGX_PlayerCharacter::RemoveGameplayTag(const FGameplayTag& TagToRemove)
+void ARGX_PlayerCharacter::RemoveGameplayTag(const FGameplayTag& TagToRemove, bool bCleanAll)
 {
 	AbilitySystemComponent->RemoveLooseGameplayTag(TagToRemove);
 }

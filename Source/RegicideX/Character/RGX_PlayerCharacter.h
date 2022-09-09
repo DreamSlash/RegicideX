@@ -268,7 +268,7 @@ public:
 
 	/** RX_GameplayTagInterface methods */
 	void AddGameplayTag(const FGameplayTag& TagToAdd) override;
-	void RemoveGameplayTag(const FGameplayTag& TagToRemove) override;
+	void RemoveGameplayTag(const FGameplayTag& TagToRemove, bool bCleanAll = false) override;
 
 	/** Stops any combo logic. It should be called at any action that interrupts an ongoing combo from the Combo system. */
 	UFUNCTION(BlueprintCallable)
