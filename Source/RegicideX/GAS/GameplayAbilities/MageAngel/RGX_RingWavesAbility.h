@@ -36,9 +36,7 @@ private:
 	void StartDelay();
 
 private:
-	FGameplayAbilitySpecHandle EndHandle;
-	const FGameplayAbilityActorInfo* EndActorInfo = nullptr;
-	FGameplayAbilityActivationInfo EndActivationInfo;
+	FTimerHandle DelayTimerHandle;
 
 	int PendingWaves = 0;
 

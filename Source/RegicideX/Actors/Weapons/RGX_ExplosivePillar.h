@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/TimelineComponent.h"
 #include "RegicideX/Actors/RGX_EffectApplierActor.h"
 #include "RGX_ExplosivePillar.generated.h"
 
@@ -32,6 +33,9 @@ protected:
 	USceneComponent* ExplosionSource = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float TimeDelayTell = 1.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float TimeToActivate = 3.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -39,6 +43,12 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadwrite)
 	float ExplosionRadius = 300.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UCurveFloat* RiseCurve = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UNiagaraSystem* TellVFX = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UNiagaraSystem* ExplosionVFX = nullptr;
@@ -50,15 +60,24 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void Detonate(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
+public:
+	void Tick(float DeltaTime) override;
+
 protected:
 	// Called when the game starts or when spawned
 	void BeginPlay() override;
 
+	void Rise();
 	void Activate();
 	void Explode();
 
 private:
+	FTimerHandle DelayTellTimerHandle;
 	FTimerHandle ActivationTimerHandle;
 	FTimerHandle ExplosionTimerHandle;
+	FTimeline RiseTimeLine;
+
+	bool bIsRising = false;
+	float InitialZ = 0.0f;
 
 };

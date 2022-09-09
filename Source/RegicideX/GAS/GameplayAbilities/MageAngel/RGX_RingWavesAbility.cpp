@@ -35,7 +35,7 @@ void URGX_RingWavesAbility::OnSpawnRingWave()
 
 void URGX_RingWavesAbility::StartDelay()
 {
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]() { OnSpawnRingWave(); }, DelayBetweenWaves, false);
+	GetWorld()->GetTimerManager().SetTimer(DelayTimerHandle, [this]() { OnSpawnRingWave(); }, DelayBetweenWaves, false);
 	/*UAbilityTask_WaitDelay* WaitDelayTask = UAbilityTask_WaitDelay::WaitDelay(this, DelayBetweenWaves);
 	WaitDelayTask->OnFinish.AddDynamic(this, &URGX_RingWavesAbility::OnSpawnRingWave);
 	WaitDelayTask->ReadyForActivation();*/
