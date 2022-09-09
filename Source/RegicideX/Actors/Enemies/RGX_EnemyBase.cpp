@@ -228,6 +228,7 @@ void ARGX_EnemyBase::HandleDamage(
 				UE_LOG(LogTemp, Error, TEXT("Not animations assigned"));
 				return;
 			}
+			UE_LOG(LogTemp, Warning, TEXT("Air Hit react"));
 			PlayAnimMontage(AnimToPlay);
 		}
 		else
