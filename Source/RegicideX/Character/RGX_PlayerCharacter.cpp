@@ -477,36 +477,6 @@ void ARGX_PlayerCharacter::ChangeTimeScale()
 	}
 }
 
-void ARGX_PlayerCharacter::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
-{
-	AbilitySystemComponent->GetOwnedGameplayTags(TagContainer);
-}
-
-bool ARGX_PlayerCharacter::HasMatchingGameplayTag(FGameplayTag TagToCheck) const
-{
-	return AbilitySystemComponent->HasMatchingGameplayTag(TagToCheck);
-}
-
-bool ARGX_PlayerCharacter::HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const
-{
-	return AbilitySystemComponent->HasAllMatchingGameplayTags(TagContainer);
-}
-
-bool ARGX_PlayerCharacter::HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const
-{
-	return AbilitySystemComponent->HasAnyMatchingGameplayTags(TagContainer);
-}
-
-void ARGX_PlayerCharacter::AddGameplayTag(const FGameplayTag& TagToAdd)
-{
-	AbilitySystemComponent->AddLooseGameplayTag(TagToAdd);
-}
-
-void ARGX_PlayerCharacter::RemoveGameplayTag(const FGameplayTag& TagToRemove, bool bCleanAll)
-{
-	AbilitySystemComponent->RemoveLooseGameplayTag(TagToRemove);
-}
-
 void ARGX_PlayerCharacter::OnInterrupted()
 {
 	ComboSystemComponent->OnEndCombo();
