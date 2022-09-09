@@ -165,6 +165,10 @@ void ARGX_LaserBeamWeapon::MoveAndDrawRay(float DeltaTime)
 
 	FVector ParticleLocation = SourcePoint;
 	for (AActor* ParticleActor : RayParticlesActor) {
+
+		if (ParticleActor == nullptr)
+			continue;
+
 		ParticleLocation += PathIncrement;
 		ParticleActor->SetActorLocation(ParticleLocation);
 	}

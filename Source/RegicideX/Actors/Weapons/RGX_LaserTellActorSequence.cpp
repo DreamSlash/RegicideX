@@ -73,10 +73,6 @@ void ARGX_LaserTellActorSequence::InitParticlePositions()
 		Particle->SetWorldLocation(NewLocation);
 		i++;
 	}
-	/*Particle1->SetWorldLocation(FVector(0, 100, 100));
-	Particle2->SetWorldLocation(FVector(0, 100, -100));
-	Particle3->SetWorldLocation(FVector(0, -100, 100));
-	Particle4->SetWorldLocation(FVector(0, -100, -100));*/
 	Particle1->SetWorldScale3D(FVector(0));
 	Particle2->SetWorldScale3D(FVector(0));
 	Particle3->SetWorldScale3D(FVector(0));
