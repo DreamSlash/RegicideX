@@ -654,15 +654,19 @@ void ARGX_PlayerCharacter::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
 
-	ECollisionChannel CollisionChannel = Hit.GetComponent()->GetCollisionObjectType();
-	if (CollisionChannel == ECollisionChannel::ECC_WorldStatic)
+	UPrimitiveComponent* PrimitiveComponent = Hit.GetComponent();
+	if (PrimitiveComponent)
 	{
-		InputHandlerComponent->ResetAirState();
+		ECollisionChannel CollisionChannel = PrimitiveComponent->GetCollisionObjectType();
+		if (CollisionChannel == ECollisionChannel::ECC_WorldStatic)
+		{
+			InputHandlerComponent->ResetAirState();
 
-		AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
-		RemoveGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.HasAirDashed")));
-		bCanAirCombo = true;
-		bIsFallingDown = false;
+			AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
+			RemoveGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.HasAirDashed")));
+			bCanAirCombo = true;
+			bIsFallingDown = false;
+		}
 	}
 }
 
