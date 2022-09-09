@@ -260,16 +260,6 @@ protected:
 	// ----------------
 
 public:
-	/** GameplayTagAssetInterface methods */
-	void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
-	bool HasMatchingGameplayTag(FGameplayTag TagToCheck) const override;
-	bool HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
-	bool HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const override;
-
-	/** RX_GameplayTagInterface methods */
-	void AddGameplayTag(const FGameplayTag& TagToAdd) override;
-	void RemoveGameplayTag(const FGameplayTag& TagToRemove) override;
-
 	/** Stops any combo logic. It should be called at any action that interrupts an ongoing combo from the Combo system. */
 	UFUNCTION(BlueprintCallable)
 	void OnInterrupted();
