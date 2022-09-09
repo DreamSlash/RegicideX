@@ -20,5 +20,5 @@ class REGICIDEX_API IRGX_GameplayTagInterface
 	virtual void AddGameplayTag(const FGameplayTag& TagToAdd) = 0;
 
 	UFUNCTION(BlueprintCallable, Category = RXGameplayTags)
-	virtual void RemoveGameplayTag(const FGameplayTag& TagToRemove) = 0;
+	virtual void RemoveGameplayTag(const FGameplayTag& TagToRemove, bool bCleanAll) = 0;
 };
