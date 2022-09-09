@@ -16,7 +16,6 @@ class REGICIDEX_API URGX_RingWavesAbility : public URGX_MageAngelAttackAbility
 	GENERATED_BODY()
 
 protected:
-	void OnStartAttackLoop() override;
 	void OnAttackWindow() override;
 
 protected:

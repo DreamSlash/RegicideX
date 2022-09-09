@@ -13,7 +13,7 @@
 
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 
-#pragma optimize("", off)
+//#pragma optimize("", off)
 
 void URGX_BTService_CalculateActorFuturePosition::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
