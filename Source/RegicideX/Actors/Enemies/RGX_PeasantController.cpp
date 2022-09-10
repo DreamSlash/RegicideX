@@ -51,12 +51,17 @@ void ARGX_PeasantController::Tick(float DeltaTime)
 	if (Peasant)
 	{
 		// Update values for the BB of the BT.
-		if(Peasant->TargetActor)
+		if (Peasant->TargetActor)
+		{
 			BBComponent->SetValueAsObject("TargetActor", Peasant->TargetActor);
+			BBComponent->SetValueAsVector("TargetLocation", Peasant->TargetActor->GetActorLocation());
+		}
 
 		// TODO Do not do it every tick
 		BBComponent->SetValueAsFloat("DistanceToPlayer", Peasant->GetDistanceToTarget());
 		BBComponent->SetValueAsInt("IdleAction", Peasant->IdleAction);
 		BBComponent->SetValueAsBool("bFrenzied", bFrenzied);
+		BBComponent->SetValueAsVector("SelfLocation", Peasant->GetActorLocation());
+		BBComponent->SetValueAsVector("ForwardVector", Peasant->GetActorLocation() + Peasant->GetActorForwardVector());
 	}
 }

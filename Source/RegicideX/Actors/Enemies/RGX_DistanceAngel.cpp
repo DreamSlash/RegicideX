@@ -29,7 +29,7 @@ ARGX_DistanceAngel::ARGX_DistanceAngel() : ARGX_EnemyBase()
 	SphereCollider->SetupAttachment(RootComponent);
 	GetMesh()->SetupAttachment(SphereCollider);
 	Ring_2_Mesh->SetRelativeLocation(FVector(0.0));
-	Ring_2_Mesh->SetupAttachment(SphereCollider);
+	Ring_2_Mesh->SetupAttachment(GetMesh());
 	ForceFieldSphere->SetupAttachment(SphereCollider);
 
 	FloorReturnPlace->SetRelativeLocation(FVector(0.0));
@@ -105,7 +105,7 @@ void ARGX_DistanceAngel::RotateMe(float DeltaTime, float Speed)
 {
 	FRotator NewRotation(0.0);
 	NewRotation.Yaw += FullBodyRotatingSpeed * DeltaTime * Speed;
-	SetActorRotation(NewRotation);
+	GetMesh()->SetWorldRotation(NewRotation);
 }
 
 void ARGX_DistanceAngel::TPToFloor()
