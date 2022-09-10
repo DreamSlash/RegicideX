@@ -19,21 +19,17 @@
 
 ARGX_DistanceAngel::ARGX_DistanceAngel() : ARGX_EnemyBase()
 {
-	Ring_1_Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ring1"));
 	Ring_2_Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Ring2"));
 	ForceFieldSphere = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ForceFieldSphere"));
-	ForceFieldOutSphere = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ForceFieldOutSphere"));
 
 	SphereCollider = CreateDefaultSubobject<USphereComponent>(TEXT("SphereCollider"));
 
 	FloorReturnPlace = CreateDefaultSubobject<USceneComponent>(TEXT("FloorReturnPlace"));
 
-	//FAttachmentTransformRules attachment_rules(EAttachmentRule::KeepRelative, false);
 	SphereCollider->SetupAttachment(RootComponent);
-	Ring_1_Mesh->SetRelativeLocation(FVector(0.0));
+	GetMesh()->SetupAttachment(SphereCollider);
 	Ring_2_Mesh->SetRelativeLocation(FVector(0.0));
-	Ring_1_Mesh->SetupAttachment(SphereCollider);
-	Ring_2_Mesh->SetupAttachment(Ring_1_Mesh);
+	Ring_2_Mesh->SetupAttachment(SphereCollider);
 	ForceFieldSphere->SetupAttachment(SphereCollider);
 
 	FloorReturnPlace->SetRelativeLocation(FVector(0.0));
@@ -41,7 +37,6 @@ ARGX_DistanceAngel::ARGX_DistanceAngel() : ARGX_EnemyBase()
 
 	HealthDisplayWidgetComponent->SetupAttachment(SphereCollider);
 	CombatTargetWidgetComponent->SetupAttachment(SphereCollider);
-	ForceFieldOutSphere->SetupAttachment(SphereCollider);
 
 	BHHitboxComponent = CreateDefaultSubobject<URGX_HitboxComponent>(TEXT("BHHitboxComponent"));
 	BHHitboxComponent->SetupAttachment(SphereCollider);
@@ -62,9 +57,8 @@ void ARGX_DistanceAngel::BeginPlay()
 	Super::BeginPlay();
 	SetLocationHeight(HeightPos);
 	RingOriginalRotatingSpeed = RingRotatingSpeed;
-	MaterialInterface = Ring_1_Mesh->GetMaterial(1);
+	MaterialInterface = Ring_2_Mesh->GetMaterial(1);
 	DynamicMaterial = UMaterialInstanceDynamic::Create(MaterialInterface, this);
-	Ring_1_Mesh->SetMaterial(1, DynamicMaterial);
 	Ring_2_Mesh->SetMaterial(1, DynamicMaterial);
 
 	bCanBeKnockup = false;
@@ -193,7 +187,6 @@ void ARGX_DistanceAngel::HandleDamage(
 			LaserBeamRef->Destroy();
 		}
 
-		Ring_1_Mesh->SetSimulatePhysics(true);
 		Ring_2_Mesh->SetSimulatePhysics(true);
 		PrimaryActorTick.bCanEverTick = false;
 		DestroyMyself(22.0f);

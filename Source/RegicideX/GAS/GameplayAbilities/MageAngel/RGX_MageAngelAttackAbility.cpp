@@ -3,6 +3,14 @@
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 #include "RegicideX/GAS/AbilityTasks/RGX_AT_PlayMontageAndWaitForEvent.h"
 
+void URGX_MageAngelAttackAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
+{
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
+	bEndChannelingLoop = false;
+	bEndAttackingLoop = false;
+}
+
 void URGX_MageAngelAttackAbility::OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData)
 {
 	// Should use constexpr

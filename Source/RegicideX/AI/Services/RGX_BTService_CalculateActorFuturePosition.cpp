@@ -13,6 +13,8 @@
 
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 
+//#pragma optimize("", off)
+
 void URGX_BTService_CalculateActorFuturePosition::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
@@ -80,9 +82,12 @@ FVector URGX_BTService_CalculateActorFuturePosition::CalculateFuturePosition(UBe
 	{
 		const float distance = FVector::Distance(owner->GetActorLocation(), Target->GetActorLocation());
 		const float timeToReachTarget = distance / owner->MoveSpeed;
+		const float time = std::min(timeToReachTarget, MaxReachTime);
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("timeToReachTarget %f"), timeToReachTarget));
 
 		const FVector targetVelocity = Target->GetVelocity();
-		const FVector futureTargetPosition = targetVelocity * timeToReachTarget;
+		const FVector futureTargetPosition = Target->GetActorLocation() + (targetVelocity * time);
 		return futureTargetPosition;
 	}
 
