@@ -32,6 +32,9 @@ void ARGX_PeasantController::OnPossess(APawn* pawn)
 				TargetActorID = BBComponent->GetKeyID("TargetActor");
 				DistanceToPlayerID = BBComponent->GetKeyID("DistanceToPlayer");
 
+				// [SM] hack pero esto hay que arreglarlo
+				BBComponent->SetValueAsObject("SelfActor", GetPawn());
+
 				// Execute behavior tree after initialization.
 				BTComponent->StartTree(*Peasant->BTree, EBTExecutionMode::Looped);
 			}		

@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
-#include "RGX_BTTask_EnemyStrafing.generated.h"
+#include "RGX_BTTask_EnemyOrbit.generated.h"
 
 /**
  * 
  */
 
 UCLASS()
-class REGICIDEX_API URGX_BT_EnemyStrafing : public UBTTaskNode
+class REGICIDEX_API URGX_BT_EnemyOrbit : public UBTTaskNode
 {
 	GENERATED_BODY()
 
@@ -29,9 +29,10 @@ protected:
 	struct FBlackboardKeySelector DirectionKey;
 
 private:
-	FVector GetDirection(UBehaviorTreeComponent& OwnerComp) const;
+	int32 GetKeyValue(UBehaviorTreeComponent& OwnerComp) const;
 
-	FVector Direction = FVector::ZeroVector;
+private:
+	int32 KeyValue = 0;
 
 };
 
