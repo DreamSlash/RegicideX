@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTService.h"
-#include "RGX_BTService_CalculateActorFuturePosition.generated.h"
+#include "RGX_BTService_CalculateDistanceToActor.generated.h"
 
 UCLASS()
-class REGICIDEX_API URGX_BTService_CalculateActorFuturePosition : public UBTService
+class REGICIDEX_API URGX_BTService_CalculateDistanceToActor : public UBTService
 {
 	GENERATED_BODY()
 
@@ -17,18 +17,15 @@ public:
 	void InitializeFromAsset(UBehaviorTree& Asset) override;
 
 protected:
-	UPROPERTY(EditAnywhere)
-		float MaxReachTime = 1.0f;
-
 	UPROPERTY(EditAnywhere, Category = Blackboard)
 	struct FBlackboardKeySelector TargetKey;
 
 	UPROPERTY(EditAnywhere, Category = Blackboard)
-	struct FBlackboardKeySelector PositionKey;
+	struct FBlackboardKeySelector BlackboardKey;
 
 private:
 	const AActor* GetTargetActor(UBehaviorTreeComponent& OwnerComp) const;
-	FVector CalculateFuturePosition(UBehaviorTreeComponent& OwnerComp, const AActor* Target) const;
-	bool SetPositionValue(UBehaviorTreeComponent& OwnerComp, const FVector& Position);
+	float CalculateDistanceBetweenActors(const AActor* Owner, const AActor* Target) const;
+	bool SetDistanceInBlackboard(UBehaviorTreeComponent& OwnerComp, const float Distance);
 
 };

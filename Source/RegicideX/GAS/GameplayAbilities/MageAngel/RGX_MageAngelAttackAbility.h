@@ -13,6 +13,8 @@ public:
 	URGX_MageAngelAttackAbility() = default;
 
 protected:
+	void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+
 	void OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData) override;
 
 	virtual void OnStartChannelLoop();
