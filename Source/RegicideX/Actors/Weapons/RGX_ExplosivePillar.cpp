@@ -19,6 +19,8 @@
 ARGX_ExplosivePillar::ARGX_ExplosivePillar()
 	: ARGX_EffectApplierActor()
 {
+	PrimaryActorTick.bCanEverTick = true;
+
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent"));
 
 	PillarCollider = CreateDefaultSubobject<UBoxComponent>(TEXT("PillarCollider"));
@@ -38,10 +40,43 @@ ARGX_ExplosivePillar::ARGX_ExplosivePillar()
 void ARGX_ExplosivePillar::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	GetWorld()->GetTimerManager().SetTimer(ActivationTimerHandle, [this]() { Activate(); }, TimeToActivate, false);
 
-	DrawDebugCapsule(GetWorld(), ActivationCollider->GetComponentLocation(), ActivationCollider->GetScaledCapsuleHalfHeight(), ActivationCollider->GetScaledCapsuleRadius(), ActivationCollider->GetComponentRotation().Quaternion(), FColor::Yellow, false, TimeToActivate);
+	if (RiseCurve)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), TellVFX, GetActorLocation(), GetActorRotation(), FVector(1.0f, 1.0f, 1.0f));
+
+		FOnTimelineFloat TimelineCallback;
+		FOnTimelineEventStatic TimelineFinishedCallback;
+		TimelineFinishedCallback.BindLambda([this]()
+			{
+				GetWorld()->GetTimerManager().SetTimer(ActivationTimerHandle, [this]() { Activate(); }, TimeToActivate, false);
+				DrawDebugCapsule(GetWorld(), ActivationCollider->GetComponentLocation(), ActivationCollider->GetScaledCapsuleHalfHeight(), ActivationCollider->GetScaledCapsuleRadius(), ActivationCollider->GetComponentRotation().Quaternion(), FColor::Yellow, false, TimeToActivate);
+			});
+
+		RiseTimeLine.AddInterpFloat(RiseCurve, TimelineCallback);
+		RiseTimeLine.SetTimelineFinishedFunc(TimelineFinishedCallback);
+
+		InitialZ = GetActorLocation().Z;
+		FVector location = GetActorLocation();
+		location.Z = InitialZ + RiseCurve->GetFloatValue(RiseTimeLine.GetPlaybackPosition());
+		SetActorLocation(location);
+
+		GetWorld()->GetTimerManager().SetTimer(DelayTellTimerHandle, [this]() { RiseTimeLine.PlayFromStart(); bIsRising = true; }, TimeDelayTell, false);
+	}
+}
+
+void ARGX_ExplosivePillar::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	if (bIsRising && RiseCurve)
+	{
+		RiseTimeLine.TickTimeline(DeltaTime);
+
+		FVector location = GetActorLocation();
+		location.Z = InitialZ + RiseCurve->GetFloatValue(RiseTimeLine.GetPlaybackPosition());
+		SetActorLocation(location);
+	}
 }
 
 void ARGX_ExplosivePillar::Activate(UPrimitiveComponent* OverlappedComponent
@@ -77,6 +112,27 @@ void ARGX_ExplosivePillar::Detonate(UPrimitiveComponent* OverlappedComponent
 		}
 
 		Explode();
+	}
+}
+
+void ARGX_ExplosivePillar::Rise()
+{
+	if (RiseCurve)
+	{
+		FOnTimelineFloat TimelineCallback;
+		FOnTimelineEventStatic TimelineFinishedCallback;
+		TimelineFinishedCallback.BindLambda([this]()
+			{
+				GetWorld()->GetTimerManager().SetTimer(ActivationTimerHandle, [this]() { Activate(); }, TimeToActivate, false);
+				DrawDebugCapsule(GetWorld(), ActivationCollider->GetComponentLocation(), ActivationCollider->GetScaledCapsuleHalfHeight(), ActivationCollider->GetScaledCapsuleRadius(), ActivationCollider->GetComponentRotation().Quaternion(), FColor::Yellow, false, TimeToActivate);
+			});
+
+		RiseTimeLine.AddInterpFloat(RiseCurve, TimelineCallback);
+		RiseTimeLine.SetTimelineFinishedFunc(TimelineFinishedCallback);
+
+		RiseTimeLine.PlayFromStart();
+
+		InitialZ = GetActorLocation().Z;
 	}
 }
 
