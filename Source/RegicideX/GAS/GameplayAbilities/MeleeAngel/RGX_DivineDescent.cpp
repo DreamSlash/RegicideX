@@ -28,6 +28,7 @@ void URGX_DivineDescent::EndAbility(const FGameplayAbilitySpecHandle Handle, con
 	ARGX_CharacterBase* Character = Cast<ARGX_CharacterBase>(GetAvatarActorFromActorInfo());
 	if (Character)
 	{
+		Character->bCanRotate = true;
 		Character->GetCharacterMovement()->GravityScale = 3.0f;
 	}
 
@@ -49,12 +50,28 @@ void URGX_DivineDescent::Tick(float DeltaTime)
 
 	FVector NewLocation = FVector::ZeroVector;
 
-	TargetLocation = owner->DivineDescentTargetLocation;
+	//TargetLocation = owner->DivineDescentTargetLocation;
+	FVector ToTarget = TargetLocation - StartLocation;
+	ToTarget.Normalize();
+
+	TargetLocation = owner->TargetActor->GetActorLocation();
+	TargetLocation -= ToTarget * 150.0f; // offset to make the angel fall nearby the player and not into the player itself, causing buggy collisions
 	StartLocation = owner->GetActorLocation();
 
-	FVector Direction = TargetLocation - StartLocation;
-	Direction.Normalize();
-	NewLocation = StartLocation + Direction * Speed * DeltaTime;
+	owner->RotateToTarget(DeltaTime);
+
+	FVector MyForward = owner->GetActorForwardVector();
+	MyForward.Z = ToTarget.Z;
+	MyForward.Normalize();
+
+	NewLocation = StartLocation + MyForward * Speed * DeltaTime;
+
+	//FVector Direction = TargetLocation - StartLocation;
+	//Direction.Normalize();
+	//NewLocation = StartLocation + Direction * Speed * DeltaTime;
+
+	UE_LOG(LogTemp, Warning, TEXT("NewLocation Z: %f"), NewLocation.Z);
+	UE_LOG(LogTemp, Warning, TEXT("TargetLocation Z: %f"), TargetLocation.Z);
 
 	// If we passed the z position of the target, clamp to target height and run the next section
 	if (NewLocation.Z <= TargetLocation.Z)
