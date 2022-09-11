@@ -21,7 +21,6 @@ EBTNodeResult::Type URGX_BTTask_BulletHell::ExecuteTask(UBehaviorTreeComponent& 
 	DistAngelPawn->ForceFieldSphere->SetHiddenInGame(false);
 	//DistAngelPawn->BulletHellOutSphere->SetHiddenInGame(false);
 	//DistAngelPawn->BHHitboxComponent->ActivateEffect();
-	DistAngelPawn->ForceFieldOutSphere->SetRelativeScale3D(FVector(MaxSize));
 	bNotifyTick = true;
 
 	return EBTNodeResult::InProgress;

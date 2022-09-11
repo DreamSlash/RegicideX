@@ -145,6 +145,22 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	ERGX_EnemyType EnemyType;
 
+	// The cosinus where the enemy do not move to player while rotating but instead, it turns in place after a while
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float TurnInPlaceCos = -0.5f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float TimeBeforeTurningInPlace = 2.0f;
+	float TimeLostSight;
+
+	// Stop turning in place and move to player when the enemy's forward has this cos after having lost sight with player
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float RegainSightCos = 0.3f;
+
+	// This is true when the TurnInPlaceCos is reached, but turn in place do not reset (waiting the TimeBeforeTurningInPlace)
+	// until the enemy has gained sight again
+	bool bHasLostSightOfPlayer = false;
+
 protected:
 	// Called when the game starts or when spawned
 	void BeginPlay() override;
@@ -154,6 +170,7 @@ protected:
 	void EraseRecentDamage(const float DamageAmount);
 
 	void CheckIfWeak(float DamageAmount);
+	void CheckIfHasLostSightOfPlayer();
 
 	// FGenericTeamId interface
 	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
@@ -165,6 +182,7 @@ public:
 	virtual FGenericTeamId GetGenericTeamId() const override;
 
 	/** Movement methods */
+	UFUNCTION(BlueprintCallable)
 	virtual void RotateToTarget(float DeltaTime);
 
 	virtual void MoveToTarget(float DeltaTime, FVector TargetPos);

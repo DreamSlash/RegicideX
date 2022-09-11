@@ -21,4 +21,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	UProjectileMovementComponent* ProjectileMovementComponent = nullptr;
+
+protected:
+	virtual void BeginPlay() override;
 };

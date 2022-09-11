@@ -54,8 +54,6 @@ void URGX_AT_RotateAndUpdateForceField::TickTask(float DeltaTime)
 
 }
 
-
-
 void URGX_AT_RotateAndUpdateForceField::OnDestroy(bool AbilityIsEnding)
 {
 	Super::OnDestroy(AbilityIsEnding);
@@ -70,7 +68,6 @@ URGX_AT_RotateAndUpdateForceField* URGX_AT_RotateAndUpdateForceField::RotateAndU
 	MyObj->MaxSize = MaxSize;
 	MyObj->Attacker->ForceFieldSphereCollider->SetRelativeScale3D(FVector(10.0));
 	MyObj->Attacker->ForceFieldSphere->SetHiddenInGame(false);
-	MyObj->Attacker->ForceFieldOutSphere->SetRelativeScale3D(FVector(MaxSize));
 	MyObj->Attacker->BHHitboxComponent->ActivateHitbox(true);
 	//Attacker->BHHitboxComponent->ActivateEffect();
 	return MyObj;

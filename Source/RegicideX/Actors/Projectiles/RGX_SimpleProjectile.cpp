@@ -20,3 +20,11 @@ ARGX_SimpleProjectile::ARGX_SimpleProjectile()
 	RootComponent = ProjectileMesh;
 	HitboxComponent->SetupAttachment(RootComponent);
 }
+
+void ARGX_SimpleProjectile::BeginPlay()
+{
+	Super::BeginPlay();
+
+	//ProjectileMovementComponent->InitialSpeed = BaseSpeed;
+	//ProjectileMovementComponent->MaxSpeed = BaseSpeed;
+}
