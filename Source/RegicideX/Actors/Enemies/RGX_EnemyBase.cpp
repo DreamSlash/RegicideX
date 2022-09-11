@@ -182,7 +182,7 @@ void ARGX_EnemyBase::Tick(float DeltaTime)
 
 	if (TargetActor)
 	{
-		if (bHasLostSightOfPlayer)
+		/*if (bHasLostSightOfPlayer)
 		{
 			UWorld* World = GetWorld();
 			if (World)
@@ -194,7 +194,7 @@ void ARGX_EnemyBase::Tick(float DeltaTime)
 				}
 			}
 		}
-		else if (bCanRotate && bDefaultFocusPlayer)
+		else */if (bCanRotate && bDefaultFocusPlayer)
 		{
 			RotateToTarget(DeltaTime);
 		}
@@ -210,7 +210,7 @@ void ARGX_EnemyBase::Tick(float DeltaTime)
 			HealthDisplayWidgetComponent->SetVisibility(true);
 		}
 
-		CheckIfHasLostSightOfPlayer();
+		//CheckIfHasLostSightOfPlayer();
 	}
 }
 
