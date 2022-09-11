@@ -12,9 +12,26 @@ EBTNodeResult::Type URGX_BT_EnemyStrafing::ExecuteTask(UBehaviorTreeComponent& O
 {
 	bNotifyTick = true;
 
+	const AAIController* AIController = OwnerComp.GetAIOwner();
+	APawn* ControlledPawn = AIController->GetPawn();
+	ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(ControlledPawn);
+	Enemy->Orbiting = true;
+
 	Direction = GetDirection(OwnerComp);
 
 	return EBTNodeResult::InProgress;
+}
+
+EBTNodeResult::Type URGX_BT_EnemyStrafing::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+{
+	const AAIController* AIController = OwnerComp.GetAIOwner();
+	APawn* ControlledPawn = AIController->GetPawn();
+	if (ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(ControlledPawn))
+	{
+		Enemy->Orbiting = false;
+	}
+
+	return EBTNodeResult::Aborted;
 }
 
 void URGX_BT_EnemyStrafing::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)

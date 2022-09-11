@@ -182,7 +182,19 @@ void ARGX_EnemyBase::Tick(float DeltaTime)
 
 	if (TargetActor)
 	{
-		if (bCanRotate && bDefaultFocusPlayer)
+		if (bHasLostSightOfPlayer)
+		{
+			UWorld* World = GetWorld();
+			if (World)
+			{
+				const float CurrentTime = World->GetTimeSeconds();
+				if (CurrentTime - TimeLostSight > TimeBeforeTurningInPlace && bCanRotate && bDefaultFocusPlayer)
+				{
+					RotateToTarget(DeltaTime);
+				}
+			}
+		}
+		else if (bCanRotate && bDefaultFocusPlayer)
 		{
 			RotateToTarget(DeltaTime);
 		}
@@ -196,6 +208,39 @@ void ARGX_EnemyBase::Tick(float DeltaTime)
 		else
 		{
 			HealthDisplayWidgetComponent->SetVisibility(true);
+		}
+
+		CheckIfHasLostSightOfPlayer();
+	}
+}
+
+void ARGX_EnemyBase::CheckIfHasLostSightOfPlayer()
+{
+	const FVector MyForward = GetActorForwardVector();
+	const FVector VectorToTarget = TargetActor->GetActorLocation() - GetActorLocation();
+	const float Dot = FVector::DotProduct(MyForward, VectorToTarget);
+
+	if (bHasLostSightOfPlayer == false)
+	{
+		if (TurnInPlaceCos > Dot)
+		{
+			UWorld* World = GetWorld();
+			if (World)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Has Lost Sight"));
+				TimeLostSight = World->GetTimeSeconds();
+				GetCharacterMovement()->MaxWalkSpeed = 0.0f;
+				bHasLostSightOfPlayer = true;
+			}
+		}
+	}
+	else
+	{
+		if (RegainSightCos < Dot)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Has Regained Sight"));
+			GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
+			bHasLostSightOfPlayer = false;
 		}
 	}
 }
