@@ -3,6 +3,7 @@
 #include "AbilitySystemComponent.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "RegicideX/Character/RGX_PlayerCharacter.h"
 
 URGX_ComboSystemComponent::URGX_ComboSystemComponent()
 {
@@ -145,10 +146,12 @@ void URGX_ComboSystemComponent::OnEndCombo()
 	bEnableComboFlag = false;
 	NextComboInput = ERGX_ComboTokenID::None;
 
-	AActor* Owner = GetOwner();
-	UCharacterMovementComponent* CharacterMovementComponent = Owner->FindComponentByClass<UCharacterMovementComponent>();
-
-	CharacterMovementComponent->GravityScale = 3.0f; //TODO: hardcoded
+	ARGX_PlayerCharacter* Owner = Cast<ARGX_PlayerCharacter>(GetOwner());
+	if (Owner)
+	{
+		UCharacterMovementComponent* CharacterMovementComponent = Owner->FindComponentByClass<UCharacterMovementComponent>();
+		CharacterMovementComponent->GravityScale = Owner->DefaultGravity;
+	}
 }
 
 void URGX_ComboSystemComponent::DrawDebugInfo()
