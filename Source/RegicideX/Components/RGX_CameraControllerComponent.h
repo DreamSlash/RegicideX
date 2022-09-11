@@ -18,44 +18,32 @@ public:
 	// Sets default values for this component's properties
 	URGX_CameraControllerComponent();
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY()
 		class USpringArmComponent* SpringArm;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UPROPERTY()
 		class UCameraComponent* Camera;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-		float TargetTraceDistance = 10000.0f;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float CombatRadius = 1200;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float PitchMaxAngle = 60.0f;
+		float TargetingConeAngle = 45.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float YawhMaxAngle = 30.0f;
+		float MaxZoomOut = 2000.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float PitchDesiredAngle = 30.0f;
+		float ZoomOutPerVisibleEnemy = 50.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float YaxDesiredAngle = 20.0f;
+		float ZoomOutPerNotVisibleEnemy = 300.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float TargetingRange = 600.0f;
+		float CameraSpeed = 1.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float TargetingConeAngle = 30.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float MaxZoomOut = 1200.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float ZoomOutDistancePerUnseenGroup = 100.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float GroupNumEnemies = 1;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float CameraSpeed = 5.0f;
+		float UpdateDistanceOffset = 10.0f;
 
 	UPROPERTY(BlueprintAssignable)
 		FRGX_TargetUpdatedDelegate OnTargetUpdated;
@@ -81,21 +69,22 @@ public:
 
 private:
 	void FindTarget();
-	void FindTargetUsingSphere();
+	void FindTarget(TArray<AActor*>& Targets);
 	void FindNearestTargetUsingSphere(bool RightDirection);
+
+	void CalculateSpringArmDistance(const TArray<AActor*>& Targets, float DeltaTime);
+	void UpdateTargeting(TArray<AActor*>& Targets, float DeltaTime);
+	FRotator CalculateDesiredRotation();
 
 	TArray<AActor*> GetNearbyActorsUsingSphere(const TArray<AActor*>& IgnoredActors) const;
 	float CalculateDotProduct(const FVector& SourceLocation, const FVector& SourceDir, const AActor* Actor) const;
-
-	float CalculateDesiredDistance();
-	FRotator CalculateDesiredRotation(float DesiredDistance);
 
 private:
 	TWeakObjectPtr<ARGX_EnemyBase> CurrentTarget;
 
 	float OriginalArmLength;
 
-	bool bIsActive = false;
+	bool bTargetingIsActive = false;
 	bool bFindNearestTargetExecuted = false;
 
 };

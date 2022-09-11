@@ -116,7 +116,7 @@ public:
 	UFUNCTION()
 	void SetOwnerActor(AActor* OA);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	void ApplyEffect(AActor* OtherActor);
 
 	UFUNCTION()
