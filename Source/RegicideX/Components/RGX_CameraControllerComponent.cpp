@@ -50,8 +50,8 @@ void URGX_CameraControllerComponent::TickComponent(float DeltaTime, ELevelTick T
 		UpdateTargeting(targets, DeltaTime);
 	}
 
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Target Arm Length: %f"), SpringArm->TargetArmLength));
+	//if (GEngine)
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Target Arm Length: %f"), SpringArm->TargetArmLength));
 
 	DrawDebugSphere(GetWorld(), OwnerPawn->GetActorLocation(), CombatRadius, 16, FColor::Red, false, DeltaTime);
 }
