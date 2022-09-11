@@ -8,7 +8,7 @@
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
 
-#pragma optimize("", off)
+//#pragma optimize("", off)
 
 // Sets default values for this component's properties
 URGX_CameraControllerComponent::URGX_CameraControllerComponent()
