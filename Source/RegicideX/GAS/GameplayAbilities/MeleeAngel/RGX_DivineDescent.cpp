@@ -6,6 +6,7 @@
 #include "RegicideX/Actors/Enemies/RGX_MeleeAngel.h"
 #include "RegicideX/Actors/RGX_CharacterBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "RegicideX/RGX_BlueprintLibrary.h"
 
 bool URGX_DivineDescent::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const
 {
@@ -66,20 +67,14 @@ void URGX_DivineDescent::Tick(float DeltaTime)
 
 	NewLocation = StartLocation + MyForward * Speed * DeltaTime;
 
-	//FVector Direction = TargetLocation - StartLocation;
-	//Direction.Normalize();
-	//NewLocation = StartLocation + Direction * Speed * DeltaTime;
-
-	UE_LOG(LogTemp, Warning, TEXT("NewLocation Z: %f"), NewLocation.Z);
-	UE_LOG(LogTemp, Warning, TEXT("TargetLocation Z: %f"), TargetLocation.Z);
+	const bool ConeCheck = URGX_BlueprintLibrary::ConeCheck(owner, owner->TargetActor, 0.7f, true);
 
 	// If we passed the z position of the target, clamp to target height and run the next section
-	if (NewLocation.Z <= TargetLocation.Z)
+	if (NewLocation.Z <= TargetLocation.Z || ConeCheck == false)
 	{
 		NewLocation.Z = TargetLocation.Z;
 		owner->SetActorLocation(NewLocation);
 		MontageJumpToSection(FName("Fall Section"));
-		UE_LOG(LogTemp, Warning, TEXT("CHAAAAAAAAAAAAARGE!"));
 		owner->bCharging = false;
 	}
 	else
