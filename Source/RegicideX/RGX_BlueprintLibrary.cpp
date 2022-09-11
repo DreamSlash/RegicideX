@@ -26,6 +26,7 @@ void URGX_BlueprintLibrary::ApplyGameplayEffectContextContainerToActor(const ARG
 
 void URGX_BlueprintLibrary::LaunchCharacterToLocation(ARGX_CharacterBase* CharacterBase, const FVector& TargetLocation, float GravityScaleMultiplier, float LaunchAngle)
 {
+	// TODO: Bug where the launch only works for 45 degrees
 	UE_LOG(LogTemp, Warning, TEXT("Launch Character To Location. Default Gravity: %f"), UPhysicsSettings::Get()->DefaultGravityZ);
 
 	if (CharacterBase == nullptr) return;
@@ -63,4 +64,22 @@ void URGX_BlueprintLibrary::LaunchCharacterToLocation(ARGX_CharacterBase* Charac
 	const FVector LaunchVelocity = FVector(HorizontalLaunchForce.X, HorizontalLaunchForce.Y, zVelocity);
 
 	CharacterBase->LaunchCharacter(LaunchVelocity, true, true);
+}
+
+bool URGX_BlueprintLibrary::ConeCheck(ARGX_CharacterBase* OriginCharacter, AActor* DestinationActor, float DotThreshold, bool bIgnoreZAxis)
+{
+	const FVector ConeOrigin = OriginCharacter->GetActorLocation();
+	const FVector ConeEnd = DestinationActor->GetActorLocation();
+
+	FVector CharacterForward = OriginCharacter->GetActorForwardVector();
+	CharacterForward.Z = bIgnoreZAxis ? 0.0f : CharacterForward.Z;
+	CharacterForward.Normalize();
+
+	FVector ToDestination = DestinationActor->GetActorLocation() - ConeOrigin;
+	ToDestination.Z = bIgnoreZAxis ? 0.0f : ToDestination.Z;
+	ToDestination.Normalize();
+
+	const float DotProduct = FVector::DotProduct(CharacterForward, ToDestination);
+
+	return DotProduct > DotThreshold;
 }

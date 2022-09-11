@@ -22,4 +22,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = Character)
 	static void LaunchCharacterToLocation(ARGX_CharacterBase* CharacterBase, const FVector& TargetLocation, float GravityScaleMultiplier, float LaunchAngle);
+
+	UFUNCTION(BlueprintCallable, Category = Character)
+	static bool ConeCheck(ARGX_CharacterBase* OriginCharacter, AActor* DestinationActor, float DotThreshold, bool bIgnoreZAxis);
 };

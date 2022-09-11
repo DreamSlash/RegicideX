@@ -6,6 +6,7 @@
 #include "Camera/CameraComponent.h"
 #include "DrawDebugHelpers.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "Kismet/KismetMathLibrary.h"
 
 //#pragma optimize("", off)
 
@@ -33,60 +34,122 @@ void URGX_CameraControllerComponent::TickComponent(float DeltaTime, ELevelTick T
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (bIsActive)
+	APawn* OwnerPawn = GetOwner<APawn>();
+	if (OwnerPawn == nullptr)
 	{
-		if (CurrentTarget.IsValid())
+		return;
+	}
+
+	TArray<AActor*> ignoredActors; ignoredActors.Add(GetOwner());
+	TArray<AActor*> targets = GetNearbyActorsUsingSphere(ignoredActors);
+
+	CalculateSpringArmDistance(targets, DeltaTime);
+
+	if (bTargetingIsActive)
+	{
+		UpdateTargeting(targets, DeltaTime);
+	}
+
+	//if (GEngine)
+		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Target Arm Length: %f"), SpringArm->TargetArmLength));
+
+	DrawDebugSphere(GetWorld(), OwnerPawn->GetActorLocation(), CombatRadius, 16, FColor::Red, false, DeltaTime);
+}
+
+void URGX_CameraControllerComponent::CalculateSpringArmDistance(const TArray<AActor*>& Targets, float DeltaTime)
+{
+	const AActor* player = GetOwner();
+	const FVector playerLocation = player->GetActorLocation();
+	const FVector cameraLocation = Camera->GetComponentLocation();
+	const FVector cameraForward = Camera->GetForwardVector();
+	const float cosFOV = cos(Camera->FieldOfView);
+
+	int32 numVisibleEnemies = 0;
+	int32 numNotVisibleEnemies = 0;
+	for (const AActor* target : Targets)
+	{
+		const float dot = CalculateDotProduct(playerLocation, cameraForward, target);
+
+		if (dot < cosFOV)
 		{
-			APawn* OwnerPawn = GetOwner<APawn>();
-			if (OwnerPawn == nullptr)
-			{
-				return;
-			}
-
-			float desiredArmLength = CalculateDesiredDistance();
-			FRotator desiredRotation = CalculateDesiredRotation(desiredArmLength);
-
-			FRotator prevRotation = OwnerPawn->GetController()->GetControlRotation();
-			FRotator result = FMath::Lerp(prevRotation, desiredRotation, DeltaTime * CameraSpeed);
-			OwnerPawn->GetController()->SetControlRotation(result);
-			SpringArm->SetWorldRotation(result);
-
-			SpringArm->TargetArmLength = FMath::Lerp(SpringArm->TargetArmLength, desiredArmLength, DeltaTime * CameraSpeed);
-
-			//DrawDebugLine(GetWorld(), DesiredCameraLoc, TargetLocation, FColor::Blue);
+			++numNotVisibleEnemies;
 		}
 		else
 		{
-			//FindTarget();
-			FindTargetUsingSphere();
+			++numVisibleEnemies;
 		}
+	}
+
+	const float visibleEnemiesZoomOut = ZoomOutPerVisibleEnemy * numVisibleEnemies;
+	const float notVisibleEnemiesZoomOut = ZoomOutPerNotVisibleEnemy * numNotVisibleEnemies;
+	const float newDistance = std::min(OriginalArmLength + visibleEnemiesZoomOut + notVisibleEnemiesZoomOut, MaxZoomOut);
+
+	if (fabs(SpringArm->TargetArmLength - newDistance) > UpdateDistanceOffset)
+	{
+		//const float res = FMath::InterpEaseInOut(SpringArm->TargetArmLength, newDistance, DeltaTime * CameraSpeed, 0.5);
+		const float res = FMath::FInterpTo(SpringArm->TargetArmLength, newDistance, DeltaTime, CameraSpeed);
+		SpringArm->TargetArmLength = res;
+	}
+}
+
+void URGX_CameraControllerComponent::UpdateTargeting(TArray<AActor*>& Targets, float DeltaTime)
+{
+	if (CurrentTarget.IsValid())
+	{
+		FRotator desiredRotation = CalculateDesiredRotation();
+
+		APawn* OwnerPawn = GetOwner<APawn>();
+		FRotator prevRotation = OwnerPawn->GetController()->GetControlRotation();
+		FRotator result = FMath::Lerp(prevRotation, desiredRotation, DeltaTime * CameraSpeed);
+
+		if (prevRotation.Equals(result, 5.0f))
+		{
+			OwnerPawn->GetController()->SetControlRotation(result);
+			SpringArm->SetWorldRotation(result);
+		}
+
+		//DrawDebugLine(GetWorld(), DesiredCameraLoc, TargetLocation, FColor::Blue);
 	}
 	else
 	{
-		SpringArm->TargetArmLength = FMath::Lerp(SpringArm->TargetArmLength, OriginalArmLength, DeltaTime * CameraSpeed);
+		FindTarget(Targets);
 	}
 }
 
-float URGX_CameraControllerComponent::CalculateDesiredDistance()
+void URGX_CameraControllerComponent::FindTarget(TArray<AActor*>& Targets)
 {
-	TArray<AActor*> ignoreActors; ignoreActors.Add(GetOwner());
-	TArray<AActor*> targets = GetNearbyActorsUsingSphere(ignoreActors);
-
-	/*int32 numActorsBehind = 0;
-	for (const AActor* target : targets)
-	{
-		const float dot = CalculateDotProduct(GetOwner()->GetActorLocation(), Camera->GetForwardVector(), target);
-		if (dot < 0.0)
+	const FVector cameraLocation = Camera->GetComponentLocation();
+	const FVector cameraForward = Camera->GetForwardVector();
+	Targets.RemoveAllSwap([this, cameraLocation, cameraForward](AActor* Target) -> bool
 		{
-			++numActorsBehind;
-		}
-	}*/
+			if (acos(CalculateDotProduct(cameraLocation, cameraForward, Target)) > TargetingConeAngle)
+			{
+				return true;
+			}
 
-	const float desiredDistance = OriginalArmLength + (ZoomOutDistancePerUnseenGroup * (targets.Num()/GroupNumEnemies));
-	return std::min(desiredDistance, MaxZoomOut);;
+			return false;
+		});
+
+	Targets.Sort([this, cameraLocation, cameraForward](const AActor& TargetLeft, const AActor& TargetRight) -> bool
+		{
+			const float dotLeft = CalculateDotProduct(cameraLocation, cameraForward, &TargetLeft);
+			const float dotRight = CalculateDotProduct(cameraLocation, cameraForward, &TargetRight);
+
+			return dotLeft > dotRight;
+		});
+
+	if (Targets.Num() > 0)
+	{
+		if (ARGX_EnemyBase* enemy = Cast<ARGX_EnemyBase>(Targets[0]))
+		{
+			float dot = CalculateDotProduct(cameraLocation, cameraForward, enemy);
+			UE_LOG(LogTemp, Warning, TEXT("Target Dot %f"), dot);
+			SetTarget(enemy);
+		}
+	}
 }
 
-FRotator URGX_CameraControllerComponent::CalculateDesiredRotation(float DesiredDistance)
+FRotator URGX_CameraControllerComponent::CalculateDesiredRotation()
 {
 	constexpr float CameraAngleToTarget = 15.0f;
 	const float CameraAngleSin = FMath::Sin(FMath::DegreesToRadians(CameraAngleToTarget));
@@ -98,8 +161,7 @@ FRotator URGX_CameraControllerComponent::CalculateDesiredRotation(float DesiredD
 
 	const float PivotDistance = FVector::Distance(PlayerLocation, TargetLocation);
 
-	//const float Height = SpringArm->TargetArmLength * CameraAngleSin;
-	const float Height = DesiredDistance * CameraAngleSin;
+	const float Height = SpringArm->TargetArmLength * CameraAngleSin;
 	const float Beta = FMath::Asin(Height / PivotDistance);
 	const float DesiredPitch = FMath::DegreesToRadians(CameraAngleToTarget) + Beta;
 
@@ -111,82 +173,47 @@ FRotator URGX_CameraControllerComponent::CalculateDesiredRotation(float DesiredD
 	FMatrix matrix = FRotationMatrix::MakeFromX(aux);
 	FRotator desiredRotation = matrix.Rotator();
 	desiredRotation.Yaw -= FMath::RadiansToDegrees(DesiredPitch);
+	desiredRotation.Pitch -= 15.0;
 
 	return desiredRotation;
 }
 
 void URGX_CameraControllerComponent::FindTarget()
 {
-	FCollisionObjectQueryParams ObjectQueryParams;
-	ObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_Pawn);
+	//FCollisionObjectQueryParams ObjectQueryParams;
+	//ObjectQueryParams.AddObjectTypesToQuery(ECollisionChannel::ECC_Pawn);
 
-	FCollisionQueryParams QueryParams = FCollisionQueryParams::DefaultQueryParam;
-	QueryParams.AddIgnoredActor(GetOwner());
+	//FCollisionQueryParams QueryParams = FCollisionQueryParams::DefaultQueryParam;
+	//QueryParams.AddIgnoredActor(GetOwner());
 
-	const FVector BoxCenter = Camera->GetComponentLocation() + Camera->GetForwardVector() * TargetTraceDistance * 0.5f;
-	const FVector BoxHalfSize(TargetTraceDistance * 0.5f, 100.0f, 100.0f);
+	//const FVector BoxCenter = Camera->GetComponentLocation() + Camera->GetForwardVector() * TargetTraceDistance * 0.5f;
+	//const FVector BoxHalfSize(TargetTraceDistance * 0.5f, 100.0f, 100.0f);
 
-	TArray<FOverlapResult> Overlaps;
-	const bool bFoundTarget = GetWorld()->OverlapMultiByObjectType(
-		Overlaps,
-		BoxCenter,
-		Camera->GetComponentQuat(),
-		ObjectQueryParams,
-		FCollisionShape::MakeBox(BoxHalfSize),
-		QueryParams
-	);
+	//TArray<FOverlapResult> Overlaps;
+	//const bool bFoundTarget = GetWorld()->OverlapMultiByObjectType(
+	//	Overlaps,
+	//	BoxCenter,
+	//	Camera->GetComponentQuat(),
+	//	ObjectQueryParams,
+	//	FCollisionShape::MakeBox(BoxHalfSize),
+	//	QueryParams
+	//);
 
-	if (bFoundTarget)
-	{
-		Overlaps.Sort([CameraLoc = Camera->GetComponentLocation()](const FOverlapResult& Lhs, const FOverlapResult& Rhs) {
-			const float LhsDistSq = FVector::DistSquared(Lhs.GetActor()->GetActorLocation(), CameraLoc);
-			const float RhsDistSq = FVector::DistSquared(Rhs.GetActor()->GetActorLocation(), CameraLoc);
-			return LhsDistSq < RhsDistSq;
-		});
+	//if (bFoundTarget)
+	//{
+	//	Overlaps.Sort([CameraLoc = Camera->GetComponentLocation()](const FOverlapResult& Lhs, const FOverlapResult& Rhs) {
+	//		const float LhsDistSq = FVector::DistSquared(Lhs.GetActor()->GetActorLocation(), CameraLoc);
+	//		const float RhsDistSq = FVector::DistSquared(Rhs.GetActor()->GetActorLocation(), CameraLoc);
+	//		return LhsDistSq < RhsDistSq;
+	//	});
 
-		if (ARGX_EnemyBase* enemy = Cast<ARGX_EnemyBase>(Overlaps[0].GetActor()))
-		{
-			SetTarget(enemy);
-		}
-	}
+	//	if (ARGX_EnemyBase* enemy = Cast<ARGX_EnemyBase>(Overlaps[0].GetActor()))
+	//	{
+	//		SetTarget(enemy);
+	//	}
+	//}
 
-	//DrawDebugBox(GetWorld(), BoxCenter, BoxHalfSize, Camera->GetComponentQuat(), bFoundTarget ? FColor::Green : FColor::Red, false, 2.0f);
-}
-
-void URGX_CameraControllerComponent::FindTargetUsingSphere()
-{
-	TArray<AActor*> ignoredActors; ignoredActors.Add(GetOwner());
-	TArray<AActor*> targets = GetNearbyActorsUsingSphere(ignoredActors);
-
-	const FVector cameraLocation = Camera->GetComponentLocation();
-	const FVector cameraForward = Camera->GetForwardVector();
-	targets.RemoveAllSwap([this, cameraLocation, cameraForward](AActor* Target) -> bool
-	{
-		if (acos(CalculateDotProduct(cameraLocation, cameraForward, Target)) > TargetingConeAngle)
-		{
-			return true;
-		}
-
-		return false;
-	});
-
-	targets.Sort([this, cameraLocation, cameraForward](const AActor& TargetLeft, const AActor& TargetRight) -> bool
-	{
-		const float dotLeft = CalculateDotProduct(cameraLocation, cameraForward, &TargetLeft);
-		const float dotRight = CalculateDotProduct(cameraLocation, cameraForward, &TargetRight);
-
-		return dotLeft > dotRight;
-	});
-
-	if (targets.Num() > 0)
-	{
-		if (ARGX_EnemyBase* enemy = Cast<ARGX_EnemyBase>(targets[0]))
-		{
-			float dot = CalculateDotProduct(cameraLocation, cameraForward, enemy);
-			UE_LOG(LogTemp, Warning, TEXT("Target Dot %f"), dot);
-			SetTarget(enemy);
-		}
-	}
+	////DrawDebugBox(GetWorld(), BoxCenter, BoxHalfSize, Camera->GetComponentQuat(), bFoundTarget ? FColor::Green : FColor::Red, false, 2.0f);
 }
 
 void URGX_CameraControllerComponent::FindNearestTargetUsingSphere(bool RightDirection)
@@ -267,7 +294,7 @@ TArray<AActor*> URGX_CameraControllerComponent::GetNearbyActorsUsingSphere(const
 	UClass* targetClass = ARGX_EnemyBase::StaticClass();
 
 	TArray<AActor*> targets;
-	UKismetSystemLibrary::SphereOverlapActors(GetWorld(), playerLocation, TargetingRange, traceObjectTypes, targetClass, IgnoredActors, targets);
+	UKismetSystemLibrary::SphereOverlapActors(GetWorld(), playerLocation, CombatRadius, traceObjectTypes, targetClass, IgnoredActors, targets);
 
 	return targets;
 }
@@ -283,18 +310,18 @@ float URGX_CameraControllerComponent::CalculateDotProduct(const FVector& SourceL
 
 void URGX_CameraControllerComponent::EnableTargeting()
 {
-	bIsActive = true;
+	bTargetingIsActive = true;
 }
 
 void URGX_CameraControllerComponent::DisableTargeting()
 {
-	bIsActive = false;
+	bTargetingIsActive = false;
 	SetTarget(nullptr);
 }
 
 void URGX_CameraControllerComponent::CheckYawInput(float Rate)
 {
-	if (bIsActive)
+	if (bTargetingIsActive)
 	{
 		if (bFindNearestTargetExecuted)
 		{
@@ -320,7 +347,7 @@ void URGX_CameraControllerComponent::CheckYawInput(float Rate)
 
 void URGX_CameraControllerComponent::TargetLeft()
 {
-	if (bIsActive)
+	if (bTargetingIsActive)
 	{
 		FindNearestTargetUsingSphere(false);
 	}
@@ -328,7 +355,7 @@ void URGX_CameraControllerComponent::TargetLeft()
 
 void URGX_CameraControllerComponent::TargetRight()
 {
-	if (bIsActive)
+	if (bTargetingIsActive)
 	{
 		FindNearestTargetUsingSphere(true);
 	}
