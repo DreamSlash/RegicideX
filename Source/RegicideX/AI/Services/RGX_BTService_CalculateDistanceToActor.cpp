@@ -72,8 +72,8 @@ float URGX_BTService_CalculateDistanceToActor::CalculateDistanceBetweenActors(co
 	const FVector ownerLocation = Owner->GetActorLocation();
 	const FVector targetLocation = Target->GetActorLocation();
 
-	DrawDebugCapsule(GetWorld(), ownerLocation, 200, 100, FQuat::Identity, FColor::Blue, false, 1);
-	DrawDebugCapsule(GetWorld(), targetLocation, 200, 100, FQuat::Identity, FColor::Red, false, 1);
+	//DrawDebugCapsule(GetWorld(), ownerLocation, 200, 100, FQuat::Identity, FColor::Blue, false, 1);
+	//DrawDebugCapsule(GetWorld(), targetLocation, 200, 100, FQuat::Identity, FColor::Red, false, 1);
 
 	return FVector::Dist2D(ownerLocation, targetLocation);
 }

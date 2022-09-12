@@ -39,7 +39,7 @@ void URGX_BTService_CalculateActorFuturePosition::TickNode(UBehaviorTreeComponen
 	}
 
 	SetPositionValue(OwnerComp, futurePosition);
-	DrawDebugCapsule(GetWorld(), futurePosition, 200, 100, FQuat::Identity, FColor::Purple, false, 1);	
+	//DrawDebugCapsule(GetWorld(), futurePosition, 200, 100, FQuat::Identity, FColor::Purple, false, 1);	
 }
 
 void URGX_BTService_CalculateActorFuturePosition::InitializeFromAsset(UBehaviorTree& Asset)
