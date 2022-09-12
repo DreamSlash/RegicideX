@@ -20,7 +20,12 @@ void URGX_ANS_JumpComboSection::NotifyTick(USkeletalMeshComponent* MeshComp, UAn
 	{
 		if (Player->bCanCombo && Player->bCanJumpToComboSection && Player->bContinueCombo)
 		{
+			UE_LOG(LogTemp, Warning, TEXT("Jump To Next Section"));
+
+			UAnimMontage* AnimMontage = Player->GetMesh()->GetAnimInstance()->GetCurrentActiveMontage();
+			UE_LOG(LogTemp, Warning, TEXT("CurrentActiveMontage: %s"), AnimMontage ? TEXT("TRUE") : TEXT("NULLPTR"));
 			Player->GetMesh()->GetAnimInstance()->Montage_JumpToSection(SectionName);
+			bContinueCombo = true;
 		}
 	}
 }
@@ -30,15 +35,20 @@ void URGX_ANS_JumpComboSection::NotifyEnd(USkeletalMeshComponent* MeshComp, UAni
 	ARGX_PlayerCharacter* Player = Cast<ARGX_PlayerCharacter>(MeshComp->GetOwner());
 	if (Player) 
 	{
+		UE_LOG(LogTemp, Warning, TEXT("Notify End"));
 		// If player does not continue the combo, reset the state.
-		if(Player->bContinueCombo == false)
+		if(bContinueCombo == false)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Combo Interrupted"));
 			Player->OnInterrupted();
+		}
 
 		// Reset flags.
 		Player->bCanCombo = false;
 		Player->bCanJumpToComboSection = false;
 		Player->bContinueCombo = false;
 		Player->JumpComboNotifyState = nullptr;
-
 	}
+
+	bContinueCombo = false;
 }
