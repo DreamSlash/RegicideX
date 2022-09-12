@@ -480,6 +480,7 @@ void ARGX_PlayerCharacter::ChangeTimeScale()
 
 void ARGX_PlayerCharacter::OnInterrupted()
 {
+	bCanJumpToComboSection = false;
 	ComboSystemComponent->OnEndCombo();
 	InputHandlerComponent->ResetAirState();
 	InputHandlerComponent->ResetInputState();

@@ -38,7 +38,7 @@ float ARGX_CharacterBase::GetHealth() const
 {
 	if (!AttributeSet)
 		return 1.0f;
-	return AttributeSet->GetHealth();;
+	return AttributeSet->GetHealth();
 }
 
 float ARGX_CharacterBase::GetMaxHealth() const
