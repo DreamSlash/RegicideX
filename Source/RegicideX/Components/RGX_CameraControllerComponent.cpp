@@ -53,7 +53,7 @@ void URGX_CameraControllerComponent::TickComponent(float DeltaTime, ELevelTick T
 	//if (GEngine)
 		//GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Target Arm Length: %f"), SpringArm->TargetArmLength));
 
-	DrawDebugSphere(GetWorld(), OwnerPawn->GetActorLocation(), CombatRadius, 16, FColor::Red, false, DeltaTime);
+	//DrawDebugSphere(GetWorld(), OwnerPawn->GetActorLocation(), CombatRadius, 16, FColor::Red, false, DeltaTime);
 }
 
 void URGX_CameraControllerComponent::CalculateSpringArmDistance(const TArray<AActor*>& Targets, float DeltaTime)
