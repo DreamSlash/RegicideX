@@ -167,6 +167,5 @@ public:
 
 	/** RX_GameplayTagInterface methods */
 	virtual void AddGameplayTag(const FGameplayTag& TagToAdd) override;
-
-	virtual void RemoveGameplayTag(const FGameplayTag& TagToRemove) override;
+	virtual void RemoveGameplayTag(const FGameplayTag& TagToRemove, bool bCleanAll = false) override;
 };

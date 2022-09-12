@@ -21,5 +21,8 @@ public:
 	static void ApplyGameplayEffectContextContainerToActor(const ARGX_CharacterBase* CharacterBase, TSubclassOf<UGameplayEffect> EffectToApply, URGX_RGXEventDataAsset* Payload);
 
 	UFUNCTION(BlueprintCallable, Category = Character)
-	static void LaunchCharacterToLocation(ARGX_CharacterBase* CharacterBase, const FVector& TargetLocation);
+	static void LaunchCharacterToLocation(ARGX_CharacterBase* CharacterBase, const FVector& TargetLocation, float GravityScaleMultiplier, float LaunchAngle);
+
+	UFUNCTION(BlueprintCallable, Category = Character)
+	static bool ConeCheck(ARGX_CharacterBase* OriginCharacter, AActor* DestinationActor, float DotThreshold, bool bIgnoreZAxis);
 };

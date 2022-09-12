@@ -6,6 +6,7 @@
 #include "RegicideX/Actors/Enemies/RGX_MeleeAngel.h"
 #include "RegicideX/Actors/RGX_CharacterBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "RegicideX/RGX_BlueprintLibrary.h"
 
 bool URGX_DivineDescent::CanActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayTagContainer* SourceTags, const FGameplayTagContainer* TargetTags, OUT FGameplayTagContainer* OptionalRelevantTags) const
 {
@@ -28,6 +29,7 @@ void URGX_DivineDescent::EndAbility(const FGameplayAbilitySpecHandle Handle, con
 	ARGX_CharacterBase* Character = Cast<ARGX_CharacterBase>(GetAvatarActorFromActorInfo());
 	if (Character)
 	{
+		Character->bCanRotate = true;
 		Character->GetCharacterMovement()->GravityScale = 3.0f;
 	}
 
@@ -49,20 +51,30 @@ void URGX_DivineDescent::Tick(float DeltaTime)
 
 	FVector NewLocation = FVector::ZeroVector;
 
-	TargetLocation = owner->DivineDescentTargetLocation;
+	//TargetLocation = owner->DivineDescentTargetLocation;
+	FVector ToTarget = TargetLocation - StartLocation;
+	ToTarget.Normalize();
+
+	TargetLocation = owner->TargetActor->GetActorLocation();
+	TargetLocation -= ToTarget * 150.0f; // offset to make the angel fall nearby the player and not into the player itself, causing buggy collisions
 	StartLocation = owner->GetActorLocation();
 
-	FVector Direction = TargetLocation - StartLocation;
-	Direction.Normalize();
-	NewLocation = StartLocation + Direction * Speed * DeltaTime;
+	owner->RotateToTarget(DeltaTime);
+
+	FVector MyForward = owner->GetActorForwardVector();
+	MyForward.Z = ToTarget.Z;
+	MyForward.Normalize();
+
+	NewLocation = StartLocation + MyForward * Speed * DeltaTime;
+
+	const bool ConeCheck = URGX_BlueprintLibrary::ConeCheck(owner, owner->TargetActor, 0.7f, true);
 
 	// If we passed the z position of the target, clamp to target height and run the next section
-	if (NewLocation.Z <= TargetLocation.Z)
+	if (NewLocation.Z <= TargetLocation.Z || ConeCheck == false)
 	{
 		NewLocation.Z = TargetLocation.Z;
 		owner->SetActorLocation(NewLocation);
 		MontageJumpToSection(FName("Fall Section"));
-		UE_LOG(LogTemp, Warning, TEXT("CHAAAAAAAAAAAAARGE!"));
 		owner->bCharging = false;
 	}
 	else

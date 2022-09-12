@@ -44,8 +44,6 @@ ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 540.0f, 0.0f);
 	GetCharacterMovement()->JumpZVelocity = 600.0f;
 	GetCharacterMovement()->AirControl = 0.2f;
-	GetCharacterMovement()->GravityScale = DefaultGravity;
-	GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
 
 	// Create a camera boom (pulls in towards the player if there is a collision)
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -227,8 +225,11 @@ void ARGX_PlayerCharacter::ManageHeavyAttackInputRelease()
 
 void ARGX_PlayerCharacter::ManageJumpInput()
 {
-	Jump();
-	OnJump();
+	if (HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("Ability.Melee")) == false)
+	{
+		Jump();
+		OnJump();
+	}
 }
 
 void ARGX_PlayerCharacter::ManageJumpInputReleased()
@@ -477,38 +478,9 @@ void ARGX_PlayerCharacter::ChangeTimeScale()
 	}
 }
 
-void ARGX_PlayerCharacter::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
-{
-	AbilitySystemComponent->GetOwnedGameplayTags(TagContainer);
-}
-
-bool ARGX_PlayerCharacter::HasMatchingGameplayTag(FGameplayTag TagToCheck) const
-{
-	return AbilitySystemComponent->HasMatchingGameplayTag(TagToCheck);
-}
-
-bool ARGX_PlayerCharacter::HasAllMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const
-{
-	return AbilitySystemComponent->HasAllMatchingGameplayTags(TagContainer);
-}
-
-bool ARGX_PlayerCharacter::HasAnyMatchingGameplayTags(const FGameplayTagContainer& TagContainer) const
-{
-	return AbilitySystemComponent->HasAnyMatchingGameplayTags(TagContainer);
-}
-
-void ARGX_PlayerCharacter::AddGameplayTag(const FGameplayTag& TagToAdd)
-{
-	AbilitySystemComponent->AddLooseGameplayTag(TagToAdd);
-}
-
-void ARGX_PlayerCharacter::RemoveGameplayTag(const FGameplayTag& TagToRemove)
-{
-	AbilitySystemComponent->RemoveLooseGameplayTag(TagToRemove);
-}
-
 void ARGX_PlayerCharacter::OnInterrupted()
 {
+	bCanJumpToComboSection = false;
 	ComboSystemComponent->OnEndCombo();
 	InputHandlerComponent->ResetAirState();
 	InputHandlerComponent->ResetInputState();
@@ -517,6 +489,9 @@ void ARGX_PlayerCharacter::OnInterrupted()
 void ARGX_PlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GetCharacterMovement()->GravityScale = DefaultGravity;
+	GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
 
 	AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
 
@@ -684,15 +659,19 @@ void ARGX_PlayerCharacter::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
 
-	ECollisionChannel CollisionChannel = Hit.GetComponent()->GetCollisionObjectType();
-	if (CollisionChannel == ECollisionChannel::ECC_WorldStatic)
+	UPrimitiveComponent* PrimitiveComponent = Hit.GetComponent();
+	if (PrimitiveComponent)
 	{
-		InputHandlerComponent->ResetAirState();
+		ECollisionChannel CollisionChannel = PrimitiveComponent->GetCollisionObjectType();
+		if (CollisionChannel == ECollisionChannel::ECC_WorldStatic)
+		{
+			InputHandlerComponent->ResetAirState();
 
-		AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
-		RemoveGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.HasAirDashed")));
-		bCanAirCombo = true;
-		bIsFallingDown = false;
+			AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
+			RemoveGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.HasAirDashed")));
+			bCanAirCombo = true;
+			bIsFallingDown = false;
+		}
 	}
 }
 

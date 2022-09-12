@@ -38,7 +38,7 @@ float ARGX_CharacterBase::GetHealth() const
 {
 	if (!AttributeSet)
 		return 1.0f;
-	return AttributeSet->GetHealth();;
+	return AttributeSet->GetHealth();
 }
 
 float ARGX_CharacterBase::GetMaxHealth() const
@@ -259,7 +259,15 @@ void ARGX_CharacterBase::AddGameplayTag(const FGameplayTag& TagToAdd)
 	AbilitySystemComponent->AddLooseGameplayTag(TagToAdd);
 }
 
-void ARGX_CharacterBase::RemoveGameplayTag(const FGameplayTag& TagToRemove)
+void ARGX_CharacterBase::RemoveGameplayTag(const FGameplayTag& TagToRemove, bool bCleanAll)
 {
-	AbilitySystemComponent->RemoveLooseGameplayTag(TagToRemove);
+	if (bCleanAll)
+	{
+		const int32 TagCount = AbilitySystemComponent->GetTagCount(TagToRemove);
+		AbilitySystemComponent->RemoveLooseGameplayTag(TagToRemove, TagCount);
+	}
+	else
+	{
+		AbilitySystemComponent->RemoveLooseGameplayTag(TagToRemove);
+	}
 }

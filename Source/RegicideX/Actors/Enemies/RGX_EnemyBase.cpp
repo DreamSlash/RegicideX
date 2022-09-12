@@ -182,7 +182,19 @@ void ARGX_EnemyBase::Tick(float DeltaTime)
 
 	if (TargetActor)
 	{
-		if (bCanRotate && bDefaultFocusPlayer)
+		/*if (bHasLostSightOfPlayer)
+		{
+			UWorld* World = GetWorld();
+			if (World)
+			{
+				const float CurrentTime = World->GetTimeSeconds();
+				if (CurrentTime - TimeLostSight > TimeBeforeTurningInPlace && bCanRotate && bDefaultFocusPlayer)
+				{
+					RotateToTarget(DeltaTime);
+				}
+			}
+		}
+		else */if (bCanRotate && bDefaultFocusPlayer)
 		{
 			RotateToTarget(DeltaTime);
 		}
@@ -197,6 +209,39 @@ void ARGX_EnemyBase::Tick(float DeltaTime)
 		{
 			HealthDisplayWidgetComponent->SetVisibility(true);
 		}
+
+		//CheckIfHasLostSightOfPlayer();
+	}
+}
+
+void ARGX_EnemyBase::CheckIfHasLostSightOfPlayer()
+{
+	const FVector MyForward = GetActorForwardVector();
+	const FVector VectorToTarget = TargetActor->GetActorLocation() - GetActorLocation();
+	const float Dot = FVector::DotProduct(MyForward, VectorToTarget);
+
+	if (bHasLostSightOfPlayer == false)
+	{
+		if (TurnInPlaceCos > Dot)
+		{
+			UWorld* World = GetWorld();
+			if (World)
+			{
+				UE_LOG(LogTemp, Warning, TEXT("Has Lost Sight"));
+				TimeLostSight = World->GetTimeSeconds();
+				GetCharacterMovement()->MaxWalkSpeed = 0.0f;
+				bHasLostSightOfPlayer = true;
+			}
+		}
+	}
+	else
+	{
+		if (RegainSightCos < Dot)
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Has Regained Sight"));
+			GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
+			bHasLostSightOfPlayer = false;
+		}
 	}
 }
 
@@ -210,6 +255,7 @@ void ARGX_EnemyBase::HandleDamage(
 {
 	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser, HitReactFlag);
 
+	StopAnimMontage();
 	if (IsAlive())
 	{
 		// Play reaction hit animation.
@@ -217,41 +263,36 @@ void ARGX_EnemyBase::HandleDamage(
 		{
 			UAnimMontage* AnimToPlay = nullptr;
 			const FAnimationArray AnimationList = *AnimMontageMap.Find(ERGX_AnimEvent::AirHitReact);
-			if (AnimationList.Animations.Num() > 1)
+			if (AnimationList.Animations.Num() > 0)
 			{
 				int32 Index = UKismetMathLibrary::RandomIntegerInRange(0, AnimationList.Animations.Num() - 1);
 				AnimToPlay = AnimationList.Animations[Index];
 			}
 			else
 			{
-				AnimToPlay = AnimationList.Animations[0];
+				UE_LOG(LogTemp, Error, TEXT("Not animations assigned"));
+				return;
 			}
+			UE_LOG(LogTemp, Warning, TEXT("Air Hit react"));
 			PlayAnimMontage(AnimToPlay);
 		}
 		else
 		{
-			CheckIfWeak(DamageAmount);
-			if (IsWeak())
-			{
-				StopAnimMontage();
-			}
-			else
+			if(HitReactFlag == ERGX_AnimEvent::BasicHitReact)
+				CheckIfWeak(DamageAmount);
+
+			if (IsWeak() == false )
 			{
 				const FAnimationArray AnimationList = *AnimMontageMap.Find(HitReactFlag);
 				UAnimMontage* AnimToPlay = nullptr;
-				if (AnimationList.Animations.Num() > 1)
+				if (AnimationList.Animations.Num() > 0)
 				{
 					int32 Index = UKismetMathLibrary::RandomIntegerInRange(0, AnimationList.Animations.Num() - 1);
 					AnimToPlay = AnimationList.Animations[Index];
 				}
 				else
 				{
-					AnimToPlay = AnimationList.Animations[0];
-				}
-
-				if (AnimToPlay == nullptr)
-				{
-					UE_LOG(LogTemp, Error, TEXT("No AnimToPlay found!"));
+					UE_LOG(LogTemp, Error, TEXT("Not animations assigned"));
 					return;
 				}
 
@@ -264,19 +305,19 @@ void ARGX_EnemyBase::HandleDamage(
 		// If damage killed the actor, we should kill its AI Logic and clean weak status as it is already dead.
 		bWeak = false;
 		RemoveGameplayTag(FGameplayTag::RequestGameplayTag("Status.Enemy.Weakened"));
-		StopAnimMontage(); // If dead, make sure nothing is executing in order to execute death animation from AnimBP.
 		StopLogic("Character Dead");
 		HealthDisplayWidgetComponent->SetVisibility(false);
 		UAnimMontage* AnimToPlay = nullptr;
 		const FAnimationArray AnimationList = *AnimMontageMap.Find(ERGX_AnimEvent::Death);
-		if (AnimationList.Animations.Num() > 1)
+		if (AnimationList.Animations.Num() > 0)
 		{
 			int32 Index = UKismetMathLibrary::RandomIntegerInRange(0, AnimationList.Animations.Num() - 1);
 			AnimToPlay = AnimationList.Animations[Index];
 		}
 		else
 		{
-			AnimToPlay = AnimationList.Animations[0];
+			UE_LOG(LogTemp, Error, TEXT("Not animations assigned"));
+			return;
 		}
 		PlayAnimMontage(AnimToPlay);
 	}

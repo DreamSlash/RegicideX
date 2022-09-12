@@ -22,7 +22,6 @@ void URGX_GA_DistanceAngelDeath::ActivateAbility(const FGameplayAbilitySpecHandl
 		DistAngel->LaserBeamRef->Destroy();
 	}
 
-	DistAngel->Ring_1_Mesh->SetSimulatePhysics(true);
 	DistAngel->Ring_2_Mesh->SetSimulatePhysics(true);
 	DistAngel->PrimaryActorTick.bCanEverTick = false;
 

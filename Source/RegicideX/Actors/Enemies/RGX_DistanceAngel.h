@@ -31,9 +31,6 @@ public:
 	ARGX_DistanceAngel();
 
 	UPROPERTY(EditAnywhere)
-	UStaticMeshComponent* Ring_1_Mesh = nullptr;
-
-	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* Ring_2_Mesh = nullptr;
 
 	UPROPERTY(EditAnywhere)
@@ -47,9 +44,6 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* LaserEndPointMesh = nullptr;
-
-	UPROPERTY(EditAnywhere)
-	UStaticMeshComponent* ForceFieldOutSphere = nullptr;
 
 	UPROPERTY(EditAnywhere)
 	USphereComponent* SphereCollider = nullptr;
@@ -87,6 +81,8 @@ public:
 	/* Effects the projectile applies when hitting a target */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<FRGX_EffectContextContainer> ForceFieldEffectsToApply;
+
+	float ForceFieldMaxSize = 10.0f;
 
 	AActor* LaserBeamRef = nullptr;
 

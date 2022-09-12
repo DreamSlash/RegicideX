@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
+
 #include "RGX_LaserBeamWeapon.h"
 #include "AbilitySystemGlobals.h"
 #include "AbilitySystemComponent.h"
@@ -29,6 +30,7 @@ void ARGX_LaserBeamWeapon::BeginPlay()
 	Super::BeginPlay();
 
 	OwnerActor = GetOwner();
+	ComputeRayGoal();
 }
 
 void ARGX_LaserBeamWeapon::CheckRayTraces(FVector& NewLocation, float DeltaTime)
@@ -52,13 +54,25 @@ void ARGX_LaserBeamWeapon::CheckRayTraces(FVector& NewLocation, float DeltaTime)
 
 	if (GetWorld()->LineTraceSingleByChannel(FrontRayTraceResult, FrontRaySrc, FrontRayEndPoint, ECollisionChannel::ECC_WorldStatic))
 	{
-		AActor* Actor = FrontRayTraceResult.GetActor();
-		if (bHittingTarget == false && Actor == TargetActor) {
+		AActor* Actor = FrontRayTraceResult.GetActor(); 
+		if (bDamageApplied == false && Actor == TargetActor) {
 			//If actor hitting target, apply damage effect
-			bHittingTarget = true;
-			FTimerHandle Timerhandle;
-			GetWorld()->GetTimerManager().SetTimer(Timerhandle, [this]() {this->bHittingTarget = false; }, ForgetTime, false);
-			ApplyEffect(Actor);
+			ApplyEffect(TargetActor);
+			bDamageApplied = true;
+			/*GetWorld()->GetTimerManager().SetTimer(
+				EffectApplyTimerhandle, 
+				[this]() { this->ApplyEffect(this->TargetActor); },
+				0.5,
+				true
+			);*/
+			/*FTimerHandle Timerhandle;
+			GetWorld()->GetTimerManager().SetTimer(
+				Timerhandle, 
+				[this]() {this->bHittingTarget = false; GetWorld()->GetTimerManager().ClearTimer(EffectApplyTimerhandle); 
+				EndPointMesh->SetWorldLocation(OwnerActor->GetActorLocation() + OwnerActor->GetActorForwardVector() * 200.0f); },
+				ForgetTime, 
+				false
+			);*/
 		}
 	}
 
@@ -75,14 +89,19 @@ void ARGX_LaserBeamWeapon::CheckRayTraces(FVector& NewLocation, float DeltaTime)
 
 void ARGX_LaserBeamWeapon::CheckDistance()
 {
-	GoalPoint = TargetActor->GetActorLocation();
-
+	
 	const FVector MyLocation = EndPointMesh->K2_GetComponentLocation();
 
 	if (FollowTarget && FVector::Distance(MyLocation, GoalPoint) <= ForgetDistance) {
-		FollowTarget = false;
+		bHittingTarget = true;
+		/*FollowTarget = false;
 		FTimerHandle Timerhandle;
-		GetWorld()->GetTimerManager().SetTimer(Timerhandle, [this]() {this->FollowTarget = true; }, ForgetTime, false);
+		GetWorld()->GetTimerManager().SetTimer(
+			Timerhandle, 
+			[this]() {this->FollowTarget = true;},
+			ForgetTime, 
+			false
+		);*/
 	}
 }
 
@@ -101,18 +120,29 @@ void ARGX_LaserBeamWeapon::ComputeNewEndpoint(float DeltaTime)
 	const FVector MyForward = EndPointMesh->GetForwardVector();
 	FVector NewLocation = MyLocation + MyForward * RaySpeed * SpeedMult * DeltaTime;
 
-	CheckRayTraces(NewLocation, DeltaTime);
-
+	if (!bHittingTarget) 
+	{
+		CheckRayTraces(NewLocation, DeltaTime);
+	}
+	else 
+	{
+		NewLocation = GoalPoint;
+	}
+		
 	EndPointMesh->SetWorldLocation(NewLocation);
 }
 
 
 void ARGX_LaserBeamWeapon::MoveAndDrawRay(float DeltaTime)
 {
+	RaySpeed += DeltaTime * RaySpeedMultiplier;
+
 	CheckDistance();
 	ComputeNewEndpoint(DeltaTime);
 
 	const FVector EndPoint = EndPointMesh->K2_GetComponentLocation();
+
+	FVector PathIncrement = EndPoint - SourcePoint; PathIncrement /= ParticlesNumber;
 
 	PathSplineComponent->ClearSplinePoints(true);
 
@@ -131,7 +161,17 @@ void ARGX_LaserBeamWeapon::MoveAndDrawRay(float DeltaTime)
 	const FVector StartTangent = PathSplineComponent->GetTangentAtSplinePoint(0, ESplineCoordinateSpace::World);
 	const FVector EndTangent = PathSplineComponent->GetTangentAtSplinePoint(1, ESplineCoordinateSpace::World);
 
-	PathSplineMeshes[0]->SetStartAndEnd(SourcePoint, StartTangent, EndPoint, EndTangent);
+	//PathSplineMeshes[0]->SetStartAndEnd(SourcePoint, StartTangent, EndPoint, EndTangent);
+
+	FVector ParticleLocation = SourcePoint;
+	for (AActor* ParticleActor : RayParticlesActor) {
+
+		if (ParticleActor == nullptr)
+			continue;
+
+		ParticleLocation += PathIncrement;
+		ParticleActor->SetActorLocation(ParticleLocation);
+	}
 }
 
 void ARGX_LaserBeamWeapon::SetSourcePoint(FVector SP)
@@ -142,7 +182,8 @@ void ARGX_LaserBeamWeapon::SetSourcePoint(FVector SP)
 
 void ARGX_LaserBeamWeapon::ComputeRayGoal()
 {
-	
+	GoalPoint = TargetActor->GetActorLocation() + OwnerActor->GetActorForwardVector() * GoalDistance;
+	UKismetSystemLibrary::DrawDebugPoint(GetWorld(), GoalPoint, 22, FColor(255, 0, 255), 10.0f);
 }
 
 void ARGX_LaserBeamWeapon::SetOwnerActor(AActor* OA)

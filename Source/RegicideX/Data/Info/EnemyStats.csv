@@ -7,9 +7,9 @@ PeasantSuicidal_MaxHealth,100,200,300
 PeasantSuicidal_AttackPower,1,1,1
 PeasantMole_MaxHealth,1000,2000,3000
 PeasantMole_AttackPower,30,60,90
-AngelMelee_MaxHealth,6000,12000,18000
+AngelMelee_MaxHealth,3000,12000,18000
 AngelMelee_AttackPower,50,100,150
-AngelDistance_MaxHealth,3200,6400,9600
+AngelDistance_MaxHealth,1600,6400,9600
 AngelDistance_AttackPower,30,60,90
-AngelMage_MaxHealth,1800,3600,5400
+AngelMage_MaxHealth,1200,3600,5400
 AngelMage_AttackPower,50,100,150

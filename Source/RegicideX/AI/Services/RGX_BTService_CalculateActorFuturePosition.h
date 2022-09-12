@@ -17,6 +17,9 @@ public:
 	void InitializeFromAsset(UBehaviorTree& Asset) override;
 
 protected:
+	UPROPERTY(EditAnywhere)
+		float MaxReachTime = 1.0f;
+
 	UPROPERTY(EditAnywhere, Category = Blackboard)
 	struct FBlackboardKeySelector TargetKey;
 
