@@ -15,10 +15,10 @@ class REGICIDEX_API URGX_GameInstance : public UGameInstance
 	GENERATED_BODY()
 	
 public:
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	virtual void BeginLoadingScreen(const FString& MapName);
 
-	UFUNCTION()
+	UFUNCTION(BlueprintCallable)
 	virtual void EndLoadingScreen(UWorld* InLoadedWorld);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Loading Screen")
