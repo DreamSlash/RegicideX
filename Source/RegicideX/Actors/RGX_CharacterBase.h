@@ -57,6 +57,8 @@ public:
 		URGX_LaunchEventDataAsset* LaunchPayload,
 		float LaunchDelay = 0.2f);
 
+	virtual void OnHitboxHit(UGameplayAbility* MeleeAbility, FGameplayEventData EventData, TSubclassOf<class UCameraShakeBase> CameraShakeClass);
+
 public:
 	/** If vertical forces can be applied to the actor or not */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)

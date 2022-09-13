@@ -3,6 +3,7 @@
 #include "Components/MCV_AbilitySystemComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameplayAbilitySpec.h"
+#include "Camera/CameraShakeBase.h"
 
 ARGX_CharacterBase::ARGX_CharacterBase()
 {
@@ -107,6 +108,10 @@ void ARGX_CharacterBase::OnBeingLaunched(
 	LaunchCharacter(LaunchForce, bOverrideXY, bOverrideZ);
 
 	// TODO: If the character is in air maybe it is mandatory to apply a minimum Z force due to an Unreal bug
+}
+
+void ARGX_CharacterBase::OnHitboxHit(UGameplayAbility* MeleeAbility, FGameplayEventData EventData, TSubclassOf<UCameraShakeBase> CameraShakeClass)
+{
 }
 
 void ARGX_CharacterBase::HandleDamage(

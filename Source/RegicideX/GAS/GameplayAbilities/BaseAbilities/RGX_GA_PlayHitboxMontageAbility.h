@@ -71,4 +71,7 @@ protected:
 	// A map of a tag that should trigger a gameplay effect with assigned payload to ability owner.
 	UPROPERTY(EditDefaultsOnly)
 	TMap<FGameplayTag, FRGX_EffectContextContainer> EffectToApplyToOwnerWithPayload;
+
+	UPROPERTY(EditDefaultsOnly)
+	TMap<FGameplayTag, TSubclassOf<class UCameraShakeBase>> EffectCameraShakes;
 };

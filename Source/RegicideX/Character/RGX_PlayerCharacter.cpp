@@ -13,7 +13,7 @@
 #include "RegicideX/Components/RGX_HitboxComponent.h"
 #include "RegicideX/Components/RGX_InputHandlerComponent.h"
 #include "RegicideX/Components/RGX_InteractComponent.h"
-#include "RegicideX/GameplayFramework/RGX_PlayerState.h" // TODO: write path to project settings
+#include "RegicideX/GameplayFramework/RGX_PlayerState.h"
 #include "RegicideX/GAS/AttributeSets/RGX_MovementAttributeSet.h"
 #include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RegicideX/Notifies/RGX_ANS_JumpComboSection.h"
@@ -24,6 +24,8 @@
 #include "RegicideX/GAS/RGX_GameplayEffectContext.h"
 #include "AbilitySystemGlobals.h"
 #include "Components/WidgetComponent.h"
+#include "RegicideX/GAS/GameplayAbilities/Common/RGX_GA_MeleeAttackAbility.h"
+#include "Camera/CameraShakeBase.h"
 
 ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 {
@@ -329,6 +331,25 @@ void ARGX_PlayerCharacter::HandleAction(const ERGX_PlayerActions Action)
 	default:
 		//UE_LOG(LogTemp, Warning, TEXT("Manuela\n"));
 		break;
+	}
+}
+
+void ARGX_PlayerCharacter::OnHitboxHit(UGameplayAbility* GameplayAbility, FGameplayEventData EventData, TSubclassOf<UCameraShakeBase> CameraShakeClass)
+{
+	URGX_MeleeAttackAbility* MeleeAbility = Cast<URGX_MeleeAttackAbility>(GameplayAbility);
+	if (MeleeAbility)
+	{
+		UWorld* World = GetWorld();
+		if (World)
+		{
+			APlayerCameraManager* CameraManager = UGameplayStatics::GetPlayerCameraManager(GetWorld(), 0);
+			if (CameraManager)
+			{
+				CameraManager->StartCameraShake(CameraShakeClass);
+			}
+
+			UE_LOG(LogTemp, Warning, TEXT("OnHitboxHit"));
+		}
 	}
 }
 
