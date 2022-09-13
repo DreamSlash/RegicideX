@@ -30,7 +30,7 @@ void URGX_DashAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 		}
 
 		Character->GetCharacterMovement()->GravityScale = 0.0f;
-		Character->GetCharacterMovement()->MaxWalkSpeed = 0.0f;
+		//Character->GetCharacterMovement()->MaxWalkSpeed = 0.0f;
 		Character->DisableMovementInput();
 
 		UCapsuleComponent* CapsuleComponent = Character->GetCapsuleComponent();
@@ -60,7 +60,7 @@ void URGX_DashAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const
 	ARGX_PlayerCharacter* Character = Cast<ARGX_PlayerCharacter>(ActorInfo->AvatarActor);
 	if (Character)
 	{
-		Character->GetCharacterMovement()->MaxWalkSpeed = 800.0f;
+		//Character->GetCharacterMovement()->MaxWalkSpeed = 800.0f;
 		Character->GetCharacterMovement()->GravityScale = Character->DefaultGravity;
 		Character->EnableMovementInput();
 

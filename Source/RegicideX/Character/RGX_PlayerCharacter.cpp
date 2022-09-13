@@ -543,16 +543,8 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 		InputHandlerComponent->ResetInputState();
 	}
 
-	/*
-	if (bStaggered == true)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Staggered: TRUE\n"));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Staggered: FALSE\n"));
-	}
-	*/
+	//UE_LOG(LogTemp, Warning, TEXT("bIgnoreInputMoveVector: %s"), bIgnoreInputMoveVector ? TEXT("TRUE") : TEXT("FALSE"));
+
 	// Leaning
 	const FRGX_LeanInfo LeanInfo = CalculateLeanAmount();
 	LeanAmount = UKismetMathLibrary::FInterpTo(LeanAmount, LeanInfo.LeanAmount, DeltaTime, LeanInfo.InterSpeed);

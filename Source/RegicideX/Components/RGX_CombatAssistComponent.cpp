@@ -25,6 +25,11 @@ void URGX_CombatAssistComponent::TickComponent(float DeltaTime, ELevelTick TickT
 
 	NumEnemiesInsideFrustum = 0;
 
+	//UE_LOG(LogTemp, Warning, TEXT("MoveVectorSpeed = %f"), MoveVectorSpeed);
+	//UE_LOG(LogTemp, Warning, TEXT("bMoveVectorEnabled = %s"), bMoveVectorEnabled ? TEXT("TRUE") : TEXT("FALSE"));
+	//UE_LOG(LogTemp, Warning, TEXT("bAddMoveVector = %s"), bAddMoveVector ? TEXT("TRUE") : TEXT("FALSE"));
+	//UE_LOG(LogTemp, Warning, TEXT("bIsAttacking = %s"), bIsAttacking ? TEXT("TRUE") : TEXT("FALSE"));
+
 	// Extra movement vector (from animation attacks, etc...)
 	if (bMoveVectorEnabled && bAddMoveVector && bIsAttacking == true)
 	{
@@ -71,7 +76,7 @@ void URGX_CombatAssistComponent::TickComponent(float DeltaTime, ELevelTick TickT
 			Owner->SetActorLocation(NewLocation, true);
 		}
 	}
-	else if (bMoveVectorEnabled && bAddMoveVector &&bIsAttacking == false)
+	else if (bMoveVectorEnabled && bAddMoveVector && bIsAttacking == false)
 	{
 		AActor* Owner = GetOwner();
 		FVector FinalVelocity = MoveVectorDirection * MoveVectorSpeed;
