@@ -43,6 +43,7 @@ void URGX_MeleeAttackAbility::EndAbility(const FGameplayAbilitySpecHandle Handle
 	if (CombatAssistComponent)
 	{
 		CombatAssistComponent->RemoveMovementVector();
+		CombatAssistComponent->DisableMovementVector();
 	}
 
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);

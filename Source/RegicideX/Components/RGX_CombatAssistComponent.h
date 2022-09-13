@@ -92,7 +92,7 @@ protected:
 
 	// --------------------------
 
-	/** Auto Assit Attack */
+	/** Auto Assist Attack */
 	UPROPERTY(EditAnywhere)
 	float AutoAssistDot = 0.5f;
 
@@ -124,5 +124,4 @@ protected:
 	float AttackMoveDurationLeft = 0.0f;
 
 	uint32 NumEnemiesInsideFrustum = 0;
-
 };
