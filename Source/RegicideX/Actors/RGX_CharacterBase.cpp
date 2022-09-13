@@ -37,9 +37,10 @@ UAbilitySystemComponent* ARGX_CharacterBase::GetAbilitySystemComponent() const
 
 float ARGX_CharacterBase::GetHealth() const
 {
-	if (!AttributeSet)
+	const URGX_AttributeSet* attrSet = GetAbilitySystemComponent()->GetSet<URGX_AttributeSet>();
+	if (!attrSet)
 		return 1.0f;
-	return AttributeSet->GetHealth();
+	return attrSet->GetHealth();
 }
 
 float ARGX_CharacterBase::GetMaxHealth() const
