@@ -76,6 +76,10 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	bool bCanRotate = true;
 
+	/** Vector in the direction the actor has to react when receiving damage*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FVector HitReactDirection = FVector(0.0f);
+
 protected:
 	/** The level of this character, should not be modified directly once it has already spawned */
 	UPROPERTY(EditAnywhere, Category = Abilities)
