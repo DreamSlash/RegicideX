@@ -256,6 +256,7 @@ void URGX_HitboxComponent::SendCollisionEvents(AActor* OwnerActor, AActor* Other
 		FGameplayEventData* Payload = new FGameplayEventData();
 		Payload->Instigator = OwnerActor;
 		Payload->Target = OtherActor;
+		Payload->TargetTags.AddTag(FGameplayTag::RequestGameplayTag(FName("Hitbox")));
 
 		for (const FGameplayTag Tag : EffectTags)
 			OwnerAbilitySystemComponent->HandleGameplayEvent(Tag, Payload);

@@ -3,6 +3,7 @@
 #include "Components/MCV_AbilitySystemComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameplayAbilitySpec.h"
+#include "Camera/CameraShakeBase.h"
 
 ARGX_CharacterBase::ARGX_CharacterBase()
 {
@@ -38,7 +39,7 @@ float ARGX_CharacterBase::GetHealth() const
 {
 	if (!AttributeSet)
 		return 1.0f;
-	return AttributeSet->GetHealth();;
+	return AttributeSet->GetHealth();
 }
 
 float ARGX_CharacterBase::GetMaxHealth() const
@@ -107,6 +108,10 @@ void ARGX_CharacterBase::OnBeingLaunched(
 	LaunchCharacter(LaunchForce, bOverrideXY, bOverrideZ);
 
 	// TODO: If the character is in air maybe it is mandatory to apply a minimum Z force due to an Unreal bug
+}
+
+void ARGX_CharacterBase::OnHitboxHit(UGameplayAbility* MeleeAbility, FGameplayEventData EventData, TSubclassOf<UCameraShakeBase> CameraShakeClass)
+{
 }
 
 void ARGX_CharacterBase::HandleDamage(

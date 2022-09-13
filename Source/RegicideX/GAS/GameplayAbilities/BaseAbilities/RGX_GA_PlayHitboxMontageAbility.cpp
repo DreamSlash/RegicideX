@@ -9,6 +9,7 @@
 #include "RegicideX/Character/RGX_PlayerCharacter.h"
 #include "RegicideX/Components/RGX_HitboxComponent.h"
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
+#include "Camera/CameraShakeBase.h"
 
 URGX_PlayHitboxMontageAbility::URGX_PlayHitboxMontageAbility()
 {
@@ -105,7 +106,11 @@ void URGX_PlayHitboxMontageAbility::HandleReceivedEvent(FGameplayTag EventTag, F
 		OwnerACS->ApplyGameplayEffectSpecToSelf(*GESpec);
 		bWasHandled = true;
 	}
-	
+
+	TSubclassOf<UCameraShakeBase> CameraShake = EffectCameraShakes.Contains(EventTag) ? *EffectCameraShakes.Find(EventTag) : nullptr;
+	OwnerCharacter->OnHitboxHit(this, EventData, CameraShake);
+
+
 	// TODO: can this be called before child overrides?
 	OnHandleReceivedEvent(EventTag, EventData, bWasHandled);
 }
