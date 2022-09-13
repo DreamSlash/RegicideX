@@ -347,8 +347,6 @@ void ARGX_PlayerCharacter::OnHitboxHit(UGameplayAbility* GameplayAbility, FGamep
 			{
 				CameraManager->StartCameraShake(CameraShakeClass);
 			}
-
-			UE_LOG(LogTemp, Warning, TEXT("OnHitboxHit"));
 		}
 	}
 }

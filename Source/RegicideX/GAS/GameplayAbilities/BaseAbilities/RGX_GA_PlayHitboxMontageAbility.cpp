@@ -107,8 +107,9 @@ void URGX_PlayHitboxMontageAbility::HandleReceivedEvent(FGameplayTag EventTag, F
 		bWasHandled = true;
 	}
 
-	TSubclassOf<UCameraShakeBase> CameraShake = *EffectCameraShakes.Find(EventTag);
+	TSubclassOf<UCameraShakeBase> CameraShake = EffectCameraShakes.Contains(EventTag) ? *EffectCameraShakes.Find(EventTag) : nullptr;
 	OwnerCharacter->OnHitboxHit(this, EventData, CameraShake);
+
 
 	// TODO: can this be called before child overrides?
 	OnHandleReceivedEvent(EventTag, EventData, bWasHandled);
