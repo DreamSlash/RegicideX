@@ -35,7 +35,7 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void BP_OnPlayerWins();
 
-	UFUNCTION(BlueprintImplementableEvent)
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void BP_OnPlayerLoses();
 
 private:
