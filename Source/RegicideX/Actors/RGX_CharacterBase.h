@@ -17,6 +17,15 @@ class UMCV_AbilitySystemComponent; // TODO Change to RGX
 class URGX_GameplayAbility;
 class AActor;
 
+USTRUCT(BlueprintType)
+struct FAnimationArray
+{
+	GENERATED_BODY()
+
+		UPROPERTY(EditAnywhere)
+		TArray<UAnimMontage*> Animations;
+};
+
 /** Base Class for al characters in the game */
 UCLASS()
 class REGICIDEX_API ARGX_CharacterBase : public ACharacter, public IAbilitySystemInterface, public IGenericTeamAgentInterface, public IGameplayTagAssetInterface, public IRGX_GameplayTagInterface
@@ -67,6 +76,10 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	bool bCanRotate = true;
 
+	/** Vector in the direction the actor has to react when receiving damage*/
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FVector HitReactDirection = FVector(0.0f);
+
 protected:
 	/** The level of this character, should not be modified directly once it has already spawned */
 	UPROPERTY(EditAnywhere, Category = Abilities)
@@ -95,6 +108,9 @@ protected:
 	/** Check if abilities are initialized. */
 	UPROPERTY()
 	bool bAbilitiesInitialized = false;
+
+	UPROPERTY(EditDefaultsOnly)
+	TMap<ERGX_AnimEvent, FAnimationArray> AnimMontageMap;
 
 	/** Events called from attribute set changes to decouple the logic. They call BP events. */
 

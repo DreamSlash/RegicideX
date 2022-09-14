@@ -36,14 +36,18 @@ void URGX_MovementAssistComponent::TickComponent(float DeltaTime, ELevelTick Tic
 		return;
 
 	if (!CheckDistanceToGoalPoint()) return;
-	MoveForward(DeltaTime);
+	Move(DeltaTime);
 }
 
-void URGX_MovementAssistComponent::MoveForward(float DeltaTime)
+void URGX_MovementAssistComponent::SetDirection(const FVector NewDirection)
+{
+	Direction = NewDirection;
+}
+
+void URGX_MovementAssistComponent::Move(float DeltaTime)
 {
 	AActor* Owner = GetOwner();
-	const FVector FrontVector = Owner->GetActorForwardVector();
-	const FVector NewLocation = Owner->GetActorLocation() + FrontVector * DeltaTime * MovementSpeed;
+	const FVector NewLocation = Owner->GetActorLocation() + Direction * DeltaTime * MovementSpeed;
 	Owner->SetActorLocation(NewLocation, true);
 }
 
@@ -66,8 +70,11 @@ void URGX_MovementAssistComponent::SetMagnitudeAndSpeed(float Magnitude, float S
 
 	MovementSpeed = Speed;
 	AActor* Owner = GetOwner();
-	const FVector FrontVector = Owner->GetActorForwardVector();
-	GoalPoint = Owner->GetActorLocation() + FrontVector * ForwardMagnitude;
+	if (Owner == nullptr) return;
+
+	if(Direction == FVector(0.0f))
+		Direction = Owner->GetActorForwardVector();
+	GoalPoint = Owner->GetActorLocation() + Direction * ForwardMagnitude;
 }
 
 void URGX_MovementAssistComponent::DisableMovementAssist()

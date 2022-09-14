@@ -43,15 +43,6 @@ struct FAttackInfo {
 
 };
 
-USTRUCT(BlueprintType)
-struct FAnimationArray
-{
-	GENERATED_BODY()
-
-	UPROPERTY(EditAnywhere)
-	TArray<UAnimMontage*> Animations;
-};
-
 class USphereComponent;
 class UWidgetComponent;
 class URGX_HitboxesManagerComponent;
@@ -135,9 +126,6 @@ protected:
 	float RecentDamageSeconds = 2.0f;
 
 	float RecentDamage;
-
-	UPROPERTY(EditDefaultsOnly)
-	TMap<ERGX_AnimEvent, FAnimationArray> AnimMontageMap;
 
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<AActor> SoulParticleActor = nullptr;

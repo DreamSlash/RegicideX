@@ -16,14 +16,16 @@ public:
 	URGX_MovementAssistComponent();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float ForwardMagnitude = 0.0f; //Movement magnitude
+	float ForwardMagnitude = 0.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float MovementSpeed = 1.0f;
 
 private:
 
-	FVector GoalPoint;
+	FVector GoalPoint = FVector(0.0f);
+
+	FVector Direction = FVector(0.0f);
 
 	float DistanceToGoalPoint = 0.0f;
 
@@ -35,13 +37,16 @@ protected:
 
 	void EndPlay(EEndPlayReason::Type EndPlayReason) override;
 
-	void MoveForward(float DeltaTime);
+	void Move(float DeltaTime);
 
 	bool CheckDistanceToGoalPoint();
 
 public:	
 	// Called every frame
 	void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+
+	UFUNCTION(BlueprintCallable)
+	void SetDirection(const FVector NewDirection);
 
 	UFUNCTION(BlueprintCallable)
 	void SetMagnitudeAndSpeed(float Magnitude, float Speed);

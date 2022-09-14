@@ -584,6 +584,55 @@ void ARGX_PlayerCharacter::OnFollowCombo()
 	}
 }
 
+void ARGX_PlayerCharacter::HandleDamage(
+	float DamageAmount, 
+	const FHitResult& HitInfo, 
+	const FGameplayTagContainer& DamageTags, 
+	ARGX_CharacterBase* InstigatorCharacter, 
+	AActor* DamageCauser, 
+	ERGX_AnimEvent HitReactFlag)
+{
+	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser, HitReactFlag);
+
+	StopAnimMontage();
+
+	if (IsAlive())
+	{
+		const FAnimationArray AnimationList = *AnimMontageMap.Find(HitReactFlag);
+		UAnimMontage* AnimToPlay = nullptr;
+		if (AnimationList.Animations.Num() > 0)
+		{
+			int32 Index = UKismetMathLibrary::RandomIntegerInRange(0, AnimationList.Animations.Num() - 1);
+			AnimToPlay = AnimationList.Animations[Index];
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Not animations assigned"));
+			return;
+		}
+
+		PlayAnimMontage(AnimToPlay);
+	}
+	else
+	{
+		DisableInput(Cast<APlayerController>(GetController()));
+
+		UAnimMontage* AnimToPlay = nullptr;
+		const FAnimationArray AnimationList = *AnimMontageMap.Find(ERGX_AnimEvent::Death);
+		if (AnimationList.Animations.Num() > 0)
+		{
+			int32 Index = UKismetMathLibrary::RandomIntegerInRange(0, AnimationList.Animations.Num() - 1);
+			AnimToPlay = AnimationList.Animations[Index];
+		}
+		else
+		{
+			UE_LOG(LogTemp, Error, TEXT("Not animations assigned"));
+			return;
+		}
+		PlayAnimMontage(AnimToPlay);
+	}
+}
+
 void ARGX_PlayerCharacter::MoveForward(float Value)
 {
 	if (bStaggered)
