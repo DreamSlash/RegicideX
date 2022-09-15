@@ -38,11 +38,13 @@ void URGX_CombatAssistComponent::TickComponent(float DeltaTime, ELevelTick TickT
 			if (DistanceToTarget > AutoAssistOffsetToEnemy)
 			{
 				float MoveSpeed = MoveVectorSpeed + AutoAssistMove / AttackMoveDuration;
+				UE_LOG(LogTemp, Warning, TEXT("Assist Move Speed: %f"), MoveSpeed);
 				const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * MoveSpeed * DeltaTime;
 				Owner->SetActorLocation(NewLocation, true);
 			}
 			else if (DistanceToTarget > AttackOffsetToEnemy)
 			{
+				// TODO: Instead of calculating total move left, calculate speed and apply it only if it does not reach the minimum offset
 				const float TotalMoveLeft = AttackMoveDurationLeft * MoveVectorSpeed;
 				const float MaxMove = DistanceToTarget - AttackOffsetToEnemy;
 
