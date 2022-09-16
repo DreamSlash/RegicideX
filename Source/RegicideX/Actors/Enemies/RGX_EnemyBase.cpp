@@ -1,21 +1,22 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "RGX_EnemyBase.h"
+
 #include "AbilitySystemGlobals.h"
-#include "AIController.h"
 #include "Animation/AnimInstance.h"
 #include "BrainComponent.h"
 #include "Components/MCV_AbilitySystemComponent.h"
 #include "Components/SphereComponent.h"
 #include "Components/WidgetComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
+
+#include "RegicideX/AI/Controllers/RGX_EnemyBaseController.h"
 #include "RegicideX/GameplayFramework/RGX_RoundGameMode.h"
 #include "RegicideX/Components/RGX_HitboxesManagerComponent.h"
 #include "RegicideX/UI/RGX_EnemyHealthBar.h"
 #include "RegicideX/Components/RGX_InteractComponent.h"
-#include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
 ARGX_EnemyBase::ARGX_EnemyBase()
@@ -459,4 +460,23 @@ void ARGX_EnemyBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		//MyGameMode->OnEnemyDeath(0);
 	}
 	Super::EndPlay(EndPlayReason);
+}
+
+ERGX_EnemyAIState ARGX_EnemyBase::GetEnemyAIState() const
+{
+	if (ARGX_EnemyBaseController* controller = GetController<ARGX_EnemyBaseController>())
+	{
+		return controller->GetEnemyAIState();
+	}
+
+	return ERGX_EnemyAIState::None;
+}
+
+void ARGX_EnemyBase::SetEnemyAIState(ERGX_EnemyAIState state)
+{
+	ARGX_EnemyBaseController* controller = Cast<ARGX_EnemyBaseController>(GetController());
+	if (controller)
+	{
+		controller->SetEnemyAIState(state);
+	}
 }

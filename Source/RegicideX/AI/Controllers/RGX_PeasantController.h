@@ -1,14 +1,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AIController.h"
+#include "RegicideX/AI/Controllers/RGX_EnemyBaseController.h"
 #include "RGX_PeasantController.generated.h"
 
 class UBlackboardComponent;
 class UBehaviorTreeComponent;
 
 UCLASS()
-class REGICIDEX_API ARGX_PeasantController : public AAIController
+class REGICIDEX_API ARGX_PeasantController : public ARGX_EnemyBaseController
 {
 	GENERATED_BODY()
 public:

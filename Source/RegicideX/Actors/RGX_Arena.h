@@ -7,6 +7,8 @@
 #include "RegicideX/Data/RGX_EnemiesDataTable.h"
 #include "RGX_Arena.generated.h"
 
+class ARGX_CombatManager;
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FArenaActivatedSignature, class ARGX_Arena*, ArenaActivated);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FArenaDeactivatedSignature, ARGX_Arena*, ArenaDeactivated);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FArenaOnEnemyKilledSignature, class ARGX_EnemyBase*, EnemyKilled);
@@ -153,6 +155,9 @@ private:
 	TArray<URGX_OutgoingWave*> CurrentWaves;
 
 	float TimeBetweenWaves = 2.0f;
+
+	UPROPERTY()
+	TWeakObjectPtr<ARGX_CombatManager> CombatManager;
 
 public:
 	UFUNCTION(BlueprintCallable)

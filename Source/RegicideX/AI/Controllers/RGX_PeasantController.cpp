@@ -4,7 +4,8 @@
 #include "BehaviorTree/BehaviorTree.h"
 #include "BehaviorTree/BehaviorTreeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
-#include "RGX_Peasant.h"
+
+#include "RegicideX/Actors/Enemies/RGX_Peasant.h"
 
 ARGX_PeasantController::ARGX_PeasantController()
 {

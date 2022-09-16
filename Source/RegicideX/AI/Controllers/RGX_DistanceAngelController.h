@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AIController.h"
+#include "RegicideX/AI/Controllers/RGX_EnemyBaseController.h"
 #include "RGX_DistanceAngelController.generated.h"
 
 /**
@@ -22,7 +22,7 @@ enum class ERGX_DistAngelAttackMode : uint8
 };
 
 UCLASS()
-class REGICIDEX_API ARGX_DistanceAngelController : public AAIController
+class REGICIDEX_API ARGX_DistanceAngelController : public ARGX_EnemyBaseController
 {
 	GENERATED_BODY()
 public:

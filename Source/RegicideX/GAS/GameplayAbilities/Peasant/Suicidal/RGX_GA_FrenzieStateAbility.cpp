@@ -3,7 +3,7 @@
 
 #include "RegicideX/GAS/GameplayAbilities/Peasant/Suicidal/RGX_GA_FrenzieStateAbility.h"
 #include "RegicideX/Actors/Enemies/RGX_Peasant.h"
-#include "RegicideX/Actors/Enemies/RGX_PeasantController.h"
+#include "RegicideX/AI/Controllers/RGX_PeasantController.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/MeshComponent.h"
 #include "NiagaraComponent.h"
