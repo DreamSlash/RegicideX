@@ -474,7 +474,8 @@ ERGX_EnemyAIState ARGX_EnemyBase::GetEnemyAIState() const
 
 void ARGX_EnemyBase::SetEnemyAIState(ERGX_EnemyAIState state)
 {
-	ARGX_EnemyBaseController* controller = Cast<ARGX_EnemyBaseController>(GetController());
+	AController* c = GetController();
+	ARGX_EnemyBaseController* controller = Cast<ARGX_EnemyBaseController>(c);
 	if (controller)
 	{
 		controller->SetEnemyAIState(state);

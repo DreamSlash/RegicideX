@@ -8,21 +8,22 @@ ARGX_EnemyBaseController::ARGX_EnemyBaseController()
 	
 }
 
-void ARGX_EnemyBaseController::OnPossess(APawn* pawn)
+void ARGX_EnemyBaseController::DamageTaken()
 {
-	Super::OnPossess(pawn);
-}
-
-bool ARGX_EnemyBaseController::InitializeBlackboard(UBlackboardComponent& BlackboardComp, UBlackboardData& BlackboardAsset)
-{
-	bool bResult = Super::InitializeBlackboard(BlackboardComp, BlackboardAsset);
-
-	if (bResult)
+	if (Blackboard && Blackboard->GetBlackboardAsset())
 	{
-		BlackboardComp.SetValueAsEnum("AIState", ERGX_EnemyAIState::None);
-	}
+		const FName key = "ConsecutiveHits";
+		int currentValue = Blackboard->GetValueAsInt(key);
+		Blackboard->SetValueAsInt(key, ++currentValue);
 
-	return bResult;
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]() {
+			if (Blackboard && Blackboard->GetBlackboardAsset())
+			{
+				const FName key = "ConsecutiveHits";
+				Blackboard->SetValueAsInt(key, 0);
+			}
+		}, TimeConsecutiveHits, false);
+	}
 }
 
 ERGX_EnemyAIState ARGX_EnemyBaseController::GetEnemyAIState() const
@@ -41,4 +42,16 @@ void ARGX_EnemyBaseController::SetEnemyAIState(ERGX_EnemyAIState state)
 	{
 		Blackboard->SetValueAsEnum("AIState", state);
 	}
+}
+
+bool ARGX_EnemyBaseController::InitializeBlackboard(UBlackboardComponent& BlackboardComp, UBlackboardData& BlackboardAsset)
+{
+	bool bResult = Super::InitializeBlackboard(BlackboardComp, BlackboardAsset);
+
+	if (bResult)
+	{
+		BlackboardComp.SetValueAsEnum("AIState", ERGX_EnemyAIState::None);
+	}
+
+	return bResult;
 }

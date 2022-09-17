@@ -6,6 +6,8 @@
 
 #include "RegicideX/Character/RGX_PlayerCharacter.h"
 
+#pragma optimize("", off)
+
 // Sets default values
 ARGX_CombatManager::ARGX_CombatManager()
 {
@@ -18,6 +20,9 @@ void ARGX_CombatManager::BeginPlay()
 {
 	Super::BeginPlay();
 
+	EnemyCombatItems.Reserve(MaxCombatEnemies);
+	EnemyCombatItems.Init(FRGX_EnemyCombatItem(), MaxCombatEnemies);
+
 	GetWorld()->AddOnActorSpawnedHandler(FOnActorSpawned::FDelegate::CreateUObject(this, &ARGX_CombatManager::OnActorSpawned));
 }
 
@@ -28,11 +33,12 @@ void ARGX_CombatManager::Tick(float DeltaTime)
 		Player = Cast<ARGX_PlayerCharacter>(UGameplayStatics::GetActorOfClass(this, ARGX_PlayerCharacter::StaticClass()));
 	}
 
-	//const int32 rand = FMath::RandRange(0, 100);
-	if (/*rand < 10 || */FVector::Dist2D(LastPlayerPosition, Player->GetActorLocation()) > InvalidateOffset)
+	if (bAddedNewEnemies || bEnemyDead || FVector::Dist2D(LastPlayerPosition, Player->GetActorLocation()) > InvalidateOffset)
 	{
 		Invalidate();
 		LastPlayerPosition = Player->GetActorLocation();
+		bAddedNewEnemies = false;
+		bEnemyDead = false;
 	}
 
 	Update();
@@ -44,34 +50,48 @@ void ARGX_CombatManager::Invalidate()
 
 	for (FRGX_EnemyCombatItem& item : EnemyCombatItems)
 	{
-		item.Distance = FVector::Dist2D(playerLocation, item.Enemy->GetActorLocation());
-		item.Scoring = item.Distance;
+		if (item.IsValid())
+		{
+			item.Distance = FVector::Dist2D(playerLocation, item.Enemy->GetActorLocation());
+			item.Scoring = item.Distance;
+		}
 	}
 
 	EnemyCombatItems.Sort([this](const FRGX_EnemyCombatItem& left, const FRGX_EnemyCombatItem& right)
 		{
-			return left.Scoring < right.Scoring;
+			if (left.IsValid() && right.IsValid())
+			{
+				return left.Scoring < right.Scoring;
+			}
+			else if (left.IsValid())
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
 		});
 
 	int32 index = 0;
-	const int32 nbEnemies = EnemyCombatItems.Num();
+	const int32 lastIndex = EnemyCombatItems.IndexOfByPredicate([](const FRGX_EnemyCombatItem& item) { return item.IsValid() == false; });
 
-	while (index < nbEnemies && index < NbHoldingEnemies)
+	while (index < lastIndex && index < NbHoldingEnemies)
 	{
 		FRGX_EnemyCombatItem& item = EnemyCombatItems[index++];
-		item.Enemy->SetEnemyAIState(ERGX_EnemyAIState::Holding);
+		if (item.Enemy->GetEnemyAIState() == ERGX_EnemyAIState::None || item.Enemy->GetEnemyAIState() == ERGX_EnemyAIState::Waiting)
+		{
+			item.Enemy->SetEnemyAIState(ERGX_EnemyAIState::Holding);
+		}
 	}
 
-	while (index < nbEnemies && index < (NbWaitingEnemies+NbHoldingEnemies))
+	while (index < lastIndex)
 	{
 		FRGX_EnemyCombatItem& item = EnemyCombatItems[index++];
-		item.Enemy->SetEnemyAIState(ERGX_EnemyAIState::Waiting);
-	}
-
-	while (index < nbEnemies)
-	{
-		FRGX_EnemyCombatItem& item = EnemyCombatItems[index++];
-		item.Enemy->SetEnemyAIState(ERGX_EnemyAIState::Idling);
+		if (item.Enemy->GetEnemyAIState() == ERGX_EnemyAIState::None)
+		{
+			item.Enemy->SetEnemyAIState(ERGX_EnemyAIState::Waiting);
+		}
 	}
 }
 
@@ -79,9 +99,24 @@ void ARGX_CombatManager::OnActorSpawned(AActor* actor)
 {
 	if (ARGX_EnemyBase* enemy = Cast<ARGX_EnemyBase>(actor))
 	{
-		EnemyCombatItems.Emplace(enemy, 0.0, 0.0);
-		Invalidate();
+		int32 index = 0;
+		while (index < EnemyCombatItems.Num())
+		{
+			auto& item = EnemyCombatItems[index++];
+			if (item.IsValid() == false)
+			{
+				item.Reset(enemy);
+				enemy->OnHandleDeathEvent.AddDynamic(this, &ARGX_CombatManager::OnEnemyDeath);
+				bAddedNewEnemies = true;
+				return;
+			}
+		}
 	}
+}
+
+void ARGX_CombatManager::OnEnemyDeath(ARGX_EnemyBase* enemy)
+{
+	bEnemyDead = true;
 }
 
 void ARGX_CombatManager::Update()
@@ -111,7 +146,8 @@ void ARGX_CombatManager::PrepareCandidateData(TArray<int32>& candidates, int32& 
 	numAttackers = 0;
 	numRecoveries = 0;
 
-	for (int32 index = 0; index < EnemyCombatItems.Num() && index < NbHoldingEnemies; ++index)
+	const int32 lastIndex = EnemyCombatItems.IndexOfByPredicate([](const FRGX_EnemyCombatItem& item) { return item.IsValid() == false; });
+	for (int32 index = 0; index < lastIndex && index < NbHoldingEnemies; ++index)
 	{
 		const auto& item = EnemyCombatItems[index];
 		switch (item.Enemy->GetEnemyAIState())

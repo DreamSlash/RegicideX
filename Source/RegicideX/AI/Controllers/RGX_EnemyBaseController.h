@@ -13,7 +13,11 @@ class REGICIDEX_API ARGX_EnemyBaseController : public AAIController
 public:
 	ARGX_EnemyBaseController();
 
-	void OnPossess(APawn* pawn) override;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float TimeConsecutiveHits = 1.0f;
+
+	UFUNCTION(BlueprintCallable)
+	virtual void DamageTaken();
 
 	UFUNCTION(BlueprintCallable)
 	ERGX_EnemyAIState GetEnemyAIState() const;
@@ -22,5 +26,8 @@ public:
 
 protected:
 	bool InitializeBlackboard(UBlackboardComponent& BlackboardComp, UBlackboardData& BlackboardAsset) override;
+
+private:
+	FTimerHandle TimerHandle;
 
 };

@@ -28,7 +28,6 @@ enum ERGX_EnemyAIState
 	Attacking	UMETA(DisplayName = "Attacking"),
 	Holding		UMETA(DisplayName = "Holding"),
 	Waiting		UMETA(DisplayName = "Waiting"),
-	Idling		UMETA(DisplayName = "Idling"),
 	Recovering	UMETA(DisplayName = "Recovering")
 };
 

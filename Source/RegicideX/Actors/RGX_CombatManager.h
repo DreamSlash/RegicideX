@@ -19,8 +19,12 @@ struct REGICIDEX_API FRGX_EnemyCombatItem
 		: Enemy(enemy), Distance(distance), Scoring(scoring)
 	{}
 
+	bool IsValid() const { return Enemy.IsValid(); }
+
+	void Reset(ARGX_EnemyBase* enemy) { Enemy = enemy; Distance = 0.0; Scoring = 0.0; }
+
 	UPROPERTY()
-	ARGX_EnemyBase* Enemy = nullptr;
+	TWeakObjectPtr<ARGX_EnemyBase> Enemy = nullptr;
 
 	float Distance = 0.0;
 	float Scoring = 0.0;
@@ -40,13 +44,10 @@ public:
 	float CombatRadius = 1000.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float WaitingRadius = 2000.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 NbHoldingEnemies = 6;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 NbWaitingEnemies = 10;
+	int32 MaxCombatEnemies = 15;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 NbPeasantSlots = 2;
@@ -67,6 +68,9 @@ private:
 	UFUNCTION(BlueprintCallable)
 	void Invalidate();
 
+	UFUNCTION()
+	void OnEnemyDeath(ARGX_EnemyBase* enemy);
+
 private:
 	void OnActorSpawned(AActor* actor);
 
@@ -77,7 +81,7 @@ private:
 
 private:
 	UPROPERTY()
-	ARGX_PlayerCharacter* Player = nullptr;
+	TWeakObjectPtr<ARGX_PlayerCharacter> Player;
 
 	UPROPERTY()
 	TArray<FRGX_EnemyCombatItem> EnemyCombatItems;
@@ -107,5 +111,8 @@ private:
 	TArray<ARGX_EnemyBase*> AngelSlots;*/
 
 	FVector LastPlayerPosition;
+
+	bool bAddedNewEnemies = false;
+	bool bEnemyDead = false;
 
 };
