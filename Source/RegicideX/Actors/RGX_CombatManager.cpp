@@ -20,8 +20,11 @@ void ARGX_CombatManager::BeginPlay()
 {
 	Super::BeginPlay();
 
-	EnemyCombatItems.Reserve(MaxCombatEnemies);
-	EnemyCombatItems.Init(FRGX_EnemyCombatItem(), MaxCombatEnemies);
+	EnemyMeleeItems.Reserve(MaxMeleeEnemies);
+	EnemyMeleeItems.Init(FRGX_EnemyCombatItem(), MaxMeleeEnemies);
+
+	EnemyDistanceItems.Reserve(MaxDistanceEnemies);
+	EnemyDistanceItems.Init(FRGX_EnemyCombatItem(), MaxDistanceEnemies);
 
 	GetWorld()->AddOnActorSpawnedHandler(FOnActorSpawned::FDelegate::CreateUObject(this, &ARGX_CombatManager::OnActorSpawned));
 }
@@ -48,7 +51,7 @@ void ARGX_CombatManager::Invalidate()
 {	
 	const FVector playerLocation = Player->GetActorLocation();
 
-	for (FRGX_EnemyCombatItem& item : EnemyCombatItems)
+	for (FRGX_EnemyCombatItem& item : EnemyMeleeItems)
 	{
 		if (item.IsValid())
 		{
@@ -57,7 +60,7 @@ void ARGX_CombatManager::Invalidate()
 		}
 	}
 
-	EnemyCombatItems.Sort([this](const FRGX_EnemyCombatItem& left, const FRGX_EnemyCombatItem& right)
+	EnemyMeleeItems.Sort([this](const FRGX_EnemyCombatItem& left, const FRGX_EnemyCombatItem& right)
 		{
 			if (left.IsValid() && right.IsValid())
 			{
@@ -74,11 +77,11 @@ void ARGX_CombatManager::Invalidate()
 		});
 
 	int32 index = 0;
-	const int32 lastIndex = EnemyCombatItems.IndexOfByPredicate([](const FRGX_EnemyCombatItem& item) { return item.IsValid() == false; });
+	const int32 lastIndex = EnemyMeleeItems.IndexOfByPredicate([](const FRGX_EnemyCombatItem& item) { return item.IsValid() == false; });
 
 	while (index < lastIndex && index < NbHoldingEnemies)
 	{
-		FRGX_EnemyCombatItem& item = EnemyCombatItems[index++];
+		FRGX_EnemyCombatItem& item = EnemyMeleeItems[index++];
 		if (item.Enemy->GetEnemyAIState() == ERGX_EnemyAIState::None || item.Enemy->GetEnemyAIState() == ERGX_EnemyAIState::Waiting)
 		{
 			item.Enemy->SetEnemyAIState(ERGX_EnemyAIState::Holding);
@@ -87,7 +90,7 @@ void ARGX_CombatManager::Invalidate()
 
 	while (index < lastIndex)
 	{
-		FRGX_EnemyCombatItem& item = EnemyCombatItems[index++];
+		FRGX_EnemyCombatItem& item = EnemyMeleeItems[index++];
 		if (item.Enemy->GetEnemyAIState() == ERGX_EnemyAIState::None)
 		{
 			item.Enemy->SetEnemyAIState(ERGX_EnemyAIState::Waiting);
@@ -100,9 +103,9 @@ void ARGX_CombatManager::OnActorSpawned(AActor* actor)
 	if (ARGX_EnemyBase* enemy = Cast<ARGX_EnemyBase>(actor))
 	{
 		int32 index = 0;
-		while (index < EnemyCombatItems.Num())
+		while (index < EnemyMeleeItems.Num())
 		{
-			auto& item = EnemyCombatItems[index++];
+			auto& item = EnemyMeleeItems[index++];
 			if (item.IsValid() == false)
 			{
 				item.Reset(enemy);
@@ -128,10 +131,10 @@ void ARGX_CombatManager::Update()
 	PrepareCandidateData(candidates, numAttackers, numRecoveries);
 
 	const int32 numCandidates = candidates.Num();
-	while (numAttackers < numCandidates)
+	while (numAttackers < numCandidates && numAttackers < NbMeleeSlots)
 	{
 		int32 index = FindNewAttacker(candidates);
-		auto& item = EnemyCombatItems[index];
+		auto& item = EnemyMeleeItems[index];
 		// assert state holding
 		item.Enemy->SetEnemyAIState(ERGX_EnemyAIState::Attacking);
 
@@ -146,10 +149,10 @@ void ARGX_CombatManager::PrepareCandidateData(TArray<int32>& candidates, int32& 
 	numAttackers = 0;
 	numRecoveries = 0;
 
-	const int32 lastIndex = EnemyCombatItems.IndexOfByPredicate([](const FRGX_EnemyCombatItem& item) { return item.IsValid() == false; });
+	const int32 lastIndex = EnemyMeleeItems.IndexOfByPredicate([](const FRGX_EnemyCombatItem& item) { return item.IsValid() == false; });
 	for (int32 index = 0; index < lastIndex && index < NbHoldingEnemies; ++index)
 	{
-		const auto& item = EnemyCombatItems[index];
+		const auto& item = EnemyMeleeItems[index];
 		switch (item.Enemy->GetEnemyAIState())
 		{
 		case ERGX_EnemyAIState::Attacking:

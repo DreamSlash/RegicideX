@@ -47,13 +47,16 @@ public:
 	int32 NbHoldingEnemies = 6;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 MaxCombatEnemies = 15;
+	int32 MaxMeleeEnemies = 12;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 NbPeasantSlots = 2;
+	int32 MaxDistanceEnemies = 5;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 NbAngelSlots = 2;
+	int32 NbMeleeSlots = 2;
+
+	UPROPERTY(Editanywhere, BlueprintReadWrite)
+	int32 NbDistanceSlots = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float InvalidateOffset = 1000.0f;
@@ -84,7 +87,10 @@ private:
 	TWeakObjectPtr<ARGX_PlayerCharacter> Player;
 
 	UPROPERTY()
-	TArray<FRGX_EnemyCombatItem> EnemyCombatItems;
+	TArray<FRGX_EnemyCombatItem> EnemyMeleeItems;
+
+	UPROPERTY()
+	TArray<FRGX_EnemyCombatItem> EnemyDistanceItems;
 
 	/*TArray<int32> PeasantSlots;
 	TArray<int32> AngelSlots;
