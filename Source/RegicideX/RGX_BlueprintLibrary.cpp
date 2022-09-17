@@ -83,3 +83,7 @@ bool URGX_BlueprintLibrary::ConeCheck(ARGX_CharacterBase* OriginCharacter, AActo
 
 	return DotProduct > DotThreshold;
 }
+
+FName URGX_BlueprintLibrary::GetPackageFromLevelAsset(const TSoftObjectPtr<UWorld>& World) {
+	return *FPackageName::ObjectPathToPackageName(World.ToString());
+}

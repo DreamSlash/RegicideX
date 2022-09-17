@@ -25,4 +25,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = Character)
 	static bool ConeCheck(ARGX_CharacterBase* OriginCharacter, AActor* DestinationActor, float DotThreshold, bool bIgnoreZAxis);
+
+	UFUNCTION(BlueprintPure)
+	static FName GetPackageFromLevelAsset(const TSoftObjectPtr<UWorld>& World);
 };

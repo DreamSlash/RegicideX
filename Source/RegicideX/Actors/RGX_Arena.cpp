@@ -92,7 +92,11 @@ void ARGX_Arena::SpawnWave(URGX_OutgoingWave* Wave)
 	TArray<FName> EnemyWaveNames = DT_EnemyRefs->GetRowNames();
 	URGX_ArenaWaveDataAsset* CurrentWaveData = Wave->WaveData;
 
-	if (EnemyWaveNames.Num() != CurrentWaveData->NumEnemies.Num()) return;
+	if (EnemyWaveNames.Num() != CurrentWaveData->NumEnemies.Num())
+	{
+		UE_LOG(LogTemp, Error, TEXT("WaveData num enemies different from total number of enemy types available"));
+		return;
+	}
 
 	for (int i = 0; i < CurrentWaveData->NumEnemies.Num(); ++i)
 	{

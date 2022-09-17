@@ -144,6 +144,15 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnFollowCombo();
 
+	/** Events called from attribute set changes to decouple the logic. They call BP events. */
+	virtual void HandleDamage(
+		float DamageAmount,
+		const FHitResult& HitInfo,
+		const struct FGameplayTagContainer& DamageTags,
+		ARGX_CharacterBase* InstigatorCharacter,
+		AActor* DamageCauser,
+		ERGX_AnimEvent HitReactFlag) override;
+
 protected:
 	/** Animation variables */
 	UPROPERTY(BlueprintReadOnly)

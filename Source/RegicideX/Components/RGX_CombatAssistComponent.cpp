@@ -25,11 +25,6 @@ void URGX_CombatAssistComponent::TickComponent(float DeltaTime, ELevelTick TickT
 
 	NumEnemiesInsideFrustum = 0;
 
-	//UE_LOG(LogTemp, Warning, TEXT("MoveVectorSpeed = %f"), MoveVectorSpeed);
-	//UE_LOG(LogTemp, Warning, TEXT("bMoveVectorEnabled = %s"), bMoveVectorEnabled ? TEXT("TRUE") : TEXT("FALSE"));
-	//UE_LOG(LogTemp, Warning, TEXT("bAddMoveVector = %s"), bAddMoveVector ? TEXT("TRUE") : TEXT("FALSE"));
-	//UE_LOG(LogTemp, Warning, TEXT("bIsAttacking = %s"), bIsAttacking ? TEXT("TRUE") : TEXT("FALSE"));
-
 	// Extra movement vector (from animation attacks, etc...)
 	if (bMoveVectorEnabled && bAddMoveVector && bIsAttacking == true)
 	{
@@ -37,41 +32,37 @@ void URGX_CombatAssistComponent::TickComponent(float DeltaTime, ELevelTick TickT
 
 		if (Target.IsValid())
 		{
-			//UE_LOG(LogTemp, Warning, TEXT("Has Target\n"));
 			const float DistanceToTarget = FVector::Distance(Owner->GetActorLocation(), Target->GetActorLocation());
 
 			// Apply attack movement only if it does not get too close to the target
 			if (DistanceToTarget > AutoAssistOffsetToEnemy)
 			{
 				float MoveSpeed = MoveVectorSpeed + AutoAssistMove / AttackMoveDuration;
-				//UE_LOG(LogTemp, Warning, TEXT("AutoAssist MoveSpeed: %f\n"), MoveSpeed);
+				UE_LOG(LogTemp, Warning, TEXT("Assist Move Speed: %f"), MoveSpeed);
 				const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * MoveSpeed * DeltaTime;
 				Owner->SetActorLocation(NewLocation, true);
 			}
 			else if (DistanceToTarget > AttackOffsetToEnemy)
 			{
+				// TODO: Instead of calculating total move left, calculate speed and apply it only if it does not reach the minimum offset
 				const float TotalMoveLeft = AttackMoveDurationLeft * MoveVectorSpeed;
 				const float MaxMove = DistanceToTarget - AttackOffsetToEnemy;
 
 				if (TotalMoveLeft <= MaxMove)
 				{
-					//UE_LOG(LogTemp, Warning, TEXT("Inferior to MaxMove Speed: %f\n"), MoveVectorSpeed);
 					const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * MoveVectorSpeed * DeltaTime;
 					Owner->SetActorLocation(NewLocation, true);
 				}
 				else
 				{
 					float MoveSpeed = MaxMove / AttackMoveDurationLeft;
-					//UE_LOG(LogTemp, Warning, TEXT("Superior to MaxMove Speed: %f\n"), MoveSpeed);
 					const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * MoveSpeed * DeltaTime;
 				}
 			}
 		}
 		else
 		{
-			//UE_LOG(LogTemp, Warning, TEXT("Does not have Target\n"));
 			FVector FinalVelocity = MoveVectorDirection * MoveVectorSpeed;
-			//UE_LOG(LogTemp, Warning, TEXT("Speed: %f, %f, %f\n"), FinalVelocity.X, FinalVelocity.Y, FinalVelocity.Z);
 			const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * MoveVectorSpeed * DeltaTime;
 			Owner->SetActorLocation(NewLocation, true);
 		}
@@ -125,8 +116,6 @@ void URGX_CombatAssistComponent::UpdateTarget()
 				NumEnemiesInsideFrustum++;
 			}
 		}
-
-		//UE_LOG(LogTemp, Warning, TEXT("Num enemies in frustum: %d\n"), NumEnemiesInsideFrustum);
 
 		if (NewTarget)
 		{
@@ -257,10 +246,6 @@ ARGX_EnemyBase* URGX_CombatAssistComponent::GetFrontEnemy(const TArray<AActor*>&
 		if (AbsAngle > AngleDiscardThreshHold)
 			continue;
 
-		//UE_LOG(LogTemp, Warning, TEXT("Angle To Enemy: %f\n"), FMath::RadiansToDegrees(OrientationToEnemy));
-		//UE_LOG(LogTemp, Warning, TEXT("Angle To Forward: %f\n"), FMath::RadiansToDegrees(OrientationToForward));
-		//UE_LOG(LogTemp, Warning, TEXT("Angle: %f\n"), Angle);
-
 		if (AbsAngle < SmallestAngle)
 		{
 			SmallestAngle = AbsAngle;
@@ -286,7 +271,6 @@ ARGX_EnemyBase* URGX_CombatAssistComponent::GetFrontEnemy(const TArray<AActor*>&
 
 	for (int32 i = 1; i < FrontEnemies.Num(); ++i)
 	{
-		//UE_LOG(LogTemp, Warning, TEXT("Actor Angle: %f\n"), ActorAngle.Angle);
 		ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(FrontEnemies[i].Actor);
 
 		if (Enemy->IsInFrustum() == true && FrontEnemies[i].Angle < CheckCameraAngle == true)
@@ -358,20 +342,17 @@ void URGX_CombatAssistComponent::PerformAttackAutoAssist()
 
 void URGX_CombatAssistComponent::EnableMovementVector()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Enable Move Vector\n"));
 	bMoveVectorEnabled = true;
 }
 
 void URGX_CombatAssistComponent::DisableMovementVector()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Disable Move Vector\n"));
 	bMoveVectorEnabled = false;
 }
 
 void URGX_CombatAssistComponent::AddMovementVector(const FVector Direction, const float Speed, const bool bNewIsAttacking)
 {
 	FVector VelocityVector = Direction * Speed;
-	//UE_LOG(LogTemp, Warning, TEXT("Add Move Vector: %f, %f, %f\n"), VelocityVector.X, VelocityVector.Y, VelocityVector.Z);
 	MoveVectorDirection = Direction;
 	MoveVectorSpeed = Speed;
 	bAddMoveVector = true;
@@ -380,7 +361,6 @@ void URGX_CombatAssistComponent::AddMovementVector(const FVector Direction, cons
 
 void URGX_CombatAssistComponent::RemoveMovementVector()
 {
-	//UE_LOG(LogTemp, Warning, TEXT("Remove Move Vector\n"));
 	MoveVectorDirection = FVector(0.0f);
 	MoveVectorSpeed = 0.0f;
 	bAddMoveVector = false;
