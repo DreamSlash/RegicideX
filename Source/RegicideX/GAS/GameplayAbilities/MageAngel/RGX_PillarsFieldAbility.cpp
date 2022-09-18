@@ -34,7 +34,7 @@ void URGX_PillarsFieldAbility::OnAttackWindow()
 		FTransform pillarTransform(location);
 
 		FHitResult Result;
-		DrawDebugLine(GetWorld(), location, location * FVector(1, 1, -1), FColor(255, 0, 0), true, 5.0f, 0, 5.0f);
+		//DrawDebugLine(GetWorld(), location, location * FVector(1, 1, -1), FColor(255, 0, 0), true, 5.0f, 0, 5.0f);
 		if (GetWorld()->LineTraceSingleByChannel(Result, location, location * FVector(1,1,-1), ECollisionChannel::ECC_WorldStatic))
 		{
 			FVector newLocation = location;

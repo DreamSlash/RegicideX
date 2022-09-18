@@ -30,7 +30,7 @@ void URGX_PillarsPartyAbility::OnSpawnPillar()
 		FTransform pillarTransform(finalLocation);
 
 		FHitResult Result;
-		DrawDebugLine(GetWorld(), finalLocation, finalLocation * FVector(1, 1, -1), FColor(255, 0, 0), true, 5.0f, 0, 5.0f);
+		//DrawDebugLine(GetWorld(), finalLocation, finalLocation * FVector(1, 1, -1), FColor(255, 0, 0), true, 5.0f, 0, 5.0f);
 		if (GetWorld()->LineTraceSingleByChannel(Result, finalLocation, finalLocation * FVector(1, 1, -1), ECollisionChannel::ECC_WorldStatic))
 		{
 			FVector newLocation = finalLocation;
