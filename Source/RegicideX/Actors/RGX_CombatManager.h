@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include <functional>
 #include "GameFramework/Actor.h"
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 #include "RGX_CombatManager.generated.h"
@@ -76,11 +77,19 @@ private:
 
 private:
 	void OnActorSpawned(AActor* actor);
+	void OnEnemySpawned(ARGX_EnemyBase* Enemy, TArray<FRGX_EnemyCombatItem>& EnemyItems);
 
-	void Update();
+private:
+	void InvalidateImpl(TArray<FRGX_EnemyCombatItem>& EnemyItems);
 
-	void PrepareCandidateData(TArray<int32>& candidates, int32& numAttackers, int32& numRecoveries) const;
-	int32 FindNewAttacker(const TArray<int32>& candidates) const;
+	void UpdateMeleeEnemies();
+	void UpdateDistanceEnemies();
+
+	void UpdateScoring(TArray<FRGX_EnemyCombatItem>& EnemyItems, const std::function<void(FRGX_EnemyCombatItem&)>& ScoringFunction);
+	void UpdateSlots(TArray<FRGX_EnemyCombatItem>& EnemyItems, int32 numSlots);
+	void PrepareCandidateData(const TArray<FRGX_EnemyCombatItem>& EnemyItems, TArray<int32>& candidates, int32& numAttackers, int32& numRecoveries) const;
+
+	int32 FindNewAttacker(const TArray<int32>& candidates, const TArray<FRGX_EnemyCombatItem>& EnemyItems) const;
 
 private:
 	UPROPERTY()
