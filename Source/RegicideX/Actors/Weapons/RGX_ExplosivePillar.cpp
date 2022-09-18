@@ -50,7 +50,7 @@ void ARGX_ExplosivePillar::BeginPlay()
 		TimelineFinishedCallback.BindLambda([this]()
 			{
 				GetWorld()->GetTimerManager().SetTimer(ActivationTimerHandle, [this]() { Activate(); }, TimeToActivate, false);
-				DrawDebugCapsule(GetWorld(), ActivationCollider->GetComponentLocation(), ActivationCollider->GetScaledCapsuleHalfHeight(), ActivationCollider->GetScaledCapsuleRadius(), ActivationCollider->GetComponentRotation().Quaternion(), FColor::Yellow, false, TimeToActivate);
+				//DrawDebugCapsule(GetWorld(), ActivationCollider->GetComponentLocation(), ActivationCollider->GetScaledCapsuleHalfHeight(), ActivationCollider->GetScaledCapsuleRadius(), ActivationCollider->GetComponentRotation().Quaternion(), FColor::Yellow, false, TimeToActivate);
 			});
 
 		RiseTimeLine.AddInterpFloat(RiseCurve, TimelineCallback);
@@ -124,7 +124,7 @@ void ARGX_ExplosivePillar::Rise()
 		TimelineFinishedCallback.BindLambda([this]()
 			{
 				GetWorld()->GetTimerManager().SetTimer(ActivationTimerHandle, [this]() { Activate(); }, TimeToActivate, false);
-				DrawDebugCapsule(GetWorld(), ActivationCollider->GetComponentLocation(), ActivationCollider->GetScaledCapsuleHalfHeight(), ActivationCollider->GetScaledCapsuleRadius(), ActivationCollider->GetComponentRotation().Quaternion(), FColor::Yellow, false, TimeToActivate);
+				//DrawDebugCapsule(GetWorld(), ActivationCollider->GetComponentLocation(), ActivationCollider->GetScaledCapsuleHalfHeight(), ActivationCollider->GetScaledCapsuleRadius(), ActivationCollider->GetComponentRotation().Quaternion(), FColor::Yellow, false, TimeToActivate);
 			});
 
 		RiseTimeLine.AddInterpFloat(RiseCurve, TimelineCallback);
@@ -140,7 +140,7 @@ void ARGX_ExplosivePillar::Activate()
 {
 	GetWorld()->GetTimerManager().SetTimer(ExplosionTimerHandle, [this]() { Explode(); }, TimeToExplode, false);
 
-	DrawDebugSphere(GetWorld(), ExplosionSource->GetComponentLocation(), ExplosionRadius, 16, FColor::Red, false, TimeToExplode);
+	//DrawDebugSphere(GetWorld(), ExplosionSource->GetComponentLocation(), ExplosionRadius, 16, FColor::Red, false, TimeToExplode);
 }
 
 void ARGX_ExplosivePillar::Explode()
