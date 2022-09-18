@@ -7,7 +7,7 @@
 
 #include "RegicideX/Character/RGX_PlayerCharacter.h"
 
-#pragma optimize("", off)
+//#pragma optimize("", off)
 
 // Sets default values
 ARGX_CombatManager::ARGX_CombatManager()
