@@ -42,16 +42,18 @@ void URGX_EvasionAbility::RotatePlayerTowardsInput(ARGX_PlayerCharacter* PlayerC
 {
 	// Rotate character towards input
 	FVector2D MovementInput = PlayerCharacter->LastInputDirection;
-	//UE_LOG(LogTemp, Warning, TEXT("Input Direction: %f, %f"), MovementInput.X, MovementInput.Y);
 
-	const FRotator Rotation = PlayerCharacter->GetControlRotation();
-	const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
+	if (MovementInput != FVector2D::ZeroVector)
+	{
+		const FRotator Rotation = PlayerCharacter->GetControlRotation();
+		const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
 
-	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 
-	FVector Direction = ForwardDirection * MovementInput.X + RightDirection * MovementInput.Y;
-	Direction.Normalize();
+		FVector Direction = ForwardDirection * MovementInput.X + RightDirection * MovementInput.Y;
+		Direction.Normalize();
 
-	PlayerCharacter->SetActorRotation(Direction.Rotation());
+		PlayerCharacter->SetActorRotation(Direction.Rotation());
+	}
 }
