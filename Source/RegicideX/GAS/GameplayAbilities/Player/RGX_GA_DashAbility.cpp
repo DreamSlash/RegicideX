@@ -61,6 +61,7 @@ void URGX_DashAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const
 	if (Character)
 	{
 		//Character->GetCharacterMovement()->MaxWalkSpeed = 800.0f;
+		Character->GetCharacterMovement()->MaxAcceleration = 2048.0f;
 		Character->GetCharacterMovement()->GravityScale = Character->DefaultGravity;
 		Character->EnableMovementInput();
 
