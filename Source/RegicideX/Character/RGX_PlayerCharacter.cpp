@@ -510,7 +510,7 @@ void ARGX_PlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	GetCharacterMovement()->GravityScale = DefaultGravity;
-	GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
+	GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
 
 	AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
 
@@ -559,7 +559,8 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 	FVector Direction = ForwardDirection * LastInputDirection.X + RightDirection * LastInputDirection.Y;
 	Direction.Normalize();
 
-	//UE_LOG(LogTemp, Warning, TEXT("Input Direction: %f, %f"), Direction.X, Direction.Y);
+	//UE_LOG(LogTemp, Warning, TEXT("MAX ACCELERATION: %f"), GetCharacterMovement()->MaxAcceleration);
+	//UE_LOG(LogTemp, Warning, TEXT("MAX WALK SPEED: %f"), GetCharacterMovement()->MaxWalkSpeed);
 
 	//UKismetSystemLibrary::DrawDebugCircle(GetWorld(), GetActorLocation(), 100.0f, 24, FLinearColor::Green, 0.0f, 0.0f, FVector(0.0f, 1.0f, 0.0f), FVector(1.0f, 0.0f, 0.0f));
 }
