@@ -153,6 +153,8 @@ public:
 		AActor* DamageCauser,
 		ERGX_AnimEvent HitReactFlag) override;
 
+	FVector2D LastInputDirection = FVector2D::ZeroVector;
+
 protected:
 	/** Animation variables */
 	UPROPERTY(BlueprintReadOnly)

@@ -549,6 +549,17 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 	const FRGX_LeanInfo LeanInfo = CalculateLeanAmount();
 	LeanAmount = UKismetMathLibrary::FInterpTo(LeanAmount, LeanInfo.LeanAmount, DeltaTime, LeanInfo.InterSpeed);
 	// ------------------
+	
+	const FRotator Rotation = GetControlRotation();
+	const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
+
+	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+
+	FVector Direction = ForwardDirection * LastInputDirection.X + RightDirection * LastInputDirection.Y;
+	Direction.Normalize();
+
+	//UE_LOG(LogTemp, Warning, TEXT("Input Direction: %f, %f"), Direction.X, Direction.Y);
 
 	//UKismetSystemLibrary::DrawDebugCircle(GetWorld(), GetActorLocation(), 100.0f, 24, FLinearColor::Green, 0.0f, 0.0f, FVector(0.0f, 1.0f, 0.0f), FVector(1.0f, 0.0f, 0.0f));
 }
@@ -648,6 +659,11 @@ void ARGX_PlayerCharacter::MoveForward(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
+		LastInputDirection.X = Value;
+	}
+	else
+	{
+		LastInputDirection.X = 0.0f;
 	}
 }
 
@@ -666,6 +682,11 @@ void ARGX_PlayerCharacter::MoveRight(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
+		LastInputDirection.Y = Value;
+	}
+	else
+	{
+		LastInputDirection.Y = 0.0f;
 	}
 }
 
