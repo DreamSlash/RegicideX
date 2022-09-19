@@ -17,7 +17,7 @@ void URGX_EvasionAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	UCharacterMovementComponent* CharacterMovementComponent = PlayerCharacter->GetCharacterMovement();
 	if (CharacterMovementComponent)
 	{
-		CharacterMovementComponent->MaxAcceleration = 500000.0f;
+		CharacterMovementComponent->MaxAcceleration = 99999999.0f;
 	}
 
 	bool bIsBeingAttacked = PlayerCharacter->IsBeingAttacked();

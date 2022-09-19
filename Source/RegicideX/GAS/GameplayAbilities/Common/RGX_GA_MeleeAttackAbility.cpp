@@ -3,6 +3,7 @@
 #include "Abilities/Tasks/AbilityTask_PlayMontageAndWait.h"
 #include "RegicideX/Components/RGX_CombatAssistComponent.h"
 #include "RegicideX/Character/RGX_PlayerCharacter.h"
+#include "GameFramework/CharacterMovementComponent.h"
 
 URGX_MeleeAttackAbility::URGX_MeleeAttackAbility()
 {
@@ -11,6 +12,9 @@ URGX_MeleeAttackAbility::URGX_MeleeAttackAbility()
 
 void URGX_MeleeAttackAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
+	ARGX_CharacterBase* CharacterBase = Cast<ARGX_CharacterBase>(GetAvatarActorFromActorInfo());
+	if (CharacterBase == nullptr) return;
+
 	URGX_CombatAssistComponent* CombatAssistComponent = ActorInfo->AvatarActor->FindComponentByClass<URGX_CombatAssistComponent>(); 
 	ARGX_PlayerCharacter* PlayerCharacter = Cast<ARGX_PlayerCharacter>(ActorInfo->AvatarActor);
 	if (PlayerCharacter)
@@ -26,6 +30,12 @@ void URGX_MeleeAttackAbility::ActivateAbility(const FGameplayAbilitySpecHandle H
 	if (CombatAssistComponent)
 	{
 		CombatAssistComponent->AddMovementVector(ActorInfo->AvatarActor->GetActorForwardVector(), MoveVectorLength, true);
+
+		UCharacterMovementComponent* CharacterMovementComponent = CharacterBase->GetCharacterMovement();
+		if (CharacterMovementComponent)
+		{
+			CharacterMovementComponent->MaxAcceleration = 99999999.0f;
+		}
 	}
 
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
@@ -33,18 +43,29 @@ void URGX_MeleeAttackAbility::ActivateAbility(const FGameplayAbilitySpecHandle H
 
 void URGX_MeleeAttackAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
 {
-	ARGX_PlayerCharacter* PlayerCharacter = Cast<ARGX_PlayerCharacter>(CurrentActorInfo->AvatarActor);
+	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+
+	ARGX_CharacterBase* CharacterBase = Cast<ARGX_CharacterBase>(GetAvatarActorFromActorInfo());
+	if (CharacterBase == nullptr) return;
+
+	ARGX_PlayerCharacter* PlayerCharacter = Cast<ARGX_PlayerCharacter>(CharacterBase);
 	if (PlayerCharacter)
 	{
 		PlayerCharacter->EnableMovementInput();
 	}
+
+	UE_LOG(LogTemp, Warning, TEXT("END MELEE ATTACK ABILITY"));
 
 	URGX_CombatAssistComponent* CombatAssistComponent = CurrentActorInfo->AvatarActor->FindComponentByClass<URGX_CombatAssistComponent>();
 	if (CombatAssistComponent)
 	{
 		CombatAssistComponent->RemoveMovementVector();
 		CombatAssistComponent->DisableMovementVector();
-	}
 
-	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
+		UCharacterMovementComponent* CharacterMovementComponent = CharacterBase->GetCharacterMovement();
+		if (CharacterMovementComponent)
+		{
+			CharacterMovementComponent->MaxAcceleration = CharacterBase->MaxAcceleration;
+		}
+	}
 }

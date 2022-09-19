@@ -94,9 +94,6 @@ public:
 	float AttackRotationInterpSpeed = 20.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float MoveSpeed = 100.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float OrbitSpeed = 50.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
