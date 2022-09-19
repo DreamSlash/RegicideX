@@ -120,9 +120,6 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	float DefaultGravity = 3.0f;
 
-	UPROPERTY(EditDefaultsOnly)
-	float MaxWalkSpeed = 600.0f;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool bIsFallingDown = false;
 

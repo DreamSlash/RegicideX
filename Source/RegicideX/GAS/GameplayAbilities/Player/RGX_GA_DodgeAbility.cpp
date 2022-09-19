@@ -46,7 +46,7 @@ void URGX_DodgeAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, cons
 	ARGX_PlayerCharacter* Character = Cast<ARGX_PlayerCharacter>(ActorInfo->AvatarActor);
 	if (Character)
 	{
-		Character->GetCharacterMovement()->MaxAcceleration = 2048.0f;
+		Character->GetCharacterMovement()->MaxAcceleration = Character->MaxAcceleration;
 		Character->GetCharacterMovement()->GravityScale = Character->DefaultGravity;
 		Character->EnableMovementInput();
 

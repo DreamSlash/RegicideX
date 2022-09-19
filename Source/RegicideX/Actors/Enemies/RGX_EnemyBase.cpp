@@ -74,8 +74,6 @@ void ARGX_EnemyBase::BeginPlay()
 	AddStartupGameplayAbilities();
 	HandleHealthChanged(0.0f, FGameplayTagContainer());
 
-	GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
-
 	TargetActor = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 }
 
