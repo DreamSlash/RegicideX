@@ -18,6 +18,10 @@ void URGX_ANS_JumpComboSection::NotifyTick(USkeletalMeshComponent* MeshComp, UAn
 	ARGX_PlayerCharacter* Player = Cast<ARGX_PlayerCharacter>(MeshComp->GetOwner());
 	if (Player)
 	{
+		UE_LOG(LogTemp, Warning, TEXT("bCanCombo: %s"), Player->bCanCombo ? TEXT("TRUE") : TEXT("FALSE"));
+		UE_LOG(LogTemp, Warning, TEXT("bCanJumpToComboSection: %s"), Player->bCanJumpToComboSection ? TEXT("TRUE") : TEXT("FALSE"));
+		UE_LOG(LogTemp, Warning, TEXT("bContinueCombo: %s"), Player->bContinueCombo ? TEXT("TRUE") : TEXT("FALSE"));
+
 		if (Player->bCanCombo && Player->bCanJumpToComboSection && Player->bContinueCombo)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Jump To Next Section"));

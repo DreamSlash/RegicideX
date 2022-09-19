@@ -142,6 +142,11 @@ bool ARGX_PlayerCharacter::IsAttacking()
 	return false;
 }
 
+bool ARGX_PlayerCharacter::IsDashing()
+{
+	return HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.Dashing")));
+}
+
 void ARGX_PlayerCharacter::ManageLightAttackInput()
 {
 	if (bStaggered == true)
@@ -150,7 +155,7 @@ void ARGX_PlayerCharacter::ManageLightAttackInput()
 	InputHandlerComponent->HandleInput(ERGX_PlayerInputID::LightAttackInput, false, GetCharacterMovement()->IsFalling());
 
 	// If we are performing an attack, try to follow the combo
-	if (IsAttacking())
+	if (IsAttacking() || IsDashing())
 	{
 		if (JumpComboNotifyState != nullptr)
 		{
