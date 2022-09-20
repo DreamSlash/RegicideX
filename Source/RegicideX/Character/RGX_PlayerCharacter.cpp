@@ -142,6 +142,11 @@ bool ARGX_PlayerCharacter::IsAttacking()
 	return false;
 }
 
+bool ARGX_PlayerCharacter::IsDashing()
+{
+	return HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.Dashing")));
+}
+
 void ARGX_PlayerCharacter::ManageLightAttackInput()
 {
 	if (bStaggered == true)
@@ -150,7 +155,7 @@ void ARGX_PlayerCharacter::ManageLightAttackInput()
 	InputHandlerComponent->HandleInput(ERGX_PlayerInputID::LightAttackInput, false, GetCharacterMovement()->IsFalling());
 
 	// If we are performing an attack, try to follow the combo
-	if (IsAttacking())
+	if (IsAttacking() || IsDashing())
 	{
 		if (JumpComboNotifyState != nullptr)
 		{
@@ -227,11 +232,13 @@ void ARGX_PlayerCharacter::ManageHeavyAttackInputRelease()
 
 void ARGX_PlayerCharacter::ManageJumpInput()
 {
-	if (HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("Ability.Melee")) == false)
-	{
-		Jump();
-		OnJump();
-	}
+	// Jump cancels current attack
+	FGameplayTagContainer TagContainer(FGameplayTag::RequestGameplayTag(FName("Ability.Melee")));
+	GetAbilitySystemComponent()->CancelAbilities(&TagContainer);
+	OnInterrupted();
+
+	Jump();
+	OnJump();
 }
 
 void ARGX_PlayerCharacter::ManageJumpInputReleased()
@@ -510,7 +517,7 @@ void ARGX_PlayerCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	GetCharacterMovement()->GravityScale = DefaultGravity;
-	GetCharacterMovement()->MaxWalkSpeed = MaxWalkSpeed;
+	GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
 
 	AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
 
@@ -559,7 +566,8 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 	FVector Direction = ForwardDirection * LastInputDirection.X + RightDirection * LastInputDirection.Y;
 	Direction.Normalize();
 
-	//UE_LOG(LogTemp, Warning, TEXT("Input Direction: %f, %f"), Direction.X, Direction.Y);
+	//UE_LOG(LogTemp, Warning, TEXT("MAX ACCELERATION: %f"), GetCharacterMovement()->MaxAcceleration);
+	//UE_LOG(LogTemp, Warning, TEXT("MAX WALK SPEED: %f"), GetCharacterMovement()->MaxWalkSpeed);
 
 	//UKismetSystemLibrary::DrawDebugCircle(GetWorld(), GetActorLocation(), 100.0f, 24, FLinearColor::Green, 0.0f, 0.0f, FVector(0.0f, 1.0f, 0.0f), FVector(1.0f, 0.0f, 0.0f));
 }

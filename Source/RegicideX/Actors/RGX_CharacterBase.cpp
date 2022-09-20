@@ -30,6 +30,14 @@ void ARGX_CharacterBase::UnPossessed()
 {
 }
 
+void ARGX_CharacterBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
+	GetCharacterMovement()->MaxAcceleration = MaxAcceleration;
+}
+
 UAbilitySystemComponent* ARGX_CharacterBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;

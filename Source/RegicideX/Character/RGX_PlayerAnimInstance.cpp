@@ -33,5 +33,6 @@ void URGX_PlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	LeanValue = PlayerLeanAmount * LeanOffset;
 
 	bIsOnAir = PlayerCharacter->GetCharacterMovement()->IsFalling();
+	bIsAttacking = PlayerCharacter->IsAttacking();
 	bIsAlive = PlayerCharacter->IsAlive();
 }

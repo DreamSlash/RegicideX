@@ -11,17 +11,22 @@ void URGX_DodgeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	ARGX_PlayerCharacter* Character = Cast<ARGX_PlayerCharacter>(ActorInfo->AvatarActor);
+	ARGX_PlayerCharacter* PlayerCharacter = Cast<ARGX_PlayerCharacter>(ActorInfo->AvatarActor);
 
-	if (Character)
+	if (PlayerCharacter)
 	{
 		FGameplayEventData EventData;
 		ActorInfo->AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Character.Interrupted")), &EventData);
+		PlayerCharacter->DisableMovementInput();
 
-		Character->GetCharacterMovement()->GravityScale = 0.0f;
-		Character->DisableMovementInput();
+		UCharacterMovementComponent* CharacterMovementComponent = PlayerCharacter->GetCharacterMovement();
+		if (CharacterMovementComponent)
+		{
+			CharacterMovementComponent->MaxAcceleration = 99999999.0f;
+			CharacterMovementComponent->GravityScale = 0.0f;
+		}
 
-		UCapsuleComponent* CapsuleComponent = Character->GetCapsuleComponent();
+		UCapsuleComponent* CapsuleComponent = PlayerCharacter->GetCapsuleComponent();
 		if (CapsuleComponent)
 		{
 			CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
@@ -46,7 +51,7 @@ void URGX_DodgeAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, cons
 	ARGX_PlayerCharacter* Character = Cast<ARGX_PlayerCharacter>(ActorInfo->AvatarActor);
 	if (Character)
 	{
-		Character->GetCharacterMovement()->MaxAcceleration = 2048.0f;
+		Character->GetCharacterMovement()->MaxAcceleration = Character->MaxAcceleration;
 		Character->GetCharacterMovement()->GravityScale = Character->DefaultGravity;
 		Character->EnableMovementInput();
 

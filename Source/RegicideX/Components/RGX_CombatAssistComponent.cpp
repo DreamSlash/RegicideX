@@ -8,6 +8,7 @@
 #include "Math/UnrealMathUtility.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "RegicideX/Actors/RGX_CharacterBase.h"
 
 URGX_CombatAssistComponent::URGX_CombatAssistComponent()
 {
@@ -25,22 +26,36 @@ void URGX_CombatAssistComponent::TickComponent(float DeltaTime, ELevelTick TickT
 
 	NumEnemiesInsideFrustum = 0;
 
+	ARGX_CharacterBase* CharacterBase = Cast<ARGX_CharacterBase>(GetOwner());
+	if (CharacterBase == nullptr) return;
+
+	UCharacterMovementComponent* CharacterMovementComponent = CharacterBase->GetCharacterMovement();
+	if (CharacterMovementComponent == nullptr) return;
+
+	const bool bIsFalling = CharacterMovementComponent->IsFalling();
+
 	// Extra movement vector (from animation attacks, etc...)
 	if (bMoveVectorEnabled && bAddMoveVector && bIsAttacking == true)
 	{
-		AActor* Owner = GetOwner();
-
 		if (Target.IsValid())
 		{
-			const float DistanceToTarget = FVector::Distance(Owner->GetActorLocation(), Target->GetActorLocation());
+			const float DistanceToTarget = FVector::Distance(CharacterBase->GetActorLocation(), Target->GetActorLocation());
 
 			// Apply attack movement only if it does not get too close to the target
 			if (DistanceToTarget > AutoAssistOffsetToEnemy)
 			{
 				float MoveSpeed = MoveVectorSpeed + AutoAssistMove / AttackMoveDuration;
-				UE_LOG(LogTemp, Warning, TEXT("Assist Move Speed: %f"), MoveSpeed);
-				const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * MoveSpeed * DeltaTime;
-				Owner->SetActorLocation(NewLocation, true);
+				//UE_LOG(LogTemp, Warning, TEXT("Assist Move Speed: %f"), MoveSpeed);
+				const FVector NewLocation = CharacterBase->GetActorLocation() + MoveVectorDirection * MoveSpeed * DeltaTime;
+
+				if (bIsFalling == true)
+				{
+					CharacterBase->SetActorLocation(NewLocation, true);
+				}
+				else
+				{
+					CharacterBase->AddMovementInput(MoveVectorDirection, MoveSpeed);
+				}
 			}
 			else if (DistanceToTarget > AttackOffsetToEnemy)
 			{
@@ -50,29 +65,52 @@ void URGX_CombatAssistComponent::TickComponent(float DeltaTime, ELevelTick TickT
 
 				if (TotalMoveLeft <= MaxMove)
 				{
-					const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * MoveVectorSpeed * DeltaTime;
-					Owner->SetActorLocation(NewLocation, true);
+					const FVector NewLocation = CharacterBase->GetActorLocation() + MoveVectorDirection * MoveVectorSpeed * DeltaTime;
+					CharacterBase->AddMovementInput(MoveVectorDirection, MoveVectorSpeed);
+
+					if (bIsFalling == true)
+					{
+						CharacterBase->SetActorLocation(NewLocation, true);
+					}
+					else
+					{
+						CharacterBase->AddMovementInput(MoveVectorDirection, MoveVectorSpeed);
+					}
 				}
 				else
 				{
 					float MoveSpeed = MaxMove / AttackMoveDurationLeft;
-					const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * MoveSpeed * DeltaTime;
+					const FVector NewLocation = CharacterBase->GetActorLocation() + MoveVectorDirection * MoveSpeed * DeltaTime;
 				}
 			}
 		}
 		else
 		{
 			FVector FinalVelocity = MoveVectorDirection * MoveVectorSpeed;
-			const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * MoveVectorSpeed * DeltaTime;
-			Owner->SetActorLocation(NewLocation, true);
+			const FVector NewLocation = CharacterBase->GetActorLocation() + MoveVectorDirection * MoveVectorSpeed * DeltaTime;
+
+			if (bIsFalling == true)
+			{
+				CharacterBase->SetActorLocation(NewLocation, true);
+			}
+			else
+			{
+				CharacterBase->AddMovementInput(MoveVectorDirection, MoveVectorSpeed);
+			}
 		}
 	}
 	else if (bMoveVectorEnabled && bAddMoveVector && bIsAttacking == false)
 	{
-		AActor* Owner = GetOwner();
+		UE_LOG(LogTemp, Warning, TEXT("MOVEMENT. MAX WALK SPEED: %f MAX ACCELERATION: %f"), CharacterMovementComponent->MaxWalkSpeed, CharacterMovementComponent->MaxAcceleration);
 		FVector FinalVelocity = MoveVectorDirection * MoveVectorSpeed;
-		const FVector NewLocation = Owner->GetActorLocation() + MoveVectorDirection * MoveVectorSpeed * DeltaTime;
-		Owner->SetActorLocation(NewLocation, true);
+		const FVector NewLocation = CharacterBase->GetActorLocation() + MoveVectorDirection * MoveVectorSpeed * DeltaTime;
+		//CharacterMovementComponent->MaxAcceleration = 99999999.0f;
+		//CharacterMovementComponent->MaxWalkSpeed = MoveVectorSpeed;
+		CharacterBase->AddMovementInput(MoveVectorDirection, MoveVectorSpeed);
+		//CharacterMovementComponent->MaxAcceleration = CharacterBase->MaxAcceleration;
+		//CharacterMovementComponent->MaxWalkSpeed = CharacterBase->MoveSpeed;
+		//CharacterMovementComponent->MaxWalkSpeed = CharacterBase->AddMovementInput
+		//Owner->SetActorLocation(NewLocation, true);
 	}
 
 	AttackMoveDurationLeft -= DeltaTime;
@@ -357,6 +395,17 @@ void URGX_CombatAssistComponent::AddMovementVector(const FVector Direction, cons
 	MoveVectorSpeed = Speed;
 	bAddMoveVector = true;
 	bIsAttacking = bNewIsAttacking;
+
+	ARGX_CharacterBase* CharacterBase = Cast<ARGX_CharacterBase>(GetOwner());
+	if (CharacterBase)
+	{
+		UCharacterMovementComponent* CharacterMovementComponent = CharacterBase->GetCharacterMovement();
+		if (CharacterMovementComponent)
+		{
+			CharacterMovementComponent->MaxWalkSpeed = Speed;
+			UE_LOG(LogTemp, Warning, TEXT("MAX WALK SPEED: %f"), CharacterMovementComponent->MaxWalkSpeed);
+		}
+	}
 }
 
 void URGX_CombatAssistComponent::RemoveMovementVector()
@@ -365,6 +414,16 @@ void URGX_CombatAssistComponent::RemoveMovementVector()
 	MoveVectorSpeed = 0.0f;
 	bAddMoveVector = false;
 	bIsAttacking = false;
+
+	ARGX_CharacterBase* CharacterBase = Cast<ARGX_CharacterBase>(GetOwner());
+	if (CharacterBase)
+	{
+		UCharacterMovementComponent* CharacterMovementComponent = CharacterBase->GetCharacterMovement();
+		if (CharacterMovementComponent)
+		{
+			CharacterMovementComponent->MaxWalkSpeed = CharacterBase->MoveSpeed;
+		}
+	}
 }
 
 void URGX_CombatAssistComponent::SetAttackMoveDuration(float Duration)
@@ -376,4 +435,15 @@ void URGX_CombatAssistComponent::SetAttackMoveDuration(float Duration)
 void URGX_CombatAssistComponent::SetMovementSpeed(const float Speed)
 {
 	MoveVectorSpeed = Speed;
+
+	ARGX_CharacterBase* CharacterBase = Cast<ARGX_CharacterBase>(GetOwner());
+	if (CharacterBase)
+	{
+		UCharacterMovementComponent* CharacterMovementComponent = CharacterBase->GetCharacterMovement();
+		if (CharacterMovementComponent)
+		{
+			CharacterMovementComponent->MaxWalkSpeed = Speed;
+			UE_LOG(LogTemp, Warning, TEXT("MAX WALK SPEED: %f"), CharacterMovementComponent->MaxWalkSpeed);
+		}
+	}
 }
