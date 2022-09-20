@@ -9,37 +9,44 @@ void URGX_DashAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	ARGX_PlayerCharacter* Character = Cast<ARGX_PlayerCharacter>(ActorInfo->AvatarActor);
+	ARGX_PlayerCharacter* PlayerCharacter = Cast<ARGX_PlayerCharacter>(ActorInfo->AvatarActor);
 
-	if (Character)
+	if (PlayerCharacter)
 	{
-		if (Character->GetCharacterMovement()->IsFalling())
+		PlayerCharacter->DisableMovementInput();
+
+		UCharacterMovementComponent* CharacterMovementComponent = PlayerCharacter->GetCharacterMovement();
+		if (CharacterMovementComponent)
 		{
-			if (bool bHasAirDashed = Character->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.HasAirDashed"))))
+			CharacterMovementComponent->MaxAcceleration = 99999999.0f;
+			CharacterMovementComponent->GravityScale = 0.0f;
+
+			if (PlayerCharacter->GetCharacterMovement()->IsFalling())
 			{
-				EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
-				return;
-			}
-			else
-			{
-				Character->StopJumping();
-				Character->LaunchCharacter(FVector(0.0f, 0.0f, 0.0f), false, true);
-				// This tag is never removed so air dash con only be made once
-				Character->AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.HasAirDashed")));
+				if (bool bHasAirDashed = PlayerCharacter->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.HasAirDashed"))))
+				{
+					EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
+					return;
+				}
+				else
+				{
+					PlayerCharacter->StopJumping();
+					PlayerCharacter->LaunchCharacter(FVector(0.0f, 0.0f, 0.0f), false, true);
+					// This tag is never removed so air dash con only be made once
+					PlayerCharacter->AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.HasAirDashed")));
+				}
 			}
 		}
 
-		Character->GetCharacterMovement()->GravityScale = 0.0f;
-		//Character->GetCharacterMovement()->MaxWalkSpeed = 0.0f;
-		Character->DisableMovementInput();
-
-		UCapsuleComponent* CapsuleComponent = Character->GetCapsuleComponent();
+		// Remove collisions with pawns
+		UCapsuleComponent* CapsuleComponent = PlayerCharacter->GetCapsuleComponent();
 		if (CapsuleComponent)
 		{
 			CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 		}
 
-		UAbilitySystemComponent* ASC = Character->GetAbilitySystemComponent();
+		// Apply invulnerability effect
+		UAbilitySystemComponent* ASC = PlayerCharacter->GetAbilitySystemComponent();
 		if (ASC != nullptr)
 		{
 			FGameplayEffectSpecHandle GameplayEffectSpecHandle = MakeOutgoingGameplayEffectSpec(InvulnerabilityEffect, 1);
@@ -57,15 +64,25 @@ void URGX_DashAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const
 {
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 
-	ARGX_PlayerCharacter* Character = Cast<ARGX_PlayerCharacter>(ActorInfo->AvatarActor);
-	if (Character)
+	ARGX_PlayerCharacter* PlayerCharacter = Cast<ARGX_PlayerCharacter>(ActorInfo->AvatarActor);
+	if (PlayerCharacter)
 	{
-		//Character->GetCharacterMovement()->MaxWalkSpeed = 800.0f;
-		Character->GetCharacterMovement()->MaxAcceleration = Character->MaxAcceleration;
-		Character->GetCharacterMovement()->GravityScale = Character->DefaultGravity;
-		Character->EnableMovementInput();
+		PlayerCharacter->EnableMovementInput();
 
-		UCapsuleComponent* CapsuleComponent = Character->GetCapsuleComponent();
+		UCharacterMovementComponent* CharacterMovementComponent = PlayerCharacter->GetCharacterMovement();
+		if (CharacterMovementComponent)
+		{
+			PlayerCharacter->GetCharacterMovement()->MaxAcceleration = PlayerCharacter->MaxAcceleration;
+			PlayerCharacter->GetCharacterMovement()->GravityScale = PlayerCharacter->DefaultGravity;
+
+			if (CharacterMovementComponent->IsFalling())
+			{
+				PlayerCharacter->LaunchCharacter(FVector(0.0f, 0.0f, -0.1f), true, true);
+			}
+		}
+
+
+		UCapsuleComponent* CapsuleComponent = PlayerCharacter->GetCapsuleComponent();
 		if (CapsuleComponent)
 		{
 			CapsuleComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);

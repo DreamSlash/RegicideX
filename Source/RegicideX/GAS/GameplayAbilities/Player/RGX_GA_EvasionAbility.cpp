@@ -2,10 +2,11 @@
 #include "GameFramework/Character.h"
 #include "RegicideX/Character/RGX_PlayerCharacter.h"
 #include "Kismet/KismetMathLibrary.h"
-#include "GameFramework/CharacterMovementComponent.h"
 
 void URGX_EvasionAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData)
 {
+	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+
 	ARGX_PlayerCharacter* PlayerCharacter = Cast<ARGX_PlayerCharacter>(ActorInfo->AvatarActor);
 	if (PlayerCharacter == false)
 	{
@@ -13,12 +14,6 @@ void URGX_EvasionAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	}
 
 	RotatePlayerTowardsInput(PlayerCharacter);
-
-	UCharacterMovementComponent* CharacterMovementComponent = PlayerCharacter->GetCharacterMovement();
-	if (CharacterMovementComponent)
-	{
-		CharacterMovementComponent->MaxAcceleration = 99999999.0f;
-	}
 
 	bool bIsBeingAttacked = PlayerCharacter->IsBeingAttacked();
 
