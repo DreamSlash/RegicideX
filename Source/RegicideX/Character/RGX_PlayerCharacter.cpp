@@ -232,11 +232,13 @@ void ARGX_PlayerCharacter::ManageHeavyAttackInputRelease()
 
 void ARGX_PlayerCharacter::ManageJumpInput()
 {
-	if (HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("Ability.Melee")) == false)
-	{
-		Jump();
-		OnJump();
-	}
+	// Jump cancels current attack
+	FGameplayTagContainer TagContainer(FGameplayTag::RequestGameplayTag(FName("Ability.Melee")));
+	GetAbilitySystemComponent()->CancelAbilities(&TagContainer);
+	OnInterrupted();
+
+	Jump();
+	OnJump();
 }
 
 void ARGX_PlayerCharacter::ManageJumpInputReleased()
