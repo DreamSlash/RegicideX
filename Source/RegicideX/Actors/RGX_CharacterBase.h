@@ -80,6 +80,12 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FVector HitReactDirection = FVector(0.0f);
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float MoveSpeed;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float MaxAcceleration = 2048.0f;
+
 protected:
 	/** The level of this character, should not be modified directly once it has already spawned */
 	UPROPERTY(EditAnywhere, Category = Abilities)
@@ -111,6 +117,8 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	TMap<ERGX_AnimEvent, FAnimationArray> AnimMontageMap;
+
+	void BeginPlay() override;
 
 	/** Events called from attribute set changes to decouple the logic. They call BP events. */
 
