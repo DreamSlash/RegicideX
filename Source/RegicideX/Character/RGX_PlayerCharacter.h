@@ -69,11 +69,6 @@ class REGICIDEX_API ARGX_PlayerCharacter : public ARGX_CharacterBase
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class URGX_CameraControllerComponent* CameraControllerComponent = nullptr;
 
-	/** Check if player is attacking, meaning the player has an active ability with Ability.Melee tag on it. */
-	bool IsAttacking();
-
-	bool IsDashing();
-
 	// Attributes ---------------
 	UPROPERTY()
 	URGX_MovementAttributeSet* MovementAttributeSet = nullptr;
@@ -81,6 +76,11 @@ class REGICIDEX_API ARGX_PlayerCharacter : public ARGX_CharacterBase
 	// --------------------------
 public:
 	ARGX_PlayerCharacter();
+
+	/** Check if player is attacking, meaning the player has an active ability with Ability.Melee tag on it. */
+	bool IsAttacking();
+
+	bool IsDashing();
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseTurnRate;
