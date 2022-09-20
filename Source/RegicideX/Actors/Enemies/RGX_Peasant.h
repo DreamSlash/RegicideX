@@ -22,7 +22,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	URGX_MovementAssistComponent* MovementAssistComponent;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UBehaviorTree* BTree = nullptr;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)

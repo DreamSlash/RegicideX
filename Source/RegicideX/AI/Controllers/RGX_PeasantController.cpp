@@ -22,32 +22,35 @@ void ARGX_PeasantController::OnPossess(APawn* pawn)
 	}
 
 	Super::OnPossess(pawn);
-	ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(pawn);
 
-	if (Peasant)
-	{
-		if (Peasant->BTree)
-		{
-			if (BBComponent->InitializeBlackboard(*Peasant->BTree->BlackboardAsset))
-			{
-				TargetActorID = BBComponent->GetKeyID("TargetActor");
-				DistanceToPlayerID = BBComponent->GetKeyID("DistanceToPlayer");
+	Peasant = Cast<ARGX_Peasant>(pawn);
 
-				// [SM] hack pero esto hay que arreglarlo
-				BBComponent->SetValueAsObject("SelfActor", GetPawn());
+	//Hack temporal, se lanza el bt desde blueprints pq antes se hace un playmontage en el onpossess
+	
+	//if (Peasant)
+	//{
+	//	if (Peasant->BTree)
+	//	{
+	//		if (BBComponent->InitializeBlackboard(*Peasant->BTree->BlackboardAsset))
+	//		{
+	//			TargetActorID = BBComponent->GetKeyID("TargetActor");
+	//			DistanceToPlayerID = BBComponent->GetKeyID("DistanceToPlayer");
 
-				// Execute behavior tree after initialization.
-				BTComponent->StartTree(*Peasant->BTree, EBTExecutionMode::Looped);
-			}		
-		}
-	}
+	//			// [SM] hack pero esto hay que arreglarlo
+	//			BBComponent->SetValueAsObject("SelfActor", GetPawn());
+
+	//			// Execute behavior tree after initialization.
+	//			BTComponent->StartTree(*Peasant->BTree, EBTExecutionMode::Looped);
+	//		}		
+	//	}
+	//}
 }
 
 void ARGX_PeasantController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	const ARGX_Peasant* Peasant = Cast<ARGX_Peasant>(GetPawn());
+	/*Peasant = Cast<ARGX_Peasant>(GetPawn());*/
 
 	if (Peasant)
 	{
