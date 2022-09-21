@@ -48,5 +48,8 @@ private:
 	bool bIsAttacking;
 
 	UPROPERTY(BlueprintReadOnly, Category = Character, meta = (AllowPrivateAccess = "true"))
+	bool bIsDashing;
+
+	UPROPERTY(BlueprintReadOnly, Category = Character, meta = (AllowPrivateAccess = "true"))
 	bool bIsAlive;
 };

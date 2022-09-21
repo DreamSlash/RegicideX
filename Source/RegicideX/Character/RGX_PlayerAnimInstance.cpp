@@ -34,5 +34,6 @@ void URGX_PlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 	bIsOnAir = PlayerCharacter->GetCharacterMovement()->IsFalling();
 	bIsAttacking = PlayerCharacter->IsAttacking();
+	bIsDashing = PlayerCharacter->IsDashing();
 	bIsAlive = PlayerCharacter->IsAlive();
 }
