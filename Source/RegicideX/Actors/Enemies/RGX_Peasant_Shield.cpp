@@ -14,6 +14,9 @@ ARGX_Peasant_Shield::ARGX_Peasant_Shield()
 
 float ARGX_Peasant_Shield::HandleDamageMitigation(float DamageAmount, const FHitResult& HitInfo, const FGameplayTagContainer& DamageTags, ARGX_CharacterBase* InstigatorCharacter, AActor* DamageCauser)
 {
+	if (bImmune)
+		return 0.0f;
+
 	if (ShieldAmount > 0.0f == false)
 	{
 		UE_LOG(LogTemp, Warning, TEXT("Shield did not mitigate damage"));

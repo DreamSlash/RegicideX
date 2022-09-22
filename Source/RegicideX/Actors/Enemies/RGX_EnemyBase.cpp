@@ -252,7 +252,20 @@ void ARGX_EnemyBase::HandleDamage(
 	AActor* DamageCauser,
 	ERGX_AnimEvent HitReactFlag)
 {
+	if (bImmune)
+		return;
+
 	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser, HitReactFlag);
+
+	FVector MyForward = GetActorForwardVector();
+	MyForward.Z = 0.0f;
+	MyForward.Normalize();
+
+	FVector ToTarget = TargetActor->GetActorLocation() - GetActorLocation();
+	ToTarget.Z = 0.0f;
+	ToTarget.Normalize();
+
+	const float DotProduct = FVector::DotProduct(MyForward, ToTarget);
 
 	StopAnimMontage();
 	if (IsAlive())
@@ -286,8 +299,15 @@ void ARGX_EnemyBase::HandleDamage(
 				UAnimMontage* AnimToPlay = nullptr;
 				if (AnimationList.Animations.Num() > 0)
 				{
-					int32 Index = UKismetMathLibrary::RandomIntegerInRange(0, AnimationList.Animations.Num() - 1);
-					AnimToPlay = AnimationList.Animations[Index];
+					if (DotProduct < 0.0 && AnimationList.Animations.Num() > 2)
+					{
+						AnimToPlay = AnimationList.Animations[2];
+					}
+					else 
+					{
+						int32 Index = UKismetMathLibrary::RandomIntegerInRange(0, AnimationList.Animations.Num() - 2);
+						AnimToPlay = AnimationList.Animations[Index];
+					}
 				}
 				else
 				{
@@ -310,8 +330,16 @@ void ARGX_EnemyBase::HandleDamage(
 		const FAnimationArray AnimationList = *AnimMontageMap.Find(ERGX_AnimEvent::Death);
 		if (AnimationList.Animations.Num() > 0)
 		{
-			int32 Index = UKismetMathLibrary::RandomIntegerInRange(0, AnimationList.Animations.Num() - 1);
-			AnimToPlay = AnimationList.Animations[Index];
+			if (DotProduct < 0.0 && AnimationList.Animations.Num() > 1) 
+			{
+				AnimToPlay = AnimationList.Animations[1];
+			}
+			else 
+			{
+				//int32 Index = UKismetMathLibrary::RandomIntegerInRange(0, AnimationList.Animations.Num() - 1);
+				AnimToPlay = AnimationList.Animations[0];
+			}
+			
 		}
 		else
 		{
