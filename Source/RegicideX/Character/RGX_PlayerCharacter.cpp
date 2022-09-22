@@ -551,11 +551,6 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 	}
 
 	//UE_LOG(LogTemp, Warning, TEXT("bIgnoreInputMoveVector: %s"), bIgnoreInputMoveVector ? TEXT("TRUE") : TEXT("FALSE"));
-
-	// Leaning
-	const FRGX_LeanInfo LeanInfo = CalculateLeanAmount();
-	LeanAmount = UKismetMathLibrary::FInterpTo(LeanAmount, LeanInfo.LeanAmount, DeltaTime, LeanInfo.InterSpeed);
-	// ------------------
 	
 	const FRotator Rotation = GetControlRotation();
 	const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
@@ -702,8 +697,9 @@ void ARGX_PlayerCharacter::TurnAtRate(float Rate)
 {
 	// TODO: Only TurnAtRate or AddControllerYawInput should modify YawChange at a time, depending if the user is using mouse or controller
 	CameraControllerComponent->CheckYawInput(Rate);
-	YawChange = Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds();
-	Super::AddControllerYawInput(YawChange);
+	float YawFinalChange = Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds();
+	UE_LOG(LogTemp, Warning, TEXT("YawChange: %f"), YawChange);
+	Super::AddControllerYawInput(YawFinalChange);
 }
 
 void ARGX_PlayerCharacter::LookUpAtRate(float Rate)
@@ -715,33 +711,13 @@ void ARGX_PlayerCharacter::LookUpAtRate(float Rate)
 void ARGX_PlayerCharacter::AddControllerYawInput(float Val)
 {
 	Super::AddControllerYawInput(Val);
-	//YawChange = Val;
+	YawChange = Val;
+	UE_LOG(LogTemp, Warning, TEXT("YawChange: %f"), YawChange);
 }
 
 void ARGX_PlayerCharacter::AddControllerPitchInput(float Val)
 {
 	Super::AddControllerPitchInput(Val);
-}
-
-FRGX_LeanInfo ARGX_PlayerCharacter::CalculateLeanAmount()
-{
-	FRGX_LeanInfo LeanInfo;
-
-	const float YawChangeClamped = UKismetMathLibrary::FClamp(YawChange, -1.0f, 1.0f);
-	const bool bInsuficientVelocity = GetCharacterMovement()->IsFalling() || GetVelocity().Size() < 5.0f;
-
-	if (bInsuficientVelocity == true)
-	{
-		LeanInfo.LeanAmount = 0.0f;
-		LeanInfo.InterSpeed = 10.0f;
-	}
-	else
-	{
-		LeanInfo.LeanAmount = YawChangeClamped;
-		LeanInfo.InterSpeed = 1.0f;
-	}
-
-	return LeanInfo;
 }
 
 void ARGX_PlayerCharacter::Landed(const FHitResult& Hit)

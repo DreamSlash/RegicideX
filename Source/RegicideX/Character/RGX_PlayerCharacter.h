@@ -21,19 +21,6 @@ class URGX_LaunchEventDataAsset;
 class UGameplayEffect;
 class UWidgetComponent;
 
-USTRUCT()
-struct FRGX_LeanInfo
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY()
-	float LeanAmount;
-
-	UPROPERTY(EditAnywhere)
-	float InterSpeed;
-};
-
 UCLASS(config = Game)
 class REGICIDEX_API ARGX_PlayerCharacter : public ARGX_CharacterBase
 {
@@ -214,9 +201,6 @@ protected:
 
 	virtual void AddControllerPitchInput(float Val) override;
 
-	//** Animation Functions */
-	FRGX_LeanInfo CalculateLeanAmount();
-
 	void Landed(const FHitResult& Hit) override;
 
 	UFUNCTION(BlueprintCallable)
@@ -289,5 +273,5 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-	FORCEINLINE float GetLeanAmount() const { return LeanAmount; }
+	FORCEINLINE float GetYawChange() const { return YawChange; }
 };
