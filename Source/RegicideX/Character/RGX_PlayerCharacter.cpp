@@ -741,6 +741,8 @@ FRGX_LeanInfo ARGX_PlayerCharacter::CalculateLeanAmount()
 		LeanInfo.InterSpeed = 1.0f;
 	}
 
+	UE_LOG(LogTemp, Warning, TEXT("Lean Amount: %f"), LeanInfo.LeanAmount);
+
 	return LeanInfo;
 }
 
