@@ -6,6 +6,19 @@
 #include "Animation/AnimInstance.h"
 #include "RGX_PlayerAnimInstance.generated.h"
 
+USTRUCT()
+struct FRGX_LeanInfo
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY()
+	float LeanAmount;
+
+	UPROPERTY(EditAnywhere)
+	float InterSpeed;
+};
+
 /**
  *
  */
@@ -38,19 +51,15 @@ private:
 	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	bool bIsOnAir;
 
-	/*
+	float YawChange;
+
+	float LeanAmount;
+
 	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	float LeanValue;
 	
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	float LeanOffset = 30.0f;
-	*/
-
-	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
-	float Lean;
-
-	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
-	bool LeaningRight;
 
 	UPROPERTY(BlueprintReadOnly, Category = Character, meta = (AllowPrivateAccess = "true"))
 	bool bIsAttacking;
@@ -64,4 +73,7 @@ private:
 	FRotator CharacterRotationLastFrame;
 	FRotator CharacterRotation;
 	FRotator DeltaRotation;
+
+private:
+	float CalculateLeanAmount(float DeltaSeconds);
 };

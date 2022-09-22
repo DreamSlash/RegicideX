@@ -29,22 +29,37 @@ void URGX_PlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	Velocity.Z = 0.0f;
 	MovementSpeed = Velocity.Size();
 
-	//const float PlayerLeanAmount = PlayerCharacter->GetLeanAmount();
-	//LeanValue = PlayerLeanAmount * LeanOffset;
-
 	bIsOnAir = PlayerCharacter->GetCharacterMovement()->IsFalling();
 	bIsAttacking = PlayerCharacter->IsAttacking();
 	bIsDashing = PlayerCharacter->IsDashing();
 	bIsAlive = PlayerCharacter->IsAlive();
 
-	CharacterRotationLastFrame = CharacterRotation;
-	CharacterRotation = PlayerCharacter->GetActorRotation();
-	const FRotator DeltaRotator = UKismetMathLibrary::NormalizedDeltaRotator(CharacterRotation, CharacterRotationLastFrame);
-	const float Target = DeltaRotator.Yaw / DeltaSeconds;
-	const float Interp = FMath::FInterpTo(Lean, Target, DeltaSeconds, 6.0f);
-	const float InterpClamped = FMath::Clamp(Interp, -90.0f, 90.0f);
-	LeaningRight = InterpClamped > 0.0f ? true : false;
-	//const float InterpClampedAbs = FMath::Abs(InterpClamped);
-	Lean = FMath::GetMappedRangeValueClamped(FVector2D(-90.0f, 90.0f), FVector2D(-30.0f, 30.0f), InterpClamped);
-	//Lean = InterpClamped;
+	// Character Lean
+	YawChange = PlayerCharacter->GetYawChange();
+	LeanValue = CalculateLeanAmount(DeltaSeconds) * LeanOffset;
+}
+
+float URGX_PlayerAnimInstance::CalculateLeanAmount(float DeltaSeconds)
+{
+	FRGX_LeanInfo LeanInfo;
+
+	const float YawChangeClamped = UKismetMathLibrary::FClamp(YawChange, -1.0f, 1.0f);
+	const bool bInsuficientVelocity = PlayerCharacter->GetCharacterMovement()->IsFalling() || PlayerCharacter->GetVelocity().Size() < 5.0f;
+
+	if (bInsuficientVelocity == true)
+	{
+		LeanInfo.LeanAmount = 0.0f;
+		LeanInfo.InterSpeed = 10.0f;
+	}
+	else
+	{
+		LeanInfo.LeanAmount = YawChangeClamped;
+		LeanInfo.InterSpeed = 1.0f;
+	}
+
+	LeanAmount = UKismetMathLibrary::FInterpTo(LeanAmount, LeanInfo.LeanAmount, DeltaSeconds, LeanInfo.InterSpeed);
+
+	UE_LOG(LogTemp, Warning, TEXT("Lean Amount: %f"), LeanInfo.LeanAmount);
+
+	return LeanAmount;
 }
