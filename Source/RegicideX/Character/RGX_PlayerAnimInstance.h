@@ -59,7 +59,7 @@ private:
 	float LeanValue;
 	
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Movement, meta = (AllowPrivateAccess = "true"))
-	float LeanOffset = 30.0f;
+	float LeanOffset = 60.0f;
 
 	UPROPERTY(BlueprintReadOnly, Category = Character, meta = (AllowPrivateAccess = "true"))
 	bool bIsAttacking;
