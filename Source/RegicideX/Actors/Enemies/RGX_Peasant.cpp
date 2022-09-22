@@ -12,6 +12,8 @@
 ARGX_Peasant::ARGX_Peasant()
 {
 	MovementAssistComponent = CreateDefaultSubobject<URGX_MovementAssistComponent>(TEXT("MovementAssistComponent"));
+	GetMesh()->SetHiddenInGame(true, true);
+	bImmune = true;
 }
 
 void ARGX_Peasant::BeginPlay()

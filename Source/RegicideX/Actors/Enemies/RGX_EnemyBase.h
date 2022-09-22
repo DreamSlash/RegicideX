@@ -106,6 +106,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool Orbiting = false;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bImmune = false;
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	URGX_HitboxesManagerComponent* HitboxesManager = nullptr;
 
