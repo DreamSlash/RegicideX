@@ -320,6 +320,11 @@ bool ARGX_PlayerCharacter::IsBeingAttacked()
 	return false;
 }
 
+void ARGX_PlayerCharacter::OnFinishBrake()
+{
+	EndBrake();
+}
+
 void ARGX_PlayerCharacter::HandleAction(const ERGX_PlayerActions Action)
 {
 	switch(Action)
@@ -445,6 +450,51 @@ void ARGX_PlayerCharacter::TargetRight()
 	CameraControllerComponent->TargetRight();
 }
 
+void ARGX_PlayerCharacter::CheckBrake(float DeltaTime)
+{
+	if (bIsBraking) return;
+
+	CharacterRotationLastFrame = CharacterRotation;
+	CharacterRotation = GetActorRotation();
+	const FRotator Delta = UKismetMathLibrary::NormalizedDeltaRotator(CharacterRotation, CharacterRotationLastFrame);
+	const float TargetYaw = Delta.Yaw / DeltaTime;
+
+	const float VelocityMagnitude = GetVelocity().Size();
+	if (FMath::Abs(TargetYaw) > BrakeThreshold && VelocityMagnitude > MinVelocityForBrake && GetCharacterMovement()->IsFalling() == false)
+	{
+		// TODO: Check if there is an ability not interrupted by brake. If that's the case, the ability has priority and the brake is not performed
+
+		StartBrake();
+	}
+}
+
+void ARGX_PlayerCharacter::StartBrake()
+{
+	bIsBraking = true;
+
+	// Brake cancels current attack
+	FGameplayTagContainer TagContainer(FGameplayTag::RequestGameplayTag(FName("Ability.Melee")));
+	GetAbilitySystemComponent()->CancelAbilities(&TagContainer);
+	OnInterrupted();
+
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	if (CharacterMovementComponent)
+	{
+		CharacterMovementComponent->MaxWalkSpeed = 0.0f;
+	}
+}
+
+void ARGX_PlayerCharacter::EndBrake()
+{
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	if (CharacterMovementComponent)
+	{
+		CharacterMovementComponent->MaxWalkSpeed = MoveSpeed;
+	}
+
+	bIsBraking = false;
+}
+
 //void ARGX_PlayerCharacter::LevelUp(const float NewLevel)
 //{
 //	Level = NewLevel;
@@ -561,8 +611,7 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 	FVector Direction = ForwardDirection * LastInputDirection.X + RightDirection * LastInputDirection.Y;
 	Direction.Normalize();
 
-	//UE_LOG(LogTemp, Warning, TEXT("MAX ACCELERATION: %f"), GetCharacterMovement()->MaxAcceleration);
-	//UE_LOG(LogTemp, Warning, TEXT("MAX WALK SPEED: %f"), GetCharacterMovement()->MaxWalkSpeed);
+	CheckBrake(DeltaTime);
 
 	//UKismetSystemLibrary::DrawDebugCircle(GetWorld(), GetActorLocation(), 100.0f, 24, FLinearColor::Green, 0.0f, 0.0f, FVector(0.0f, 1.0f, 0.0f), FVector(1.0f, 0.0f, 0.0f));
 }

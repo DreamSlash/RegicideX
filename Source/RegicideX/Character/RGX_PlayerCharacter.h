@@ -112,6 +112,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool bIsFallingDown = false;
 
+	UPROPERTY(BlueprintReadWrite)
+	bool bIsBraking;
+
 	void BeginPlay() override;
 
 	void Tick(float DeltaTime) override;
@@ -157,6 +160,15 @@ protected:
 	UPROPERTY()
 	bool bIgnoreInputMoveVector = false;
 
+	FRotator CharacterRotationLastFrame;
+	FRotator CharacterRotation;
+	FRotator DeltaRotation;
+
+	UPROPERTY(EditDefaultsOnly)
+	float BrakeThreshold = 400.0f;
+
+	UPROPERTY(EditDefaultsOnly)
+	float MinVelocityForBrake = 400.0f;
 	// -----------------------
 
 	UPROPERTY()
@@ -239,6 +251,10 @@ protected:
 	void TargetLeft();
 	void TargetRight();
 
+	void CheckBrake(float DeltaTime);
+	void StartBrake();
+	void EndBrake();
+
 	//void ManagePowerSkillInput();
 	void TryToInteract();
 	// ----------------------------------
@@ -261,6 +277,9 @@ public:
 	/** Utility methods */
 	UFUNCTION(BlueprintCallable)
 	bool IsBeingAttacked();
+
+	UFUNCTION(BlueprintCallable)
+	void OnFinishBrake();
 
 	/* Input Handler calls this to let the player handle the action */
 	UFUNCTION()

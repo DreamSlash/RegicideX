@@ -33,18 +33,13 @@ void URGX_PlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	bIsAttacking = PlayerCharacter->IsAttacking();
 	bIsDashing = PlayerCharacter->IsDashing();
 	bIsAlive = PlayerCharacter->IsAlive();
+	bIsBraking = PlayerCharacter->bIsBraking;
 
 	CharacterRotationLastFrame = CharacterRotation;
 	CharacterRotation = PlayerCharacter->GetActorRotation();
 	const FRotator Delta = UKismetMathLibrary::NormalizedDeltaRotator(CharacterRotation, CharacterRotationLastFrame);
 	const float Target = Delta.Yaw / DeltaSeconds;
 	YawChange = FMath::GetMappedRangeValueClamped(FVector2D(-540.0f, 540.0f), FVector2D(-1.0f, 1.0f), Target);
-	UE_LOG(LogTemp, Warning, TEXT("Delta: %f"), Delta.Yaw);
-	UE_LOG(LogTemp, Warning, TEXT("Target: %f"), Target);
-	UE_LOG(LogTemp, Warning, TEXT("YawChange: %f"), YawChange);
-
-	// Character Lean
-	//YawChange = PlayerCharacter->GetYawChange();
 	LeanValue = CalculateLeanAmount(DeltaSeconds) * LeanOffset;
 }
 
@@ -68,7 +63,7 @@ float URGX_PlayerAnimInstance::CalculateLeanAmount(float DeltaSeconds)
 
 	LeanAmount = UKismetMathLibrary::FInterpTo(LeanAmount, LeanInfo.LeanAmount, DeltaSeconds, LeanInfo.InterSpeed);
 
-	UE_LOG(LogTemp, Warning, TEXT("Lean Amount: %f"), LeanInfo.LeanAmount);
+	//UE_LOG(LogTemp, Warning, TEXT("Lean Amount: %f"), LeanInfo.LeanAmount);
 
 	return LeanAmount;
 }
