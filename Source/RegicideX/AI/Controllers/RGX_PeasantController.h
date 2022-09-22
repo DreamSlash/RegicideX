@@ -6,6 +6,7 @@
 
 class UBlackboardComponent;
 class UBehaviorTreeComponent;
+class ARGX_Peasant;
 
 UCLASS()
 class REGICIDEX_API ARGX_PeasantController : public ARGX_EnemyBaseController
@@ -26,6 +27,9 @@ public:
 
 	UPROPERTY(transient)
 	UBehaviorTreeComponent* BTComponent = nullptr;
+
+	UPROPERTY(BlueprintReadWrite)
+	ARGX_Peasant* Peasant = nullptr;
 
 	// Blackboard key ids
 	uint8 TargetActorID;

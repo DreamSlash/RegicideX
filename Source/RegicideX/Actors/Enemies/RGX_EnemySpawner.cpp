@@ -6,6 +6,7 @@
 #include "RGX_Peasant.h"
 #include "Kismet/GameplayStatics.h"
 #include "Math/UnrealMathUtility.h"
+#include "NavigationSystem.h"
 
 // Sets default values
 ARGX_EnemySpawner::ARGX_EnemySpawner()
@@ -28,10 +29,24 @@ void ARGX_EnemySpawner::BeginPlay()
 ARGX_EnemyBase* ARGX_EnemySpawner::Spawn(const TSubclassOf<ARGX_EnemyBase> EnemyBP)
 {
 	// @todo: Make spawner smarter -> get parameters from Data Asset and preset actor parameter
+	const FVector spawnerLocation = GetActorLocation();
+	UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetNavigationSystem(this);
 
-	const FVector Location = FMath::RandPointInBox(SpawnBox) + FVector(150.0f, 150.0f, 300.0f);
 	const FRotator Rotation(0.0f, 0.0f, 0.0f);
+	for (int32 i = 0; i < 10; ++i)
+	{
+		FNavLocation spawnLocation;
+		if (NavSystem->GetRandomReachablePointInRadius(spawnerLocation, SpawnRadius, spawnLocation))
+		{
+			FVector finalLocation = spawnLocation.Location;
+			finalLocation.Z = spawnerLocation.Z;
 
-	ARGX_EnemyBase* SpawnedEnemy = GetWorld()->SpawnActor<ARGX_EnemyBase>(EnemyBP, Location, Rotation);
-	return SpawnedEnemy;
+			if (ARGX_EnemyBase* SpawnedEnemy = GetWorld()->SpawnActor<ARGX_EnemyBase>(EnemyBP, finalLocation, Rotation))
+			{
+				return SpawnedEnemy;
+			}
+		}
+	}
+
+	return nullptr;
 }

@@ -24,6 +24,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	FBox SpawnBox;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float SpawnRadius = 200.0f;
+
 	/** Spawns enemy based on the blueprint EnemyBP **/
 	UFUNCTION(BlueprintCallable)
 	ARGX_EnemyBase* Spawn(TSubclassOf<ARGX_EnemyBase> EnemyBP);
