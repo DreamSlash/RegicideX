@@ -58,7 +58,7 @@ float URGX_PlayerAnimInstance::CalculateLeanAmount(float DeltaSeconds)
 	else
 	{
 		LeanInfo.LeanAmount = YawChangeClamped;
-		LeanInfo.InterSpeed = 1.0f;
+		LeanInfo.InterSpeed = LeanInterpSpeed;
 	}
 
 	LeanAmount = UKismetMathLibrary::FInterpTo(LeanAmount, LeanInfo.LeanAmount, DeltaSeconds, LeanInfo.InterSpeed);
