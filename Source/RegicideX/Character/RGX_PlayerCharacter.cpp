@@ -454,35 +454,20 @@ void ARGX_PlayerCharacter::CheckBrake(float DeltaTime)
 {
 	if (bIsBraking) return;
 
-	/*
-	CharacterRotationLastFrame = CharacterRotation;
-	CharacterRotation = GetActorRotation();
-	const FRotator Delta = UKismetMathLibrary::NormalizedDeltaRotator(CharacterRotation, CharacterRotationLastFrame);
-	UE_LOG(LogTemp, Warning, TEXT("Delta Rotation: %f"), Delta.Yaw);
-	const float TargetYaw = Delta.Yaw / DeltaTime;
-	*/
+	FVector LastInputDirection = GetLastMoveInputDirection();
+	FVector CurrentInputDirection = GetCurrentMoveInputDirection();
+	UE_LOG(LogTemp, Warning, TEXT("LastInputDirection: %f,%f,%f"), LastInputDirection.X, LastInputDirection.Y, LastInputDirection.Z);
+	UE_LOG(LogTemp, Warning, TEXT("CurrentInputDirection: %f,%f,%f"), CurrentInputDirection.X, CurrentInputDirection.Y, CurrentInputDirection.Z);
 
-	/*
-	RecentRotation += TargetYaw;
-	FTimerDelegate TimerDel;
-	FTimerHandle TimerHandle;
-	TimerDel.BindUFunction(this, FName("EraseRecentRotation"), TargetYaw);
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, TimeForBrake, false);
-
-	bool bBrakeThreshold = RecentRotation > BrakeThreshold || RecentRotation < -BrakeThreshold;
-	UE_LOG(LogTemp, Warning, TEXT("bBrakeThreshold: %s"), bBrakeThreshold ? TEXT("TRUE") : TEXT("FALSE"));
+	const float Dot = FVector::DotProduct(LastInputDirection, CurrentInputDirection);
+	bool bDotCondition = Dot < 0.0f;
+	UE_LOG(LogTemp, Warning, TEXT("Dot: %f"), Dot);
+	//UE_LOG(LogTemp, Warning, TEXT("bDotCondition: %s"), bDotCondition ? TEXT("TRUE") : TEXT("FALSE"));
 	bool bVelocityThreshold = VelocityMagnitudeLastFrame > MinVelocityForBrake;
-	UE_LOG(LogTemp, Warning, TEXT("VelocityMagnitudeLastFrame: %f"), VelocityMagnitudeLastFrame);
-	UE_LOG(LogTemp, Warning, TEXT("bVelocityThreshold: %s"), bVelocityThreshold ? TEXT("TRUE") : TEXT("FALSE"));
-	*/
-	/*
-	if (bBrakeThreshold && bVelocityThreshold && GetCharacterMovement()->IsFalling() == false)
+	if (bDotCondition && bVelocityThreshold == true && GetCharacterMovement()->IsFalling() == false)
 	{
-		// TODO: Check if there is an ability not interrupted by brake. If that's the case, the ability has priority and the brake is not performed
-
-		StartBrake();
+		StartBrake();	
 	}
-	*/
 }
 
 void ARGX_PlayerCharacter::StartBrake()
@@ -498,6 +483,7 @@ void ARGX_PlayerCharacter::StartBrake()
 	if (CharacterMovementComponent)
 	{
 		CharacterMovementComponent->MaxWalkSpeed = 0.0f;
+		CharacterMovementComponent->RotationRate.Yaw = 200.0f;
 	}
 }
 
@@ -507,6 +493,7 @@ void ARGX_PlayerCharacter::EndBrake()
 	if (CharacterMovementComponent)
 	{
 		CharacterMovementComponent->MaxWalkSpeed = MoveSpeed;
+		CharacterMovementComponent->RotationRate.Yaw = 540.0f;
 	}
 
 	bIsBraking = false;
@@ -623,21 +610,13 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 	}
 
 	//UE_LOG(LogTemp, Warning, TEXT("bIgnoreInputMoveVector: %s"), bIgnoreInputMoveVector ? TEXT("TRUE") : TEXT("FALSE"));
-	
-	const FRotator Rotation = GetControlRotation();
-	const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
-
-	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-
-	FVector Direction = ForwardDirection * LastInputDirection.X + RightDirection * LastInputDirection.Y;
-	Direction.Normalize();
 
 	CheckBrake(DeltaTime);
 	
 	VelocityMagnitudeLastFrame = GetVelocity().Size();
+	LastMoveInput = CurrentMoveInput;
 
-	UE_LOG(LogTemp, Warning, TEXT("Recent Rotation: %f"), RecentRotation);
+	//UE_LOG(LogTemp, Warning, TEXT("Recent Rotation: %f"), RecentRotation);
 
 	//UKismetSystemLibrary::DrawDebugCircle(GetWorld(), GetActorLocation(), 100.0f, 24, FLinearColor::Green, 0.0f, 0.0f, FVector(0.0f, 1.0f, 0.0f), FVector(1.0f, 0.0f, 0.0f));
 }
@@ -673,11 +652,19 @@ void ARGX_PlayerCharacter::OnFollowCombo()
 	}
 }
 
+FVector ARGX_PlayerCharacter::GetCurrentMoveInputDirection()
+{
+	return GetMoveDirectionFromVector(CurrentMoveInput);
+}
+
 FVector ARGX_PlayerCharacter::GetLastMoveInputDirection()
 {
-	FVector2D MovementInput = LastInputDirection;
+	return GetMoveDirectionFromVector(LastMoveInput);
+}
 
-	if (MovementInput != FVector2D::ZeroVector)
+FVector ARGX_PlayerCharacter::GetMoveDirectionFromVector(FVector2D& InputVector)
+{
+	if (InputVector != FVector2D::ZeroVector)
 	{
 		const FRotator Rotation = GetControlRotation();
 		const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
@@ -685,7 +672,7 @@ FVector ARGX_PlayerCharacter::GetLastMoveInputDirection()
 		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 
-		FVector Direction = ForwardDirection * MovementInput.X + RightDirection * MovementInput.Y;
+		FVector Direction = ForwardDirection * InputVector.X + RightDirection * InputVector.Y;
 		Direction.Normalize();
 
 		return Direction;
@@ -696,7 +683,7 @@ FVector ARGX_PlayerCharacter::GetLastMoveInputDirection()
 
 void ARGX_PlayerCharacter::RotatePlayerTowardsInput()
 {
-	FVector InputDirection = GetLastMoveInputDirection();
+	FVector InputDirection = GetCurrentMoveInputDirection();
 
 	if (InputDirection.IsNearlyZero() == false)
 	{
@@ -768,11 +755,11 @@ void ARGX_PlayerCharacter::MoveForward(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
-		LastInputDirection.X = Value;
+		CurrentMoveInput.X = Value;
 	}
 	else
 	{
-		LastInputDirection.X = 0.0f;
+		CurrentMoveInput.X = 0.0f;
 	}
 }
 
@@ -791,11 +778,11 @@ void ARGX_PlayerCharacter::MoveRight(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
-		LastInputDirection.Y = Value;
+		CurrentMoveInput.Y = Value;
 	}
 	else
 	{
-		LastInputDirection.Y = 0.0f;
+		CurrentMoveInput.Y = 0.0f;
 	}
 }
 

@@ -134,7 +134,13 @@ public:
 	void OnFollowCombo();
 
 	UFUNCTION(BlueprintCallable)
+	FVector GetCurrentMoveInputDirection();
+
+	UFUNCTION(BlueprintCallable)
 	FVector GetLastMoveInputDirection();
+
+	UFUNCTION(BlueprintCallable)
+	FVector GetMoveDirectionFromVector(FVector2D& InputVector);
 
 	UFUNCTION(BlueprintCallable)
 	void RotatePlayerTowardsInput();
@@ -148,7 +154,8 @@ public:
 		AActor* DamageCauser,
 		ERGX_AnimEvent HitReactFlag) override;
 
-	FVector2D LastInputDirection = FVector2D::ZeroVector;
+	FVector2D LastMoveInput = FVector2D::ZeroVector;
+	FVector2D CurrentMoveInput = FVector2D::ZeroVector;
 
 protected:
 	/** Animation variables */
