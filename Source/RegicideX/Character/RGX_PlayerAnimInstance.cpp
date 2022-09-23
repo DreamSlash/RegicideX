@@ -40,7 +40,7 @@ void URGX_PlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	const FRotator Delta = UKismetMathLibrary::NormalizedDeltaRotator(CharacterRotation, CharacterRotationLastFrame);
 	const float Target = Delta.Yaw / DeltaSeconds;
 	YawChange = FMath::GetMappedRangeValueClamped(FVector2D(-540.0f, 540.0f), FVector2D(-1.0f, 1.0f), Target);
-	LeanValue = CalculateLeanAmount(DeltaSeconds) * LeanOffset;
+	LeanValue = FMath::Clamp(CalculateLeanAmount(DeltaSeconds) * LeanOffset, -30.0f, 30.0f);
 }
 
 float URGX_PlayerAnimInstance::CalculateLeanAmount(float DeltaSeconds)

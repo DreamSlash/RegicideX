@@ -51,6 +51,7 @@ private:
 	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	bool bIsOnAir;
 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	float YawChange;
 
 	float LeanAmount;
@@ -59,7 +60,7 @@ private:
 	float LeanValue;
 	
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Movement, meta = (AllowPrivateAccess = "true"))
-	float LeanOffset = 60.0f;
+	float LeanOffset = 100.0f;
 
 	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	bool bIsBraking;
