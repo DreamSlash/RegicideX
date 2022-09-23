@@ -133,6 +133,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnFollowCombo();
 
+	UFUNCTION(BlueprintCallable)
+	FVector GetLastMoveInputDirection();
+
+	UFUNCTION(BlueprintCallable)
+	void RotatePlayerTowardsInput();
+
 	/** Events called from attribute set changes to decouple the logic. They call BP events. */
 	virtual void HandleDamage(
 		float DamageAmount,
@@ -169,6 +175,12 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	float MinVelocityForBrake = 400.0f;
+
+	UPROPERTY(EditDefaultsOnly)
+	float TimeForBrake = 0.1f;
+
+	float VelocityMagnitudeLastFrame;
+	float RecentRotation;
 	// -----------------------
 
 	UPROPERTY()
@@ -254,6 +266,9 @@ protected:
 	void CheckBrake(float DeltaTime);
 	void StartBrake();
 	void EndBrake();
+	
+	UFUNCTION()
+	void EraseRecentRotation(float YawRotation);
 
 	//void ManagePowerSkillInput();
 	void TryToInteract();

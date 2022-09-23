@@ -454,18 +454,35 @@ void ARGX_PlayerCharacter::CheckBrake(float DeltaTime)
 {
 	if (bIsBraking) return;
 
+	/*
 	CharacterRotationLastFrame = CharacterRotation;
 	CharacterRotation = GetActorRotation();
 	const FRotator Delta = UKismetMathLibrary::NormalizedDeltaRotator(CharacterRotation, CharacterRotationLastFrame);
+	UE_LOG(LogTemp, Warning, TEXT("Delta Rotation: %f"), Delta.Yaw);
 	const float TargetYaw = Delta.Yaw / DeltaTime;
+	*/
 
-	const float VelocityMagnitude = GetVelocity().Size();
-	if (FMath::Abs(TargetYaw) > BrakeThreshold && VelocityMagnitude > MinVelocityForBrake && GetCharacterMovement()->IsFalling() == false)
+	/*
+	RecentRotation += TargetYaw;
+	FTimerDelegate TimerDel;
+	FTimerHandle TimerHandle;
+	TimerDel.BindUFunction(this, FName("EraseRecentRotation"), TargetYaw);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, TimeForBrake, false);
+
+	bool bBrakeThreshold = RecentRotation > BrakeThreshold || RecentRotation < -BrakeThreshold;
+	UE_LOG(LogTemp, Warning, TEXT("bBrakeThreshold: %s"), bBrakeThreshold ? TEXT("TRUE") : TEXT("FALSE"));
+	bool bVelocityThreshold = VelocityMagnitudeLastFrame > MinVelocityForBrake;
+	UE_LOG(LogTemp, Warning, TEXT("VelocityMagnitudeLastFrame: %f"), VelocityMagnitudeLastFrame);
+	UE_LOG(LogTemp, Warning, TEXT("bVelocityThreshold: %s"), bVelocityThreshold ? TEXT("TRUE") : TEXT("FALSE"));
+	*/
+	/*
+	if (bBrakeThreshold && bVelocityThreshold && GetCharacterMovement()->IsFalling() == false)
 	{
 		// TODO: Check if there is an ability not interrupted by brake. If that's the case, the ability has priority and the brake is not performed
 
 		StartBrake();
 	}
+	*/
 }
 
 void ARGX_PlayerCharacter::StartBrake()
@@ -493,6 +510,11 @@ void ARGX_PlayerCharacter::EndBrake()
 	}
 
 	bIsBraking = false;
+}
+
+void ARGX_PlayerCharacter::EraseRecentRotation(float YawRotation)
+{
+	RecentRotation -= YawRotation;
 }
 
 //void ARGX_PlayerCharacter::LevelUp(const float NewLevel)
@@ -612,6 +634,10 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 	Direction.Normalize();
 
 	CheckBrake(DeltaTime);
+	
+	VelocityMagnitudeLastFrame = GetVelocity().Size();
+
+	UE_LOG(LogTemp, Warning, TEXT("Recent Rotation: %f"), RecentRotation);
 
 	//UKismetSystemLibrary::DrawDebugCircle(GetWorld(), GetActorLocation(), 100.0f, 24, FLinearColor::Green, 0.0f, 0.0f, FVector(0.0f, 1.0f, 0.0f), FVector(1.0f, 0.0f, 0.0f));
 }
@@ -644,6 +670,37 @@ void ARGX_PlayerCharacter::OnFollowCombo()
 		int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(NextAttack, &EventData);
 		// Clear next attack status
 		ComboSystemComponent->CleanStatus(TriggeredAbilities);
+	}
+}
+
+FVector ARGX_PlayerCharacter::GetLastMoveInputDirection()
+{
+	FVector2D MovementInput = LastInputDirection;
+
+	if (MovementInput != FVector2D::ZeroVector)
+	{
+		const FRotator Rotation = GetControlRotation();
+		const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
+
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+
+		FVector Direction = ForwardDirection * MovementInput.X + RightDirection * MovementInput.Y;
+		Direction.Normalize();
+
+		return Direction;
+	}
+
+	return FVector::ZeroVector;
+}
+
+void ARGX_PlayerCharacter::RotatePlayerTowardsInput()
+{
+	FVector InputDirection = GetLastMoveInputDirection();
+
+	if (InputDirection.IsNearlyZero() == false)
+	{
+		SetActorRotation(InputDirection.Rotation());
 	}
 }
 
@@ -747,7 +804,7 @@ void ARGX_PlayerCharacter::TurnAtRate(float Rate)
 	// TODO: Only TurnAtRate or AddControllerYawInput should modify YawChange at a time, depending if the user is using mouse or controller
 	CameraControllerComponent->CheckYawInput(Rate);
 	float YawFinalChange = Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds();
-	UE_LOG(LogTemp, Warning, TEXT("YawChange: %f"), YawChange);
+	//UE_LOG(LogTemp, Warning, TEXT("YawChange: %f"), YawChange);
 	Super::AddControllerYawInput(YawFinalChange);
 }
 
@@ -761,7 +818,7 @@ void ARGX_PlayerCharacter::AddControllerYawInput(float Val)
 {
 	Super::AddControllerYawInput(Val);
 	YawChange = Val;
-	UE_LOG(LogTemp, Warning, TEXT("YawChange: %f"), YawChange);
+	//UE_LOG(LogTemp, Warning, TEXT("YawChange: %f"), YawChange);
 }
 
 void ARGX_PlayerCharacter::AddControllerPitchInput(float Val)
