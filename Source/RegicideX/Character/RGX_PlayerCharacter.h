@@ -173,21 +173,13 @@ protected:
 	UPROPERTY()
 	bool bIgnoreInputMoveVector = false;
 
-	FRotator CharacterRotationLastFrame;
-	FRotator CharacterRotation;
-	FRotator DeltaRotation;
-
-	UPROPERTY(EditDefaultsOnly)
-	float BrakeThreshold = 400.0f;
-
 	UPROPERTY(EditDefaultsOnly)
 	float MinVelocityForBrake = 400.0f;
 
-	UPROPERTY(EditDefaultsOnly)
-	float TimeForBrake = 0.1f;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float BrakeYawRotationRate = 240.0f;
 
 	float VelocityMagnitudeLastFrame;
-	float RecentRotation;
 	// -----------------------
 
 	UPROPERTY()
@@ -273,9 +265,6 @@ protected:
 	void CheckBrake(float DeltaTime);
 	void StartBrake();
 	void EndBrake();
-	
-	UFUNCTION()
-	void EraseRecentRotation(float YawRotation);
 
 	//void ManagePowerSkillInput();
 	void TryToInteract();

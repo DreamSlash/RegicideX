@@ -483,7 +483,7 @@ void ARGX_PlayerCharacter::StartBrake()
 	if (CharacterMovementComponent)
 	{
 		CharacterMovementComponent->MaxWalkSpeed = 0.0f;
-		CharacterMovementComponent->RotationRate.Yaw = 200.0f;
+		CharacterMovementComponent->RotationRate.Yaw = BrakeYawRotationRate;
 	}
 }
 
@@ -497,11 +497,6 @@ void ARGX_PlayerCharacter::EndBrake()
 	}
 
 	bIsBraking = false;
-}
-
-void ARGX_PlayerCharacter::EraseRecentRotation(float YawRotation)
-{
-	RecentRotation -= YawRotation;
 }
 
 //void ARGX_PlayerCharacter::LevelUp(const float NewLevel)
