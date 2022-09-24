@@ -7,7 +7,8 @@
 
 #include "RegicideX/Actors/Enemies/RGX_Peasant.h"
 
-ARGX_PeasantController::ARGX_PeasantController()
+ARGX_PeasantController::ARGX_PeasantController(const FObjectInitializer& ObjectInitializer)
+	: ARGX_EnemyBaseController(ObjectInitializer)
 {
 	BBComponent = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BBPeasant"));
 	BTComponent = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BTPeasant"));

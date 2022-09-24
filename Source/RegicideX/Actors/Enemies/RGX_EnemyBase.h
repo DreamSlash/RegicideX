@@ -80,6 +80,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetEnemyAIState(ERGX_EnemyAIState state);
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UBehaviorTree* BehaviorTree = nullptr;
+
 public:
 	
 	FOnHandleDeathSignature OnHandleDeathEvent;

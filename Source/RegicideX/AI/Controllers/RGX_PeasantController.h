@@ -14,7 +14,7 @@ class REGICIDEX_API ARGX_PeasantController : public ARGX_EnemyBaseController
 	GENERATED_BODY()
 public:
 
-	ARGX_PeasantController();
+	ARGX_PeasantController(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	virtual void OnPossess(APawn* pawn) override;
