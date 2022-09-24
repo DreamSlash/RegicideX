@@ -96,6 +96,8 @@ void URGX_InteractComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 void URGX_InteractComponent::TryToInteract()
 {
 	// If CurrentActor is null, CurrentInteract will return null
+	if (CurrentActor == nullptr) return;
+
 	if (CurrentActor->Implements<URGX_InteractInterface>())
 	{
 		//UE_LOG(LogInteract, Display, TEXT("Interacting with actor %s"), *CurrentActor->GetName());
