@@ -18,9 +18,9 @@ class REGICIDEX_API ARGX_Potion : public AActor, public IRGX_InteractInterface
 public:	
 	ARGX_Potion();
 
-	void Interact(AActor* ActorInteracting) override;
-	void StartCanInteract(AActor* ActorInteracting) override { /* Popup UI Element*/ }
-	void StopCanInteract(AActor* ActorInteracting) override { /* Hide UI Element*/ }
+	void Interact_Implementation(AActor* ActorInteracting) override;
+	void StartCanInteract_Implementation(AActor* ActorInteracting) override { /* Popup UI Element*/ }
+	void StopCanInteract_Implementation(AActor* ActorInteracting) override { /* Hide UI Element*/ }
 
 protected:
 	void BeginPlay() override;
