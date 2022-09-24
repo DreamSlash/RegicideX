@@ -11,7 +11,6 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetMathLibrary.h"
-
 #include "RegicideX/AI/Controllers/RGX_EnemyBaseController.h"
 #include "RegicideX/GameplayFramework/RGX_RoundGameMode.h"
 #include "RegicideX/Components/RGX_HitboxesManagerComponent.h"
@@ -104,7 +103,7 @@ void ARGX_EnemyBase::CheckIfWeak(float DamageAmount)
 	const float HealthAsPercentage = CurrentHealth / MaxHealth;
 	if (HealthAsPercentage < WeakenPercentage)
 	{
-		if (CanBeInteractedWith(nullptr) == false)
+		if (CanBeInteractedWith_Implementation(nullptr) == false)
 			EnableInteraction();
 
 		bWeak = true;
@@ -421,7 +420,7 @@ void ARGX_EnemyBase::HideCombatTargetWidget()
 	CombatTargetWidgetComponent->SetVisibility(false);
 }
 
-void ARGX_EnemyBase::Interact(AActor* ActorInteracting)
+void ARGX_EnemyBase::Interact_Implementation(AActor* ActorInteracting)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Interaction With Enemy\n"));
 	UAbilitySystemComponent* ACS = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(ActorInteracting); 
@@ -435,7 +434,7 @@ void ARGX_EnemyBase::Interact(AActor* ActorInteracting)
 	}
 }
 
-void ARGX_EnemyBase::StartCanInteract(AActor* ActorInteracting)
+void ARGX_EnemyBase::StartCanInteract_Implementation(AActor* ActorInteracting)
 {
 	URGX_InteractComponent* InteractComponent = ActorInteracting->FindComponentByClass<URGX_InteractComponent>();
 	FString Text = "Execute";
@@ -443,13 +442,13 @@ void ARGX_EnemyBase::StartCanInteract(AActor* ActorInteracting)
 	InteractComponent->ShowInteractWidget();
 }
 
-void ARGX_EnemyBase::StopCanInteract(AActor* ActorInteracting)
+void ARGX_EnemyBase::StopCanInteract_Implementation(AActor* ActorInteracting)
 {
 	URGX_InteractComponent* InteractComponent = ActorInteracting->FindComponentByClass<URGX_InteractComponent>();
 	InteractComponent->HideInteractWidget();
 }
 
-bool ARGX_EnemyBase::CanBeInteractedWith(AActor* ActorInteracting)
+bool ARGX_EnemyBase::CanBeInteractedWith_Implementation(AActor* ActorInteracting)
 {
 	//UE_LOG(LogTemp, Warning, TEXT("Can be interacted with\n"));
 	return InteractionShapeComponent->IsCollisionEnabled() && IsAlive();

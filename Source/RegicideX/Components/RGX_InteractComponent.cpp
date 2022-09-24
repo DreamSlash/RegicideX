@@ -47,14 +47,15 @@ void URGX_InteractComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 
 	for (AActor* HitActor : OutActors)
 	{
-		IRGX_InteractInterface* Interactable = Cast<IRGX_InteractInterface>(HitActor);
-		if (Interactable)
+		//IRGX_InteractInterface* Interactable = Cast<IRGX_InteractInterface>(HitActor);
+		if (HitActor->Implements<URGX_InteractInterface>())
 		{
-			bool bCanInteract = Interactable->CanBeInteractedWith(Owner);
+			bool bCanInteract = IRGX_InteractInterface::Execute_CanBeInteractedWith(HitActor, Owner);
+			UE_LOG(LogTemp, Warning, TEXT("Can Be Interacted With: %s"), bCanInteract ? TEXT("TRUE") : TEXT("FALSE"));
 			if (bCanInteract == true)
 			{
 				NewActor = HitActor;
-				NewInteract = Interactable;
+				//NewInteract = Interactable;
 				break;
 			}
 		}
@@ -74,27 +75,33 @@ void URGX_InteractComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 	// Notify the old actor, we no longer want to interact with him
 	if (CurrentActor.IsValid())
 	{
-		IRGX_InteractInterface* CurrentInteract = Cast<IRGX_InteractInterface>(CurrentActor);
-		CurrentInteract->StopCanInteract(Owner);
+		if (CurrentActor->Implements<URGX_InteractInterface>())
+		{
+			IRGX_InteractInterface::Execute_StopCanInteract(CurrentActor.Get(), Owner);
+			UE_LOG(LogTemp, Warning, TEXT("Stop Can Interact"));
+		}
+
 		CurrentActor = nullptr;
 	}
 
 	// If we have something to interact with, notify it to the actor
-	if (NewInteract)
+	if (NewActor.IsValid())
 	{
 		CurrentActor = NewActor;
-		NewInteract->StartCanInteract(Owner);
+		IRGX_InteractInterface::Execute_StartCanInteract(NewActor.Get(), Owner);
+		UE_LOG(LogTemp, Warning, TEXT("Start Can Interact"));
 	}
 }
 
 void URGX_InteractComponent::TryToInteract()
 {
 	// If CurrentActor is null, CurrentInteract will return null
-	IRGX_InteractInterface* CurrentInteract = Cast<IRGX_InteractInterface>(CurrentActor);
-	if (CurrentInteract)
+	if (CurrentActor == nullptr) return;
+
+	if (CurrentActor->Implements<URGX_InteractInterface>())
 	{
 		//UE_LOG(LogInteract, Display, TEXT("Interacting with actor %s"), *CurrentActor->GetName());
-		CurrentInteract->Interact(GetOwner());
+		IRGX_InteractInterface::Execute_Interact(CurrentActor.Get(), GetOwner());
 	}
 }
 

@@ -29,6 +29,7 @@ void URGX_MeleeAttackAbility::ActivateAbility(const FGameplayAbilitySpecHandle H
 
 	if (CombatAssistComponent)
 	{
+		CombatAssistComponent->RemoveMovementVector();
 		CombatAssistComponent->AddMovementVector(ActorInfo->AvatarActor->GetActorForwardVector(), MoveVectorLength, true);
 
 		UCharacterMovementComponent* CharacterMovementComponent = CharacterBase->GetCharacterMovement();

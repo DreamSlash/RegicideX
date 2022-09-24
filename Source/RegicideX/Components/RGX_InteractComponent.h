@@ -5,7 +5,7 @@
 
 class UWidgetComponent;
 
-UCLASS(Blueprintable, meta = (BlueprintSpawnableComponent))
+UCLASS(Blueprintable, BlueprintType, meta = (BlueprintSpawnableComponent))
 class URGX_InteractComponent : public UActorComponent
 {
 	GENERATED_BODY()
@@ -40,8 +40,12 @@ public:
 
 	void TryToInteract();
 
+	UFUNCTION(BlueprintCallable)
 	void ShowInteractWidget();
+
+	UFUNCTION(BlueprintCallable)
 	void HideInteractWidget();
 
+	UFUNCTION(BlueprintCallable)
 	void SetInteractionText(const FText& InteractionText);
 };

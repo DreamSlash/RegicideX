@@ -320,6 +320,11 @@ bool ARGX_PlayerCharacter::IsBeingAttacked()
 	return false;
 }
 
+void ARGX_PlayerCharacter::OnFinishBrake()
+{
+	EndBrake();
+}
+
 void ARGX_PlayerCharacter::HandleAction(const ERGX_PlayerActions Action)
 {
 	switch(Action)
@@ -445,6 +450,60 @@ void ARGX_PlayerCharacter::TargetRight()
 	CameraControllerComponent->TargetRight();
 }
 
+void ARGX_PlayerCharacter::CheckBrake(float DeltaTime)
+{
+	return;
+
+	if (bIsBraking) return;
+
+	FVector LastInputDirection = GetLastMoveInputDirection();
+	FVector CurrentInputDirection = GetCurrentMoveInputDirection();
+
+	if (LastInputDirection.IsNearlyZero() || CurrentInputDirection.IsNearlyZero()) return;
+
+	UE_LOG(LogTemp, Warning, TEXT("LastInputDirection: %f,%f,%f"), LastInputDirection.X, LastInputDirection.Y, LastInputDirection.Z);
+	UE_LOG(LogTemp, Warning, TEXT("CurrentInputDirection: %f,%f,%f"), CurrentInputDirection.X, CurrentInputDirection.Y, CurrentInputDirection.Z);
+
+	const float Dot = FVector::DotProduct(LastInputDirection, CurrentInputDirection);
+	bool bDotCondition = Dot < 0.5f;
+	UE_LOG(LogTemp, Warning, TEXT("Dot: %f"), Dot);
+	//UE_LOG(LogTemp, Warning, TEXT("bDotCondition: %s"), bDotCondition ? TEXT("TRUE") : TEXT("FALSE"));
+	bool bVelocityThreshold = VelocityMagnitudeLastFrame > MinVelocityForBrake;
+	if (bDotCondition && bVelocityThreshold == true && GetCharacterMovement()->IsFalling() == false)
+	{
+		StartBrake();	
+	}
+}
+
+void ARGX_PlayerCharacter::StartBrake()
+{
+	bIsBraking = true;
+
+	// Brake cancels current attack
+	FGameplayTagContainer TagContainer(FGameplayTag::RequestGameplayTag(FName("Ability.Melee")));
+	GetAbilitySystemComponent()->CancelAbilities(&TagContainer);
+	OnInterrupted();
+
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	if (CharacterMovementComponent)
+	{
+		CharacterMovementComponent->MaxWalkSpeed = 0.0f;
+		CharacterMovementComponent->RotationRate.Yaw = BrakeYawRotationRate;
+	}
+}
+
+void ARGX_PlayerCharacter::EndBrake()
+{
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	if (CharacterMovementComponent)
+	{
+		CharacterMovementComponent->MaxWalkSpeed = MoveSpeed;
+		CharacterMovementComponent->RotationRate.Yaw = 540.0f;
+	}
+
+	bIsBraking = false;
+}
+
 //void ARGX_PlayerCharacter::LevelUp(const float NewLevel)
 //{
 //	Level = NewLevel;
@@ -552,22 +611,12 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 
 	//UE_LOG(LogTemp, Warning, TEXT("bIgnoreInputMoveVector: %s"), bIgnoreInputMoveVector ? TEXT("TRUE") : TEXT("FALSE"));
 
-	// Leaning
-	const FRGX_LeanInfo LeanInfo = CalculateLeanAmount();
-	LeanAmount = UKismetMathLibrary::FInterpTo(LeanAmount, LeanInfo.LeanAmount, DeltaTime, LeanInfo.InterSpeed);
-	// ------------------
+	CheckBrake(DeltaTime);
 	
-	const FRotator Rotation = GetControlRotation();
-	const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
+	VelocityMagnitudeLastFrame = GetVelocity().Size();
+	LastMoveInput = CurrentMoveInput;
 
-	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-
-	FVector Direction = ForwardDirection * LastInputDirection.X + RightDirection * LastInputDirection.Y;
-	Direction.Normalize();
-
-	//UE_LOG(LogTemp, Warning, TEXT("MAX ACCELERATION: %f"), GetCharacterMovement()->MaxAcceleration);
-	//UE_LOG(LogTemp, Warning, TEXT("MAX WALK SPEED: %f"), GetCharacterMovement()->MaxWalkSpeed);
+	//UE_LOG(LogTemp, Warning, TEXT("Recent Rotation: %f"), RecentRotation);
 
 	//UKismetSystemLibrary::DrawDebugCircle(GetWorld(), GetActorLocation(), 100.0f, 24, FLinearColor::Green, 0.0f, 0.0f, FVector(0.0f, 1.0f, 0.0f), FVector(1.0f, 0.0f, 0.0f));
 }
@@ -600,6 +649,45 @@ void ARGX_PlayerCharacter::OnFollowCombo()
 		int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(NextAttack, &EventData);
 		// Clear next attack status
 		ComboSystemComponent->CleanStatus(TriggeredAbilities);
+	}
+}
+
+FVector ARGX_PlayerCharacter::GetCurrentMoveInputDirection()
+{
+	return GetMoveDirectionFromVector(CurrentMoveInput);
+}
+
+FVector ARGX_PlayerCharacter::GetLastMoveInputDirection()
+{
+	return GetMoveDirectionFromVector(LastMoveInput);
+}
+
+FVector ARGX_PlayerCharacter::GetMoveDirectionFromVector(FVector2D& InputVector)
+{
+	if (InputVector != FVector2D::ZeroVector)
+	{
+		const FRotator Rotation = GetControlRotation();
+		const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
+
+		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+
+		FVector Direction = ForwardDirection * InputVector.X + RightDirection * InputVector.Y;
+		Direction.Normalize();
+
+		return Direction;
+	}
+
+	return FVector::ZeroVector;
+}
+
+void ARGX_PlayerCharacter::RotatePlayerTowardsInput()
+{
+	FVector InputDirection = GetCurrentMoveInputDirection();
+
+	if (InputDirection.IsNearlyZero() == false)
+	{
+		SetActorRotation(InputDirection.Rotation());
 	}
 }
 
@@ -667,11 +755,13 @@ void ARGX_PlayerCharacter::MoveForward(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
-		LastInputDirection.X = Value;
+		CurrentMoveInput.X = Value;
+		//UE_LOG(LogTemp, Warning, TEXT("CurrentMoveInput.X: %f"), CurrentMoveInput.X);
 	}
 	else
 	{
-		LastInputDirection.X = 0.0f;
+		CurrentMoveInput.X = 0.0f;
+		//UE_LOG(LogTemp, Warning, TEXT("CurrentMoveInput.X: %f"), CurrentMoveInput.X);
 	}
 }
 
@@ -690,11 +780,13 @@ void ARGX_PlayerCharacter::MoveRight(float Value)
 		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
 		// add movement in that direction
 		AddMovementInput(Direction, Value);
-		LastInputDirection.Y = Value;
+		CurrentMoveInput.Y = Value;
+		//UE_LOG(LogTemp, Warning, TEXT("CurrentMoveInput.Y: %f"), CurrentMoveInput.Y);
 	}
 	else
 	{
-		LastInputDirection.Y = 0.0f;
+		CurrentMoveInput.Y = 0.0f;
+		//UE_LOG(LogTemp, Warning, TEXT("CurrentMoveInput.Y: %f"), CurrentMoveInput.Y);
 	}
 }
 
@@ -702,8 +794,9 @@ void ARGX_PlayerCharacter::TurnAtRate(float Rate)
 {
 	// TODO: Only TurnAtRate or AddControllerYawInput should modify YawChange at a time, depending if the user is using mouse or controller
 	CameraControllerComponent->CheckYawInput(Rate);
-	YawChange = Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds();
-	Super::AddControllerYawInput(YawChange);
+	float YawFinalChange = Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds();
+	//UE_LOG(LogTemp, Warning, TEXT("YawChange: %f"), YawChange);
+	Super::AddControllerYawInput(YawFinalChange);
 }
 
 void ARGX_PlayerCharacter::LookUpAtRate(float Rate)
@@ -715,33 +808,13 @@ void ARGX_PlayerCharacter::LookUpAtRate(float Rate)
 void ARGX_PlayerCharacter::AddControllerYawInput(float Val)
 {
 	Super::AddControllerYawInput(Val);
-	//YawChange = Val;
+	YawChange = Val;
+	//UE_LOG(LogTemp, Warning, TEXT("YawChange: %f"), YawChange);
 }
 
 void ARGX_PlayerCharacter::AddControllerPitchInput(float Val)
 {
 	Super::AddControllerPitchInput(Val);
-}
-
-FRGX_LeanInfo ARGX_PlayerCharacter::CalculateLeanAmount()
-{
-	FRGX_LeanInfo LeanInfo;
-
-	const float YawChangeClamped = UKismetMathLibrary::FClamp(YawChange, -1.0f, 1.0f);
-	const bool bInsuficientVelocity = GetCharacterMovement()->IsFalling() || GetVelocity().Size() < 5.0f;
-
-	if (bInsuficientVelocity == true)
-	{
-		LeanInfo.LeanAmount = 0.0f;
-		LeanInfo.InterSpeed = 10.0f;
-	}
-	else
-	{
-		LeanInfo.LeanAmount = YawChangeClamped;
-		LeanInfo.InterSpeed = 1.0f;
-	}
-
-	return LeanInfo;
 }
 
 void ARGX_PlayerCharacter::Landed(const FHitResult& Hit)

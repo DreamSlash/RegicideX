@@ -21,19 +21,6 @@ class URGX_LaunchEventDataAsset;
 class UGameplayEffect;
 class UWidgetComponent;
 
-USTRUCT()
-struct FRGX_LeanInfo
-{
-	GENERATED_BODY()
-
-public:
-	UPROPERTY()
-	float LeanAmount;
-
-	UPROPERTY(EditAnywhere)
-	float InterSpeed;
-};
-
 UCLASS(config = Game)
 class REGICIDEX_API ARGX_PlayerCharacter : public ARGX_CharacterBase
 {
@@ -125,6 +112,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool bIsFallingDown = false;
 
+	UPROPERTY(BlueprintReadWrite)
+	bool bIsBraking;
+
 	void BeginPlay() override;
 
 	void Tick(float DeltaTime) override;
@@ -143,6 +133,18 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void OnFollowCombo();
 
+	UFUNCTION(BlueprintCallable)
+	FVector GetCurrentMoveInputDirection();
+
+	UFUNCTION(BlueprintCallable)
+	FVector GetLastMoveInputDirection();
+
+	UFUNCTION(BlueprintCallable)
+	FVector GetMoveDirectionFromVector(FVector2D& InputVector);
+
+	UFUNCTION(BlueprintCallable)
+	void RotatePlayerTowardsInput();
+
 	/** Events called from attribute set changes to decouple the logic. They call BP events. */
 	virtual void HandleDamage(
 		float DamageAmount,
@@ -152,7 +154,8 @@ public:
 		AActor* DamageCauser,
 		ERGX_AnimEvent HitReactFlag) override;
 
-	FVector2D LastInputDirection = FVector2D::ZeroVector;
+	FVector2D LastMoveInput = FVector2D::ZeroVector;
+	FVector2D CurrentMoveInput = FVector2D::ZeroVector;
 
 protected:
 	/** Animation variables */
@@ -170,6 +173,13 @@ protected:
 	UPROPERTY()
 	bool bIgnoreInputMoveVector = false;
 
+	UPROPERTY(EditDefaultsOnly)
+	float MinVelocityForBrake = 400.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float BrakeYawRotationRate = 240.0f;
+
+	float VelocityMagnitudeLastFrame;
 	// -----------------------
 
 	UPROPERTY()
@@ -214,9 +224,6 @@ protected:
 
 	virtual void AddControllerPitchInput(float Val) override;
 
-	//** Animation Functions */
-	FRGX_LeanInfo CalculateLeanAmount();
-
 	void Landed(const FHitResult& Hit) override;
 
 	UFUNCTION(BlueprintCallable)
@@ -255,6 +262,10 @@ protected:
 	void TargetLeft();
 	void TargetRight();
 
+	void CheckBrake(float DeltaTime);
+	void StartBrake();
+	void EndBrake();
+
 	//void ManagePowerSkillInput();
 	void TryToInteract();
 	// ----------------------------------
@@ -278,6 +289,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsBeingAttacked();
 
+	UFUNCTION(BlueprintCallable)
+	void OnFinishBrake();
+
 	/* Input Handler calls this to let the player handle the action */
 	UFUNCTION()
 	void HandleAction(const ERGX_PlayerActions Action);
@@ -289,5 +303,5 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
-	FORCEINLINE float GetLeanAmount() const { return LeanAmount; }
+	FORCEINLINE float GetYawChange() const { return YawChange; }
 };

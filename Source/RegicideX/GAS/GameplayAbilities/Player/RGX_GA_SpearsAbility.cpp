@@ -18,12 +18,14 @@ void URGX_SpearsAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 
 	CastSpearsAttack(ActorInfo->AvatarActor.Get());
 
+	/*
 	WaitInputReleaseTask = UAbilityTask_WaitInputRelease::WaitInputRelease(this);
 	WaitInputReleaseTask->OnRelease.AddDynamic(this, &URGX_SpearsAbility::OnInputReleased);
 	WaitInputReleaseTask->ReadyForActivation();
 
 	FTimerHandle TimerHandle;
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &URGX_SpearsAbility::OnHoldSpearsTimeOut, MaxHoldSpearsTime, false);
+	*/
 }
 
 void URGX_SpearsAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
@@ -42,9 +44,9 @@ void URGX_SpearsAbility::CastSpearsAttack(AActor* CasterActor)
 {
 	UE_LOG(LogTemp, Warning, TEXT("Cast Spears Attack\n"));
 	
-	const float AnglePerSpear = SpearsSpawnAngle / (MaxNumSpears - 1);
+	const float AnglePerSpear = SpearsSpawnAngle / (MaxNumSpears);
 
-	for (int i = 0; i < MaxNumSpears - 1; ++i)
+	for (int i = 0; i < MaxNumSpears; ++i)
 	{
 		const FVector CasterLocation = CasterActor->GetActorLocation();
 		const FVector Right = CasterActor->GetActorRightVector();
@@ -77,6 +79,9 @@ void URGX_SpearsAbility::CastSpearsAttack(AActor* CasterActor)
 
 		SpearsArray.Add(SpawnedSpear);
 	}
+
+	FTimerHandle TimerHandle;
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &URGX_SpearsAbility::OnHoldSpearsTimeOut, ReleaseSpearTime, false);
 }
 
 void URGX_SpearsAbility::LaunchSpearsAttack()

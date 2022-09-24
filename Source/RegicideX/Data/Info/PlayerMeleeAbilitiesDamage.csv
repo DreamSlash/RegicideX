@@ -15,3 +15,5 @@ LaunchAttack_Damage,50,100,150
 LaunchAttack_Scaling,1,1,1
 FallAttack_Damage,100,150,200
 FallAttack_Scaling,1,1,1
+PowerSpears_Damage,20,40,60
+PowerSpears_Scaling,0.5,0.5,0.5

@@ -155,3 +155,13 @@ public:
 	UPROPERTY()
 	float KnockdownAnimationSpeedMultiplier;
 };
+
+UCLASS(BlueprintType)
+class URGX_DialogueDataAsset : public UPrimaryDataAsset
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TArray<FText> Dialogue;
+};
