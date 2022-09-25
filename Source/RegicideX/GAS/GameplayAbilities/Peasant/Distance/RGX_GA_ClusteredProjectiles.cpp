@@ -32,13 +32,19 @@ void URGX_GA_ClusteredProjectiles::ActivateAbility(
 	
 	for (int i = 0; i < NumberProjectilesToFire; ++i)
 	{
-		FVector2D Point2D = FMath::RandPointInCircle(75.0f);
-		FVector Position = Point2D.X * Right + Point2D.Y * Up;
+		FVector2D Point2D = FMath::RandPointInCircle(500.0f);
+		FVector Position;
+		Position.X = Right.X * Point2D.X;
+		Position.Y = Right.Y * Point2D.Y;
+		Position.Z = FMath::RandRange(20.0f, 100.0f);
 		Position = Center + Position;
 		PointsToSpawn.Add(Position);
 	}
 
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
+	FGameplayTag EventTag;
+	FGameplayEventData EventData;
+	OnReceivedEvent(EventTag, EventData);
 }
 
 void URGX_GA_ClusteredProjectiles::OnReceivedEvent(
