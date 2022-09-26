@@ -2,6 +2,7 @@
 #include "RGX_ANS_JumpComboSection.h"
 #include "RegicideX\Character\RGX_PlayerCharacter.h"
 #include "Animation/AnimInstance.h"
+#include "AbilitySystemGlobals.h"
 
 void URGX_ANS_JumpComboSection::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
 {
@@ -25,10 +26,21 @@ void URGX_ANS_JumpComboSection::NotifyTick(USkeletalMeshComponent* MeshComp, UAn
 		if (Player->bCanCombo && Player->bCanJumpToComboSection && Player->bContinueCombo)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Jump To Next Section"));
+			//UAnimMontage* AnimMontage = Player->GetMesh()->GetAnimInstance()->GetCurrentActiveMontage();
+			//UE_LOG(LogTemp, Warning, TEXT("CurrentActiveMontage: %s"), AnimMontage ? TEXT("TRUE") : TEXT("NULLPTR"));
+			if (bJumpToNextAbility == true)
+			{
+				Player->GetMesh()->GetAnimInstance()->Montage_JumpToSection(SectionName);
+			}
+			else
+			{
+				UAbilitySystemComponent* ACS = Player->GetAbilitySystemComponent();
+				if (ACS && NextAbility.Get())
+				{
+					ACS->TryActivateAbilityByClass(NextAbility.Get());
+				}
+			}
 
-			UAnimMontage* AnimMontage = Player->GetMesh()->GetAnimInstance()->GetCurrentActiveMontage();
-			UE_LOG(LogTemp, Warning, TEXT("CurrentActiveMontage: %s"), AnimMontage ? TEXT("TRUE") : TEXT("NULLPTR"));
-			Player->GetMesh()->GetAnimInstance()->Montage_JumpToSection(SectionName);
 			bContinueCombo = true;
 		}
 	}
