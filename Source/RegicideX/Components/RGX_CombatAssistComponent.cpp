@@ -372,6 +372,8 @@ void URGX_CombatAssistComponent::PerformAttackAutoAssist()
 		AutoAssistMove = MaxAutoassistMove;
 	}
 
+	UE_LOG(LogTemp, Warning, TEXT("Attack Auto Assist"));
+
 	//UE_LOG(LogTemp, Warning, TEXT("AutoAssistMove: %f\n"), AutoAssistMove);
 	//const FVector FinalLocation = PlayerLocation + AssistDirection * (CurrentClosestDistance - AutoAssistOffsetToEnemy);
 

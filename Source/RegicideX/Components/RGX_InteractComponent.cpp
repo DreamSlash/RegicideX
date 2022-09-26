@@ -51,7 +51,7 @@ void URGX_InteractComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 		if (HitActor->Implements<URGX_InteractInterface>())
 		{
 			bool bCanInteract = IRGX_InteractInterface::Execute_CanBeInteractedWith(HitActor, Owner);
-			UE_LOG(LogTemp, Warning, TEXT("Can Be Interacted With: %s"), bCanInteract ? TEXT("TRUE") : TEXT("FALSE"));
+			//UE_LOG(LogTemp, Warning, TEXT("Can Be Interacted With: %s"), bCanInteract ? TEXT("TRUE") : TEXT("FALSE"));
 			if (bCanInteract == true)
 			{
 				NewActor = HitActor;
@@ -78,7 +78,7 @@ void URGX_InteractComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 		if (CurrentActor->Implements<URGX_InteractInterface>())
 		{
 			IRGX_InteractInterface::Execute_StopCanInteract(CurrentActor.Get(), Owner);
-			UE_LOG(LogTemp, Warning, TEXT("Stop Can Interact"));
+			//UE_LOG(LogTemp, Warning, TEXT("Stop Can Interact"));
 		}
 
 		CurrentActor = nullptr;
@@ -89,7 +89,7 @@ void URGX_InteractComponent::TickComponent(float DeltaTime, enum ELevelTick Tick
 	{
 		CurrentActor = NewActor;
 		IRGX_InteractInterface::Execute_StartCanInteract(NewActor.Get(), Owner);
-		UE_LOG(LogTemp, Warning, TEXT("Start Can Interact"));
+		//UE_LOG(LogTemp, Warning, TEXT("Start Can Interact"));
 	}
 }
 
