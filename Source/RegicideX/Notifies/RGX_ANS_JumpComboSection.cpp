@@ -30,15 +30,15 @@ void URGX_ANS_JumpComboSection::NotifyTick(USkeletalMeshComponent* MeshComp, UAn
 			//UE_LOG(LogTemp, Warning, TEXT("CurrentActiveMontage: %s"), AnimMontage ? TEXT("TRUE") : TEXT("NULLPTR"));
 			if (bJumpToNextAbility == true)
 			{
-				Player->GetMesh()->GetAnimInstance()->Montage_JumpToSection(SectionName);
-			}
-			else
-			{
 				UAbilitySystemComponent* ACS = Player->GetAbilitySystemComponent();
 				if (ACS && NextAbility.Get())
 				{
 					ACS->TryActivateAbilityByClass(NextAbility.Get());
 				}
+			}
+			else
+			{
+				Player->GetMesh()->GetAnimInstance()->Montage_JumpToSection(SectionName);
 			}
 
 			bContinueCombo = true;
