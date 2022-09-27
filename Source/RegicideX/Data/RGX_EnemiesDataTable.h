@@ -5,6 +5,13 @@
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 #include "RGX_EnemiesDataTable.generated.h"
 
+UENUM(BlueprintType)
+enum class ERGX_WaveSpawnMode : uint8
+{
+	Random							UMETA(DisplayName = "Random"),
+	RoundRobin						UMETA(DisplayName = "RoundRobin")
+};
+
 USTRUCT(BlueprintType)
 struct FRGX_EnemiesDataTable : public FTableRowBase
 {
@@ -37,4 +44,10 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	URGX_ArenaWaveDataAsset* ChildWave;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float SpawnTimeDelay = 0.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	ERGX_WaveSpawnMode WaveSpawnMode = ERGX_WaveSpawnMode::Random;
 };

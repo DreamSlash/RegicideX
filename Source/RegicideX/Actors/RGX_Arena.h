@@ -68,6 +68,9 @@ private:
 	void SpawnConstantPeasant();
 
 	UFUNCTION()
+	void HandleSpawnWave(URGX_OutgoingWave* Wave);
+
+	UFUNCTION()
 	void OnHandleFinishWave(URGX_OutgoingWave* FinishedWave);
 	UFUNCTION()
 	void HandleFinishWave(URGX_OutgoingWave* FinishedWave);

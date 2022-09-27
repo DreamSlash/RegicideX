@@ -87,6 +87,16 @@ void ARGX_Arena::SpawnInitialWaves()
 
 void ARGX_Arena::SpawnWave(URGX_OutgoingWave* Wave)
 {
+	const float SpawnDelay = Wave->WaveData->SpawnTimeDelay;
+
+	FTimerDelegate TimerDel;
+	FTimerHandle TimerHandle;
+	TimerDel.BindUFunction(this, FName("HandleSpawnWave"), Wave);
+	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, SpawnDelay, false);
+}
+
+void ARGX_Arena::HandleSpawnWave(URGX_OutgoingWave* Wave)
+{
 	if (EnemySpawners.Num() <= 0) return;
 
 	TArray<FName> EnemyWaveNames = DT_EnemyRefs->GetRowNames();
@@ -267,17 +277,6 @@ void ARGX_Arena::OnConstantPeasantDeath(ARGX_EnemyBase* Enemy)
 void ARGX_Arena::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	//UE_LOG(LogTemp, Warning, TEXT("Num Spawners: %d"), EnemySpawners.Num());
-
-	// Overlaps do not work until iteration of overlaps
-	/*
-	if (bIsInitialized == false)
-	{
-		// Get spawners in area
-		InitializeSpawners();
-	}
-	*/
 
 	if (bActivated == false || bFinished == true) return;
 
