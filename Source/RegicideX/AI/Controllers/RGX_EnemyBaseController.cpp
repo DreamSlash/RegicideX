@@ -15,10 +15,25 @@
 #include "BehaviorTree/Blackboard/BlackboardKeyType_String.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
+#include "Kismet/GameplayStatics.h"
+
+#include "RegicideX/Actors/RGX_CombatManager.h"
+
+#pragma optimize("", off)
+
 ARGX_EnemyBaseController::ARGX_EnemyBaseController(const FObjectInitializer& ObjectInitializer)
 {
 	BehaviorTreeComponent = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorTree Component"));
 	BlackboardComponent = CreateDefaultSubobject<UBlackboardComponent>(TEXT("Blackboard Component"));
+}
+
+void ARGX_EnemyBaseController::BeginPlay()
+{
+	Super::BeginPlay();
+
+	CombatManager = Cast<ARGX_CombatManager>(UGameplayStatics::GetActorOfClass(this, ARGX_CombatManager::StaticClass()));
+
+	//TargetActor = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 }
 
 void ARGX_EnemyBaseController::OnPossess(APawn* InPawn)
@@ -28,19 +43,18 @@ void ARGX_EnemyBaseController::OnPossess(APawn* InPawn)
 	ARGX_EnemyBase* enemy = Cast<ARGX_EnemyBase>(InPawn);
 	if (enemy != nullptr && enemy->BehaviorTree != nullptr)
 	{
+		Agent = enemy;
+
 		// Initialize Blackboard
-		BlackboardComponent->InitializeBlackboard(*enemy->BehaviorTree->BlackboardAsset);
-
-		// Set Blackboard Key IDS
-		TargetKeyId = BlackboardComponent->GetKeyID("TargetActor");
-		DistanceToPlayerKeyId = BlackboardComponent->GetKeyID("DistanceToPlayer");
-		RandomNumberKeyId = BlackboardComponent->GetKeyID("RandomNumber");
-		AIStateKeyId = BlackboardComponent->GetKeyID("AIState");
-		ConsecutiveHitsKeyId = BlackboardComponent->GetKeyID("ConsecutiveHits");
-
-		// Start Behavior Tree
-		BehaviorTreeComponent->StartTree(*enemy->BehaviorTree);
+		InitializeBlackboard(*Blackboard, *enemy->BehaviorTree->BlackboardAsset);
+		//BlackboardComponent->InitializeBlackboard(*enemy->BehaviorTree->BlackboardAsset);
 	}
+}
+
+void ARGX_EnemyBaseController::StartLogic()
+{
+	// Start Behavior Tree
+	BehaviorTreeComponent->StartTree(*Agent->BehaviorTree);
 }
 
 void ARGX_EnemyBaseController::DamageTaken()
@@ -59,17 +73,17 @@ void ARGX_EnemyBaseController::DamageTaken()
 	}
 }
 
-ERGX_EnemyAIState ARGX_EnemyBaseController::GetEnemyAIState() const
+ERGX_EnemyAIState::Type ARGX_EnemyBaseController::GetEnemyAIState() const
 {
 	if (Blackboard && Blackboard->GetBlackboardAsset())
 	{
-		return (ERGX_EnemyAIState)Blackboard->GetValue<UBlackboardKeyType_Enum>(AIStateKeyId);
+		return (ERGX_EnemyAIState::Type)Blackboard->GetValue<UBlackboardKeyType_Enum>(AIStateKeyId);
 	}
 
 	return ERGX_EnemyAIState::None;
 }
 
-void ARGX_EnemyBaseController::SetEnemyAIState(ERGX_EnemyAIState state)
+void ARGX_EnemyBaseController::SetEnemyAIState(ERGX_EnemyAIState::Type state)
 {
 	if (Blackboard && Blackboard->GetBlackboardAsset())
 	{
@@ -83,12 +97,17 @@ bool ARGX_EnemyBaseController::InitializeBlackboard(UBlackboardComponent& Blackb
 
 	if (bResult)
 	{
-		if (ARGX_EnemyBase* enemy = GetPawn<ARGX_EnemyBase>())
-		{
-			BlackboardComp.SetValue<UBlackboardKeyType_Object>(TargetKeyId, enemy->TargetActor);
-		}
+		// Set Blackboard Key IDS
+		TargetKeyId = Blackboard->GetKeyID("TargetActor");
+		DistanceToPlayerKeyId = Blackboard->GetKeyID("DistanceToPlayer");
+		RandomNumberKeyId = Blackboard->GetKeyID("RandomNumber");
+		AIStateKeyId = Blackboard->GetKeyID("AIState");
+		ConsecutiveHitsKeyId = Blackboard->GetKeyID("ConsecutiveHits");
+		StrafeDirectionKeyId = Blackboard->GetKeyID("StrafeDirection");
 
+		BlackboardComp.SetValue<UBlackboardKeyType_Object>(TargetKeyId, Agent->TargetActor);
 		BlackboardComp.SetValue<UBlackboardKeyType_Enum>(AIStateKeyId, ERGX_EnemyAIState::None);
+		BlackboardComp.SetValue<UBlackboardKeyType_Enum>(StrafeDirectionKeyId, ERGX_StrafeDirection::None);
 	}
 
 	return bResult;

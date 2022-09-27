@@ -74,7 +74,7 @@ void ARGX_EnemyBase::BeginPlay()
 	AddStartupGameplayAbilities();
 	HandleHealthChanged(0.0f, FGameplayTagContainer());
 
-	TargetActor = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	//TargetActor = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 }
 
 void ARGX_EnemyBase::PossessedBy(AController* NewController)
@@ -486,24 +486,4 @@ void ARGX_EnemyBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		//MyGameMode->OnEnemyDeath(0);
 	}
 	Super::EndPlay(EndPlayReason);
-}
-
-ERGX_EnemyAIState ARGX_EnemyBase::GetEnemyAIState() const
-{
-	if (ARGX_EnemyBaseController* controller = GetController<ARGX_EnemyBaseController>())
-	{
-		return controller->GetEnemyAIState();
-	}
-
-	return ERGX_EnemyAIState::None;
-}
-
-void ARGX_EnemyBase::SetEnemyAIState(ERGX_EnemyAIState state)
-{
-	AController* c = GetController();
-	ARGX_EnemyBaseController* controller = Cast<ARGX_EnemyBaseController>(c);
-	if (controller)
-	{
-		controller->SetEnemyAIState(state);
-	}
 }

@@ -46,7 +46,7 @@ void URGX_GA_FrenzieStateAbility::OnReceivedEvent(FGameplayTag EventTag, FGamepl
                     NiagaraComponent->Activate();
                 }
 
-                PeasantController->bFrenzied = true;
+                //PeasantController->bFrenzied = true;
             }
         }
 	}

@@ -5,9 +5,10 @@
 #include "CoreMinimal.h"
 #include <functional>
 #include "GameFramework/Actor.h"
-#include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 #include "RGX_CombatManager.generated.h"
 
+class ARGX_EnemyBase;
+class ARGX_EnemyBaseController;
 class ARGX_PlayerCharacter;
 
 USTRUCT()
@@ -22,7 +23,7 @@ struct REGICIDEX_API FRGX_EnemyCombatItem
 
 	bool IsValid() const { return Enemy.IsValid(); }
 
-	void Reset(ARGX_EnemyBase* enemy) { Enemy = enemy; Distance = 0.0; Scoring = 0.0; }
+	void Reset(ARGX_EnemyBase* enemy);
 
 	UPROPERTY()
 	TWeakObjectPtr<ARGX_EnemyBase> Enemy = nullptr;
@@ -62,6 +63,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float InvalidateOffset = 1000.0f;
 
+	UPROPERTY()
+	TArray<FRGX_EnemyCombatItem> EnemyMeleeItems;
+
+	UPROPERTY()
+	TArray<FRGX_EnemyCombatItem> EnemyDistanceItems;
+
 protected:
 	// Called when the game starts or when spawned
 	void BeginPlay() override;
@@ -94,12 +101,6 @@ private:
 private:
 	UPROPERTY()
 	TWeakObjectPtr<ARGX_PlayerCharacter> Player;
-
-	UPROPERTY()
-	TArray<FRGX_EnemyCombatItem> EnemyMeleeItems;
-
-	UPROPERTY()
-	TArray<FRGX_EnemyCombatItem> EnemyDistanceItems;
 
 	/*TArray<int32> PeasantSlots;
 	TArray<int32> AngelSlots;

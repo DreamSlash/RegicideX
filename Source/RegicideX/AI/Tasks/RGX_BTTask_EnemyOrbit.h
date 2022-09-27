@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/BTTaskNode.h"
+#include "RegicideX/AI/Controllers/RGX_EnemyBaseController.h"
 #include "RGX_BTTask_EnemyOrbit.generated.h"
 
 /**
@@ -29,10 +30,10 @@ protected:
 	struct FBlackboardKeySelector DirectionKey;
 
 private:
-	int32 GetKeyValue(UBehaviorTreeComponent& OwnerComp) const;
+	ERGX_StrafeDirection::Type GetKeyValue(UBehaviorTreeComponent& OwnerComp) const;
 
 private:
-	int32 KeyValue = 0;
+	ERGX_StrafeDirection::Type KeyValue = ERGX_StrafeDirection::None;
 
 };
 

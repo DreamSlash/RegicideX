@@ -5,9 +5,30 @@
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
 
+#include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
+#include "RegicideX/AI/Controllers/RGX_EnemyBaseController.h"
 #include "RegicideX/Character/RGX_PlayerCharacter.h"
 
-//#pragma optimize("", off)
+#pragma optimize("", off)
+
+//---- FRGX_EnemyCombatItem -----------------------------------------------------------------------
+
+void FRGX_EnemyCombatItem::Reset(ARGX_EnemyBase* enemy)
+{
+	if (enemy)
+	{
+		Enemy = enemy;
+	}
+	else
+	{
+		Enemy.Reset();
+	}
+
+	Distance = 0.0;
+	Scoring = 0.0;
+}
+
+//---- ARGX_CombatManager -------------------------------------------------------------------------
 
 // Sets default values
 ARGX_CombatManager::ARGX_CombatManager()
@@ -81,7 +102,10 @@ void ARGX_CombatManager::OnEnemySpawned(ARGX_EnemyBase* Enemy, TArray<FRGX_Enemy
 		if (item.IsValid() == false)
 		{
 			item.Reset(Enemy);
+
 			Enemy->OnHandleDeathEvent.AddDynamic(this, &ARGX_CombatManager::OnEnemyDeath);
+			Enemy->TargetActor = Player.Get();
+
 			bAddedNewEnemies = true;
 			return;
 		}
@@ -128,18 +152,24 @@ void ARGX_CombatManager::InvalidateImpl(TArray<FRGX_EnemyCombatItem>& EnemyItems
 	while (index < lastIndex && index < NbHoldingEnemies)
 	{
 		FRGX_EnemyCombatItem& item = EnemyItems[index++];
-		if (item.Enemy->GetEnemyAIState() == ERGX_EnemyAIState::None || item.Enemy->GetEnemyAIState() == ERGX_EnemyAIState::Waiting)
+		if (ARGX_EnemyBaseController* enemyController = item.Enemy->GetController<ARGX_EnemyBaseController>())
 		{
-			item.Enemy->SetEnemyAIState(ERGX_EnemyAIState::Holding);
+			if (enemyController->GetEnemyAIState() == ERGX_EnemyAIState::None || enemyController->GetEnemyAIState() == ERGX_EnemyAIState::Waiting)
+			{
+				enemyController->SetEnemyAIState(ERGX_EnemyAIState::Holding);
+			}
 		}
 	}
 
 	while (index < lastIndex)
 	{
 		FRGX_EnemyCombatItem& item = EnemyItems[index++];
-		if (item.Enemy->GetEnemyAIState() == ERGX_EnemyAIState::None)
+		if (ARGX_EnemyBaseController* enemyController = item.Enemy->GetController<ARGX_EnemyBaseController>())
 		{
-			item.Enemy->SetEnemyAIState(ERGX_EnemyAIState::Waiting);
+			if (enemyController->GetEnemyAIState() == ERGX_EnemyAIState::None)
+			{
+				enemyController->SetEnemyAIState(ERGX_EnemyAIState::Waiting);
+			}
 		}
 	}
 }
@@ -206,16 +236,18 @@ void ARGX_CombatManager::UpdateSlots(TArray<FRGX_EnemyCombatItem>& EnemyItems, i
 
 	PrepareCandidateData(EnemyItems, candidates, numAttackers, numRecoveries);
 
-	const int32 numCandidates = candidates.Num();
-	while (numAttackers < numCandidates && numAttackers < numSlots)
+	int32 numFreeSlots = numSlots - numAttackers;
+	while (numFreeSlots > 0 && candidates.Num())
 	{
-		int32 index = FindNewAttacker(candidates, EnemyItems);
+		const int32 index = FindNewAttacker(candidates, EnemyItems);
 		auto& item = EnemyItems[index];
+		ARGX_EnemyBaseController* enemyController = item.Enemy->GetController<ARGX_EnemyBaseController>();
 		// assert state holding
-		item.Enemy->SetEnemyAIState(ERGX_EnemyAIState::Attacking);
+		enemyController->SetEnemyAIState(ERGX_EnemyAIState::Attacking);
 
 		candidates.RemoveAtSwap(index);
-		++numAttackers;
+		//++numAttackers;
+		--numFreeSlots;
 	}
 }
 
@@ -229,19 +261,22 @@ void ARGX_CombatManager::PrepareCandidateData(const TArray<FRGX_EnemyCombatItem>
 	for (int32 index = 0; index < lastIndex && index < NbHoldingEnemies; ++index)
 	{
 		const auto& item = EnemyItems[index];
-		switch (item.Enemy->GetEnemyAIState())
+		if (ARGX_EnemyBaseController* enemyController = item.Enemy->GetController<ARGX_EnemyBaseController>())
 		{
-		case ERGX_EnemyAIState::Attacking:
-			++numAttackers;
-			break;
-		case ERGX_EnemyAIState::Recovering:
-			++numRecoveries;
-			break;
-		case ERGX_EnemyAIState::Holding:
-			candidates.Add(index);
-			break;
-		default:		
-			break;
+			switch (enemyController->GetEnemyAIState())
+			{
+			case ERGX_EnemyAIState::Attacking:
+				++numAttackers;
+				break;
+			case ERGX_EnemyAIState::Recovering:
+				++numRecoveries;
+				break;
+			case ERGX_EnemyAIState::Holding:
+				candidates.Add(index);
+				break;
+			default:
+				break;
+			}
 		}
 	}
 }
