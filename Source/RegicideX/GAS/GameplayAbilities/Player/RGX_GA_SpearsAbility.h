@@ -30,6 +30,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	float MaxHoldSpearsTime = 3.0f;
 
+	UPROPERTY(EditDefaultsOnly)
+	float ReleaseSpearTime = 0.5f;
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ARGX_SpearProjectile> SpearProjectileClass;
 

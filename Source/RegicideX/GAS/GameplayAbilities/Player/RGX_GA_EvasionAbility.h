@@ -10,7 +10,4 @@ class REGICIDEX_API URGX_EvasionAbility : public URGX_GameplayAbility
 	GENERATED_BODY()
 
 	void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
-
-private:
-	void RotatePlayerTowardsInput(class ARGX_PlayerCharacter* PlayerCharacter);
 };

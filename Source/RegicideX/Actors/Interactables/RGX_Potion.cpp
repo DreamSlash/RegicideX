@@ -10,7 +10,7 @@ ARGX_Potion::ARGX_Potion()
 {
 }
 
-void ARGX_Potion::Interact(AActor* ActorInteracting)
+void ARGX_Potion::Interact_Implementation(AActor* ActorInteracting)
 {
 	UAbilitySystemComponent* TargetASC = UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(ActorInteracting);
 	if (TargetASC)

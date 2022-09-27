@@ -19,7 +19,7 @@
 
 #include "RegicideX/Actors/RGX_CombatManager.h"
 
-#pragma optimize("", off)
+//#pragma optimize("", off)
 
 ARGX_EnemyBaseController::ARGX_EnemyBaseController(const FObjectInitializer& ObjectInitializer)
 {

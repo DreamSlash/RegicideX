@@ -13,7 +13,7 @@
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 #include "RegicideX/AI/Controllers/RGX_EnemyBaseController.h"
 
-#pragma optimize("", off)
+//#pragma optimize("", off)
 
 URGX_BT_FindStrafeDirection::URGX_BT_FindStrafeDirection(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
@@ -64,7 +64,7 @@ void URGX_BT_FindStrafeDirection::LocationSeekerQueryFinished(TSharedPtr<FEnvQue
 
 	for (auto& loc : locations)
 	{
-		DrawDebugCapsule(GetWorld(), loc, 200, 100, FQuat::Identity, FColor::Purple, false, 2);
+		//DrawDebugCapsule(GetWorld(), loc, 200, 100, FQuat::Identity, FColor::Purple, false, 2);
 
 		if (IsDistanceGreaterThanX(loc) && Result->GetItemScore(index) > currentBestScore)
 		{

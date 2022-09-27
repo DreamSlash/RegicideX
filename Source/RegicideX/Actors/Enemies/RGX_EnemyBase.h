@@ -218,10 +218,10 @@ public:
 	// ----------------------------------
 
 	/** Interact Interface */
-	void Interact(AActor* ActorInteracting) override;
-	void StartCanInteract(AActor* ActorInteracting) override;
-	void StopCanInteract(AActor* ActorInteracting) override;
-	bool CanBeInteractedWith(AActor* ActorInteracting) override;
+	void Interact_Implementation(AActor* ActorInteracting) override;
+	void StartCanInteract_Implementation(AActor* ActorInteracting) override;
+	void StopCanInteract_Implementation(AActor* ActorInteracting) override;
+	bool CanBeInteractedWith_Implementation(AActor* ActorInteracting) override;
 
 	bool IsInFrustum();
 

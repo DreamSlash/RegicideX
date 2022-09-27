@@ -9,7 +9,7 @@
 #include "RegicideX/AI/Controllers/RGX_EnemyBaseController.h"
 #include "RegicideX/Character/RGX_PlayerCharacter.h"
 
-#pragma optimize("", off)
+//#pragma optimize("", off)
 
 //---- FRGX_EnemyCombatItem -----------------------------------------------------------------------
 

@@ -13,7 +13,7 @@ void URGX_EvasionAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 		EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
 	}
 
-	RotatePlayerTowardsInput(PlayerCharacter);
+	PlayerCharacter->RotatePlayerTowardsInput();
 
 	bool bIsBeingAttacked = PlayerCharacter->IsBeingAttacked();
 
@@ -31,24 +31,4 @@ void URGX_EvasionAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handl
 	}
 
 	EndAbility(Handle, ActorInfo, ActivationInfo, false, false);
-}
-
-void URGX_EvasionAbility::RotatePlayerTowardsInput(ARGX_PlayerCharacter* PlayerCharacter)
-{
-	// Rotate character towards input
-	FVector2D MovementInput = PlayerCharacter->LastInputDirection;
-
-	if (MovementInput != FVector2D::ZeroVector)
-	{
-		const FRotator Rotation = PlayerCharacter->GetControlRotation();
-		const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
-
-		const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-
-		FVector Direction = ForwardDirection * MovementInput.X + RightDirection * MovementInput.Y;
-		Direction.Normalize();
-
-		PlayerCharacter->SetActorRotation(Direction.Rotation());
-	}
 }

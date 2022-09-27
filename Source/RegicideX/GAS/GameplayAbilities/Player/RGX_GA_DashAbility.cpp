@@ -20,6 +20,7 @@ void URGX_DashAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 		{
 			CharacterMovementComponent->MaxAcceleration = 99999999.0f;
 			CharacterMovementComponent->GravityScale = 0.0f;
+			
 
 			if (PlayerCharacter->GetCharacterMovement()->IsFalling())
 			{
@@ -31,7 +32,7 @@ void URGX_DashAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle, 
 				else
 				{
 					PlayerCharacter->StopJumping();
-					PlayerCharacter->LaunchCharacter(FVector(0.0f, 0.0f, 0.0f), false, true);
+					PlayerCharacter->LaunchCharacter(FVector(0.0f, 0.0f, -0.1f), false, true);
 					// This tag is never removed so air dash con only be made once
 					PlayerCharacter->AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.HasAirDashed")));
 				}

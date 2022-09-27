@@ -101,7 +101,7 @@ void URGX_CombatAssistComponent::TickComponent(float DeltaTime, ELevelTick TickT
 	}
 	else if (bMoveVectorEnabled && bAddMoveVector && bIsAttacking == false)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("MOVEMENT. MAX WALK SPEED: %f MAX ACCELERATION: %f"), CharacterMovementComponent->MaxWalkSpeed, CharacterMovementComponent->MaxAcceleration);
+		//UE_LOG(LogTemp, Warning, TEXT("MOVEMENT. MAX WALK SPEED: %f MAX ACCELERATION: %f"), CharacterMovementComponent->MaxWalkSpeed, CharacterMovementComponent->MaxAcceleration);
 		FVector FinalVelocity = MoveVectorDirection * MoveVectorSpeed;
 		const FVector NewLocation = CharacterBase->GetActorLocation() + MoveVectorDirection * MoveVectorSpeed * DeltaTime;
 		//CharacterMovementComponent->MaxAcceleration = 99999999.0f;
@@ -372,6 +372,8 @@ void URGX_CombatAssistComponent::PerformAttackAutoAssist()
 		AutoAssistMove = MaxAutoassistMove;
 	}
 
+	UE_LOG(LogTemp, Warning, TEXT("Attack Auto Assist"));
+
 	//UE_LOG(LogTemp, Warning, TEXT("AutoAssistMove: %f\n"), AutoAssistMove);
 	//const FVector FinalLocation = PlayerLocation + AssistDirection * (CurrentClosestDistance - AutoAssistOffsetToEnemy);
 
@@ -403,7 +405,7 @@ void URGX_CombatAssistComponent::AddMovementVector(const FVector Direction, cons
 		if (CharacterMovementComponent)
 		{
 			CharacterMovementComponent->MaxWalkSpeed = Speed;
-			UE_LOG(LogTemp, Warning, TEXT("MAX WALK SPEED: %f"), CharacterMovementComponent->MaxWalkSpeed);
+			//UE_LOG(LogTemp, Warning, TEXT("MAX WALK SPEED: %f"), CharacterMovementComponent->MaxWalkSpeed);
 		}
 	}
 }
@@ -443,7 +445,7 @@ void URGX_CombatAssistComponent::SetMovementSpeed(const float Speed)
 		if (CharacterMovementComponent)
 		{
 			CharacterMovementComponent->MaxWalkSpeed = Speed;
-			UE_LOG(LogTemp, Warning, TEXT("MAX WALK SPEED: %f"), CharacterMovementComponent->MaxWalkSpeed);
+			//UE_LOG(LogTemp, Warning, TEXT("MAX WALK SPEED: %f"), CharacterMovementComponent->MaxWalkSpeed);
 		}
 	}
 }
