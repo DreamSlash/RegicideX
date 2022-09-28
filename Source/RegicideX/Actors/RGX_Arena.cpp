@@ -123,12 +123,29 @@ void ARGX_Arena::SpawnWaveEnemyTypeGroup(const FName& EnemyWaveName, int32 NumEn
 	{
 		UDataAsset* EnemyInfo = DT_EnemyRefs->FindRow<FRGX_EnemiesDataTable>(EnemyWaveName, "")->EnemyInfo;
 		const URGX_EnemyDataAsset* EnemyInfoCasted = Cast<URGX_EnemyDataAsset>(EnemyInfo);
-		if (EnemyInfoCasted)
+		if (EnemyInfoCasted && EnemyInfoCasted->EnemyBP)
 		{
-			if (EnemyInfoCasted->EnemyBP)
+			switch(Wave->WaveData->WaveSpawnMode)
+			{
+			case ERGX_WaveSpawnMode::Random:
 			{
 				const int SpawnerIdx = FMath::RandRange(0, EnemySpawners.Num() - 1);
 				SpawnWaveEnemy(EnemyInfoCasted->EnemyBP, SpawnerIdx, Wave);
+				break;
+			}
+			case ERGX_WaveSpawnMode::RoundRobin:
+			{
+				const int SpawnerIdx = Wave->EnemiesLeft % EnemySpawners.Num();
+				SpawnWaveEnemy(EnemyInfoCasted->EnemyBP, SpawnerIdx, Wave);
+				break;
+			}
+		
+			default: // Default is random spawn
+			{
+				const int SpawnerIdx = FMath::RandRange(0, EnemySpawners.Num() - 1);
+				SpawnWaveEnemy(EnemyInfoCasted->EnemyBP, SpawnerIdx, Wave);
+				break;
+			}
 			}
 		}
 	}
