@@ -17,8 +17,8 @@ struct REGICIDEX_API FRGX_EnemyCombatItem
 	GENERATED_BODY()
 
 	FRGX_EnemyCombatItem() = default;
-	FRGX_EnemyCombatItem(ARGX_EnemyBase* enemy, float distance, float scoring)
-		: Enemy(enemy), Distance(distance), Scoring(scoring)
+	FRGX_EnemyCombatItem(ARGX_EnemyBase* enemy)
+		: Enemy(enemy)
 	{}
 
 	bool IsValid() const { return Enemy.IsValid(); }
@@ -30,6 +30,7 @@ struct REGICIDEX_API FRGX_EnemyCombatItem
 
 	float Distance = 0.0;
 	float Scoring = 0.0;
+	float LastAttackTime = 0.0;
 	
 };
 
@@ -52,22 +53,34 @@ public:
 	int32 MaxMeleeEnemies = 12;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	int32 MaxDistanceEnemies = 5;
+	int32 MaxRangedEnemies = 5;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	int32 NbMeleeSlots = 2;
 
 	UPROPERTY(Editanywhere, BlueprintReadWrite)
-	int32 NbDistanceSlots = 1;
+	int32 NbRangedSlots = 1;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float InvalidateOffset = 1000.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float DistanceWeight = 1.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float IsInFrustumScore = 2000.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float IsInFrustumWeight = 1.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float LastAttackTimeWeight = 1.0f;
 
 	UPROPERTY()
 	TArray<FRGX_EnemyCombatItem> EnemyMeleeItems;
 
 	UPROPERTY()
-	TArray<FRGX_EnemyCombatItem> EnemyDistanceItems;
+	TArray<FRGX_EnemyCombatItem> EnemyRangedItems;
 
 protected:
 	// Called when the game starts or when spawned

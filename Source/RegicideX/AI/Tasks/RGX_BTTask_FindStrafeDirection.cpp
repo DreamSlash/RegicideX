@@ -100,7 +100,7 @@ bool URGX_BT_FindStrafeDirection::IsDistanceGreaterThanX(const FVector& Location
 		}
 	}
 
-	for (const auto& item : Controller->CombatManager->EnemyDistanceItems)
+	for (const auto& item : Controller->CombatManager->EnemyRangedItems)
 	{
 		if (item.IsValid())
 		{
