@@ -108,12 +108,73 @@ void ARGX_Arena::HandleSpawnWave(URGX_OutgoingWave* Wave)
 		return;
 	}
 
+	LastSpawnerIdx = -1;
 	for (int i = 0; i < CurrentWaveData->NumEnemies.Num(); ++i)
 	{
 		SpawnWaveEnemyTypeGroup(EnemyWaveNames[i], CurrentWaveData->NumEnemies[i], Wave);
 	}
 
 	Wave->bEnemiesSpawned = true;
+}
+
+void ARGX_Arena::SpawnWaveEnemyRandomMode(TSubclassOf<class ARGX_EnemyBase> EnemyClass, URGX_OutgoingWave* Wave)
+{
+	int SpawnerIdx = 0;
+	TSet<int>& AvailableSpawnersIdx = Wave->WaveData->SpawnerIdxAvailable;
+
+	if (AvailableSpawnersIdx.Num() == 0)
+	{
+		SpawnerIdx = FMath::RandRange(0, EnemySpawners.Num() - 1);
+	}
+	else
+	{
+		do
+		{
+			SpawnerIdx = FMath::RandRange(0, EnemySpawners.Num() - 1);
+		} while (AvailableSpawnersIdx.Contains(SpawnerIdx) == false);
+	}
+
+	SpawnWaveEnemy(EnemyClass, SpawnerIdx, Wave);
+}
+
+void ARGX_Arena::SpawnWaveEnemyRoundRobinMode(TSubclassOf<class ARGX_EnemyBase> EnemyClass, URGX_OutgoingWave* Wave)
+{
+	int SpawnerIdx = 0;
+	TSet<int>& AvailableSpawnersIdx = Wave->WaveData->SpawnerIdxAvailable;
+
+	if (AvailableSpawnersIdx.Num() == 0)
+	{
+		SpawnerIdx = Wave->EnemiesLeft % EnemySpawners.Num();
+	}
+	else if (AvailableSpawnersIdx.Num() == 1)
+	{	
+		// TODO: Guarreiro pero no em se la sintaxi per pillar l'unic element del set
+		for (int i : AvailableSpawnersIdx)
+		{
+			SpawnerIdx = i;
+			break;
+		}
+	}
+	else
+	{
+		// TODO: Bug. Incorrect idx sometimes
+		SpawnerIdx = Wave->EnemiesLeft % EnemySpawners.Num();
+		while (SpawnerIdx == LastSpawnerIdx || AvailableSpawnersIdx.Contains(SpawnerIdx) == false)
+		{
+			if (SpawnerIdx + 1 == EnemySpawners.Num())
+			{
+				SpawnerIdx = 0;
+			}
+			else
+			{
+				SpawnerIdx++;
+			}
+		}
+
+		LastSpawnerIdx = SpawnerIdx;
+	}
+
+	SpawnWaveEnemy(EnemyClass, SpawnerIdx, Wave);
 }
 
 // TODO: Petar-se lu de EnemyWaveName. Amb idx ja es pot accedir a la info d'un enemic
@@ -129,21 +190,18 @@ void ARGX_Arena::SpawnWaveEnemyTypeGroup(const FName& EnemyWaveName, int32 NumEn
 			{
 			case ERGX_WaveSpawnMode::Random:
 			{
-				const int SpawnerIdx = FMath::RandRange(0, EnemySpawners.Num() - 1);
-				SpawnWaveEnemy(EnemyInfoCasted->EnemyBP, SpawnerIdx, Wave);
+				SpawnWaveEnemyRandomMode(EnemyInfoCasted->EnemyBP, Wave);
 				break;
 			}
 			case ERGX_WaveSpawnMode::RoundRobin:
 			{
-				const int SpawnerIdx = Wave->EnemiesLeft % EnemySpawners.Num();
-				SpawnWaveEnemy(EnemyInfoCasted->EnemyBP, SpawnerIdx, Wave);
+				SpawnWaveEnemyRoundRobinMode(EnemyInfoCasted->EnemyBP, Wave);
 				break;
 			}
 		
 			default: // Default is random spawn
 			{
-				const int SpawnerIdx = FMath::RandRange(0, EnemySpawners.Num() - 1);
-				SpawnWaveEnemy(EnemyInfoCasted->EnemyBP, SpawnerIdx, Wave);
+				SpawnWaveEnemyRandomMode(EnemyInfoCasted->EnemyBP, Wave);
 				break;
 			}
 			}

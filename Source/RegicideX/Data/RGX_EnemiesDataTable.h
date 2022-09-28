@@ -50,4 +50,8 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	ERGX_WaveSpawnMode WaveSpawnMode = ERGX_WaveSpawnMode::Random;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSet<int> SpawnerIdxAvailable; // Wave will spawn in spawners with those indices if they are available. If array is empty it will spawn in all spawners available
+
 };

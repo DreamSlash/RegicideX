@@ -70,6 +70,9 @@ private:
 	UFUNCTION()
 	void HandleSpawnWave(URGX_OutgoingWave* Wave);
 
+	void SpawnWaveEnemyRandomMode(TSubclassOf<class ARGX_EnemyBase> EnemyClass, URGX_OutgoingWave* Wave);
+	void SpawnWaveEnemyRoundRobinMode(TSubclassOf<class ARGX_EnemyBase> EnemyClass, URGX_OutgoingWave* Wave);
+
 	UFUNCTION()
 	void OnHandleFinishWave(URGX_OutgoingWave* FinishedWave);
 	UFUNCTION()
@@ -114,6 +117,8 @@ private:
 	bool bFinished = false;
 	bool bIsInitialized = false;
 	bool bInitialWavesSpawned = false;
+
+	int LastSpawnerIdx;
 
 	// Constant Spawn of Zombies
 	UPROPERTY(EditAnywhere, Category = "Constant Spawn")
