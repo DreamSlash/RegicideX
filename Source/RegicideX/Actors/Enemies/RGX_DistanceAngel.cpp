@@ -35,7 +35,6 @@ ARGX_DistanceAngel::ARGX_DistanceAngel() : ARGX_EnemyBase()
 	FloorReturnPlace->SetRelativeLocation(FVector(0.0));
 	FloorReturnPlace->SetupAttachment(RootComponent);
 
-	HealthDisplayWidgetComponent->SetupAttachment(SphereCollider);
 	CombatTargetWidgetComponent->SetupAttachment(SphereCollider);
 
 	BHHitboxComponent = CreateDefaultSubobject<URGX_HitboxComponent>(TEXT("BHHitboxComponent"));

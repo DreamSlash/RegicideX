@@ -25,8 +25,6 @@ ARGX_EnemyBase::ARGX_EnemyBase()
 
 	CombatTargetWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("CombatTargetWidgetComponent"));
 	CombatTargetWidgetComponent->SetupAttachment(RootComponent);
-	HealthDisplayWidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthDisplayWidgetComponent"));
-	HealthDisplayWidgetComponent->SetupAttachment(RootComponent);
 
 	InteractionShapeComponent = CreateDefaultSubobject<USphereComponent>(TEXT("InteractionShapeComponent"));
 	InteractionShapeComponent->SetupAttachment(RootComponent);
@@ -42,8 +40,6 @@ ARGX_EnemyBase::ARGX_EnemyBase()
 void ARGX_EnemyBase::Activate()
 {
 	Super::Activate();
-
-	//HealthDisplayWidgetComponent->SetVisibility(true);
 	//AddStartupGameplayAbilities();
 }
 
@@ -198,15 +194,6 @@ void ARGX_EnemyBase::Tick(float DeltaTime)
 		}
 
 		const FVector VectorToTarget = TargetActor->GetActorLocation() - GetActorLocation();
-		const float DistanceToTarget = VectorToTarget.Size();
-		if (DistanceToTarget > HealthBarHideDistance)
-		{
-			HealthDisplayWidgetComponent->SetVisibility(false);
-		}
-		else
-		{
-			HealthDisplayWidgetComponent->SetVisibility(true);
-		}
 
 		//CheckIfHasLostSightOfPlayer();
 	}
@@ -324,7 +311,6 @@ void ARGX_EnemyBase::HandleDamage(
 		bWeak = false;
 		RemoveGameplayTag(FGameplayTag::RequestGameplayTag("Status.Enemy.Weakened"));
 		StopLogic("Character Dead");
-		HealthDisplayWidgetComponent->SetVisibility(false);
 		UAnimMontage* AnimToPlay = nullptr;
 		const FAnimationArray AnimationList = *AnimMontageMap.Find(ERGX_AnimEvent::Death);
 		if (AnimationList.Animations.Num() > 0)
@@ -354,13 +340,6 @@ void ARGX_EnemyBase::HandleHealthChanged(float DeltaValue, const struct FGamepla
 	Super::HandleHealthChanged(DeltaValue, EventTags);
 
 	UMCV_AbilitySystemComponent* ACS	= Cast<UMCV_AbilitySystemComponent>(AbilitySystemComponent);
-	URGX_EnemyHealthBar* HealthBar		= Cast<URGX_EnemyHealthBar>(HealthDisplayWidgetComponent->GetWidget());
-	if (HealthBar)
-	{
-		HealthBar->MaxHealth		= ACS->GetNumericAttribute(AttributeSet->GetMaxHealthAttribute());
-		HealthBar->CurrentHealth	= ACS->GetNumericAttribute(AttributeSet->GetHealthAttribute());
-	}
-
 	// Only call BP event if ACS is initialized
 	if (ACS->bIsInitialized == true)
 	{

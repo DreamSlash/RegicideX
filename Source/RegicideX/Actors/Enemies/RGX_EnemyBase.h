@@ -103,12 +103,8 @@ public:
 protected:
 
 	/** Target widget component to notify the player this is the enemy on target. */
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UWidgetComponent* CombatTargetWidgetComponent = nullptr;
-
-	/** Health Display Widget */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UWidgetComponent* HealthDisplayWidgetComponent = nullptr;
 
 	/* Percentage of health player must apply as recent damage to weaken enemy */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Abilities)
