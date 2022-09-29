@@ -21,21 +21,31 @@ public:
 
 	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override; 
 
+	void InitializeFromAsset(UBehaviorTree& Asset) override;
+
+public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blackboard")
 	UEnvQuery* LocationSeekerQuery;
 
-	FEnvQueryRequest LocationSeekerQueryRequest;
-
-	void LocationSeekerQueryFinished(TSharedPtr<FEnvQueryResult> Result);
-
-	class ARGX_EnemyBaseController* Controller;
-
-	FVector StrafeLocation = FVector::ZeroVector;
+	UPROPERTY(EditAnywhere, Category = Blackboard)
+	struct FBlackboardKeySelector DistanceKey;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blackboard")
 	float Distance = 500.0f;
 
+private:
+	void LocationSeekerQueryFinished(TSharedPtr<FEnvQueryResult> Result);
+
 	bool IsDistanceGreaterThanX(const FVector& Location);
+
+	float GetDistance(UBehaviorTreeComponent& OwnerComp) const;
+
+private:
+	FEnvQueryRequest LocationSeekerQueryRequest;
+
+	class ARGX_EnemyBaseController* Controller = nullptr;
+
+	FVector StrafeLocation = FVector::ZeroVector;
 
 };
 
