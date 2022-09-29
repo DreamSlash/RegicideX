@@ -1,16 +1,12 @@
 
 #include "RGX_PeasantController.h"
 
-#include "BehaviorTree/BehaviorTree.h"
-#include "BehaviorTree/BehaviorTreeComponent.h"
-#include "BehaviorTree/BlackboardComponent.h"
-
 #include "RegicideX/Actors/Enemies/RGX_Peasant.h"
 
-ARGX_PeasantController::ARGX_PeasantController()
+ARGX_PeasantController::ARGX_PeasantController(const FObjectInitializer& ObjectInitializer)
+	: ARGX_EnemyBaseController(ObjectInitializer)
 {
-	BBComponent = CreateDefaultSubobject<UBlackboardComponent>(TEXT("BBPeasant"));
-	BTComponent = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BTPeasant"));
+
 }
 
 void ARGX_PeasantController::OnPossess(APawn* pawn)
@@ -51,21 +47,4 @@ void ARGX_PeasantController::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	/*Peasant = Cast<ARGX_Peasant>(GetPawn());*/
-
-	if (Peasant)
-	{
-		// Update values for the BB of the BT.
-		if (Peasant->TargetActor)
-		{
-			BBComponent->SetValueAsObject("TargetActor", Peasant->TargetActor);
-			BBComponent->SetValueAsVector("TargetLocation", Peasant->TargetActor->GetActorLocation());
-		}
-
-		// TODO Do not do it every tick
-		BBComponent->SetValueAsFloat("DistanceToPlayer", Peasant->GetDistanceToTarget());
-		BBComponent->SetValueAsInt("IdleAction", Peasant->IdleAction);
-		BBComponent->SetValueAsBool("bFrenzied", bFrenzied);
-		BBComponent->SetValueAsVector("SelfLocation", Peasant->GetActorLocation());
-		BBComponent->SetValueAsVector("ForwardVector", Peasant->GetActorLocation() + Peasant->GetActorForwardVector());
-	}
 }

@@ -575,9 +575,6 @@ void ARGX_PlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetCharacterMovement()->GravityScale = DefaultGravity;
-	GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
-
 	AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
 
 	if (PowerSkills.Num() < 1 == false)
@@ -596,9 +593,13 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	
-	if (GetVelocity().Z < 0)
+	if (GetCharacterMovement() && GetCharacterMovement()->IsFalling() && GetVelocity().Z < 0)
 	{
 		bIsFallingDown = true;
+	}
+	else
+	{
+		bIsFallingDown = false;
 	}
 
 	bool bWasStaggered = bStaggered;

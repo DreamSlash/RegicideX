@@ -6,7 +6,8 @@
 #include "RegicideX\Actors\Enemies\RGX_DistanceAngel.h"
 #include "NavigationSystem.h"
 
-ARGX_DistanceAngelController::ARGX_DistanceAngelController()
+ARGX_DistanceAngelController::ARGX_DistanceAngelController(const FObjectInitializer& ObjectInitializer)
+	: ARGX_EnemyBaseController(ObjectInitializer)
 {
 	
 }

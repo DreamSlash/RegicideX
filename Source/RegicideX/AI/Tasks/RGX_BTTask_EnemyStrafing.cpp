@@ -3,7 +3,7 @@
 #include "RGX_BTTask_EnemyStrafing.h"
 
 #include "AIController.h"
-#include "BehaviorTree/Blackboard/BlackboardKeyType_Int.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyType_Enum.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
@@ -46,7 +46,27 @@ void URGX_BT_EnemyStrafing::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* N
 		return;
 	}
 
-	ControlledPawn->AddMovementInput(Direction);
+	FVector dirStrafe;
+	switch (Direction)
+	{
+	case ERGX_StrafeDirection::Forward:
+		dirStrafe = ControlledPawn->GetActorForwardVector();
+		break;
+	case ERGX_StrafeDirection::Backward:
+		dirStrafe = -ControlledPawn->GetActorForwardVector();
+		break;
+	case ERGX_StrafeDirection::Right:
+		dirStrafe = ControlledPawn->GetActorRightVector();
+		break;
+	case ERGX_StrafeDirection::Left:
+		dirStrafe = -ControlledPawn->GetActorRightVector();
+		break;
+	default:
+		dirStrafe = FVector::ZeroVector;
+		break;
+	}
+
+	ControlledPawn->AddMovementInput(dirStrafe);
 
 	FinishLatentTask(OwnerComp, EBTNodeResult::InProgress);
 }
@@ -66,20 +86,21 @@ void URGX_BT_EnemyStrafing::InitializeFromAsset(UBehaviorTree& Asset)
 	}
 }
 
-FVector URGX_BT_EnemyStrafing::GetDirection(UBehaviorTreeComponent& OwnerComp) const
+ERGX_StrafeDirection::Type URGX_BT_EnemyStrafing::GetDirection(UBehaviorTreeComponent& OwnerComp) const
 {
 	const UBlackboardComponent* MyBlackboard = OwnerComp.GetBlackboardComponent();
 	if (MyBlackboard)
 	{
-		if (DirectionKey.SelectedKeyType == UBlackboardKeyType_Int::StaticClass())
+		if (DirectionKey.IsNone() == false && DirectionKey.SelectedKeyType == UBlackboardKeyType_Enum::StaticClass())
 		{
-			int32 KeyValue = MyBlackboard->GetValue<UBlackboardKeyType_Int>(DirectionKey.GetSelectedKeyID());
+			return (ERGX_StrafeDirection::Type)MyBlackboard->GetValue<UBlackboardKeyType_Enum>(DirectionKey.GetSelectedKeyID());
+			/*int32 KeyValue = MyBlackboard->GetValue<UBlackboardKeyType_Int>(DirectionKey.GetSelectedKeyID());
 			const AAIController* AIController = OwnerComp.GetAIOwner();
 			APawn* ControlledPawn = AIController->GetPawn();
 
 			const FVector forwardVector = ControlledPawn->GetActorForwardVector();
 			const FVector direction = forwardVector.RotateAngleAxis((float)KeyValue, ControlledPawn->GetActorUpVector());
-			return direction;
+			return direction;*/
 
 			/*switch (KeyValue)
 			{
@@ -95,7 +116,11 @@ FVector URGX_BT_EnemyStrafing::GetDirection(UBehaviorTreeComponent& OwnerComp) c
 				return FVector::ZeroVector;
 			}*/
 		}
+		else
+		{
+			return StrafeDirection;
+		}
 	}
 
-	return FVector::ZeroVector;
+	return ERGX_StrafeDirection::None;
 }
