@@ -3,7 +3,7 @@
 #include "RGX_BTTask_EnemyOrbit.h"
 
 #include "AIController.h"
-#include "BehaviorTree/Blackboard/BlackboardKeyType_Int.h"
+#include "BehaviorTree/Blackboard/BlackboardKeyType_Enum.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
@@ -49,10 +49,10 @@ void URGX_BT_EnemyOrbit::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* Node
 	FVector direction;
 	switch (KeyValue)
 	{
-	case 0: // Right
+	case ERGX_StrafeDirection::Right: // Right
 		direction = ControlledPawn->GetActorRightVector();
 		break;
-	case 1:
+	case ERGX_StrafeDirection::Left:
 		direction = -ControlledPawn->GetActorRightVector();
 		break;
 	default:
@@ -79,16 +79,16 @@ void URGX_BT_EnemyOrbit::InitializeFromAsset(UBehaviorTree& Asset)
 	}
 }
 
-int32 URGX_BT_EnemyOrbit::GetKeyValue(UBehaviorTreeComponent& OwnerComp) const
+ERGX_StrafeDirection::Type URGX_BT_EnemyOrbit::GetKeyValue(UBehaviorTreeComponent& OwnerComp) const
 {
 	const UBlackboardComponent* MyBlackboard = OwnerComp.GetBlackboardComponent();
 	if (MyBlackboard)
 	{
-		if (DirectionKey.SelectedKeyType == UBlackboardKeyType_Int::StaticClass())
+		if (DirectionKey.SelectedKeyType == UBlackboardKeyType_Enum::StaticClass())
 		{
-			return MyBlackboard->GetValue<UBlackboardKeyType_Int>(DirectionKey.GetSelectedKeyID());
+			return (ERGX_StrafeDirection::Type)MyBlackboard->GetValue<UBlackboardKeyType_Enum>(DirectionKey.GetSelectedKeyID());
 		}
 	}
 
-	return 0;
+	return ERGX_StrafeDirection::None;
 }

@@ -5,9 +5,32 @@
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
 
+#include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
+#include "RegicideX/AI/Controllers/RGX_EnemyBaseController.h"
 #include "RegicideX/Character/RGX_PlayerCharacter.h"
 
 //#pragma optimize("", off)
+
+//---- FRGX_EnemyCombatItem -----------------------------------------------------------------------
+
+void FRGX_EnemyCombatItem::Reset(ARGX_EnemyBase* enemy)
+{
+	if (enemy)
+	{
+		Enemy = enemy;
+		LastAttackTime = UGameplayStatics::GetTimeSeconds(enemy);
+	}
+	else
+	{
+		Enemy.Reset();
+		LastAttackTime = 0.0;
+	}
+
+	Distance = 0.0;
+	Scoring = 0.0;
+}
+
+//---- ARGX_CombatManager -------------------------------------------------------------------------
 
 // Sets default values
 ARGX_CombatManager::ARGX_CombatManager()
@@ -24,10 +47,11 @@ void ARGX_CombatManager::BeginPlay()
 	EnemyMeleeItems.Reserve(MaxMeleeEnemies);
 	EnemyMeleeItems.Init(FRGX_EnemyCombatItem(), MaxMeleeEnemies);
 
-	EnemyDistanceItems.Reserve(MaxDistanceEnemies);
-	EnemyDistanceItems.Init(FRGX_EnemyCombatItem(), MaxDistanceEnemies);
+	EnemyRangedItems.Reserve(MaxRangedEnemies);
+	EnemyRangedItems.Init(FRGX_EnemyCombatItem(), MaxRangedEnemies);
 
-	GetWorld()->AddOnActorSpawnedHandler(FOnActorSpawned::FDelegate::CreateUObject(this, &ARGX_CombatManager::OnActorSpawned));
+	GetWorld()->AddOnActorPreSpawnInitialization(FOnActorSpawned::FDelegate::CreateUObject(this, &ARGX_CombatManager::OnActorSpawned));
+	//GetWorld()->AddOnActorSpawnedHandler(FOnActorSpawned::FDelegate::CreateUObject(this, &ARGX_CombatManager::OnActorSpawned));
 }
 
 void ARGX_CombatManager::Tick(float DeltaTime)
@@ -52,7 +76,7 @@ void ARGX_CombatManager::Tick(float DeltaTime)
 void ARGX_CombatManager::Invalidate()
 {	
 	InvalidateImpl(EnemyMeleeItems);
-	InvalidateImpl(EnemyDistanceItems);
+	InvalidateImpl(EnemyRangedItems);
 }
 
 void ARGX_CombatManager::OnActorSpawned(AActor* actor)
@@ -66,7 +90,7 @@ void ARGX_CombatManager::OnActorSpawned(AActor* actor)
 			OnEnemySpawned(enemy, EnemyMeleeItems);
 			break;
 		case ERGX_EnemyType::DistancePeasant:
-			OnEnemySpawned(enemy, EnemyDistanceItems);
+			OnEnemySpawned(enemy, EnemyRangedItems);
 			break;
 		}
 	}
@@ -81,7 +105,10 @@ void ARGX_CombatManager::OnEnemySpawned(ARGX_EnemyBase* Enemy, TArray<FRGX_Enemy
 		if (item.IsValid() == false)
 		{
 			item.Reset(Enemy);
+
 			Enemy->OnHandleDeathEvent.AddDynamic(this, &ARGX_CombatManager::OnEnemyDeath);
+			Enemy->TargetActor = Player.Get();
+
 			bAddedNewEnemies = true;
 			return;
 		}
@@ -128,41 +155,34 @@ void ARGX_CombatManager::InvalidateImpl(TArray<FRGX_EnemyCombatItem>& EnemyItems
 	while (index < lastIndex && index < NbHoldingEnemies)
 	{
 		FRGX_EnemyCombatItem& item = EnemyItems[index++];
-		if (item.Enemy->GetEnemyAIState() == ERGX_EnemyAIState::None || item.Enemy->GetEnemyAIState() == ERGX_EnemyAIState::Waiting)
+		if (ARGX_EnemyBaseController* enemyController = item.Enemy->GetController<ARGX_EnemyBaseController>())
 		{
-			item.Enemy->SetEnemyAIState(ERGX_EnemyAIState::Holding);
+			if (enemyController->GetEnemyAIState() == ERGX_EnemyAIState::None || enemyController->GetEnemyAIState() == ERGX_EnemyAIState::Waiting)
+			{
+				enemyController->SetEnemyAIState(ERGX_EnemyAIState::Holding);
+			}
 		}
 	}
 
 	while (index < lastIndex)
 	{
 		FRGX_EnemyCombatItem& item = EnemyItems[index++];
-		if (item.Enemy->GetEnemyAIState() == ERGX_EnemyAIState::None)
+		if (ARGX_EnemyBaseController* enemyController = item.Enemy->GetController<ARGX_EnemyBaseController>())
 		{
-			item.Enemy->SetEnemyAIState(ERGX_EnemyAIState::Waiting);
+			if (enemyController->GetEnemyAIState() == ERGX_EnemyAIState::None)
+			{
+				enemyController->SetEnemyAIState(ERGX_EnemyAIState::Waiting);
+			}
 		}
 	}
 }
 
 void ARGX_CombatManager::UpdateMeleeEnemies()
 {
-	const UCameraComponent* Camera = Player->GetFollowCamera();
-
 	const FVector playerLocation = Player->GetActorLocation();
-	const FVector cameraLocation = Camera->GetComponentLocation();
-	const FVector cameraForward = Camera->GetForwardVector();
-	const float cosFOV = cos(Camera->FieldOfView);
+	const float currentTime = UGameplayStatics::GetTimeSeconds(this);
 
-	auto CalculateDotProduct = [](const FVector& SourceLocation, const FVector& SourceDir, const AActor* Target)
-	{
-		const FVector targetLocation = Target->GetActorLocation();
-		const FVector targetDirection = targetLocation - SourceLocation;
-		const FVector targetDirectionNormalized = targetDirection.GetUnsafeNormal();
-
-		return FVector::DotProduct(SourceDir, targetDirectionNormalized);
-	};
-
-	UpdateScoring(EnemyMeleeItems, [playerLocation, cameraForward, cosFOV, CalculateDotProduct](FRGX_EnemyCombatItem& item)
+	UpdateScoring(EnemyMeleeItems, [this, playerLocation, currentTime](FRGX_EnemyCombatItem& item)
 		{
 			item.Distance = std::numeric_limits<float>::infinity();
 			item.Scoring = std::numeric_limits<float>::infinity();
@@ -171,16 +191,12 @@ void ARGX_CombatManager::UpdateMeleeEnemies()
 			{
 				item.Distance = FVector::Dist2D(playerLocation, item.Enemy->GetActorLocation());
 
-				float visibilityScoring = 0.f;
-				const float dot = CalculateDotProduct(playerLocation, cameraForward, item.Enemy.Get());
-				if (dot < cosFOV)
-				{
-					visibilityScoring += 2000.0f;
-				}
+				const float distanceScore = item.Distance * DistanceWeight;
+				const float visibilityScore = (item.Enemy->IsInFrustum() ? IsInFrustumScore : 0.0) * IsInFrustumWeight;
+				const float lastAttackTimeScore = (currentTime - item.LastAttackTime) * LastAttackTimeWeight;
 				
-				item.Scoring = item.Distance + visibilityScoring;
-			}
-			
+				item.Scoring = distanceScore + visibilityScore + lastAttackTimeScore;
+			}			
 		});
 
 	UpdateSlots(EnemyMeleeItems, NbMeleeSlots);
@@ -189,13 +205,26 @@ void ARGX_CombatManager::UpdateMeleeEnemies()
 void ARGX_CombatManager::UpdateDistanceEnemies()
 {
 	const FVector playerLocation = Player->GetActorLocation();
-	UpdateScoring(EnemyDistanceItems, [playerLocation](FRGX_EnemyCombatItem& item)
+	const float currentTime = UGameplayStatics::GetTimeSeconds(this);
+
+	UpdateScoring(EnemyRangedItems, [this, playerLocation, currentTime](FRGX_EnemyCombatItem& item)
 		{
-			item.Distance = FVector::Dist2D(playerLocation, item.Enemy->GetActorLocation());
-			item.Scoring = item.Distance;
+			item.Distance = std::numeric_limits<float>::infinity();
+			item.Scoring = std::numeric_limits<float>::infinity();
+
+			if (item.IsValid())
+			{
+				item.Distance = FVector::Dist2D(playerLocation, item.Enemy->GetActorLocation());
+
+				const float distanceScore = item.Distance * DistanceWeight;
+				const float visibilityScore = (item.Enemy->IsInFrustum() ? IsInFrustumScore : 0.0) * IsInFrustumWeight;
+				const float lastAttackTimeScore = (currentTime - item.LastAttackTime) * LastAttackTimeWeight;
+
+				item.Scoring = distanceScore + visibilityScore + lastAttackTimeScore;
+			}
 		});
 
-	UpdateSlots(EnemyDistanceItems, NbDistanceSlots);
+	UpdateSlots(EnemyRangedItems, NbRangedSlots);
 }
 
 void ARGX_CombatManager::UpdateSlots(TArray<FRGX_EnemyCombatItem>& EnemyItems, int32 numSlots)
@@ -206,16 +235,20 @@ void ARGX_CombatManager::UpdateSlots(TArray<FRGX_EnemyCombatItem>& EnemyItems, i
 
 	PrepareCandidateData(EnemyItems, candidates, numAttackers, numRecoveries);
 
-	const int32 numCandidates = candidates.Num();
-	while (numAttackers < numCandidates && numAttackers < numSlots)
+	const float currentTime = UGameplayStatics::GetTimeSeconds(this);
+	int32 numFreeSlots = numSlots - numAttackers;
+	while (numFreeSlots > 0 && candidates.Num())
 	{
-		int32 index = FindNewAttacker(candidates, EnemyItems);
+		const int32 index = FindNewAttacker(candidates, EnemyItems);
 		auto& item = EnemyItems[index];
+		ARGX_EnemyBaseController* enemyController = item.Enemy->GetController<ARGX_EnemyBaseController>();
 		// assert state holding
-		item.Enemy->SetEnemyAIState(ERGX_EnemyAIState::Attacking);
+		enemyController->SetEnemyAIState(ERGX_EnemyAIState::Attacking);
+		item.LastAttackTime = currentTime;
 
 		candidates.RemoveAtSwap(index);
-		++numAttackers;
+		//++numAttackers;
+		--numFreeSlots;
 	}
 }
 
@@ -229,19 +262,22 @@ void ARGX_CombatManager::PrepareCandidateData(const TArray<FRGX_EnemyCombatItem>
 	for (int32 index = 0; index < lastIndex && index < NbHoldingEnemies; ++index)
 	{
 		const auto& item = EnemyItems[index];
-		switch (item.Enemy->GetEnemyAIState())
+		if (ARGX_EnemyBaseController* enemyController = item.Enemy->GetController<ARGX_EnemyBaseController>())
 		{
-		case ERGX_EnemyAIState::Attacking:
-			++numAttackers;
-			break;
-		case ERGX_EnemyAIState::Recovering:
-			++numRecoveries;
-			break;
-		case ERGX_EnemyAIState::Holding:
-			candidates.Add(index);
-			break;
-		default:		
-			break;
+			switch (enemyController->GetEnemyAIState())
+			{
+			case ERGX_EnemyAIState::Attacking:
+				++numAttackers;
+				break;
+			case ERGX_EnemyAIState::Recovering:
+				++numRecoveries;
+				break;
+			case ERGX_EnemyAIState::Holding:
+				candidates.Add(index);
+				break;
+			default:
+				break;
+			}
 		}
 	}
 }
@@ -286,8 +322,6 @@ int32 ARGX_CombatManager::FindNewAttacker(const TArray<int32>& candidates, const
 
 void ARGX_CombatManager::UpdateScoring(TArray<FRGX_EnemyCombatItem>& EnemyItems, const std::function<void(FRGX_EnemyCombatItem&)>& ScoringFunction)
 {
-	const FVector playerLocation = Player->GetActorLocation();
-
 	for (FRGX_EnemyCombatItem& item : EnemyItems)
 	{
 		if (item.IsValid())

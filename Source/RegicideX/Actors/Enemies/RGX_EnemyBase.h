@@ -21,16 +21,6 @@ enum class ERGX_EnemyType : uint8
 	SuicidalPeasant		UMETA(DisplayName = "SuicidalPeasant")
 };
 
-UENUM(BlueprintType)
-enum ERGX_EnemyAIState
-{
-	None		UMETA(DisplayName = "None"),
-	Attacking	UMETA(DisplayName = "Attacking"),
-	Holding		UMETA(DisplayName = "Holding"),
-	Waiting		UMETA(DisplayName = "Waiting"),
-	Recovering	UMETA(DisplayName = "Recovering")
-};
-
 USTRUCT()
 struct FAttackInfo {
 
@@ -75,10 +65,8 @@ public:
 	UFUNCTION(BlueprintCallable)
 	ERGX_EnemyType GetEnemyType() const;
 
-	UFUNCTION(BlueprintCallable)
-	ERGX_EnemyAIState GetEnemyAIState() const;
-	UFUNCTION(BlueprintCallable)
-	void SetEnemyAIState(ERGX_EnemyAIState state);
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UBehaviorTree* BehaviorTree = nullptr;
 
 public:
 	
@@ -115,12 +103,8 @@ public:
 protected:
 
 	/** Target widget component to notify the player this is the enemy on target. */
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	UWidgetComponent* CombatTargetWidgetComponent = nullptr;
-
-	/** Health Display Widget */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UWidgetComponent* HealthDisplayWidgetComponent = nullptr;
 
 	/* Percentage of health player must apply as recent damage to weaken enemy */
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Abilities)
@@ -238,8 +222,5 @@ public:
 	bool IsInFrustum();
 
 	void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
-
-private:
-	ERGX_EnemyAIState AIState = ERGX_EnemyAIState::None;
 
 };
