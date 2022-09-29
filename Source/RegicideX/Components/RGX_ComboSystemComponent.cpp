@@ -150,7 +150,7 @@ void URGX_ComboSystemComponent::OnEndCombo()
 	if (Owner)
 	{
 		UCharacterMovementComponent* CharacterMovementComponent = Owner->FindComponentByClass<UCharacterMovementComponent>();
-		CharacterMovementComponent->GravityScale = Owner->DefaultGravity;
+		CharacterMovementComponent->GravityScale = Owner->GravityScale;
 	}
 }
 
