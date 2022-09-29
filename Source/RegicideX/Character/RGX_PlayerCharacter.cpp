@@ -597,6 +597,10 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 	{
 		bIsFallingDown = true;
 	}
+	else
+	{
+		bIsFallingDown = false;
+	}
 
 	bool bWasStaggered = bStaggered;
 	bStaggered = HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Combat.InHurtReact")));
@@ -836,7 +840,6 @@ void ARGX_PlayerCharacter::Landed(const FHitResult& Hit)
 
 void ARGX_PlayerCharacter::OnCapsuleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	/*
 	if (bIsFallingDown == true)
 	{
 		const FVector Normal = Hit.Normal;
@@ -858,7 +861,6 @@ void ARGX_PlayerCharacter::OnCapsuleHit(UPrimitiveComponent* HitComponent, AActo
 			}
 		}
 	}
-	*/
 }
 
 void ARGX_PlayerCharacter::OnJump_Implementation()
