@@ -89,10 +89,17 @@ void ARGX_Arena::SpawnWave(URGX_OutgoingWave* Wave)
 {
 	const float SpawnDelay = Wave->WaveData->SpawnTimeDelay;
 
-	FTimerDelegate TimerDel;
-	FTimerHandle TimerHandle;
-	TimerDel.BindUFunction(this, FName("HandleSpawnWave"), Wave);
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, SpawnDelay, false);
+	if (SpawnDelay > 0.1f)
+	{
+		FTimerDelegate TimerDel;
+		FTimerHandle TimerHandle;
+		TimerDel.BindUFunction(this, FName("HandleSpawnWave"), Wave);
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, SpawnDelay, false);
+	}
+	else
+	{
+		HandleSpawnWave(Wave);
+	}
 }
 
 void ARGX_Arena::HandleSpawnWave(URGX_OutgoingWave* Wave)
