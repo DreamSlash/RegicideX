@@ -68,10 +68,10 @@ public:
 	float DistanceWeight = 1.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float IsInFrustumScore = 2000.0f;
+	float IsNotInFrustumScore = 2000.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	float IsInFrustumWeight = 1.0f;
+	float IsNotInFrustumWeight = 1.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float LastAttackTimeWeight = 1.0f;

@@ -35,8 +35,9 @@ public:
 
 private:
 	void LocationSeekerQueryFinished(TSharedPtr<FEnvQueryResult> Result);
+	int32 BestReachableLocationInDirection(const TArray<TTuple<FVector, float>>& Locations) const;
 
-	bool IsDistanceGreaterThanX(const FVector& Location);
+	bool IsDistanceGreaterThanX(const FVector& Location) const;
 
 	float GetDistance(UBehaviorTreeComponent& OwnerComp) const;
 

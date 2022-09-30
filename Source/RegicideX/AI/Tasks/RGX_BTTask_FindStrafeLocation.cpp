@@ -13,6 +13,8 @@
 #include "RegicideX/Actors/RGX_CombatManager.h"
 #include "RegicideX/AI/Controllers/RGX_EnemyBaseController.h"
 
+//#pragma optimize("", off)
+
 URGX_BT_FindStrafeLocation::URGX_BT_FindStrafeLocation(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {
 	bCreateNodeInstance = true;
@@ -31,7 +33,7 @@ EBTNodeResult::Type URGX_BT_FindStrafeLocation::ExecuteTask(UBehaviorTreeCompone
 			LocationSeekerQueryRequest = FEnvQueryRequest(LocationSeekerQuery, Controller->Agent);
 			LocationSeekerQueryRequest.SetFloatParam("OnCircle.CircleRadius", playerDistance);
 			LocationSeekerQueryRequest.Execute(EEnvQueryRunMode::AllMatching, this, &URGX_BT_FindStrafeLocation::LocationSeekerQueryFinished);
-			return EBTNodeResult::Succeeded;
+			return EBTNodeResult::InProgress;
 		}
 	}
 
@@ -55,28 +57,116 @@ void URGX_BT_FindStrafeLocation::InitializeFromAsset(UBehaviorTree& Asset)
 
 void URGX_BT_FindStrafeLocation::LocationSeekerQueryFinished(TSharedPtr<FEnvQueryResult> Result)
 {
-	int32 index = 0;
 	float currentBestScore = 0;
 	TArray<FVector> locations;
 	Result->GetAllAsLocations(locations);
 
+	TArray<TTuple<FVector, float>> locationsRight;
+	TArray<TTuple<FVector, float>> locationsLeft;
+	const FVector fromLocation = Controller->Agent->GetActorLocation();
+	const FVector rightVector = Controller->Agent->GetActorRightVector();
+	
+	int32 index = 0;
 	for (auto& loc : locations)
 	{
-		DrawDebugCapsule(GetWorld(), loc, 200, 100, FQuat::Identity, FColor::Purple, false, 2);
-
-		if (IsDistanceGreaterThanX(loc) && Result->GetItemScore(index) > currentBestScore)
+		if (FVector::Dist2D(fromLocation, loc) >= Distance)
 		{
-			StrafeLocation = loc;
-			currentBestScore = Result->GetItemScore(index);
+			//DrawDebugCapsule(GetWorld(), loc, 200, 100, FQuat::Identity, FColor::Purple, false, 2);
+
+			const FVector direction = (loc - fromLocation).GetSafeNormal2D();
+			if (FVector::DotProduct(rightVector, direction) >= 0.0)
+			{
+				locationsRight.Add(MakeTuple(loc, Result->GetItemScore(index++)));
+			}
+			else
+			{
+				locationsLeft.Add(MakeTuple(loc, Result->GetItemScore(index++)));
+			}
+		}
+		else
+		{
+			++index;
+		}
+	}
+
+	auto sortFunction = [fromLocation](const auto& left, const auto& right)
+	{
+		const float distanceLeft = FVector::Dist2D(fromLocation, left.Key);
+		const float distanceRight = FVector::Dist2D(fromLocation, right.Key);
+		return distanceLeft < distanceRight;
+	};
+
+	locationsRight.Sort(sortFunction);
+	locationsLeft.Sort(sortFunction);
+
+	int32 bestLocationRightIndex = BestReachableLocationInDirection(locationsRight);
+	int32 bestLocationLeftIndex = BestReachableLocationInDirection(locationsLeft);
+
+	UBehaviorTreeComponent* OwnerComp = Cast<UBehaviorTreeComponent>(GetOuter());
+	if (bestLocationRightIndex < 0 && bestLocationLeftIndex < 0)
+	{
+		FinishLatentTask(*OwnerComp, EBTNodeResult::Failed);
+	}
+	else if (bestLocationRightIndex < 0)
+	{
+		const auto& bestLeft = locationsLeft[bestLocationLeftIndex];
+		Controller->BlackboardComponent->SetValue<UBlackboardKeyType_Vector>(Controller->StrafeLocationKeyId, bestLeft.Key);
+		FinishLatentTask(*OwnerComp, EBTNodeResult::Succeeded);
+	}
+	else if (bestLocationLeftIndex < 0)
+	{
+		const auto& bestRight = locationsRight[bestLocationRightIndex];
+		Controller->BlackboardComponent->SetValue<UBlackboardKeyType_Vector>(Controller->StrafeLocationKeyId, bestRight.Key);
+		FinishLatentTask(*OwnerComp, EBTNodeResult::Succeeded);
+	}
+	else
+	{
+		const auto& bestLeft = locationsLeft[bestLocationLeftIndex];
+		const auto& bestRight = locationsRight[bestLocationRightIndex];
+
+		FVector finalStrafeLocation;
+		if (bestRight.Value >= bestLeft.Value)
+		{
+			finalStrafeLocation = bestRight.Key;
+		}
+		else
+		{
+			finalStrafeLocation = bestLeft.Key;
+		}
+
+		Controller->BlackboardComponent->SetValue<UBlackboardKeyType_Vector>(Controller->StrafeLocationKeyId, finalStrafeLocation);
+		FinishLatentTask(*OwnerComp, EBTNodeResult::Succeeded);
+	}
+}
+
+int32 URGX_BT_FindStrafeLocation::BestReachableLocationInDirection(const TArray<TTuple<FVector, float>>& Locations) const
+{
+	int32 currentBestIndex = -1;
+	float currentBestScore = 0.0;
+
+	int32 index = 0;
+	for (const auto& loc : Locations)
+	{
+		const FVector& location = loc.Key;
+		float score = loc.Value;
+
+		if (IsDistanceGreaterThanX(location) && score > currentBestScore)
+		{
+			currentBestIndex = index;
+			currentBestScore = score;
+		}
+		else
+		{
+			break;
 		}
 
 		++index;
 	}
 
-	Controller->BlackboardComponent->SetValue<UBlackboardKeyType_Vector>(Controller->StrafeLocationKeyId, StrafeLocation);
+	return currentBestIndex;
 }
 
-bool URGX_BT_FindStrafeLocation::IsDistanceGreaterThanX(const FVector& Location)
+bool URGX_BT_FindStrafeLocation::IsDistanceGreaterThanX(const FVector& Location) const
 {
 	for (const auto& item : Controller->CombatManager->EnemyMeleeItems)
 	{
