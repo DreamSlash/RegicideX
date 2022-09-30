@@ -37,6 +37,10 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector DivineDescentTargetLocation = FVector::ZeroVector;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector HeightGoal;
+
 protected:
 	FVector ChargeVelocity;
 

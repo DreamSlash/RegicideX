@@ -44,7 +44,6 @@ void ARGX_MeleeAngel::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-
 }
 
 FVector ARGX_MeleeAngel::GetVelocity() const
