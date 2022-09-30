@@ -104,6 +104,7 @@ bool ARGX_EnemyBaseController::InitializeBlackboard(UBlackboardComponent& Blackb
 		AIStateKeyId = Blackboard->GetKeyID("AIState");
 		ConsecutiveHitsKeyId = Blackboard->GetKeyID("ConsecutiveHits");
 		StrafeDirectionKeyId = Blackboard->GetKeyID("StrafeDirection");
+		StrafeLocationKeyId = Blackboard->GetKeyID("StrafeLocation");
 
 		BlackboardComp.SetValue<UBlackboardKeyType_Object>(TargetKeyId, Agent->TargetActor);
 		BlackboardComp.SetValue<UBlackboardKeyType_Enum>(AIStateKeyId, ERGX_EnemyAIState::None);

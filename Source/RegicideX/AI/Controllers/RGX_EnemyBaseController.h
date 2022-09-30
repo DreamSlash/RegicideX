@@ -62,6 +62,7 @@ public:
 	uint8 AIStateKeyId;
 	uint8 ConsecutiveHitsKeyId;
 	uint8 StrafeDirectionKeyId;
+	uint8 StrafeLocationKeyId;
 
 public:
 	UFUNCTION(BlueprintCallable)

@@ -190,9 +190,10 @@ void ARGX_CombatManager::UpdateMeleeEnemies()
 			if (item.IsValid())
 			{
 				item.Distance = FVector::Dist2D(playerLocation, item.Enemy->GetActorLocation());
+				const float speed = item.Enemy->MoveSpeed;
 
-				const float distanceScore = item.Distance * DistanceWeight;
-				const float visibilityScore = (item.Enemy->IsInFrustum() ? IsInFrustumScore : 0.0) * IsInFrustumWeight;
+				const float distanceScore = (item.Distance / speed) * DistanceWeight;
+				const float visibilityScore = (item.Enemy->IsInFrustum() ? 0.0 : IsNotInFrustumScore) * IsNotInFrustumWeight;
 				const float lastAttackTimeScore = (currentTime - item.LastAttackTime) * LastAttackTimeWeight;
 				
 				item.Scoring = distanceScore + visibilityScore + lastAttackTimeScore;
@@ -215,9 +216,10 @@ void ARGX_CombatManager::UpdateDistanceEnemies()
 			if (item.IsValid())
 			{
 				item.Distance = FVector::Dist2D(playerLocation, item.Enemy->GetActorLocation());
+				const float speed = item.Enemy->MoveSpeed;
 
-				const float distanceScore = item.Distance * DistanceWeight;
-				const float visibilityScore = (item.Enemy->IsInFrustum() ? IsInFrustumScore : 0.0) * IsInFrustumWeight;
+				const float distanceScore = (item.Distance/speed) * DistanceWeight;
+				const float visibilityScore = (item.Enemy->IsInFrustum() ? 0.0 : IsNotInFrustumScore) * IsNotInFrustumWeight;
 				const float lastAttackTimeScore = (currentTime - item.LastAttackTime) * LastAttackTimeWeight;
 
 				item.Scoring = distanceScore + visibilityScore + lastAttackTimeScore;
