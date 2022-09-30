@@ -31,7 +31,10 @@ public:
 	struct FBlackboardKeySelector DistanceKey;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blackboard")
-	float Distance = 500.0f;
+	float MaxDistanceFromOwner = 500.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Blackboard")
+	float MinDistanceToOtherEnemies = 500.0f;
 
 private:
 	void LocationSeekerQueryFinished(TSharedPtr<FEnvQueryResult> Result);
