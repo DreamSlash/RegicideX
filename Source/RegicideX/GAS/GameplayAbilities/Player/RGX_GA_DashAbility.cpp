@@ -74,7 +74,7 @@ void URGX_DashAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const
 		if (CharacterMovementComponent)
 		{
 			PlayerCharacter->GetCharacterMovement()->MaxAcceleration = PlayerCharacter->MaxAcceleration;
-			PlayerCharacter->GetCharacterMovement()->GravityScale = PlayerCharacter->DefaultGravity;
+			PlayerCharacter->GetCharacterMovement()->GravityScale = PlayerCharacter->GravityScale;
 
 			if (CharacterMovementComponent->IsFalling())
 			{

@@ -30,12 +30,27 @@ void ARGX_CharacterBase::UnPossessed()
 {
 }
 
+void ARGX_CharacterBase::ResetGravity()
+{
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	if (CharacterMovementComponent)
+	{
+		CharacterMovementComponent->GravityScale = GravityScale;
+	}
+}
+
 void ARGX_CharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
-	GetCharacterMovement()->MaxAcceleration = MaxAcceleration;
+	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+	if (CharacterMovementComponent)
+	{
+		CharacterMovementComponent->MaxWalkSpeed = MoveSpeed;
+		CharacterMovementComponent->MaxAcceleration = MaxAcceleration;
+		CharacterMovementComponent->GravityScale = GravityScale;
+	}
+
 }
 
 UAbilitySystemComponent* ARGX_CharacterBase::GetAbilitySystemComponent() const

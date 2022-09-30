@@ -52,7 +52,7 @@ void URGX_DodgeAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, cons
 	if (Character)
 	{
 		Character->GetCharacterMovement()->MaxAcceleration = Character->MaxAcceleration;
-		Character->GetCharacterMovement()->GravityScale = Character->DefaultGravity;
+		Character->GetCharacterMovement()->GravityScale = Character->GravityScale;
 		Character->EnableMovementInput();
 
 		UCapsuleComponent* CapsuleComponent = Character->GetCapsuleComponent();

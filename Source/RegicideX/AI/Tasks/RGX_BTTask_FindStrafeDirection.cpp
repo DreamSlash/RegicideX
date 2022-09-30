@@ -9,8 +9,8 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "DrawDebugHelpers.h"
 
-#include "RegicideX/Actors/RGX_CombatManager.h"
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
+#include "RegicideX/Actors/RGX_CombatManager.h"
 #include "RegicideX/AI/Controllers/RGX_EnemyBaseController.h"
 
 //#pragma optimize("", off)
