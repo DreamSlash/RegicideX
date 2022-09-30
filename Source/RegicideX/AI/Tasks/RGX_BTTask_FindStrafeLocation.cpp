@@ -13,7 +13,7 @@
 #include "RegicideX/Actors/RGX_CombatManager.h"
 #include "RegicideX/AI/Controllers/RGX_EnemyBaseController.h"
 
-#pragma optimize("", off)
+//#pragma optimize("", off)
 
 URGX_BT_FindStrafeLocation::URGX_BT_FindStrafeLocation(const FObjectInitializer& ObjectInitializer) : Super(ObjectInitializer)
 {

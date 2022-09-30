@@ -4,7 +4,7 @@
 
 #include "BehaviorTree/BehaviorTreeComponent.h"
 
-#pragma optimize("", off)
+//#pragma optimize("", off)
 
 void ARGX_MageAngelController::OnMageAngelHealthChanged(float CurrentHealth, float MaxHealth)
 {
