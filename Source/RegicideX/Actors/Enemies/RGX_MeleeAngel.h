@@ -21,16 +21,11 @@ public:
 	ARGX_MeleeAngel();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bLevitating = false;
+	bool bAtFloor = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bFlying = false;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bCharging = false;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bSweeping = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	URGX_MovementAssistComponent* MovementAssistComponent;
