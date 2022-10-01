@@ -1,6 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "EnvironmentQuery/EnvQueryManager.h"
 #include "RegicideX/GAS/GameplayAbilities/MageAngel/RGX_MageAngelAttackAbility.h"
 #include "RGX_PillarsPartyAbility.generated.h"
 
@@ -12,6 +13,8 @@ class REGICIDEX_API URGX_PillarsPartyAbility : public URGX_MageAngelAttackAbilit
 	GENERATED_BODY()
 
 protected:
+	void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
+
 	void OnAttackWindow() override;
 
 protected:
@@ -19,7 +22,19 @@ protected:
 	int32 NumPillars = 10;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float PartyRadius = 1000.0f;
+	class UEnvQuery* PositionsQuery = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float GridSize = 1000.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float MinSpacingBetweenPillars = 200.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float MinDistanceFromPlayer = 400.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float MaxDistanceFromPlayer = 800.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float DelayBetweenPillars = 0.5f;
@@ -28,12 +43,19 @@ protected:
 	TSubclassOf<ARGX_ExplosivePillar> PillarActorClass;
 
 private:
-	UFUNCTION()
-	void OnSpawnPillar();
+	void PositionsQueryFinished(TSharedPtr<FEnvQueryResult> Result);
+	void SpawnPillarAtLocation(const FVector& Location) const;
 
-	void StartDelay();
+	//UFUNCTION()
+	//void OnSpawnPillar();
+
+	//void StartDelay();
 
 private:
+	FEnvQueryRequest PositionsQueryRequest;
+
+	TSharedPtr<FEnvQueryResult> PositionsQueryResult = nullptr;
+
 	FTimerHandle DelayTimerHandle;
 
 	int PendingPillars = 0;
