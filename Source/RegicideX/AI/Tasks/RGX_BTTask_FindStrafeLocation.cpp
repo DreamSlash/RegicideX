@@ -32,6 +32,7 @@ EBTNodeResult::Type URGX_BT_FindStrafeLocation::ExecuteTask(UBehaviorTreeCompone
 		{
 			LocationSeekerQueryRequest = FEnvQueryRequest(LocationSeekerQuery, Controller->Agent);
 			LocationSeekerQueryRequest.SetFloatParam("OnCircle.CircleRadius", playerDistance);
+			LocationSeekerQueryRequest.SetFloatParam("Distance.FloatValueMax", MaxDistanceFromOwner);
 			LocationSeekerQueryRequest.Execute(EEnvQueryRunMode::AllMatching, this, &URGX_BT_FindStrafeLocation::LocationSeekerQueryFinished);
 			return EBTNodeResult::InProgress;
 		}
@@ -69,8 +70,8 @@ void URGX_BT_FindStrafeLocation::LocationSeekerQueryFinished(TSharedPtr<FEnvQuer
 	int32 index = 0;
 	for (auto& loc : locations)
 	{
-		if (FVector::Dist2D(fromLocation, loc) >= Distance)
-		{
+		/*if (FVector::Dist2D(fromLocation, loc) >= Distance)
+		{*/
 			//DrawDebugCapsule(GetWorld(), loc, 200, 100, FQuat::Identity, FColor::Purple, false, 2);
 
 			const FVector direction = (loc - fromLocation).GetSafeNormal2D();
@@ -82,11 +83,11 @@ void URGX_BT_FindStrafeLocation::LocationSeekerQueryFinished(TSharedPtr<FEnvQuer
 			{
 				locationsLeft.Add(MakeTuple(loc, Result->GetItemScore(index++)));
 			}
-		}
+		/*}
 		else
 		{
 			++index;
-		}
+		}*/
 	}
 
 	auto sortFunction = [fromLocation](const auto& left, const auto& right)
@@ -173,7 +174,7 @@ bool URGX_BT_FindStrafeLocation::IsDistanceGreaterThanX(const FVector& Location)
 		if (item.IsValid() && item.Enemy != Controller->Agent)
 		{
 			const float distance = (Location - item.Enemy->GetActorLocation()).Size2D();
-			if (distance <= Distance)
+			if (distance <= MinDistanceToOtherEnemies)
 			{
 				return false;
 			}
@@ -185,7 +186,7 @@ bool URGX_BT_FindStrafeLocation::IsDistanceGreaterThanX(const FVector& Location)
 		if (item.IsValid() && item.Enemy != Controller->Agent)
 		{
 			const float distance = (Location - item.Enemy->GetActorLocation()).Size2D();
-			if (distance <= Distance)
+			if (distance <= MinDistanceToOtherEnemies)
 			{
 				return false;
 			}

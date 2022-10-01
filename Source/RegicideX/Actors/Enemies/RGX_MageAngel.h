@@ -29,11 +29,13 @@ public:
 	void BeginPlay() override;
 	void Tick(float DeltaTime) override;
 
-	virtual void HandleDamage(
+	void HandleDamage(
 		float DamageAmount,
 		const FHitResult& HitInfo,
 		const struct FGameplayTagContainer& DamageTags,
 		ARGX_CharacterBase* InstigatorCharacter,
 		AActor* DamageCauser,
 		ERGX_AnimEvent HitReactFlag) override;
+
+	void HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags) override;
 };
