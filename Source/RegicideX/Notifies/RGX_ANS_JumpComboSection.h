@@ -20,6 +20,12 @@ public:
 	UPROPERTY(EditAnywhere)
 	ERGX_ComboTokenID InputID;
 
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class UGameplayAbility> NextAbility;
+
+	UPROPERTY(EditAnywhere)
+	bool bJumpToNextAbility;
+
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration) override;
 	virtual void NotifyTick(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float FrameDeltaTime) override;
 	virtual void NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;

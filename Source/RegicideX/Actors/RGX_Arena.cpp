@@ -87,6 +87,23 @@ void ARGX_Arena::SpawnInitialWaves()
 
 void ARGX_Arena::SpawnWave(URGX_OutgoingWave* Wave)
 {
+	const float SpawnDelay = Wave->WaveData->SpawnTimeDelay;
+
+	if (SpawnDelay > 0.1f)
+	{
+		FTimerDelegate TimerDel;
+		FTimerHandle TimerHandle;
+		TimerDel.BindUFunction(this, FName("HandleSpawnWave"), Wave);
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, SpawnDelay, false);
+	}
+	else
+	{
+		HandleSpawnWave(Wave);
+	}
+}
+
+void ARGX_Arena::HandleSpawnWave(URGX_OutgoingWave* Wave)
+{
 	if (EnemySpawners.Num() <= 0) return;
 
 	TArray<FName> EnemyWaveNames = DT_EnemyRefs->GetRowNames();
@@ -98,12 +115,73 @@ void ARGX_Arena::SpawnWave(URGX_OutgoingWave* Wave)
 		return;
 	}
 
+	LastSpawnerIdx = -1;
 	for (int i = 0; i < CurrentWaveData->NumEnemies.Num(); ++i)
 	{
 		SpawnWaveEnemyTypeGroup(EnemyWaveNames[i], CurrentWaveData->NumEnemies[i], Wave);
 	}
 
 	Wave->bEnemiesSpawned = true;
+}
+
+void ARGX_Arena::SpawnWaveEnemyRandomMode(TSubclassOf<class ARGX_EnemyBase> EnemyClass, URGX_OutgoingWave* Wave)
+{
+	int SpawnerIdx = 0;
+	TSet<int>& AvailableSpawnersIdx = Wave->WaveData->SpawnerIdxAvailable;
+
+	if (AvailableSpawnersIdx.Num() == 0)
+	{
+		SpawnerIdx = FMath::RandRange(0, EnemySpawners.Num() - 1);
+	}
+	else
+	{
+		do
+		{
+			SpawnerIdx = FMath::RandRange(0, EnemySpawners.Num() - 1);
+		} while (AvailableSpawnersIdx.Contains(SpawnerIdx) == false);
+	}
+
+	SpawnWaveEnemy(EnemyClass, SpawnerIdx, Wave);
+}
+
+void ARGX_Arena::SpawnWaveEnemyRoundRobinMode(TSubclassOf<class ARGX_EnemyBase> EnemyClass, URGX_OutgoingWave* Wave)
+{
+	int SpawnerIdx = 0;
+	TSet<int>& AvailableSpawnersIdx = Wave->WaveData->SpawnerIdxAvailable;
+
+	if (AvailableSpawnersIdx.Num() == 0)
+	{
+		SpawnerIdx = Wave->EnemiesLeft % EnemySpawners.Num();
+	}
+	else if (AvailableSpawnersIdx.Num() == 1)
+	{	
+		// TODO: Guarreiro pero no em se la sintaxi per pillar l'unic element del set
+		for (int i : AvailableSpawnersIdx)
+		{
+			SpawnerIdx = i;
+			break;
+		}
+	}
+	else
+	{
+		// TODO: Bug. Incorrect idx sometimes
+		SpawnerIdx = Wave->EnemiesLeft % EnemySpawners.Num();
+		while (SpawnerIdx == LastSpawnerIdx || AvailableSpawnersIdx.Contains(SpawnerIdx) == false)
+		{
+			if (SpawnerIdx + 1 == EnemySpawners.Num())
+			{
+				SpawnerIdx = 0;
+			}
+			else
+			{
+				SpawnerIdx++;
+			}
+		}
+
+		LastSpawnerIdx = SpawnerIdx;
+	}
+
+	SpawnWaveEnemy(EnemyClass, SpawnerIdx, Wave);
 }
 
 // TODO: Petar-se lu de EnemyWaveName. Amb idx ja es pot accedir a la info d'un enemic
@@ -113,12 +191,26 @@ void ARGX_Arena::SpawnWaveEnemyTypeGroup(const FName& EnemyWaveName, int32 NumEn
 	{
 		UDataAsset* EnemyInfo = DT_EnemyRefs->FindRow<FRGX_EnemiesDataTable>(EnemyWaveName, "")->EnemyInfo;
 		const URGX_EnemyDataAsset* EnemyInfoCasted = Cast<URGX_EnemyDataAsset>(EnemyInfo);
-		if (EnemyInfoCasted)
+		if (EnemyInfoCasted && EnemyInfoCasted->EnemyBP)
 		{
-			if (EnemyInfoCasted->EnemyBP)
+			switch(Wave->WaveData->WaveSpawnMode)
 			{
-				const int SpawnerIdx = FMath::RandRange(0, EnemySpawners.Num() - 1);
-				SpawnWaveEnemy(EnemyInfoCasted->EnemyBP, SpawnerIdx, Wave);
+			case ERGX_WaveSpawnMode::Random:
+			{
+				SpawnWaveEnemyRandomMode(EnemyInfoCasted->EnemyBP, Wave);
+				break;
+			}
+			case ERGX_WaveSpawnMode::RoundRobin:
+			{
+				SpawnWaveEnemyRoundRobinMode(EnemyInfoCasted->EnemyBP, Wave);
+				break;
+			}
+		
+			default: // Default is random spawn
+			{
+				SpawnWaveEnemyRandomMode(EnemyInfoCasted->EnemyBP, Wave);
+				break;
+			}
 			}
 		}
 	}
@@ -267,17 +359,6 @@ void ARGX_Arena::OnConstantPeasantDeath(ARGX_EnemyBase* Enemy)
 void ARGX_Arena::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	//UE_LOG(LogTemp, Warning, TEXT("Num Spawners: %d"), EnemySpawners.Num());
-
-	// Overlaps do not work until iteration of overlaps
-	/*
-	if (bIsInitialized == false)
-	{
-		// Get spawners in area
-		InitializeSpawners();
-	}
-	*/
 
 	if (bActivated == false || bFinished == true) return;
 

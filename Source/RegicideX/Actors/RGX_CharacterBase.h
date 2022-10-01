@@ -86,6 +86,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	float MaxAcceleration = 2048.0f;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	float GravityScale = 3.0f;
+
 protected:
 	/** The level of this character, should not be modified directly once it has already spawned */
 	UPROPERTY(EditAnywhere, Category = Abilities)
@@ -117,6 +120,12 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	TMap<ERGX_AnimEvent, FAnimationArray> AnimMontageMap;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float TimeGravityZeroAfterKnockUp = 2.0f;
+
+	UFUNCTION()
+	void ResetGravity();
 
 	void BeginPlay() override;
 

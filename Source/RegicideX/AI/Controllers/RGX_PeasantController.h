@@ -14,26 +14,14 @@ class REGICIDEX_API ARGX_PeasantController : public ARGX_EnemyBaseController
 	GENERATED_BODY()
 public:
 
-	ARGX_PeasantController();
+	ARGX_PeasantController(const FObjectInitializer& ObjectInitializer);
 
 protected:
 	virtual void OnPossess(APawn* pawn) override;
 	virtual void Tick(float DeltaTime) override;
 
 public:
-
-	UPROPERTY(transient)
-	UBlackboardComponent* BBComponent = nullptr;
-
-	UPROPERTY(transient)
-	UBehaviorTreeComponent* BTComponent = nullptr;
-
 	UPROPERTY(BlueprintReadWrite)
 	ARGX_Peasant* Peasant = nullptr;
 
-	// Blackboard key ids
-	uint8 TargetActorID;
-	uint8 DistanceToPlayerID;
-	uint8 IdleActionID;
-	bool bFrenzied = false;
 };

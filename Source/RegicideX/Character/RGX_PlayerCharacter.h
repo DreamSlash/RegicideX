@@ -106,9 +106,6 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EObjectTypeQuery> DodgeableObjectType;
 
-	UPROPERTY(EditDefaultsOnly)
-	float DefaultGravity = 3.0f;
-
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool bIsFallingDown = false;
 

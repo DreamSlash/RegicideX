@@ -26,7 +26,7 @@ class REGICIDEX_API ARGX_DistanceAngelController : public ARGX_EnemyBaseControll
 {
 	GENERATED_BODY()
 public:
-	ARGX_DistanceAngelController();
+	ARGX_DistanceAngelController(const FObjectInitializer& ObjectInitializer);
 
 	UFUNCTION()
 	void SetRandomLocationAroundTarget(float Distance);
