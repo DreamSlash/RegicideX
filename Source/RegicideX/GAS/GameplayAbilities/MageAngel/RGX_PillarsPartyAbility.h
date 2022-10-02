@@ -2,20 +2,20 @@
 
 #include "CoreMinimal.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
-#include "RegicideX/GAS/GameplayAbilities/MageAngel/RGX_MageAngelAttackAbility.h"
+#include "RegicideX/GAS/GameplayAbilities/MageAngel/RGX_MageAngelExplosionAbility.h"
 #include "RGX_PillarsPartyAbility.generated.h"
 
 class ARGX_ExplosivePillar;
 
 UCLASS()
-class REGICIDEX_API URGX_PillarsPartyAbility : public URGX_MageAngelAttackAbility
+class REGICIDEX_API URGX_PillarsPartyAbility : public URGX_MageAngelExplosionAbility
 {
 	GENERATED_BODY()
 
 protected:
 	void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
-	void OnAttackWindow() override;
+	void OnExplode() override;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

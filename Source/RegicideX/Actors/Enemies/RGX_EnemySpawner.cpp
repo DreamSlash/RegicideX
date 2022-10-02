@@ -26,9 +26,22 @@ void ARGX_EnemySpawner::BeginPlay()
 	FVector Scale(0.3f);
 }
 
-ARGX_EnemyBase* ARGX_EnemySpawner::Spawn(const TSubclassOf<ARGX_EnemyBase> EnemyBP)
+
+
+ARGX_EnemyBase* ARGX_EnemySpawner::Spawn(TSubclassOf<ARGX_EnemyBase> EnemyBP)
 {
+	// TODO: Move assignation to callback. Unused Function right now
+	ActivateSpawner(EnemyBP);
+	
+	return HandleSpawn(EnemyBP);
+	
+}
+
+ARGX_EnemyBase* ARGX_EnemySpawner::HandleSpawn(TSubclassOf<ARGX_EnemyBase> EnemyBP)
+{
+
 	// @todo: Make spawner smarter -> get parameters from Data Asset and preset actor parameter
+	
 	const FVector spawnerLocation = GetActorLocation();
 	UNavigationSystemV1* NavSystem = UNavigationSystemV1::GetNavigationSystem(this);
 
@@ -39,10 +52,13 @@ ARGX_EnemyBase* ARGX_EnemySpawner::Spawn(const TSubclassOf<ARGX_EnemyBase> Enemy
 		if (NavSystem->GetRandomReachablePointInRadius(spawnerLocation, SpawnRadius, spawnLocation))
 		{
 			FVector finalLocation = spawnLocation.Location;
-			finalLocation.Z = spawnerLocation.Z;
+			finalLocation.Z = spawnerLocation.Z + 10;
+
+
 
 			if (ARGX_EnemyBase* SpawnedEnemy = GetWorld()->SpawnActor<ARGX_EnemyBase>(EnemyBP, finalLocation, Rotation))
 			{
+
 				return SpawnedEnemy;
 			}
 		}
@@ -50,3 +66,4 @@ ARGX_EnemyBase* ARGX_EnemySpawner::Spawn(const TSubclassOf<ARGX_EnemyBase> Enemy
 
 	return nullptr;
 }
+

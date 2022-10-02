@@ -54,6 +54,9 @@ private:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Movement, meta = (AllowPrivateAccess = "true"))
 	float YawChange;
 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	float Lean;
+
 	float LeanAmount;
 
 	UPROPERTY(BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
@@ -83,4 +86,5 @@ private:
 
 private:
 	float CalculateLeanAmount(float DeltaSeconds);
+	void CalculateLean();
 };

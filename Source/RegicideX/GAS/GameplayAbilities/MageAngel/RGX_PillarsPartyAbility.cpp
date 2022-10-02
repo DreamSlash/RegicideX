@@ -29,7 +29,7 @@ void URGX_PillarsPartyAbility::PositionsQueryFinished(TSharedPtr<FEnvQueryResult
 	}
 }
 
-void URGX_PillarsPartyAbility::OnAttackWindow()
+void URGX_PillarsPartyAbility::OnExplode()
 {
 	AActor* AvatarActor = GetAvatarActorFromActorInfo();
 	const ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(AvatarActor);
