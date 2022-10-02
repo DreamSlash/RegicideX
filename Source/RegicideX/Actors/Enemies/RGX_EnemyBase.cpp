@@ -17,6 +17,8 @@
 #include "RegicideX/UI/RGX_EnemyHealthBar.h"
 #include "RegicideX/Components/RGX_InteractComponent.h"
 
+#pragma optimize("", off)
+
 // Sets default values
 ARGX_EnemyBase::ARGX_EnemyBase()
 {
@@ -152,6 +154,26 @@ void ARGX_EnemyBase::DisableInteraction()
 	//UE_LOG(LogTemp, Warning, TEXT("Disable Interaction\n"));
 }
 
+void ARGX_EnemyBase::RotateTowardsTarget()
+{
+	FOnTimelineFloat TimelineCallback;
+	/*FOnTimelineEventStatic TimelineFinishedCallback;
+	TimelineFinishedCallback.BindLambda([this]()
+		{
+			GetWorld()->GetTimerManager().SetTimer(DestroyTimerHandle, [this]() {Destroy(); }, LifeTimeOnceIsRisen, false);
+		});*/
+
+	RotationTowardsTargetTimeline.AddInterpFloat(RotationTowardsTargetCurve, TimelineCallback);
+	//RiseTimeLine.SetTimelineFinishedFunc(TimelineFinishedCallback);
+
+	RotationTowardsTargetTimeline.PlayFromStart();
+}
+
+void ARGX_EnemyBase::StopRotatingTowardsEnemy()
+{
+	RotationTowardsTargetTimeline.Stop();
+}
+
 void ARGX_EnemyBase::RotateToTarget(float DeltaTime)
 {
 	if (TargetActor)
@@ -196,6 +218,25 @@ void ARGX_EnemyBase::Tick(float DeltaTime)
 		const FVector VectorToTarget = TargetActor->GetActorLocation() - GetActorLocation();
 
 		//CheckIfHasLostSightOfPlayer();
+
+		if (RotationTowardsTargetTimeline.IsPlaying())
+		{
+			RotationTowardsTargetTimeline.TickTimeline(DeltaTime);
+
+			const float alpha = RotationTowardsTargetCurve->GetFloatValue(RotationTowardsTargetTimeline.GetPlaybackPosition());
+
+			const FRotator selfRotation = GetActorRotation();
+
+			const FVector selfLocation = GetActorLocation();
+			const FVector targetLocation = TargetActor->GetActorLocation();
+			const FRotator lookRotation = UKismetMathLibrary::FindLookAtRotation(selfLocation, targetLocation);
+
+			const FRotator desiredRotation = FRotator(selfRotation.Pitch, lookRotation.Yaw, selfRotation.Roll);
+
+			const FRotator finalRotation = FMath::Lerp(selfRotation, desiredRotation, alpha);
+
+			SetActorRotation(finalRotation);
+		}
 	}
 }
 
