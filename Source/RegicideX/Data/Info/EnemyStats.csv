@@ -11,5 +11,5 @@ AngelMelee_MaxHealth,3000,12000,18000
 AngelMelee_AttackPower,50,100,150
 AngelDistance_MaxHealth,1600,6400,9600
 AngelDistance_AttackPower,30,60,90
-AngelMage_MaxHealth,1200,3600,5400
+AngelMage_MaxHealth,3000,3600,5400
 AngelMage_AttackPower,50,100,150

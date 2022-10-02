@@ -32,8 +32,9 @@ EBTNodeResult::Type URGX_BT_FindStrafeDirection::ExecuteTask(UBehaviorTreeCompon
 		{
 			LocationSeekerQueryRequest = FEnvQueryRequest(LocationSeekerQuery, Controller->Agent);
 			LocationSeekerQueryRequest.SetFloatParam("OnCircle.CircleRadius", playerDistance);
+			LocationSeekerQueryRequest.SetFloatParam("Distance.FloatValueMax", MaxDistanceFromOwner);
 			LocationSeekerQueryRequest.Execute(EEnvQueryRunMode::AllMatching, this, &URGX_BT_FindStrafeDirection::LocationSeekerQueryFinished);
-			return EBTNodeResult::Succeeded;
+			return EBTNodeResult::InProgress;
 		}
 	}
 
@@ -57,25 +58,87 @@ void URGX_BT_FindStrafeDirection::InitializeFromAsset(UBehaviorTree& Asset)
 
 void URGX_BT_FindStrafeDirection::LocationSeekerQueryFinished(TSharedPtr<FEnvQueryResult> Result)
 {
-	int32 index = 0;
 	float currentBestScore = 0;
 	TArray<FVector> locations;
 	Result->GetAllAsLocations(locations);
 
+	TArray<TTuple<FVector, float>> locationsRight;
+	TArray<TTuple<FVector, float>> locationsLeft;
+	const FVector fromLocation = Controller->Agent->GetActorLocation();
+	const FVector rightVector = Controller->Agent->GetActorRightVector();
+
+	int32 index = 0;
 	for (auto& loc : locations)
 	{
 		//DrawDebugCapsule(GetWorld(), loc, 200, 100, FQuat::Identity, FColor::Purple, false, 2);
 
-		if (IsDistanceGreaterThanX(loc) && Result->GetItemScore(index) > currentBestScore)
+		const FVector direction = (loc - fromLocation).GetSafeNormal2D();
+		if (FVector::DotProduct(rightVector, direction) >= 0.0)
+		{
+			locationsRight.Add(MakeTuple(loc, Result->GetItemScore(index++)));
+		}
+		else
+		{
+			locationsLeft.Add(MakeTuple(loc, Result->GetItemScore(index++)));
+		}
+
+		/*if (IsDistanceGreaterThanX(loc) && Result->GetItemScore(index) > currentBestScore)
 		{
 			StrafeLocation = loc;
 			currentBestScore = Result->GetItemScore(index);
 		}
 
-		++index;
+		++index;*/
 	}
 
-	const FVector dirStrafe = (StrafeLocation - Controller->Agent->GetActorLocation()).GetSafeNormal2D();
+	auto sortFunction = [fromLocation](const auto& left, const auto& right)
+	{
+		const float distanceLeft = FVector::Dist2D(fromLocation, left.Key);
+		const float distanceRight = FVector::Dist2D(fromLocation, right.Key);
+		return distanceLeft < distanceRight;
+	};
+
+	locationsRight.Sort(sortFunction);
+	locationsLeft.Sort(sortFunction);
+
+	int32 bestLocationRightIndex = BestReachableLocationInDirection(locationsRight);
+	int32 bestLocationLeftIndex = BestReachableLocationInDirection(locationsLeft);
+
+	UBehaviorTreeComponent* OwnerComp = Cast<UBehaviorTreeComponent>(GetOuter());
+	if (bestLocationRightIndex < 0 && bestLocationLeftIndex < 0)
+	{
+		FinishLatentTask(*OwnerComp, EBTNodeResult::Failed);
+	}
+	else if (bestLocationRightIndex < 0)
+	{
+		const auto& bestLeft = locationsLeft[bestLocationLeftIndex];
+		Controller->BlackboardComponent->SetValue<UBlackboardKeyType_Enum>(Controller->StrafeDirectionKeyId, ERGX_StrafeDirection::Left);
+		FinishLatentTask(*OwnerComp, EBTNodeResult::Succeeded);
+	}
+	else if (bestLocationLeftIndex < 0)
+	{
+		const auto& bestRight = locationsRight[bestLocationRightIndex];
+		Controller->BlackboardComponent->SetValue<UBlackboardKeyType_Enum>(Controller->StrafeDirectionKeyId, ERGX_StrafeDirection::Right);
+		FinishLatentTask(*OwnerComp, EBTNodeResult::Succeeded);
+	}
+	else
+	{
+		const auto& bestLeft = locationsLeft[bestLocationLeftIndex];
+		const auto& bestRight = locationsRight[bestLocationRightIndex];
+
+		if (bestRight.Value >= bestLeft.Value)
+		{
+			Controller->BlackboardComponent->SetValue<UBlackboardKeyType_Enum>(Controller->StrafeDirectionKeyId, ERGX_StrafeDirection::Right);
+		}
+		else
+		{
+			Controller->BlackboardComponent->SetValue<UBlackboardKeyType_Enum>(Controller->StrafeDirectionKeyId, ERGX_StrafeDirection::Left);
+		}
+
+		FinishLatentTask(*OwnerComp, EBTNodeResult::Succeeded);
+	}
+
+	/*const FVector dirStrafe = (StrafeLocation - Controller->Agent->GetActorLocation()).GetSafeNormal2D();
 	if (FVector::DotProduct(Controller->Agent->GetActorRightVector(), dirStrafe) >= 0.0)
 	{
 		Controller->BlackboardComponent->SetValue<UBlackboardKeyType_Enum>(Controller->StrafeDirectionKeyId, ERGX_StrafeDirection::Right);
@@ -83,17 +146,44 @@ void URGX_BT_FindStrafeDirection::LocationSeekerQueryFinished(TSharedPtr<FEnvQue
 	else
 	{
 		Controller->BlackboardComponent->SetValue<UBlackboardKeyType_Enum>(Controller->StrafeDirectionKeyId, ERGX_StrafeDirection::Left);
-	}
+	}*/
 }
 
-bool URGX_BT_FindStrafeDirection::IsDistanceGreaterThanX(const FVector& Location)
+int32 URGX_BT_FindStrafeDirection::BestReachableLocationInDirection(const TArray<TTuple<FVector, float>>& Locations) const
+{
+	int32 currentBestIndex = -1;
+	float currentBestScore = 0.0;
+
+	int32 index = 0;
+	for (const auto& loc : Locations)
+	{
+		const FVector& location = loc.Key;
+		float score = loc.Value;
+
+		if (IsDistanceGreaterThanX(location) && score > currentBestScore)
+		{
+			currentBestIndex = index;
+			currentBestScore = score;
+		}
+		else
+		{
+			break;
+		}
+
+		++index;
+	}
+
+	return currentBestIndex;
+}
+
+bool URGX_BT_FindStrafeDirection::IsDistanceGreaterThanX(const FVector& Location) const
 {
 	for (const auto& item : Controller->CombatManager->EnemyMeleeItems)
 	{
-		if (item.IsValid())
+		if (item.IsValid() && item.Enemy != Controller->Agent)
 		{
 			const float distance = (Location - item.Enemy->GetActorLocation()).Size2D();
-			if (distance <= Distance)
+			if (distance <= MinDistanceToOtherEnemies)
 			{
 				return false;
 			}
@@ -102,10 +192,10 @@ bool URGX_BT_FindStrafeDirection::IsDistanceGreaterThanX(const FVector& Location
 
 	for (const auto& item : Controller->CombatManager->EnemyRangedItems)
 	{
-		if (item.IsValid())
+		if (item.IsValid() && item.Enemy != Controller->Agent)
 		{
 			const float distance = (Location - item.Enemy->GetActorLocation()).Size2D();
-			if (distance <= Distance)
+			if (distance <= MinDistanceToOtherEnemies)
 			{
 				return false;
 			}

@@ -180,9 +180,17 @@ void ARGX_CombatManager::InvalidateImpl(TArray<FRGX_EnemyCombatItem>& EnemyItems
 void ARGX_CombatManager::UpdateMeleeEnemies()
 {
 	const FVector playerLocation = Player->GetActorLocation();
-	const float currentTime = UGameplayStatics::GetTimeSeconds(this);
+	
+	float oldestAttackTime = UGameplayStatics::GetTimeSeconds(this);
+	for (FRGX_EnemyCombatItem& item : EnemyMeleeItems)
+	{
+		if (item.IsValid())
+		{
+			oldestAttackTime = std::min(oldestAttackTime, item.LastAttackTime);
+		}
+	}
 
-	UpdateScoring(EnemyMeleeItems, [this, playerLocation, currentTime](FRGX_EnemyCombatItem& item)
+	UpdateScoring(EnemyMeleeItems, [this, playerLocation, oldestAttackTime](FRGX_EnemyCombatItem& item)
 		{
 			item.Distance = std::numeric_limits<float>::infinity();
 			item.Scoring = std::numeric_limits<float>::infinity();
@@ -194,7 +202,7 @@ void ARGX_CombatManager::UpdateMeleeEnemies()
 
 				const float distanceScore = (item.Distance / speed) * DistanceWeight;
 				const float visibilityScore = (item.Enemy->IsInFrustum() ? 0.0 : IsNotInFrustumScore) * IsNotInFrustumWeight;
-				const float lastAttackTimeScore = (currentTime - item.LastAttackTime) * LastAttackTimeWeight;
+				const float lastAttackTimeScore = (item.LastAttackTime - oldestAttackTime) * LastAttackTimeWeight;
 				
 				item.Scoring = distanceScore + visibilityScore + lastAttackTimeScore;
 			}			
@@ -206,9 +214,17 @@ void ARGX_CombatManager::UpdateMeleeEnemies()
 void ARGX_CombatManager::UpdateDistanceEnemies()
 {
 	const FVector playerLocation = Player->GetActorLocation();
-	const float currentTime = UGameplayStatics::GetTimeSeconds(this);
+	
+	float oldestAttackTime = UGameplayStatics::GetTimeSeconds(this);
+	for (FRGX_EnemyCombatItem& item : EnemyMeleeItems)
+	{
+		if (item.IsValid())
+		{
+			oldestAttackTime = std::min(oldestAttackTime, item.LastAttackTime);
+		}
+	}
 
-	UpdateScoring(EnemyRangedItems, [this, playerLocation, currentTime](FRGX_EnemyCombatItem& item)
+	UpdateScoring(EnemyRangedItems, [this, playerLocation, oldestAttackTime](FRGX_EnemyCombatItem& item)
 		{
 			item.Distance = std::numeric_limits<float>::infinity();
 			item.Scoring = std::numeric_limits<float>::infinity();
@@ -220,11 +236,13 @@ void ARGX_CombatManager::UpdateDistanceEnemies()
 
 				const float distanceScore = (item.Distance/speed) * DistanceWeight;
 				const float visibilityScore = (item.Enemy->IsInFrustum() ? 0.0 : IsNotInFrustumScore) * IsNotInFrustumWeight;
-				const float lastAttackTimeScore = (currentTime - item.LastAttackTime) * LastAttackTimeWeight;
+				const float lastAttackTimeScore = (item.LastAttackTime-oldestAttackTime) * LastAttackTimeWeight;
 
 				item.Scoring = distanceScore + visibilityScore + lastAttackTimeScore;
 			}
 		});
+
+
 
 	UpdateSlots(EnemyRangedItems, NbRangedSlots);
 }
@@ -241,14 +259,17 @@ void ARGX_CombatManager::UpdateSlots(TArray<FRGX_EnemyCombatItem>& EnemyItems, i
 	int32 numFreeSlots = numSlots - numAttackers;
 	while (numFreeSlots > 0 && candidates.Num())
 	{
-		const int32 index = FindNewAttacker(candidates, EnemyItems);
+		//const int32 index = FindNewAttacker(candidates, EnemyItems);
+		const int32 candidateIndex = FindBestAttacker(candidates, EnemyItems);
+		const int32 index = candidates[candidateIndex];
 		auto& item = EnemyItems[index];
-		ARGX_EnemyBaseController* enemyController = item.Enemy->GetController<ARGX_EnemyBaseController>();
+
 		// assert state holding
+		ARGX_EnemyBaseController* enemyController = item.Enemy->GetController<ARGX_EnemyBaseController>();
 		enemyController->SetEnemyAIState(ERGX_EnemyAIState::Attacking);
 		item.LastAttackTime = currentTime;
 
-		candidates.RemoveAtSwap(index);
+		candidates.RemoveAtSwap(candidateIndex);
 		//++numAttackers;
 		--numFreeSlots;
 	}
@@ -282,6 +303,11 @@ void ARGX_CombatManager::PrepareCandidateData(const TArray<FRGX_EnemyCombatItem>
 			}
 		}
 	}
+}
+
+int32 ARGX_CombatManager::FindBestAttacker(const TArray<int32>& candidates, const TArray<FRGX_EnemyCombatItem>& EnemyItems) const
+{
+	return 0;
 }
 
 int32 ARGX_CombatManager::FindNewAttacker(const TArray<int32>& candidates, const TArray<FRGX_EnemyCombatItem>& EnemyItems) const

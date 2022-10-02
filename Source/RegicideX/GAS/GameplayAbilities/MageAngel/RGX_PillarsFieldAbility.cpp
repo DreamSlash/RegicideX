@@ -24,8 +24,10 @@ void URGX_PillarsFieldAbility::PillarsPositionsQueryFinished(TSharedPtr<FEnvQuer
 	PillarsPositionsResult = Result;
 }
 
-void URGX_PillarsFieldAbility::OnAttackWindow()
+void URGX_PillarsFieldAbility::OnStartLoop()
 {
+	Super::OnStartLoop();
+
 	FOccluderVertexArray locations;
 	PillarsPositionsResult->GetAllAsLocations(locations);
 

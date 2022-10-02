@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "RegicideX/GAS/GameplayAbilities/MageAngel/RGX_MageAngelAttackAbility.h"
+#include "RegicideX/GAS/GameplayAbilities/MageAngel/RGX_MageAngelExplosionAbility.h"
 #include "RGX_PillarsFieldAbility.generated.h"
 
 class ARGX_ExplosivePillar;
@@ -9,7 +9,7 @@ class ARGX_ExplosivePillar;
 struct FEnvQueryResult;
 
 UCLASS()
-class REGICIDEX_API URGX_PillarsFieldAbility : public URGX_MageAngelAttackAbility
+class REGICIDEX_API URGX_PillarsFieldAbility : public URGX_MageAngelExplosionAbility
 {
 	GENERATED_BODY()
 
@@ -19,7 +19,7 @@ public:
 protected:
 	void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
-	void OnAttackWindow() override;
+	void OnStartLoop() override;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

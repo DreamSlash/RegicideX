@@ -4,8 +4,10 @@
 #include "RegicideX/Actors/Enemies/RGX_MageAngel.h"
 #include "RegicideX/Actors/Weapons/RGX_RingWave.h"
 
-void URGX_RingWavesAbility::OnAttackWindow()
+void URGX_RingWavesAbility::OnStartLoop()
 {
+	Super::OnStartLoop();
+
 	PendingWaves = NumWaves;
 
 	OnSpawnRingWave();
@@ -24,7 +26,7 @@ void URGX_RingWavesAbility::OnSpawnRingWave()
 	}
 	else
 	{
-		bEndAttackingLoop = true;
+		bEndLoop = true;
 	}
 }
 
