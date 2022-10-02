@@ -72,7 +72,7 @@ void URGX_BT_FindStrafeLocation::LocationSeekerQueryFinished(TSharedPtr<FEnvQuer
 	{
 		/*if (FVector::Dist2D(fromLocation, loc) >= Distance)
 		{*/
-			//DrawDebugCapsule(GetWorld(), loc, 200, 100, FQuat::Identity, FColor::Purple, false, 2);
+			DrawDebugCapsule(GetWorld(), loc, 200, 100, FQuat::Identity, FColor::Purple, false, 2);
 
 			const FVector direction = (loc - fromLocation).GetSafeNormal2D();
 			if (FVector::DotProduct(rightVector, direction) >= 0.0)

@@ -15,6 +15,7 @@ void URGX_MageAngelExplosionAbility::OnReceivedEvent(FGameplayTag EventTag, FGam
 	// Should use constexpr
 	const FName StartLoop = FName("Enemy.MageAngel.ExplosionAnimation.StartLoop");
 	const FName EndLoop = FName("Enemy.MageAngel.ExplosionAnimation.EndLoop");
+	const FName Explode = FName("Enemy.MageAngel.ExplosionAnimation.Explode");
 
 	const FName tagName = EventTag.GetTagName();
 	if (tagName == StartLoop)
@@ -24,6 +25,10 @@ void URGX_MageAngelExplosionAbility::OnReceivedEvent(FGameplayTag EventTag, FGam
 	else if (tagName == EndLoop)
 	{
 		OnEndLoop();
+	}
+	else if (tagName == Explode)
+	{
+		OnExplode();
 	}
 }
 
@@ -49,6 +54,6 @@ void URGX_MageAngelExplosionAbility::OnEndLoop()
 	if (bEndLoop)
 	{
 		TimerHandle.Invalidate();
-		PlayMontageBySectionName(FName("attack_start"));
+		PlayMontageBySectionName(FName("End"));
 	}
 }

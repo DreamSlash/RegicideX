@@ -109,6 +109,7 @@ private:
 	void UpdateSlots(TArray<FRGX_EnemyCombatItem>& EnemyItems, int32 numSlots);
 	void PrepareCandidateData(const TArray<FRGX_EnemyCombatItem>& EnemyItems, TArray<int32>& candidates, int32& numAttackers, int32& numRecoveries) const;
 
+	int32 FindBestAttacker(const TArray<int32>& candidates, const TArray<FRGX_EnemyCombatItem>& EnemyItems) const;
 	int32 FindNewAttacker(const TArray<int32>& candidates, const TArray<FRGX_EnemyCombatItem>& EnemyItems) const;
 
 private:
