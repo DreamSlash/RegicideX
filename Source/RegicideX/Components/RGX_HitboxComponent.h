@@ -78,8 +78,6 @@ public:
 public:
 	FRGX_HitboxOverlapDelegate OnHitboxOverlap;
 
-	//FOnHitting OnHittingHandle;
-
 protected:
 
 	//void ApplyEffects(AActor* OtherActor);

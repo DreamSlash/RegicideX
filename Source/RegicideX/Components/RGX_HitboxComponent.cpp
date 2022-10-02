@@ -234,8 +234,6 @@ void URGX_HitboxComponent::HandleOverlappedActor(AActor* OtherActor, UPrimitiveC
 		ARGX_PlayerCharacter* Player = Cast<ARGX_PlayerCharacter>(OwnerActor);
 		if(Player)
 			OnHitting();
-		//if(OnHittingHandle.IsBound())
-		//	OnHittingHandle.ExecuteIfBound();
 	}
 
 	HandleDestroyOnOverlap(OtherActor, Attitude, bCanApplyEffects);
