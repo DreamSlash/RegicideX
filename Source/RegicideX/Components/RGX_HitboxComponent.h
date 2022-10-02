@@ -12,6 +12,7 @@
 #include "RGX_HitboxComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRGX_HitboxOverlapDelegate, class AActor*, HitActor);
+//DECLARE_DELEGATE(FOnHitting);
 
 USTRUCT()
 struct FRGX_HitboxGameplayEvent
@@ -71,8 +72,13 @@ public:
 	UFUNCTION()
 	bool IsGoingToOverlapActor(AActor* Actor);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnHitting();
+
 public:
 	FRGX_HitboxOverlapDelegate OnHitboxOverlap;
+
+	//FOnHitting OnHittingHandle;
 
 protected:
 
