@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/TimelineComponent.h"
 #include "GameplayEffect.h"
 #include "RegicideX/Actors/RGX_PoolActor.h"
 #include "RGX_EnemyBase.generated.h"
@@ -46,6 +47,8 @@ struct FAttackInfo {
 class USphereComponent;
 class UWidgetComponent;
 class URGX_HitboxesManagerComponent;
+
+struct FTimeline;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnHandleDeathSignature, class ARGX_EnemyBase*, EnemyKilled);
 
@@ -96,6 +99,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bImmune = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UCurveFloat* RotationTowardsTargetCurve = nullptr;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	URGX_HitboxesManagerComponent* HitboxesManager = nullptr;
@@ -192,6 +198,12 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void DisableInteraction();
 
+	UFUNCTION(BlueprintCallable)
+	void RotateTowardsTarget();
+
+	UFUNCTION(BlueprintCallable)
+	void StopRotatingTowardsEnemy();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -222,5 +234,8 @@ public:
 	bool IsInFrustum();
 
 	void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+
+private:
+	FTimeline RotationTowardsTargetTimeline;
 
 };

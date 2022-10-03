@@ -17,11 +17,14 @@
 
 #include "Kismet/GameplayStatics.h"
 
+#include "Navigation/CrowdFollowingComponent.h"
+
 #include "RegicideX/Actors/RGX_CombatManager.h"
 
 //#pragma optimize("", off)
 
 ARGX_EnemyBaseController::ARGX_EnemyBaseController(const FObjectInitializer& ObjectInitializer)
+	: Super(ObjectInitializer.SetDefaultSubobjectClass<UCrowdFollowingComponent>(TEXT("PathFollowingComponent")))
 {
 	BehaviorTreeComponent = CreateDefaultSubobject<UBehaviorTreeComponent>(TEXT("BehaviorTree Component"));
 	BlackboardComponent = CreateDefaultSubobject<UBlackboardComponent>(TEXT("Blackboard Component"));

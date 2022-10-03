@@ -41,6 +41,8 @@ void URGX_PlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	const float Target = Delta.Yaw / DeltaSeconds;
 	YawChange = FMath::GetMappedRangeValueClamped(FVector2D(-540.0f, 540.0f), FVector2D(-1.0f, 1.0f), Target);
 	LeanValue = FMath::Clamp(CalculateLeanAmount(DeltaSeconds) * LeanOffset, -30.0f, 30.0f);
+
+	CalculateLean();
 }
 
 float URGX_PlayerAnimInstance::CalculateLeanAmount(float DeltaSeconds)
@@ -66,4 +68,22 @@ float URGX_PlayerAnimInstance::CalculateLeanAmount(float DeltaSeconds)
 	//UE_LOG(LogTemp, Warning, TEXT("Lean Amount: %f"), LeanInfo.LeanAmount);
 
 	return LeanAmount;
+}
+
+void URGX_PlayerAnimInstance::CalculateLean()
+{
+	const FVector velocity = PlayerCharacter->GetVelocity();
+	const FRotator rotation = PlayerCharacter->GetActorRotation();
+
+	if (MovementSpeed < 500.0f)
+	{
+		Lean = 0.0;
+	}
+	else
+	{
+		Lean = FMath::Clamp(CalculateDirection(velocity, rotation), -30.0f, 30.0f);
+	}
+
+	/*if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Lean: %f"), Lean));*/
 }
