@@ -98,7 +98,7 @@ void ARGX_EnemyBase::CheckIfWeak(float DamageAmount)
 	const float RecentDamageAsHealthPercentage = RecentDamage / MaxHealth;
 	const float HealthAsPercentage = CurrentHealth / MaxHealth;
 	if (HealthAsPercentage < WeakenPercentage)
-	{
+	{/*
 		if (CanBeInteractedWith_Implementation(nullptr) == false)
 			EnableInteraction();
 
@@ -107,7 +107,7 @@ void ARGX_EnemyBase::CheckIfWeak(float DamageAmount)
 		if (HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("Status.Enemy.Weakened")) == false)
 		{
 			AddGameplayTag(FGameplayTag::RequestGameplayTag("Status.Enemy.Weakened"));
-		}
+		}*/
 	}
 }
 
