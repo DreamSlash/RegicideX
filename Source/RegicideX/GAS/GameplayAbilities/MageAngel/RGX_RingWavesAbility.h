@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "RegicideX/GAS/GameplayAbilities/MageAngel/RGX_MageAngelAttackAbility.h"
+#include "RegicideX/GAS/GameplayAbilities/MageAngel/RGX_MageAngelExplosionAbility.h"
 #include "Abilities/GameplayAbilityTypes.h"
 #include "GameplayAbilitySpec.h"
 #include "RGX_RingWavesAbility.generated.h"
@@ -11,12 +11,12 @@ class ARGX_RingWave;
 struct FGameplayAbilityActorInfo;
 
 UCLASS()
-class REGICIDEX_API URGX_RingWavesAbility : public URGX_MageAngelAttackAbility
+class REGICIDEX_API URGX_RingWavesAbility : public URGX_MageAngelExplosionAbility
 {
 	GENERATED_BODY()
 
 protected:
-	void OnAttackWindow() override;
+	void OnStartLoop() override;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

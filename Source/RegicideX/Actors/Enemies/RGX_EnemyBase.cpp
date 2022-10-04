@@ -98,7 +98,7 @@ void ARGX_EnemyBase::CheckIfWeak(float DamageAmount)
 	const float RecentDamageAsHealthPercentage = RecentDamage / MaxHealth;
 	const float HealthAsPercentage = CurrentHealth / MaxHealth;
 	if (HealthAsPercentage < WeakenPercentage)
-	{
+	{/*
 		if (CanBeInteractedWith_Implementation(nullptr) == false)
 			EnableInteraction();
 
@@ -107,7 +107,7 @@ void ARGX_EnemyBase::CheckIfWeak(float DamageAmount)
 		if (HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("Status.Enemy.Weakened")) == false)
 		{
 			AddGameplayTag(FGameplayTag::RequestGameplayTag("Status.Enemy.Weakened"));
-		}
+		}*/
 	}
 }
 
@@ -150,6 +150,26 @@ void ARGX_EnemyBase::DisableInteraction()
 {
 	InteractionShapeComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	//UE_LOG(LogTemp, Warning, TEXT("Disable Interaction\n"));
+}
+
+void ARGX_EnemyBase::RotateTowardsTarget()
+{
+	FOnTimelineFloat TimelineCallback;
+	/*FOnTimelineEventStatic TimelineFinishedCallback;
+	TimelineFinishedCallback.BindLambda([this]()
+		{
+			GetWorld()->GetTimerManager().SetTimer(DestroyTimerHandle, [this]() {Destroy(); }, LifeTimeOnceIsRisen, false);
+		});*/
+
+	RotationTowardsTargetTimeline.AddInterpFloat(RotationTowardsTargetCurve, TimelineCallback);
+	//RiseTimeLine.SetTimelineFinishedFunc(TimelineFinishedCallback);
+
+	RotationTowardsTargetTimeline.PlayFromStart();
+}
+
+void ARGX_EnemyBase::StopRotatingTowardsEnemy()
+{
+	RotationTowardsTargetTimeline.Stop();
 }
 
 void ARGX_EnemyBase::RotateToTarget(float DeltaTime)
@@ -196,6 +216,25 @@ void ARGX_EnemyBase::Tick(float DeltaTime)
 		const FVector VectorToTarget = TargetActor->GetActorLocation() - GetActorLocation();
 
 		//CheckIfHasLostSightOfPlayer();
+
+		if (RotationTowardsTargetTimeline.IsPlaying())
+		{
+			RotationTowardsTargetTimeline.TickTimeline(DeltaTime);
+
+			const float alpha = RotationTowardsTargetCurve->GetFloatValue(RotationTowardsTargetTimeline.GetPlaybackPosition());
+
+			const FRotator selfRotation = GetActorRotation();
+
+			const FVector selfLocation = GetActorLocation();
+			const FVector targetLocation = TargetActor->GetActorLocation();
+			const FRotator lookRotation = UKismetMathLibrary::FindLookAtRotation(selfLocation, targetLocation);
+
+			const FRotator desiredRotation = FRotator(selfRotation.Pitch, lookRotation.Yaw, selfRotation.Roll);
+
+			const FRotator finalRotation = FMath::Lerp(selfRotation, desiredRotation, alpha);
+
+			SetActorRotation(finalRotation);
+		}
 	}
 }
 

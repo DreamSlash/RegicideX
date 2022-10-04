@@ -19,6 +19,7 @@ protected:
 
 	virtual void OnStartLoop();
 	virtual void OnEndLoop();
+	virtual void OnExplode() {}
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

@@ -12,14 +12,21 @@ class ARGX_CombatManager;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FArenaActivatedSignature, class ARGX_Arena*, ArenaActivated);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FArenaDeactivatedSignature, ARGX_Arena*, ArenaDeactivated);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FArenaOnEnemyKilledSignature, class ARGX_EnemyBase*, EnemyKilled);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWaveFinishedSignature, class URGX_OutgoingWave*, FinishedWave);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWaveFinishedSignature, class URGX_OngoingWave*, FinishedWave);
+
+// TODO: Move assignation to callback. Unused Function right now
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSpawnEnemyCallbackSignature, ARGX_EnemyBase*, Enemy, URGX_OngoingWave*, Wave);
 
 UCLASS()
-class REGICIDEX_API URGX_OutgoingWave : public UObject
+class REGICIDEX_API URGX_OngoingWave : public UObject
 {
 	GENERATED_BODY()
 
 public:
+	/**
+	 * @brief Data of the outgoing wave
+	 */
+	UPROPERTY()
 	URGX_ArenaWaveDataAsset* WaveData;
 	int32 EnemiesLeft = 0;
 	bool bEnemiesSpawned = false;
@@ -43,8 +50,7 @@ class REGICIDEX_API ARGX_Arena : public AActor
 	
 public:	
 	ARGX_Arena();
-
-public:
+	
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable)
@@ -62,39 +68,26 @@ private:
 	void InitializeSpawners();
 
 	void SpawnInitialWaves();
-	void SpawnWave(URGX_OutgoingWave* Wave);
-	void SpawnWaveEnemyTypeGroup(const FName& EnemyWaveName, int32 NumEnemies, URGX_OutgoingWave* Wave);
-	void SpawnWaveEnemy(TSubclassOf<class ARGX_EnemyBase> EnemyClass, int32 SpawnerIdx, URGX_OutgoingWave* Wave);
+	void SpawnWave(URGX_OngoingWave* Wave);
+	void SpawnWaveEnemyTypeGroup(const FName& EnemyWaveName, int32 NumEnemies, URGX_OngoingWave* Wave);
+	void SpawnWaveEnemy(TSubclassOf<class ARGX_EnemyBase> EnemyClass, int32 SpawnerIdx, URGX_OngoingWave* Wave);
 	void SpawnConstantPeasant();
 
-	UFUNCTION()
-	void HandleSpawnWave(URGX_OutgoingWave* Wave);
 
-	void SpawnWaveEnemyRandomMode(TSubclassOf<class ARGX_EnemyBase> EnemyClass, URGX_OutgoingWave* Wave);
-	void SpawnWaveEnemyRoundRobinMode(TSubclassOf<class ARGX_EnemyBase> EnemyClass, URGX_OutgoingWave* Wave);
+	
+	UFUNCTION()
+	void HandleSpawnWave(URGX_OngoingWave* Wave);
+
+	void SpawnWaveEnemyRandomMode(TSubclassOf<class ARGX_EnemyBase> EnemyClass, URGX_OngoingWave* Wave);
+	void SpawnWaveEnemyRoundRobinMode(TSubclassOf<class ARGX_EnemyBase> EnemyClass, URGX_OngoingWave* Wave);
 
 	UFUNCTION()
-	void OnHandleFinishWave(URGX_OutgoingWave* FinishedWave);
+	void OnHandleFinishWave(URGX_OngoingWave* FinishedWave);
 	UFUNCTION()
-	void HandleFinishWave(URGX_OutgoingWave* FinishedWave);
-
+	void HandleFinishWave(URGX_OngoingWave* FinishedWave);
+	UFUNCTION()
 	void HandleFinishArena();
-
-	UFUNCTION()
-	void OnComponentBeginOverlap(
-		UPrimitiveComponent* OverlappedComponent,
-		AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex,
-		bool bFromSweep,
-		const FHitResult& SweepResult);
-
-	UFUNCTION()
-	void OnComponentEndOverlap(
-		UPrimitiveComponent* OverlappedComponent,
-		AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex);
+	
 
 	UFUNCTION()
 	void OnEnemyDeath(ARGX_EnemyBase* Enemy);
@@ -109,6 +102,13 @@ public:
 	FArenaDeactivatedSignature OnArenaDeactivated;
 	UPROPERTY(BlueprintAssignable)
 	FArenaOnEnemyKilledSignature OnArenaEnemyKilled;
+
+	// TODO: Move assignation to callback. Unused Function right now
+	UPROPERTY()
+	FSpawnEnemyCallbackSignature SpawnWaveEnemyCB;
+	
+	UFUNCTION(BlueprintCallable)
+	void SpawnWaveEnemyCallback(ARGX_EnemyBase* Enemy, URGX_OngoingWave* Wave);
 
 private:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
@@ -149,6 +149,10 @@ private:
 	UPROPERTY(EditAnywhere, meta = (AllowPrivateAccess = "true"))
 	TArray<ARGX_EnemySpawner*>  EnemySpawners;
 
+	/**
+	 * @brief Reference to player character
+	 */
+	UPROPERTY()
 	class ARGX_PlayerCharacter* PlayerCharacter;
 
 	// TODO: Pass this info to game mode or some static class
@@ -160,7 +164,7 @@ private:
 
 	// TODO: Make it a linked list or make use again of the objects instead of destroying them or only allow one child wave
 	UPROPERTY()
-	TArray<URGX_OutgoingWave*> CurrentWaves;
+	TArray<URGX_OngoingWave*> CurrentWaves;
 
 	float TimeBetweenWaves = 2.0f;
 
