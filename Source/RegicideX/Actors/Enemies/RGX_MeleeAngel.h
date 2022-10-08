@@ -7,8 +7,8 @@
 #include "RGX_MeleeAngel.generated.h"
 
 class URGX_MovementAssistComponent;
-
-
+class URGX_HitboxComponent;
+class USphereComponent;
 
 
 UCLASS()
@@ -28,6 +28,9 @@ public:
 	bool bCharging = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	bool bTornadoActive = false;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	URGX_MovementAssistComponent* MovementAssistComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -35,6 +38,12 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector HeightGoal;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	URGX_HitboxComponent* BHHitboxComponent = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	USphereComponent* TornadoSphereCollider = nullptr;
 
 protected:
 	FVector ChargeVelocity;
