@@ -123,6 +123,11 @@ void URGX_CameraControllerComponent::UpdateTargeting(TArray<AActor*>& Targets, f
 	}
 	else
 	{
+		if (CurrentTarget.IsExplicitlyNull() == false)
+		{
+			SetTarget(nullptr);
+		}
+
 		FindTarget(Targets);
 	}
 }
@@ -387,6 +392,19 @@ float URGX_CameraControllerComponent::CalculateDotProduct(const FVector& SourceL
 	const FVector targetDirectionNormalized = targetDirection.GetUnsafeNormal();
 
 	return FVector::DotProduct(SourceDir, targetDirectionNormalized);
+}
+
+void URGX_CameraControllerComponent::ToggleTargeting()
+{
+	if (bTargetingIsActive)
+	{
+		bTargetingIsActive = false;
+		SetTarget(nullptr);
+	}
+	else
+	{
+		bTargetingIsActive = true;
+	}
 }
 
 void URGX_CameraControllerComponent::EnableTargeting()

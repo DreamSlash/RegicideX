@@ -254,6 +254,7 @@ protected:
 	void PerformHeavyAttack();
 	void ChangePowerSkill();
 
+	void ToggleTargeting();
 	void EnableTargeting();
 	void DisableTargeting();
 	void TargetLeft();
