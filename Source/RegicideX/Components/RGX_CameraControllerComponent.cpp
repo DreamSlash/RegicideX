@@ -1,6 +1,7 @@
 #include "RGX_CameraControllerComponent.h"
 
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
+#include "RegicideX/Character/RGx_PlayerCharacter.h"
 
 #include "GameFramework/SpringArmComponent.h"
 #include "Camera/CameraComponent.h"
@@ -24,6 +25,8 @@ URGX_CameraControllerComponent::URGX_CameraControllerComponent()
 void URGX_CameraControllerComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Owner = GetOwner<ARGX_PlayerCharacter>();
 	SpringArm->bEnableCameraRotationLag = true;
 
 	OriginalArmLength = SpringArm->TargetArmLength;
@@ -34,8 +37,7 @@ void URGX_CameraControllerComponent::TickComponent(float DeltaTime, ELevelTick T
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	APawn* OwnerPawn = GetOwner<APawn>();
-	if (OwnerPawn == nullptr)
+	if (Owner == nullptr)
 	{
 		return;
 	}
@@ -57,6 +59,20 @@ void URGX_CameraControllerComponent::TickComponent(float DeltaTime, ELevelTick T
 }
 
 void URGX_CameraControllerComponent::CalculateSpringArmDistance(const TArray<AActor*>& Targets, float DeltaTime)
+{
+	const float distanceByEnemies = CalculateSpringArmDistanceByEnemies(Targets);
+	const bool bIsDoingAirCombo = (Owner->bIsFallingDown && Owner->IsAttacking());
+	const float newDistance = distanceByEnemies + (bIsDoingAirCombo ? ZoomOutAirCombo : 0.0);
+
+	if (fabs(SpringArm->TargetArmLength - newDistance) > UpdateDistanceOffset)
+	{
+		//const float res = FMath::InterpEaseInOut(SpringArm->TargetArmLength, newDistance, DeltaTime * CameraSpeed, 0.5);
+		const float res = FMath::FInterpTo(SpringArm->TargetArmLength, newDistance, DeltaTime, CameraSpeed);
+		SpringArm->TargetArmLength = res;
+	}
+}
+
+float URGX_CameraControllerComponent::CalculateSpringArmDistanceByEnemies(const TArray<AActor*>& Targets) const
 {
 	const AActor* player = GetOwner();
 	const FVector playerLocation = player->GetActorLocation();
@@ -84,12 +100,7 @@ void URGX_CameraControllerComponent::CalculateSpringArmDistance(const TArray<AAc
 	const float notVisibleEnemiesZoomOut = ZoomOutPerNotVisibleEnemy * numNotVisibleEnemies;
 	const float newDistance = std::min(OriginalArmLength + visibleEnemiesZoomOut + notVisibleEnemiesZoomOut, MaxZoomOut);
 
-	if (fabs(SpringArm->TargetArmLength - newDistance) > UpdateDistanceOffset)
-	{
-		//const float res = FMath::InterpEaseInOut(SpringArm->TargetArmLength, newDistance, DeltaTime * CameraSpeed, 0.5);
-		const float res = FMath::FInterpTo(SpringArm->TargetArmLength, newDistance, DeltaTime, CameraSpeed);
-		SpringArm->TargetArmLength = res;
-	}
+	return newDistance;
 }
 
 void URGX_CameraControllerComponent::UpdateTargeting(TArray<AActor*>& Targets, float DeltaTime)
@@ -112,6 +123,11 @@ void URGX_CameraControllerComponent::UpdateTargeting(TArray<AActor*>& Targets, f
 	}
 	else
 	{
+		if (CurrentTarget.IsExplicitlyNull() == false)
+		{
+			SetTarget(nullptr);
+		}
+
 		FindTarget(Targets);
 	}
 }
@@ -149,33 +165,103 @@ void URGX_CameraControllerComponent::FindTarget(TArray<AActor*>& Targets)
 	}
 }
 
-FRotator URGX_CameraControllerComponent::CalculateDesiredRotation()
+FRotator URGX_CameraControllerComponent::CalculateDesiredRotation() const
 {
-	constexpr float CameraAngleToTarget = 15.0f;
-	const float CameraAngleSin = FMath::Sin(FMath::DegreesToRadians(CameraAngleToTarget));
+	const float desiredYaw = CalculateDesiredAngle(DesiredYawAngle);
+	const float desiredPitch = CalculateDesiredAngle(DesiredPitchAngle);
 
-
-
-	const FVector TargetLocation = CurrentTarget->GetActorLocation();
-	const FVector PlayerLocation = SpringArm->GetComponentLocation();
-
-	const float PivotDistance = FVector::Distance(PlayerLocation, TargetLocation);
-
-	const float Height = SpringArm->TargetArmLength * CameraAngleSin;
-	const float Beta = FMath::Asin(Height / PivotDistance);
-	const float DesiredPitch = FMath::DegreesToRadians(CameraAngleToTarget) + Beta;
-
-	UE_LOG(LogTemp, Warning, TEXT("PD: %f - H: %f - B: %f - DP: %f"), PivotDistance, Height, Beta, DesiredPitch);
+	const FVector targetLocation = CurrentTarget->GetActorLocation();
+	const FVector playerLocation = SpringArm->GetComponentLocation();
 
 	// [SM] Check better way to play with two altitude levels
-	FVector aux = TargetLocation - PlayerLocation;
+	FVector aux = targetLocation - playerLocation;
 	aux.Z = 0.0;
 	FMatrix matrix = FRotationMatrix::MakeFromX(aux);
+
 	FRotator desiredRotation = matrix.Rotator();
-	desiredRotation.Yaw -= FMath::RadiansToDegrees(DesiredPitch);
-	desiredRotation.Pitch -= 15.0;
+	desiredRotation.Yaw += CalculateFinalYaw(desiredYaw);
+	desiredRotation.Pitch += CalculateFinalPitch(desiredPitch);
 
 	return desiredRotation;
+}
+
+float URGX_CameraControllerComponent::CalculateDesiredAngle(float DesiredAngle) const
+{
+	const float desiredAngleSin = FMath::Sin(FMath::DegreesToRadians(DesiredAngle));
+
+	const FVector targetLocation = CurrentTarget->GetActorLocation();
+	const FVector playerLocation = SpringArm->GetComponentLocation();
+
+	const float pivotDistance = FVector::Distance(playerLocation, targetLocation);
+
+	const float height = SpringArm->TargetArmLength * desiredAngleSin;
+	const float beta = FMath::Asin(height / pivotDistance);
+
+	return FMath::DegreesToRadians(DesiredAngle) + beta; 
+}
+
+float URGX_CameraControllerComponent::CalculateFinalYaw(float DesiredYaw) const
+{
+	const FVector playerLocation = SpringArm->GetComponentLocation();
+	const FVector playerUpVector = Owner->GetActorUpVector();
+
+	const FVector cameraLocation = Camera->GetComponentLocation();
+	const FVector cameraForward = Camera->GetForwardVector();
+	const FVector rightVector = FVector::CrossProduct(Owner->GetActorUpVector(), cameraForward);
+
+	const float dot = CalculateDotProduct(playerLocation, rightVector, CurrentTarget.Get());
+	const float angle = FMath::RadiansToDegrees(FMath::Acos(dot));
+	const float realAngle = 90.0 - angle;
+
+	float finalYaw = FMath::Clamp(FMath::RadiansToDegrees(DesiredYaw), MinYawAngle, MaxYawAngle);
+	if (dot > 0.0)
+	{
+		return -finalYaw;
+	}
+	else
+	{
+		return finalYaw;
+	}
+
+	//float result = 0.0;
+	//if (dot > 0.0)
+	//{
+	//	if (realAngle < MinYawAngle)
+	//	{
+	//		result = -MinYawAngle;
+	//		//desiredRotation.Yaw -= MinYawAngle;
+
+	//	}
+	//	else if (realAngle > MaxYawAngle)
+	//	{
+	//		result = -MaxYawAngle;
+	//		desiredRotation.Yaw -= MaxYawAngle;
+	//	}
+	//	else
+	//	{
+	//		return GetOwner<APawn>()->GetController()->GetControlRotation();
+	//	}
+	//}
+	//else if (dot <= 0.0)
+	//{
+	//	if (realAngle < MinYawAngle)
+	//	{
+	//		desiredRotation.Yaw += MinYawAngle;
+	//	}
+	//	else if (realAngle > MaxYawAngle)
+	//	{
+	//		desiredRotation.Yaw += MaxYawAngle;
+	//	}
+	//	else
+	//	{
+	//		return GetOwner<APawn>()->GetController()->GetControlRotation();
+	//	}
+	//}
+}
+
+float URGX_CameraControllerComponent::CalculateFinalPitch(float DesiredPitch) const
+{
+	return -FMath::Clamp(DesiredPitch, MinPitchAngle, MaxPitchAngle);
 }
 
 void URGX_CameraControllerComponent::FindTarget()
@@ -306,6 +392,19 @@ float URGX_CameraControllerComponent::CalculateDotProduct(const FVector& SourceL
 	const FVector targetDirectionNormalized = targetDirection.GetUnsafeNormal();
 
 	return FVector::DotProduct(SourceDir, targetDirectionNormalized);
+}
+
+void URGX_CameraControllerComponent::ToggleTargeting()
+{
+	if (bTargetingIsActive)
+	{
+		bTargetingIsActive = false;
+		SetTarget(nullptr);
+	}
+	else
+	{
+		bTargetingIsActive = true;
+	}
 }
 
 void URGX_CameraControllerComponent::EnableTargeting()
