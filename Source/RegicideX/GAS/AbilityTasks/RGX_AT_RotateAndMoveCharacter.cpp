@@ -28,6 +28,7 @@ void URGX_AT_RotateAndMoveCharacter::TickTask(float DeltaTime)
 	{
 		Attacker->BHHitboxComponent->DeactivateHitbox();
 		Attacker->bTornadoActive = false;
+		Attacker->SetTornadoFXVisibility(false);
 		if (ShouldBroadcastAbilityTaskDelegates())
 		{
 			OnFinish.Broadcast();
@@ -57,5 +58,6 @@ URGX_AT_RotateAndMoveCharacter* URGX_AT_RotateAndMoveCharacter::RotateAndMoveCha
 	MyObj->Attacker = Cast<ARGX_MeleeAngel>(OwningAbility->GetAvatarActorFromActorInfo());
 	MyObj->Attacker->bTornadoActive = true;
 	MyObj->Attacker->BHHitboxComponent->ActivateHitbox(true);
+	MyObj->Attacker->SetTornadoFXVisibility(true);
 	return MyObj;
 }

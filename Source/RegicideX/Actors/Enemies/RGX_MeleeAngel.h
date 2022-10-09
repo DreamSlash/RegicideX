@@ -65,4 +65,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void ApplyTornadoEffects(AActor* OtherActor);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetTornadoFXVisibility(bool Visible);
 };
