@@ -15,7 +15,7 @@ class REGICIDEX_API URGX_PillarsPartyAbility : public URGX_MageAngelExplosionAbi
 protected:
 	void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
-	void OnExplode() override;
+	void OnGround() override;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

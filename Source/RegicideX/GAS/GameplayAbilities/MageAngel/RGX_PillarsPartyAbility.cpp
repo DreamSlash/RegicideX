@@ -29,8 +29,10 @@ void URGX_PillarsPartyAbility::PositionsQueryFinished(TSharedPtr<FEnvQueryResult
 	}
 }
 
-void URGX_PillarsPartyAbility::OnExplode()
+void URGX_PillarsPartyAbility::OnGround()
 {
+	Super::OnGround();
+
 	AActor* AvatarActor = GetAvatarActorFromActorInfo();
 	const ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(AvatarActor);
 	AActor* Player = Enemy->TargetActor;
