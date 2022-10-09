@@ -26,6 +26,8 @@ void URGX_AT_RotateAndMoveCharacter::TickTask(float DeltaTime)
 	TaskTime += DeltaTime;
 	if (TaskTime >= MaxTime)
 	{
+		Attacker->BHHitboxComponent->DeactivateHitbox();
+		Attacker->bTornadoActive = false;
 		if (ShouldBroadcastAbilityTaskDelegates())
 		{
 			OnFinish.Broadcast();
@@ -33,6 +35,11 @@ void URGX_AT_RotateAndMoveCharacter::TickTask(float DeltaTime)
 		EndTask();
 	}
 	Attacker->RotateToTarget(DeltaTime);
+
+	FVector TargetLocation = Attacker->TargetActor->GetActorLocation();
+	if (FVector::Dist(Attacker->GetActorLocation(), TargetLocation) < 200.0)
+		return;
+
 	const FVector NewLocation = Attacker->GetActorLocation() + Attacker->GetActorForwardVector() * Attacker->MoveSpeed * DeltaTime;
 	Attacker->SetActorLocation(NewLocation);
 }
@@ -48,6 +55,7 @@ URGX_AT_RotateAndMoveCharacter* URGX_AT_RotateAndMoveCharacter::RotateAndMoveCha
 	URGX_AT_RotateAndMoveCharacter* MyObj = NewAbilityTask<URGX_AT_RotateAndMoveCharacter>(OwningAbility);
 	MyObj->MaxTime = Time;
 	MyObj->Attacker = Cast<ARGX_MeleeAngel>(OwningAbility->GetAvatarActorFromActorInfo());
-	//MyObj->Attacker->BHHitboxComponent->ActivateHitbox(true);
+	MyObj->Attacker->bTornadoActive = true;
+	MyObj->Attacker->BHHitboxComponent->ActivateHitbox(true);
 	return MyObj;
 }

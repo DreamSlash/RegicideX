@@ -45,6 +45,9 @@ public:
 	UPROPERTY(EditAnywhere)
 	USphereComponent* TornadoSphereCollider = nullptr;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TArray<FRGX_EffectContextContainer> TornadoEffectsToApply;
+
 protected:
 	FVector ChargeVelocity;
 
@@ -59,4 +62,7 @@ public:
 	FVector GetVelocity() const;
 
 	void SetChargeVelocity(const FVector NewChargeVelocity) { ChargeVelocity = NewChargeVelocity; }
+
+	UFUNCTION(BlueprintCallable)
+	void ApplyTornadoEffects(AActor* OtherActor);
 };

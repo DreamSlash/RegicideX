@@ -6,18 +6,24 @@
 #include "Kismet/KismetMathLibrary.h"
 
 #include "RegicideX/Components/RGX_MovementAssistComponent.h"
-
+#include "Components/MCV_AbilitySystemComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Components/SphereComponent.h"
 #include "RegicideX/Components/RGX_HitboxComponent.h"
 
+#include "RegicideX/GAS/RGX_GameplayEffectContext.h"
+#include "RegicideX/GAS/RGX_PayloadObjects.h"
 
 ARGX_MeleeAngel::ARGX_MeleeAngel()
 {
 	MovementAssistComponent = CreateDefaultSubobject<URGX_MovementAssistComponent>(TEXT("MovementAssistComponent"));
 	BHHitboxComponent = CreateDefaultSubobject<URGX_HitboxComponent>(TEXT("BHHitboxComponent"));
+	BHHitboxComponent->SetupAttachment(RootComponent);
+
 	TornadoSphereCollider = CreateDefaultSubobject<USphereComponent>(TEXT("TornadoSphereCollider"));
 	TornadoSphereCollider->SetupAttachment(BHHitboxComponent);
+	BHHitboxComponent->DeactivateHitbox();
+	BHHitboxComponent->OnHitboxOverlap.AddDynamic(this, &ARGX_MeleeAngel::ApplyTornadoEffects);
 }
 
 
@@ -64,5 +70,25 @@ FVector ARGX_MeleeAngel::GetVelocity() const
 	else
 	{
 		return Velocity;
+	}
+}
+
+void ARGX_MeleeAngel::ApplyTornadoEffects(AActor* OtherActor)
+{
+	UAbilitySystemComponent* SourceACS = AbilitySystemComponent;
+	UAbilitySystemComponent* TargetACS = OtherActor->FindComponentByClass<UAbilitySystemComponent>();
+	if (SourceACS && TargetACS)
+	{
+		FGameplayEffectContextHandle ContextHandle = SourceACS->MakeEffectContext();
+		FRGX_GameplayEffectContext* RGXContext = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
+
+		for (FRGX_EffectContextContainer& EffectContextContainer : TornadoEffectsToApply)
+		{
+			if (ensureMsgf(EffectContextContainer.EffectToApply.Get(), TEXT("[Error] OnHitboxOverlap: %s Effect was nullptr"), *GetName()))
+			{
+				RGXContext->OptionalObject = EffectContextContainer.Payload;
+				SourceACS->ApplyGameplayEffectToTarget(EffectContextContainer.EffectToApply->GetDefaultObject<UGameplayEffect>(), TargetACS, this->GetCharacterLevel(), ContextHandle);
+			}
+		}
 	}
 }
