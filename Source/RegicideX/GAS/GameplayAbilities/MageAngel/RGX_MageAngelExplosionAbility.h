@@ -17,17 +17,25 @@ protected:
 
 	void OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData) override;
 
-	virtual void OnStartLoop();
-	virtual void OnEndLoop();
-	virtual void OnExplode() {}
+	virtual void OnStartCastLoop();
+	virtual void OnEndCastLoop();
+	virtual void OnStartGroundLoop();
+	virtual void OnEndGroundLoop();
+
+	virtual void OnTopCast() {}
+	virtual void OnGround() {}
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float LoopTime = 0.0f;
+	float CastTime = 0.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float GroundTime = 0.0f;
 
 protected:
 	FTimerHandle TimerHandle;
 	
-	bool bEndLoop = false;
+	bool bEndCastLoop = false;
+	bool bEndGroundLoop = false;
 
 };

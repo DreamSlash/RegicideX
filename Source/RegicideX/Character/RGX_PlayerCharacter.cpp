@@ -94,6 +94,7 @@ void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAction("SwitchPowerSkill", IE_Pressed, this, &ARGX_PlayerCharacter::ChangePowerSkill);
 	PlayerInputComponent->BindAction("TimeScale", IE_Pressed, this, &ARGX_PlayerCharacter::ChangeTimeScale);
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ARGX_PlayerCharacter::TryToInteract);
+	PlayerInputComponent->BindAction("ToggleTargeting", IE_Pressed, this, &ARGX_PlayerCharacter::ToggleTargeting);
 	PlayerInputComponent->BindAction("EnableTargeting", IE_Pressed, this, &ARGX_PlayerCharacter::EnableTargeting);
 	PlayerInputComponent->BindAction("EnableTargeting", IE_Released, this, &ARGX_PlayerCharacter::DisableTargeting);
 	PlayerInputComponent->BindAction("TargetLeft", IE_Pressed, this, &ARGX_PlayerCharacter::TargetLeft);
@@ -428,6 +429,11 @@ void ARGX_PlayerCharacter::ChangePowerSkill()
 
 	FString SkillName = PowerSkills[CurrentSkillSelected].ToString();
 	//UE_LOG(LogTemp, Warning, TEXT("Power Skill Selected: %s\n"), *SkillName);
+}
+
+void ARGX_PlayerCharacter::ToggleTargeting()
+{
+	CameraControllerComponent->ToggleTargeting();
 }
 
 void ARGX_PlayerCharacter::EnableTargeting()

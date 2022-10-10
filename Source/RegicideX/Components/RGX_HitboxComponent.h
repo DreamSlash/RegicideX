@@ -12,7 +12,6 @@
 #include "RGX_HitboxComponent.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FRGX_HitboxOverlapDelegate, class AActor*, HitActor);
-//DECLARE_DELEGATE(FOnHitting);
 
 USTRUCT()
 struct FRGX_HitboxGameplayEvent

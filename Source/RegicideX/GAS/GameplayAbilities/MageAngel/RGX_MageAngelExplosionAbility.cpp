@@ -7,51 +7,94 @@ void URGX_MageAngelExplosionAbility::ActivateAbility(const FGameplayAbilitySpecH
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 
-	bEndLoop = false;
+	bEndCastLoop = false;
+	bEndGroundLoop = false;
 }
 
 void URGX_MageAngelExplosionAbility::OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData)
 {
 	// Should use constexpr
-	const FName StartLoop = FName("Enemy.MageAngel.ExplosionAnimation.StartLoop");
-	const FName EndLoop = FName("Enemy.MageAngel.ExplosionAnimation.EndLoop");
-	const FName Explode = FName("Enemy.MageAngel.ExplosionAnimation.Explode");
+	const FName StartCastLoop = FName("Enemy.MageAngel.ExplosionAnimation.StartLoop");
+	const FName EndCastLoop = FName("Enemy.MageAngel.ExplosionAnimation.EndLoop");
+	const FName StartGroundLoop = FName("Enemy.MageAngel.ExplosionAnimation.StartGroundLoop");
+	const FName EndGroundLoop = FName("Enemy.MageAngel.ExplosionAnimation.EndGroundLoop");
+
+	const FName TopCast = FName("Enemy.MageAngel.ExplosionAnimation.OnTopCast");
+	const FName Ground = FName("Enemy.MageAngel.ExplosionAnimation.OnGround");
 
 	const FName tagName = EventTag.GetTagName();
-	if (tagName == StartLoop)
+	if (tagName == StartCastLoop)
 	{
-		OnStartLoop();
+		OnStartCastLoop();
 	}
-	else if (tagName == EndLoop)
+	else if (tagName == EndCastLoop)
 	{
-		OnEndLoop();
+		OnEndCastLoop();
 	}
-	else if (tagName == Explode)
+	else if (tagName == StartGroundLoop)
 	{
-		OnExplode();
+		OnStartGroundLoop();
+	}
+	else if (tagName == EndGroundLoop)
+	{
+		OnEndGroundLoop();
+	}
+	else if (tagName == TopCast)
+	{
+		OnTopCast();
+	}
+	else if (tagName == Ground)
+	{
+		OnGround();
 	}
 }
 
-void URGX_MageAngelExplosionAbility::OnStartLoop()
+void URGX_MageAngelExplosionAbility::OnStartCastLoop()
 {
-	if (bEndLoop) return; // Gets called after invalidating the timer handle... check this
+	if (bEndCastLoop) return; // Gets called after invalidating the timer handle... check this
 
-	if (LoopTime > 0.0f)
+	if (CastTime > 0.0f)
 	{
 		if (TimerHandle.IsValid() == false)
 		{
-			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]() { bEndLoop = true; }, LoopTime, false);
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]() { bEndCastLoop = true; }, CastTime, false);
 		}
 	}
 	else
 	{
-		bEndLoop = true;
+		bEndCastLoop = true;
 	}
 }
 
-void URGX_MageAngelExplosionAbility::OnEndLoop()
+void URGX_MageAngelExplosionAbility::OnEndCastLoop()
 {
-	if (bEndLoop)
+	if (bEndCastLoop)
+	{
+		TimerHandle.Invalidate();
+		PlayMontageBySectionName(FName("Fall"));
+	}
+}
+
+void URGX_MageAngelExplosionAbility::OnStartGroundLoop()
+{
+	if (bEndGroundLoop) return;
+
+	if (GroundTime > 0.0f)
+	{
+		if (TimerHandle.IsValid() == false)
+		{
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]() { bEndGroundLoop = true; }, GroundTime, false);
+		}
+	}
+	else
+	{
+		bEndGroundLoop = true;
+	}
+}
+
+void URGX_MageAngelExplosionAbility::OnEndGroundLoop()
+{
+	if (bEndGroundLoop)
 	{
 		TimerHandle.Invalidate();
 		PlayMontageBySectionName(FName("End"));

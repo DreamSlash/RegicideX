@@ -31,6 +31,24 @@ public:
 		float TargetingConeAngle = 45.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float DesiredYawAngle = 20.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float MinYawAngle = 15.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float MaxYawAngle = 30.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float DesiredPitchAngle = 15.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float MinPitchAngle = 10.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float MaxPitchAngle = 20.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float MaxZoomOut = 2000.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -38,6 +56,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float ZoomOutPerNotVisibleEnemy = 300.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		float ZoomOutAirCombo = 200.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		float CameraSpeed = 1.0f;
@@ -48,6 +69,7 @@ public:
 	UPROPERTY(BlueprintAssignable)
 		FRGX_TargetUpdatedDelegate OnTargetUpdated;
 
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
@@ -56,6 +78,7 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+	void ToggleTargeting();
 	void EnableTargeting();
 	void DisableTargeting();
 
@@ -73,13 +96,22 @@ private:
 	void FindNearestTargetUsingSphere(bool RightDirection);
 
 	void CalculateSpringArmDistance(const TArray<AActor*>& Targets, float DeltaTime);
+	float CalculateSpringArmDistanceByEnemies(const TArray<AActor*>& Targets) const;
+
 	void UpdateTargeting(TArray<AActor*>& Targets, float DeltaTime);
-	FRotator CalculateDesiredRotation();
+
+	FRotator CalculateDesiredRotation() const;
+	float CalculateDesiredAngle(float DesiredAngle) const;
+	float CalculateFinalYaw(float DesiredYaw) const;
+	float CalculateFinalPitch(float DesiredPitch) const;
 
 	TArray<AActor*> GetNearbyActorsUsingSphere(const TArray<AActor*>& IgnoredActors) const;
 	float CalculateDotProduct(const FVector& SourceLocation, const FVector& SourceDir, const AActor* Actor) const;
 
 private:
+	UPROPERTY()
+	class ARGX_PlayerCharacter* Owner = nullptr;
+
 	TWeakObjectPtr<ARGX_EnemyBase> CurrentTarget;
 
 	float OriginalArmLength;
