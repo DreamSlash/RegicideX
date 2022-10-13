@@ -19,7 +19,7 @@ public:
 protected:
 	void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
-	void OnStartLoop() override;
+	void OnGround() override;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
