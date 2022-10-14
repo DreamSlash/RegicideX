@@ -86,15 +86,15 @@ public:
 	FGameplayTag CurrentSkillTag;
 
 	/** If true, player is in window to carry on with the combo if appropiate input is pressed. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(BlueprintReadWrite)
 	bool bCanCombo = false;
 
 	/** Signals if player has pressed an input to continue the on going combo. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(BlueprintReadWrite)
 	bool bContinueCombo = false;
 
 	/** If true, we can jump to next section in the combo. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 	bool bCanJumpToComboSection = false;
 
 	/** Holds the AnimNotifyState of the current attack, which has the information for the combo to follow. */
@@ -106,10 +106,10 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EObjectTypeQuery> DodgeableObjectType;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY()
 	bool bIsFallingDown = false;
 
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY()
 	bool bIsBraking;
 
 	void BeginPlay() override;
