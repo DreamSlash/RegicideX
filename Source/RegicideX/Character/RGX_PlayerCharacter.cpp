@@ -463,8 +463,8 @@ void ARGX_PlayerCharacter::CheckBrake(float DeltaTime)
 	FVector LastInputDirection = GetLastMoveInputDirection();
 	FVector CurrentInputDirection = GetCurrentMoveInputDirection();
 
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, CurrentInputDirection.ToString());
+	/*if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, CurrentInputDirection.ToString());*/
 
 	if (LastInputDirection.IsNearlyZero() || CurrentInputDirection.IsNearlyZero()) return;
 
@@ -620,12 +620,6 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 	}
 
 	//UE_LOG(LogTemp, Warning, TEXT("bIgnoreInputMoveVector: %s"), bIgnoreInputMoveVector ? TEXT("TRUE") : TEXT("FALSE"));
-
-	const FRotator Rotation = GetControlRotation();
-	const FVector direction = Rotation.Vector() * 200.0f;
-	FVector location = GetActorLocation();
-	location.Z += 200.0f;
-	UKismetSystemLibrary::DrawDebugArrow(GetWorld(), location, location + direction, 50.0f, FLinearColor::Yellow, 1.f);
 
 	CheckBrake(DeltaTime);
 	
