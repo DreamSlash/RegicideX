@@ -86,6 +86,6 @@ void URGX_PlayerAnimInstance::CalculateLean()
 		Lean = FMath::Clamp(CalculateDirection(velocity, rotation), -30.0f, 30.0f);
 	}
 
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Lean: %f"), Lean));
+	/*if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Lean: %f"), Lean));*/
 }

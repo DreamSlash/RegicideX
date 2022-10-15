@@ -58,6 +58,40 @@ void ARGX_EnemyBaseController::StartLogic()
 {
 	// Start Behavior Tree
 	BehaviorTreeComponent->StartTree(*Agent->BehaviorTree);
+
+	if (BehaviorPhases.Num() > 0)
+	{
+		BehaviorPhases.Sort([](const FBehaviorPhaseInfo& Left, const FBehaviorPhaseInfo& Right)
+			{
+				return Left.HealthThreshold >= Right.HealthThreshold;
+			});
+
+		UpdateDynamicBehavior(BehaviorPhases[BehaviorPhaseIndex++]);
+	}
+}
+
+void ARGX_EnemyBaseController::OnEnemyHealthChanged(float CurrentHealth, float MaxHealth)
+{
+	const float proportion = CurrentHealth / MaxHealth;
+
+	if (BehaviorPhaseIndex < (uint32)BehaviorPhases.Num())
+	{
+		const FBehaviorPhaseInfo& phaseInfo = BehaviorPhases[BehaviorPhaseIndex];
+		if (proportion < phaseInfo.HealthThreshold)
+		{
+			UpdateDynamicBehavior(phaseInfo);
+
+			++BehaviorPhaseIndex;
+		}
+	}
+}
+
+void ARGX_EnemyBaseController::UpdateDynamicBehavior(const FBehaviorPhaseInfo& PhaseInfo)
+{
+	for (auto it = PhaseInfo.TreeByTag.begin(); it != PhaseInfo.TreeByTag.end(); ++it)
+	{
+		BehaviorTreeComponent->SetDynamicSubtree(it.Key(), it.Value());
+	}
 }
 
 void ARGX_EnemyBaseController::DamageTaken()

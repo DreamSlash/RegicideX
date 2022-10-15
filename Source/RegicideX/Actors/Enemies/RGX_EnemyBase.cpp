@@ -384,6 +384,14 @@ void ARGX_EnemyBase::HandleHealthChanged(float DeltaValue, const struct FGamepla
 	{
 		OnHealthChanged(DeltaValue, EventTags);
 	}
+
+	if (ARGX_EnemyBaseController* controller = GetController<ARGX_EnemyBaseController>())
+	{
+		const float currentHealth = GetHealth();
+		const float maxHealth = GetMaxHealth();
+
+		controller->OnEnemyHealthChanged(currentHealth, maxHealth);
+	}
 }
 
 void ARGX_EnemyBase::HandleDeath()
