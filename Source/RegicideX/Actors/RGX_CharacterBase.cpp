@@ -58,6 +58,36 @@ UAbilitySystemComponent* ARGX_CharacterBase::GetAbilitySystemComponent() const
 	return AbilitySystemComponent;
 }
 
+float ARGX_CharacterBase::GetCurrentMaxSpeed() const
+{
+	return MoveSpeed;
+}
+
+void ARGX_CharacterBase::SetCurrentMaxSpeed(float Speed)
+{
+	MoveSpeed = Speed;
+}
+
+float ARGX_CharacterBase::GetCurrentMaxAcceleration() const
+{
+	return MaxAcceleration;
+}
+
+void ARGX_CharacterBase::SetCurrentMaxAcceleration(float Acceleration)
+{
+	MaxAcceleration = Acceleration;
+}
+
+float ARGX_CharacterBase::GetCurrentGravityScale() const
+{
+	return GravityScale;
+}
+
+void ARGX_CharacterBase::SetCurrentGravityScale(float Scale)
+{
+	GravityScale = Scale;
+}
+
 float ARGX_CharacterBase::GetHealth() const
 {
 	const URGX_AttributeSet* attrSet = GetAbilitySystemComponent()->GetSet<URGX_AttributeSet>();

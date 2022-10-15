@@ -47,7 +47,7 @@ void URGX_CameraControllerComponent::TickComponent(float DeltaTime, ELevelTick T
 
 	CalculateSpringArmDistance(targets, DeltaTime);
 
-	if (bTargetingIsActive)
+	if (bTargetingEnabled)
 	{
 		UpdateTargeting(targets, DeltaTime);
 	}
@@ -396,31 +396,31 @@ float URGX_CameraControllerComponent::CalculateDotProduct(const FVector& SourceL
 
 void URGX_CameraControllerComponent::ToggleTargeting()
 {
-	if (bTargetingIsActive)
+	if (bTargetingEnabled)
 	{
-		bTargetingIsActive = false;
+		bTargetingEnabled = false;
 		SetTarget(nullptr);
 	}
 	else
 	{
-		bTargetingIsActive = true;
+		bTargetingEnabled = true;
 	}
 }
 
 void URGX_CameraControllerComponent::EnableTargeting()
 {
-	bTargetingIsActive = true;
+	bTargetingEnabled = true;
 }
 
 void URGX_CameraControllerComponent::DisableTargeting()
 {
-	bTargetingIsActive = false;
+	bTargetingEnabled = false;
 	SetTarget(nullptr);
 }
 
 void URGX_CameraControllerComponent::CheckYawInput(float Rate)
 {
-	if (bTargetingIsActive)
+	if (bTargetingEnabled)
 	{
 		if (bFindNearestTargetExecuted)
 		{
@@ -446,7 +446,7 @@ void URGX_CameraControllerComponent::CheckYawInput(float Rate)
 
 void URGX_CameraControllerComponent::TargetLeft()
 {
-	if (bTargetingIsActive)
+	if (bTargetingEnabled)
 	{
 		FindNearestTargetUsingSphere(false);
 	}
@@ -454,7 +454,7 @@ void URGX_CameraControllerComponent::TargetLeft()
 
 void URGX_CameraControllerComponent::TargetRight()
 {
-	if (bTargetingIsActive)
+	if (bTargetingEnabled)
 	{
 		FindNearestTargetUsingSphere(true);
 	}

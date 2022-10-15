@@ -41,7 +41,7 @@ void URGX_AT_RotateAndMoveCharacter::TickTask(float DeltaTime)
 	if (FVector::Dist(Attacker->GetActorLocation(), TargetLocation) < 200.0)
 		return;
 
-	const FVector NewLocation = Attacker->GetActorLocation() + Attacker->GetActorForwardVector() * Attacker->MoveSpeed * DeltaTime;
+	const FVector NewLocation = Attacker->GetActorLocation() + Attacker->GetActorForwardVector() * Attacker->GetCurrentMaxSpeed() * DeltaTime;
 	Attacker->SetActorLocation(NewLocation);
 }
 

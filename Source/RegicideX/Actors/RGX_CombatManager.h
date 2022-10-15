@@ -5,9 +5,10 @@
 #include "CoreMinimal.h"
 #include <functional>
 #include "GameFramework/Actor.h"
+#include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 #include "RGX_CombatManager.generated.h"
 
-class ARGX_EnemyBase;
+//class ARGX_EnemyBase;
 class ARGX_EnemyBaseController;
 class ARGX_PlayerCharacter;
 

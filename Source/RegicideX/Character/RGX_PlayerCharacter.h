@@ -78,6 +78,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseLookUpRate;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Strafing)
+	float StrafingSpeed = 400.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Strafing)
+	float StrafingAcceleration = 2000.f;
+
 	// TODO [REFACTOR]: Move this to AbilitySystemComponent.
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<FGameplayTag> PowerSkills;
@@ -115,6 +121,9 @@ public:
 	UPROPERTY()
 	bool bIsBraking;
 
+	UPROPERTY()
+	bool bIsStrafing = false;
+
 	void BeginPlay() override;
 
 	void Tick(float DeltaTime) override;
@@ -144,6 +153,8 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	void RotatePlayerTowardsInput();
+
+	float GetCurrentMaxSpeed() const override;
 
 	/** Events called from attribute set changes to decouple the logic. They call BP events. */
 	virtual void HandleDamage(
@@ -229,12 +240,17 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void OnCapsuleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
+	UFUNCTION()
+	void OnTargetUpdatedImpl(ARGX_EnemyBase* NewTarget);
+
 protected:
 	// --- APawn interface ---
 	void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	void PossessedBy(AController* NewController) override;
 	// -----------------------
+
+	void RotateToTarget(float DeltaTime);
 
 	// FGenericTeamId interface
 	void SetGenericTeamId(const FGenericTeamId& TeamID) override;

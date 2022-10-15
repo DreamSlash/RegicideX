@@ -117,7 +117,7 @@ void ARGX_EnemyBase::MoveToTarget(float DeltaTime, FVector TargetPos)
 	{
 		const FVector MyFront = this->GetActorForwardVector();
 		const FVector CurrentLocation = this->GetActorLocation();
-		FVector NewLocation = CurrentLocation + MyFront * MoveSpeed * DeltaTime;
+		FVector NewLocation = CurrentLocation + MyFront * GetCurrentMaxSpeed() * DeltaTime;
 		this->SetActorLocation(NewLocation);
 	}
 }
@@ -263,7 +263,7 @@ void ARGX_EnemyBase::CheckIfHasLostSightOfPlayer()
 		if (RegainSightCos < Dot)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Has Regained Sight"));
-			GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
+			GetCharacterMovement()->MaxWalkSpeed = GetCurrentMaxSpeed();
 			bHasLostSightOfPlayer = false;
 		}
 	}
