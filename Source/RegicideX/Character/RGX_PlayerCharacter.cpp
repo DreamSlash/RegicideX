@@ -13,6 +13,7 @@
 #include "RegicideX/Components/RGX_HitboxComponent.h"
 #include "RegicideX/Components/RGX_InputHandlerComponent.h"
 #include "RegicideX/Components/RGX_InteractComponent.h"
+#include "RegicideX/Components/RGX_MovementAssistComponent.h"
 #include "RegicideX/GameplayFramework/RGX_PlayerState.h"
 #include "RegicideX/GAS/AttributeSets/RGX_MovementAttributeSet.h"
 #include "RegicideX/GAS/RGX_PayloadObjects.h"
@@ -71,6 +72,8 @@ ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 	InputHandlerComponent		= CreateDefaultSubobject<URGX_InputHandlerComponent>(TEXT("InputHandlerComponent"));
 	MovementAttributeSet		= CreateDefaultSubobject<URGX_MovementAttributeSet>(TEXT("MovementAttributeSet"));
 	InteractComponent			= CreateDefaultSubobject<URGX_InteractComponent>(TEXT("InteractComponent"));
+	MovementAssistComponent		= CreateDefaultSubobject<URGX_MovementAssistComponent>(TEXT("MovementAssistComponent"));
+
 	InteractComponent->InteractWidgetComponent = InteractWidgetComponent;
 
 	CameraControllerComponent->OnTargetUpdated.__Internal_AddDynamic(CombatAssistComponent, &URGX_CombatAssistComponent::SetTargetFromOutside, "SetTargetFromOutside");

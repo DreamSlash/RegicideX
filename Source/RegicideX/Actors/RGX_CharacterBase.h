@@ -77,7 +77,7 @@ public:
 	bool bCanRotate = true;
 
 	/** Vector in the direction the actor has to react when receiving damage*/
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	FVector HitReactDirection = FVector(0.0f);
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)

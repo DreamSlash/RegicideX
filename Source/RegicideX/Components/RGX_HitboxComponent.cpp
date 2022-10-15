@@ -222,7 +222,7 @@ void URGX_HitboxComponent::HandleOverlappedActor(AActor* OtherActor, UPrimitiveC
 	ARGX_CharacterBase* TargetCharacter = Cast<ARGX_CharacterBase>(OtherActor);
 	if (TargetCharacter != nullptr)
 	{
-		FVector Direction = OwnerActor->GetActorLocation() - TargetCharacter->GetActorLocation();
+		FVector Direction = TargetCharacter->GetActorLocation() - OwnerActor->GetActorLocation();
 		Direction.Normalize();
 		TargetCharacter->HitReactDirection = Direction;
 	}

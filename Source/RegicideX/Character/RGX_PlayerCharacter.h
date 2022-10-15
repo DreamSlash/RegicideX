@@ -56,6 +56,9 @@ class REGICIDEX_API ARGX_PlayerCharacter : public ARGX_CharacterBase
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class URGX_CameraControllerComponent* CameraControllerComponent = nullptr;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	class URGX_MovementAssistComponent* MovementAssistComponent = nullptr;
+
 	// Attributes ---------------
 	UPROPERTY()
 	URGX_MovementAttributeSet* MovementAttributeSet = nullptr;
