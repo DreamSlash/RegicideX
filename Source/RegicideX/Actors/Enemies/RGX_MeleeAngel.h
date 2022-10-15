@@ -7,8 +7,8 @@
 #include "RGX_MeleeAngel.generated.h"
 
 class URGX_MovementAssistComponent;
-
-
+class URGX_HitboxComponent;
+class USphereComponent;
 
 
 UCLASS()
@@ -21,22 +21,33 @@ public:
 	ARGX_MeleeAngel();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bLevitating = false;
+	bool bAtFloor = false;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bFlying = false;
-
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bCharging = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	bool bSweeping = false;
+	bool bTornadoActive = false;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	URGX_MovementAssistComponent* MovementAssistComponent;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector DivineDescentTargetLocation = FVector::ZeroVector;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector HeightGoal;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	URGX_HitboxComponent* BHHitboxComponent = nullptr;
+
+	UPROPERTY(EditAnywhere)
+	USphereComponent* TornadoSphereCollider = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TArray<FRGX_EffectContextContainer> TornadoEffectsToApply;
+
 protected:
 	FVector ChargeVelocity;
 
@@ -51,4 +62,10 @@ public:
 	FVector GetVelocity() const;
 
 	void SetChargeVelocity(const FVector NewChargeVelocity) { ChargeVelocity = NewChargeVelocity; }
+
+	UFUNCTION(BlueprintCallable)
+	void ApplyTornadoEffects(AActor* OtherActor);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void SetTornadoFXVisibility(bool Visible);
 };

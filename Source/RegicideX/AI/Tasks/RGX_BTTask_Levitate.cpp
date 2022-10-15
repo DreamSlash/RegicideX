@@ -43,7 +43,7 @@ EBTNodeResult::Type URGX_BTTask_Levitate::ExecuteTask(UBehaviorTreeComponent& Ow
 		5.0f
 	);*/
 
-	MeleeAngelPawn->bLevitating = true;
+	//MeleeAngelPawn->bLevitating = true;
 
 	bNotifyTick = true;
 	return EBTNodeResult::InProgress;
@@ -54,7 +54,7 @@ void URGX_BTTask_Levitate::TickTask(UBehaviorTreeComponent& OwnerComp, uint8* No
 	TaskTime += DeltaSeconds;
 
 	if (TaskTime >= MaxTime){
-		MeleeAngelPawn->bLevitating = false;
+		//MeleeAngelPawn->bLevitating = false;
 		TaskTime = 0.0f;
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
