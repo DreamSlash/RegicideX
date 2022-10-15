@@ -22,7 +22,7 @@ EBTNodeResult::Type URGX_BTTask_MeleeAngelCharge::ExecuteTask(UBehaviorTreeCompo
 
 	//Hitbox->ActivateEffect();
 
-	MeleeAngelPawn->bFlying = true;
+	//MeleeAngelPawn->bFlying = true;
 
 	MoveSpeed = MeleeAngelPawn->MoveSpeed;
 	GoalLocation = MeleeAngelPawn->TargetActor->GetActorLocation();
@@ -64,7 +64,7 @@ void URGX_BTTask_MeleeAngelCharge::TickTask(UBehaviorTreeComponent& OwnerComp, u
 	{
 		TaskTime = 0.0f;
 		MeleeAngelPawn->SetGravityScale(1.0);
-		MeleeAngelPawn->bFlying = false;
+		//MeleeAngelPawn->bFlying = false;
 		MeleeAngelPawn->bCharging = false;
 		MeleeAngelPawn->MoveSpeed = MoveSpeed;
 		FRotator Rotation = MeleeAngelPawn->GetActorRotation();

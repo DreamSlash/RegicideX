@@ -87,3 +87,18 @@ bool URGX_BlueprintLibrary::ConeCheck(ARGX_CharacterBase* OriginCharacter, AActo
 FName URGX_BlueprintLibrary::GetPackageFromLevelAsset(const TSoftObjectPtr<UWorld>& World) {
 	return *FPackageName::ObjectPathToPackageName(World.ToString());
 }
+
+bool URGX_BlueprintLibrary::TranslateCharacterMeshToPoint(ACharacter* Actor, FVector GoalPoint, float Alpha, float Tolerance)
+{
+	const FVector ActorLocation = Actor->GetMesh()->K2_GetComponentLocation();
+
+	if (FVector::Dist(ActorLocation, GoalPoint) <= Tolerance)
+	{
+		return true;
+	}
+
+	const FVector NewLocation = FMath::Lerp(ActorLocation, GoalPoint, Alpha);
+	Actor->GetMesh()->SetWorldLocation(NewLocation);
+
+	return false;
+}
