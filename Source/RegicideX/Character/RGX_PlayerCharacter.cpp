@@ -458,12 +458,13 @@ void ARGX_PlayerCharacter::TargetRight()
 
 void ARGX_PlayerCharacter::CheckBrake(float DeltaTime)
 {
-	return;
-
 	if (bIsBraking) return;
 
 	FVector LastInputDirection = GetLastMoveInputDirection();
 	FVector CurrentInputDirection = GetCurrentMoveInputDirection();
+
+	/*if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, CurrentInputDirection.ToString());*/
 
 	if (LastInputDirection.IsNearlyZero() || CurrentInputDirection.IsNearlyZero()) return;
 
@@ -471,12 +472,14 @@ void ARGX_PlayerCharacter::CheckBrake(float DeltaTime)
 	UE_LOG(LogTemp, Warning, TEXT("CurrentInputDirection: %f,%f,%f"), CurrentInputDirection.X, CurrentInputDirection.Y, CurrentInputDirection.Z);
 
 	const float Dot = FVector::DotProduct(LastInputDirection, CurrentInputDirection);
-	bool bDotCondition = Dot < 0.5f;
+	bool bDotCondition = Dot < -0.5f;
 	UE_LOG(LogTemp, Warning, TEXT("Dot: %f"), Dot);
 	//UE_LOG(LogTemp, Warning, TEXT("bDotCondition: %s"), bDotCondition ? TEXT("TRUE") : TEXT("FALSE"));
 	bool bVelocityThreshold = VelocityMagnitudeLastFrame > MinVelocityForBrake;
 	if (bDotCondition && bVelocityThreshold == true && GetCharacterMovement()->IsFalling() == false)
 	{
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Start Braking")));
 		StartBrake();	
 	}
 }
@@ -749,52 +752,46 @@ void ARGX_PlayerCharacter::HandleDamage(
 
 void ARGX_PlayerCharacter::MoveForward(float Value)
 {
-	if (bStaggered)
+	CurrentMoveInput.X = 0.0f;
+
+	const bool bIsControllerNull = Controller == nullptr;
+	const bool bIsAxisValueLesserThanThreshold = std::abs(Value) <= 0.0;
+	if (bStaggered || bIsControllerNull || bIsAxisValueLesserThanThreshold || bIgnoreInputMoveVector)
 		return;
 
-	if ((Controller != nullptr) && (Value != 0.0f) && !bIgnoreInputMoveVector)
-	{
-		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
+	// find out which way is forward
+	const FRotator Rotation = Controller->GetControlRotation();
+	const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
 
-		// get forward vector
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		// add movement in that direction
-		AddMovementInput(Direction, Value);
-		CurrentMoveInput.X = Value;
-		//UE_LOG(LogTemp, Warning, TEXT("CurrentMoveInput.X: %f"), CurrentMoveInput.X);
-	}
-	else
-	{
-		CurrentMoveInput.X = 0.0f;
-		//UE_LOG(LogTemp, Warning, TEXT("CurrentMoveInput.X: %f"), CurrentMoveInput.X);
-	}
+	// get forward vector
+	const FVector Direction = UKismetMathLibrary::GetForwardVector(YawRotation);
+	//const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	// add movement in that direction
+	AddMovementInput(Direction, Value);
+	CurrentMoveInput.X = Value;
+	//UE_LOG(LogTemp, Warning, TEXT("CurrentMoveInput.X: %f"), CurrentMoveInput.X);
 }
 
 void ARGX_PlayerCharacter::MoveRight(float Value)
 {
-	if (bStaggered)
+	CurrentMoveInput.Y = 0.0f;
+
+	const bool bIsControllerNull = Controller == nullptr;
+	const bool bIsAxisValueLesserThanThreshold = std::abs(Value) <= 0.0;
+	if (bStaggered || bIsControllerNull || bIsAxisValueLesserThanThreshold || bIgnoreInputMoveVector)
 		return;
 
-	if ((Controller != nullptr) && (Value != 0.0f) && !bIgnoreInputMoveVector)
-	{
-		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
+	// find out which way is forward
+	const FRotator Rotation = Controller->GetControlRotation();
+	const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
 
-		// get right vector
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		// add movement in that direction
-		AddMovementInput(Direction, Value);
-		CurrentMoveInput.Y = Value;
-		//UE_LOG(LogTemp, Warning, TEXT("CurrentMoveInput.Y: %f"), CurrentMoveInput.Y);
-	}
-	else
-	{
-		CurrentMoveInput.Y = 0.0f;
-		//UE_LOG(LogTemp, Warning, TEXT("CurrentMoveInput.Y: %f"), CurrentMoveInput.Y);
-	}
+	// get right vector
+	const FVector Direction = UKismetMathLibrary::GetRightVector(YawRotation);
+	//const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+	// add movement in that direction
+	AddMovementInput(Direction, Value);
+	CurrentMoveInput.Y = Value;
+	//UE_LOG(LogTemp, Warning, TEXT("CurrentMoveInput.Y: %f"), CurrentMoveInput.Y);
 }
 
 void ARGX_PlayerCharacter::TurnAtRate(float Rate)
