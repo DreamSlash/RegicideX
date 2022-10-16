@@ -69,6 +69,11 @@ public:
 	UPROPERTY(BlueprintAssignable)
 		FRGX_TargetUpdatedDelegate OnTargetUpdated;
 
+	UPROPERTY()
+		bool bTargetingEnabled = false;
+
+	UPROPERTY()
+		TWeakObjectPtr<ARGX_EnemyBase> CurrentTarget;
 
 protected:
 	// Called when the game starts
@@ -112,11 +117,8 @@ private:
 	UPROPERTY()
 	class ARGX_PlayerCharacter* Owner = nullptr;
 
-	TWeakObjectPtr<ARGX_EnemyBase> CurrentTarget;
-
 	float OriginalArmLength;
 
-	bool bTargetingIsActive = false;
 	bool bFindNearestTargetExecuted = false;
 
 };

@@ -5,6 +5,8 @@
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 #include "RGX_EnemyBaseController.generated.h"
 
+class UBehaviorTree;
+
 UENUM(BlueprintType)
 namespace ERGX_EnemyAIState
 {
@@ -31,6 +33,18 @@ namespace ERGX_StrafeDirection
 	};
 }
 
+USTRUCT(BlueprintType)
+struct FBehaviorPhaseInfo
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0.0", ClampMax = "1.0", UIMin = "0.0", UIMax = "1.0"))
+	float HealthThreshold = 1.0f;
+
+	UPROPERTY(EditAnywhere)
+	TMap<FGameplayTag, UBehaviorTree*> TreeByTag;
+};
+
 UCLASS()
 class REGICIDEX_API ARGX_EnemyBaseController : public AAIController
 {
@@ -51,6 +65,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float TimeConsecutiveHits = 1.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TArray<FBehaviorPhaseInfo> BehaviorPhases;
 
 	class ARGX_EnemyBase* Agent = nullptr;
 	class ARGX_CombatManager* CombatManager = nullptr;
@@ -76,10 +93,18 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void StartLogic();
 
+public:
+	void OnEnemyHealthChanged(float CurrentHealth, float MaxHealth);
+
 protected:
 	bool InitializeBlackboard(UBlackboardComponent& BlackboardComp, UBlackboardData& BlackboardAsset) override;
 
 private:
+	void UpdateDynamicBehavior(const FBehaviorPhaseInfo& PhaseInfo);
+
+private:
 	FTimerHandle TimerHandle;
+
+	uint32 BehaviorPhaseIndex = 0;
 
 };

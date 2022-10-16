@@ -25,6 +25,7 @@ UCLASS()
 class REGICIDEX_API ARGX_DistanceAngelController : public ARGX_EnemyBaseController
 {
 	GENERATED_BODY()
+
 public:
 	ARGX_DistanceAngelController(const FObjectInitializer& ObjectInitializer);
 
@@ -32,5 +33,9 @@ public:
 	void SetRandomLocationAroundTarget(float Distance);
 
 	UFUNCTION()
-		FVector GenerateRandomLocationAroundPoint(FVector Location, float Radius) const;
+	FVector GenerateRandomLocationAroundPoint(FVector Location, float Radius) const;
+
+protected:
+	void OnPossess(APawn* InPawn) override;
+
 };

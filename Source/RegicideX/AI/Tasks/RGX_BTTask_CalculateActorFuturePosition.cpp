@@ -78,7 +78,7 @@ FVector URGX_BTTask_CalculateActorFuturePosition::CalculateFuturePosition(UBehav
 	if (owner)
 	{
 		const float distance = FVector::Distance(owner->GetActorLocation(), Target->GetActorLocation());
-		const float timeToReachTarget = distance / owner->MoveSpeed;
+		const float timeToReachTarget = distance / owner->GetCurrentMaxSpeed();
 
 		const FVector targetVelocity = Target->GetVelocity();
 		const FVector futureTargetPosition = targetVelocity* timeToReachTarget;

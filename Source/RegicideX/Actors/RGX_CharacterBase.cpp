@@ -4,6 +4,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameplayAbilitySpec.h"
 #include "Camera/CameraShakeBase.h"
+#include "Kismet/KismetMathLibrary.h"
 
 ARGX_CharacterBase::ARGX_CharacterBase()
 {
@@ -56,6 +57,36 @@ void ARGX_CharacterBase::BeginPlay()
 UAbilitySystemComponent* ARGX_CharacterBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
+}
+
+float ARGX_CharacterBase::GetCurrentMaxSpeed() const
+{
+	return MoveSpeed;
+}
+
+void ARGX_CharacterBase::SetCurrentMaxSpeed(float Speed)
+{
+	MoveSpeed = Speed;
+}
+
+float ARGX_CharacterBase::GetCurrentMaxAcceleration() const
+{
+	return MaxAcceleration;
+}
+
+void ARGX_CharacterBase::SetCurrentMaxAcceleration(float Acceleration)
+{
+	MaxAcceleration = Acceleration;
+}
+
+float ARGX_CharacterBase::GetCurrentGravityScale() const
+{
+	return GravityScale;
+}
+
+void ARGX_CharacterBase::SetCurrentGravityScale(float Scale)
+{
+	GravityScale = Scale;
 }
 
 float ARGX_CharacterBase::GetHealth() const
@@ -132,6 +163,19 @@ void ARGX_CharacterBase::OnBeingLaunched(
 	LaunchCharacter(LaunchForce, bOverrideXY, bOverrideZ);
 
 	// TODO: If the character is in air maybe it is mandatory to apply a minimum Z force due to an Unreal bug
+}
+
+void ARGX_CharacterBase::RotateDirectlyTowardsActor(const AActor* Target)
+{
+	const FRotator selfRotation = GetActorRotation();
+
+	const FVector selfLocation = GetActorLocation();
+	const FVector targetLocation = Target->GetActorLocation();
+	const FRotator lookRotation = UKismetMathLibrary::FindLookAtRotation(selfLocation, targetLocation);
+
+	const FRotator desiredRotation = FRotator(selfRotation.Pitch, lookRotation.Yaw, selfRotation.Roll);
+
+	SetActorRotation(desiredRotation);
 }
 
 void ARGX_CharacterBase::OnHitboxHit(UGameplayAbility* MeleeAbility, FGameplayEventData EventData, TSubclassOf<UCameraShakeBase> CameraShakeClass)

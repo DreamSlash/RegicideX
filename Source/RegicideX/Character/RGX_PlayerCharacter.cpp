@@ -13,8 +13,10 @@
 #include "RegicideX/Components/RGX_HitboxComponent.h"
 #include "RegicideX/Components/RGX_InputHandlerComponent.h"
 #include "RegicideX/Components/RGX_InteractComponent.h"
+#include "RegicideX/Components/RGX_MovementAssistComponent.h"
 #include "RegicideX/GameplayFramework/RGX_PlayerState.h"
 #include "RegicideX/GAS/AttributeSets/RGX_MovementAttributeSet.h"
+#include "RegicideX/GAS/AttributeSets/RGX_ManaAttributeSet.h"
 #include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RegicideX/Notifies/RGX_ANS_JumpComboSection.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -70,10 +72,11 @@ ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 	CombatAssistComponent		= CreateDefaultSubobject<URGX_CombatAssistComponent>(TEXT("CombatAssistComponent"));
 	InputHandlerComponent		= CreateDefaultSubobject<URGX_InputHandlerComponent>(TEXT("InputHandlerComponent"));
 	MovementAttributeSet		= CreateDefaultSubobject<URGX_MovementAttributeSet>(TEXT("MovementAttributeSet"));
+	ManaAttributeSet			= CreateDefaultSubobject<URGX_ManaAttributeSet>(TEXT("ManaAttributeSet"));
 	InteractComponent			= CreateDefaultSubobject<URGX_InteractComponent>(TEXT("InteractComponent"));
-	InteractComponent->InteractWidgetComponent = InteractWidgetComponent;
+	MovementAssistComponent		= CreateDefaultSubobject<URGX_MovementAssistComponent>(TEXT("MovementAssistComponent"));
 
-	CameraControllerComponent->OnTargetUpdated.__Internal_AddDynamic(CombatAssistComponent, &URGX_CombatAssistComponent::SetTargetFromOutside, "SetTargetFromOutside");
+	InteractComponent->InteractWidgetComponent = InteractWidgetComponent;
 }
 
 void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -119,6 +122,27 @@ void ARGX_PlayerCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	AddGameplayTag(FGameplayTag::RequestGameplayTag("PossessedBy.Player"));
+}
+
+void ARGX_PlayerCharacter::RotateToTarget(float DeltaTime)
+{
+	if (bIsStrafing)
+	{
+		if (CameraControllerComponent->CurrentTarget.IsValid())
+		{
+			const ARGX_EnemyBase* target = CameraControllerComponent->CurrentTarget.Get();
+
+			const FVector selfLocation = GetActorLocation();
+			const FVector targetLocation = target->GetActorLocation();
+
+			const FRotator selfRotation = GetActorRotation();
+			const FRotator lookRotation = UKismetMathLibrary::FindLookAtRotation(selfLocation, targetLocation);
+			const FRotator desiredRotation = FRotator(selfRotation.Pitch, lookRotation.Yaw, selfRotation.Roll);
+
+			const FRotator finalRotation = FMath::Lerp(selfRotation, desiredRotation, DeltaTime);
+			SetActorRotation(finalRotation);
+		}
+	}
 }
 
 void ARGX_PlayerCharacter::SetGenericTeamId(const FGenericTeamId& TeamID)
@@ -347,6 +371,28 @@ void ARGX_PlayerCharacter::HandleAction(const ERGX_PlayerActions Action)
 	}
 }
 
+void ARGX_PlayerCharacter::UpdateMana(const float AddedMana)
+{
+	if (ManaAttributeSet->GetMana() + AddedMana > ManaAttributeSet->GetMaxMana())
+		{
+		if (ManaAttributeSet->GetManaStack() == ManaAttributeSet->GetMaxManaStack())
+		{
+			ManaAttributeSet->SetMana(ManaAttributeSet->GetMaxMana());
+		}
+		else
+		{
+			ManaAttributeSet->SetManaStack(ManaAttributeSet->GetManaStack() + 1);
+			ManaAttributeSet->SetMana(0.0f);
+			OnAddStack();
+		}
+	}
+	else
+	{
+		ManaAttributeSet->SetMana(ManaAttributeSet->GetMana() + AddedMana);
+	}
+	OnUpdateMana();
+}
+
 void ARGX_PlayerCharacter::OnHitboxHit(UGameplayAbility* GameplayAbility, FGameplayEventData EventData, TSubclassOf<UCameraShakeBase> CameraShakeClass)
 {
 	URGX_MeleeAttackAbility* MeleeAbility = Cast<URGX_MeleeAttackAbility>(GameplayAbility);
@@ -458,12 +504,13 @@ void ARGX_PlayerCharacter::TargetRight()
 
 void ARGX_PlayerCharacter::CheckBrake(float DeltaTime)
 {
-	return;
-
-	if (bIsBraking) return;
+	if (bIsBraking || bIsStrafing) return;
 
 	FVector LastInputDirection = GetLastMoveInputDirection();
 	FVector CurrentInputDirection = GetCurrentMoveInputDirection();
+
+	/*if (GEngine)
+		GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, CurrentInputDirection.ToString());*/
 
 	if (LastInputDirection.IsNearlyZero() || CurrentInputDirection.IsNearlyZero()) return;
 
@@ -471,12 +518,14 @@ void ARGX_PlayerCharacter::CheckBrake(float DeltaTime)
 	UE_LOG(LogTemp, Warning, TEXT("CurrentInputDirection: %f,%f,%f"), CurrentInputDirection.X, CurrentInputDirection.Y, CurrentInputDirection.Z);
 
 	const float Dot = FVector::DotProduct(LastInputDirection, CurrentInputDirection);
-	bool bDotCondition = Dot < 0.5f;
+	bool bDotCondition = Dot < -0.5f;
 	UE_LOG(LogTemp, Warning, TEXT("Dot: %f"), Dot);
 	//UE_LOG(LogTemp, Warning, TEXT("bDotCondition: %s"), bDotCondition ? TEXT("TRUE") : TEXT("FALSE"));
 	bool bVelocityThreshold = VelocityMagnitudeLastFrame > MinVelocityForBrake;
 	if (bDotCondition && bVelocityThreshold == true && GetCharacterMovement()->IsFalling() == false)
 	{
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Start Braking")));
 		StartBrake();	
 	}
 }
@@ -503,7 +552,7 @@ void ARGX_PlayerCharacter::EndBrake()
 	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
 	if (CharacterMovementComponent)
 	{
-		CharacterMovementComponent->MaxWalkSpeed = MoveSpeed;
+		CharacterMovementComponent->MaxWalkSpeed = GetCurrentMaxSpeed();
 		CharacterMovementComponent->RotationRate.Yaw = 540.0f;
 	}
 
@@ -591,6 +640,9 @@ void ARGX_PlayerCharacter::BeginPlay()
 
 	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ARGX_PlayerCharacter::OnCapsuleHit);
 
+	CameraControllerComponent->OnTargetUpdated.__Internal_AddUniqueDynamic(this, &ARGX_PlayerCharacter::OnTargetUpdatedImpl, "OnTargetUpdatedImpl");
+	CameraControllerComponent->OnTargetUpdated.__Internal_AddUniqueDynamic(CombatAssistComponent, &URGX_CombatAssistComponent::SetTargetFromOutside, "SetTargetFromOutside");
+
 	//LevelUp(Level);
 	//AbilitySystemComponent->ApplyGameplayEffectToSelf()
 }
@@ -619,6 +671,7 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 	//UE_LOG(LogTemp, Warning, TEXT("bIgnoreInputMoveVector: %s"), bIgnoreInputMoveVector ? TEXT("TRUE") : TEXT("FALSE"));
 
 	CheckBrake(DeltaTime);
+	RotateToTarget(DeltaTime);
 	
 	VelocityMagnitudeLastFrame = GetVelocity().Size();
 	LastMoveInput = CurrentMoveInput;
@@ -698,6 +751,11 @@ void ARGX_PlayerCharacter::RotatePlayerTowardsInput()
 	}
 }
 
+float ARGX_PlayerCharacter::GetCurrentMaxSpeed() const
+{
+	return bIsStrafing ? StrafingSpeed : MoveSpeed;
+}
+
 void ARGX_PlayerCharacter::HandleDamage(
 	float DamageAmount, 
 	const FHitResult& HitInfo, 
@@ -749,52 +807,46 @@ void ARGX_PlayerCharacter::HandleDamage(
 
 void ARGX_PlayerCharacter::MoveForward(float Value)
 {
-	if (bStaggered)
+	CurrentMoveInput.X = 0.0f;
+
+	const bool bIsControllerNull = Controller == nullptr;
+	const bool bIsAxisValueLesserThanThreshold = std::abs(Value) <= 0.0;
+	if (bStaggered || bIsControllerNull || bIsAxisValueLesserThanThreshold || bIgnoreInputMoveVector)
 		return;
 
-	if ((Controller != nullptr) && (Value != 0.0f) && !bIgnoreInputMoveVector)
-	{
-		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
+	// find out which way is forward
+	const FRotator Rotation = Controller->GetControlRotation();
+	const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
 
-		// get forward vector
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		// add movement in that direction
-		AddMovementInput(Direction, Value);
-		CurrentMoveInput.X = Value;
-		//UE_LOG(LogTemp, Warning, TEXT("CurrentMoveInput.X: %f"), CurrentMoveInput.X);
-	}
-	else
-	{
-		CurrentMoveInput.X = 0.0f;
-		//UE_LOG(LogTemp, Warning, TEXT("CurrentMoveInput.X: %f"), CurrentMoveInput.X);
-	}
+	// get forward vector
+	const FVector Direction = UKismetMathLibrary::GetForwardVector(YawRotation);
+	//const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+	// add movement in that direction
+	AddMovementInput(Direction, Value);
+	CurrentMoveInput.X = Value;
+	//UE_LOG(LogTemp, Warning, TEXT("CurrentMoveInput.X: %f"), CurrentMoveInput.X);
 }
 
 void ARGX_PlayerCharacter::MoveRight(float Value)
 {
-	if (bStaggered)
+	CurrentMoveInput.Y = 0.0f;
+
+	const bool bIsControllerNull = Controller == nullptr;
+	const bool bIsAxisValueLesserThanThreshold = std::abs(Value) <= 0.0;
+	if (bStaggered || bIsControllerNull || bIsAxisValueLesserThanThreshold || bIgnoreInputMoveVector)
 		return;
 
-	if ((Controller != nullptr) && (Value != 0.0f) && !bIgnoreInputMoveVector)
-	{
-		// find out which way is forward
-		const FRotator Rotation = Controller->GetControlRotation();
-		const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
+	// find out which way is forward
+	const FRotator Rotation = Controller->GetControlRotation();
+	const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
 
-		// get right vector
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		// add movement in that direction
-		AddMovementInput(Direction, Value);
-		CurrentMoveInput.Y = Value;
-		//UE_LOG(LogTemp, Warning, TEXT("CurrentMoveInput.Y: %f"), CurrentMoveInput.Y);
-	}
-	else
-	{
-		CurrentMoveInput.Y = 0.0f;
-		//UE_LOG(LogTemp, Warning, TEXT("CurrentMoveInput.Y: %f"), CurrentMoveInput.Y);
-	}
+	// get right vector
+	const FVector Direction = UKismetMathLibrary::GetRightVector(YawRotation);
+	//const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
+	// add movement in that direction
+	AddMovementInput(Direction, Value);
+	CurrentMoveInput.Y = Value;
+	//UE_LOG(LogTemp, Warning, TEXT("CurrentMoveInput.Y: %f"), CurrentMoveInput.Y);
 }
 
 void ARGX_PlayerCharacter::TurnAtRate(float Rate)
@@ -866,6 +918,24 @@ void ARGX_PlayerCharacter::OnCapsuleHit(UPrimitiveComponent* HitComponent, AActo
 				OtherACS->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Launched")), &EventData);
 			}
 		}
+	}
+}
+
+void ARGX_PlayerCharacter::OnTargetUpdatedImpl(ARGX_EnemyBase* NewTarget)
+{
+	bIsStrafing = NewTarget != nullptr;
+
+	if (bIsStrafing)
+	{
+		GetCharacterMovement()->bOrientRotationToMovement = false;
+		GetCharacterMovement()->MaxWalkSpeed = StrafingSpeed;
+		GetCharacterMovement()->MaxAcceleration = StrafingAcceleration;
+	}
+	else
+	{
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+		GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
+		GetCharacterMovement()->MaxAcceleration = MaxAcceleration;
 	}
 }
 

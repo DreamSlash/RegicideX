@@ -41,7 +41,7 @@ private:
 
 	bool bFinished = false;
 	bool bTargetSelected = false;
-
+	bool bAdditionalTranslationEnded = false;
 	FVector StartLocation = FVector::ZeroVector;
 	FVector TargetLocation = FVector::ZeroVector;
 
