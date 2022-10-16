@@ -84,6 +84,9 @@ public:
 		URGX_LaunchEventDataAsset* LaunchPayload,
 		float LaunchDelay = 0.2f);
 
+	UFUNCTION(BlueprintCallable)
+	void RotateDirectlyTowardsActor(const AActor* Target);
+
 	virtual void OnHitboxHit(UGameplayAbility* MeleeAbility, FGameplayEventData EventData, TSubclassOf<class UCameraShakeBase> CameraShakeClass);
 
 public:

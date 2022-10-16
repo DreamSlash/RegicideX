@@ -83,6 +83,9 @@ public:
 	UPROPERTY()
 	TArray<FRGX_EnemyCombatItem> EnemyRangedItems;
 
+	UPROPERTY()
+	TWeakObjectPtr<ARGX_PlayerCharacter> Player;
+
 protected:
 	// Called when the game starts or when spawned
 	void BeginPlay() override;
@@ -114,9 +117,6 @@ private:
 	int32 FindNewAttacker(const TArray<int32>& candidates, const TArray<FRGX_EnemyCombatItem>& EnemyItems) const;
 
 private:
-	UPROPERTY()
-	TWeakObjectPtr<ARGX_PlayerCharacter> Player;
-
 	/*TArray<int32> PeasantSlots;
 	TArray<int32> AngelSlots;
 
