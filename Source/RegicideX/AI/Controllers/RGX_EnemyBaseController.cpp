@@ -19,6 +19,7 @@
 
 #include "Navigation/CrowdFollowingComponent.h"
 
+#include "RegicideX/Character/RGX_PlayerCharacter.h"
 #include "RegicideX/Actors/RGX_CombatManager.h"
 
 //#pragma optimize("", off)
@@ -143,7 +144,10 @@ bool ARGX_EnemyBaseController::InitializeBlackboard(UBlackboardComponent& Blackb
 		StrafeDirectionKeyId = Blackboard->GetKeyID("StrafeDirection");
 		StrafeLocationKeyId = Blackboard->GetKeyID("StrafeLocation");
 
-		BlackboardComp.SetValue<UBlackboardKeyType_Object>(TargetKeyId, Agent->TargetActor);
+		// [SM] Hack to get the player for angels, as they don't use the combat manager directly
+		AActor* player = Agent->TargetActor != nullptr ? Agent->TargetActor : CombatManager->Player.Get();
+
+		BlackboardComp.SetValue<UBlackboardKeyType_Object>(TargetKeyId, player);
 		BlackboardComp.SetValue<UBlackboardKeyType_Enum>(AIStateKeyId, ERGX_EnemyAIState::None);
 		BlackboardComp.SetValue<UBlackboardKeyType_Enum>(StrafeDirectionKeyId, ERGX_StrafeDirection::None);
 	}
