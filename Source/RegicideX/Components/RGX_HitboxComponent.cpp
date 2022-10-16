@@ -232,8 +232,8 @@ void URGX_HitboxComponent::HandleOverlappedActor(AActor* OtherActor, UPrimitiveC
 		SendCollisionEvents(OwnerActor, OtherActor, bFromSweep, SweepResult);
 
 		ARGX_PlayerCharacter* Player = Cast<ARGX_PlayerCharacter>(OwnerActor);
-		if(Player)
-			OnHitting();
+		if (Player)
+			Player->UpdateMana();
 	}
 
 	HandleDestroyOnOverlap(OtherActor, Attitude, bCanApplyEffects);

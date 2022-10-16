@@ -16,6 +16,7 @@ class URGX_ComboSystemComponent;
 class URGX_CombatAssistComponent;
 class URGX_InputHandlerComponent;
 class URGX_MovementAttributeSet;
+class URGX_ManaAttributeSet;
 class URGX_InteractComponent;
 class URGX_LaunchEventDataAsset;
 class UGameplayEffect;
@@ -62,6 +63,9 @@ class REGICIDEX_API ARGX_PlayerCharacter : public ARGX_CharacterBase
 	// Attributes ---------------
 	UPROPERTY()
 	URGX_MovementAttributeSet* MovementAttributeSet = nullptr;
+
+	UPROPERTY()
+	URGX_ManaAttributeSet* ManaAttributeSet = nullptr;
 
 	// --------------------------
 public:
@@ -312,6 +316,16 @@ public:
 	/* Input Handler calls this to let the player handle the action */
 	UFUNCTION()
 	void HandleAction(const ERGX_PlayerActions Action);
+
+	/* Called when hitting an enemy. By default mana is increased by 10.0f but we should change such input mana calculations when needed.*/
+	UFUNCTION()
+	void UpdateMana(const float AddedMana = 10.0f);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnAddStack();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnUpdateMana();
 
 	virtual void OnHitboxHit(UGameplayAbility* MeleeAbility, FGameplayEventData EventData, TSubclassOf<UCameraShakeBase> CameraShakeClass) override;
 
