@@ -223,7 +223,8 @@ void URGX_HitboxComponent::HandleOverlappedActor(AActor* OtherActor, UPrimitiveC
 	if (TargetCharacter != nullptr)
 	{
 		FVector Direction = TargetCharacter->GetActorLocation() - OwnerActor->GetActorLocation();
-		TargetCharacter->HitReactDirection = Direction.GetSafeNormal2D();;
+		TargetCharacter->HitReactDirection = Direction.GetSafeNormal2D();
+		TargetCharacter->RotateDirectlyTowardsActor(OwnerActor);
 	}
 
 	if (Attitude == TeamToApply && bCanApplyEffects)
