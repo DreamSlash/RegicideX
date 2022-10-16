@@ -16,6 +16,7 @@
 #include "RegicideX/Components/RGX_MovementAssistComponent.h"
 #include "RegicideX/GameplayFramework/RGX_PlayerState.h"
 #include "RegicideX/GAS/AttributeSets/RGX_MovementAttributeSet.h"
+#include "RegicideX/GAS/AttributeSets/RGX_ManaAttributeSet.h"
 #include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RegicideX/Notifies/RGX_ANS_JumpComboSection.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -71,6 +72,7 @@ ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 	CombatAssistComponent		= CreateDefaultSubobject<URGX_CombatAssistComponent>(TEXT("CombatAssistComponent"));
 	InputHandlerComponent		= CreateDefaultSubobject<URGX_InputHandlerComponent>(TEXT("InputHandlerComponent"));
 	MovementAttributeSet		= CreateDefaultSubobject<URGX_MovementAttributeSet>(TEXT("MovementAttributeSet"));
+	ManaAttributeSet			= CreateDefaultSubobject<URGX_ManaAttributeSet>(TEXT("ManaAttributeSet"));
 	InteractComponent			= CreateDefaultSubobject<URGX_InteractComponent>(TEXT("InteractComponent"));
 	MovementAssistComponent		= CreateDefaultSubobject<URGX_MovementAssistComponent>(TEXT("MovementAssistComponent"));
 
@@ -367,6 +369,28 @@ void ARGX_PlayerCharacter::HandleAction(const ERGX_PlayerActions Action)
 		//UE_LOG(LogTemp, Warning, TEXT("Manuela\n"));
 		break;
 	}
+}
+
+void ARGX_PlayerCharacter::UpdateMana(const float AddedMana)
+{
+	if (ManaAttributeSet->GetMana() + AddedMana > ManaAttributeSet->GetMaxMana())
+		{
+		if (ManaAttributeSet->GetManaStack() == ManaAttributeSet->GetMaxManaStack())
+		{
+			ManaAttributeSet->SetMana(ManaAttributeSet->GetMaxMana());
+		}
+		else
+		{
+			ManaAttributeSet->SetManaStack(ManaAttributeSet->GetManaStack() + 1);
+			ManaAttributeSet->SetMana(0.0f);
+			OnAddStack();
+		}
+	}
+	else
+	{
+		ManaAttributeSet->SetMana(ManaAttributeSet->GetMana() + AddedMana);
+	}
+	OnUpdateMana();
 }
 
 void ARGX_PlayerCharacter::OnHitboxHit(UGameplayAbility* GameplayAbility, FGameplayEventData EventData, TSubclassOf<UCameraShakeBase> CameraShakeClass)
