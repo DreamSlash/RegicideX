@@ -216,11 +216,11 @@ void URGX_HitboxComponent::HandleOverlappedActor(AActor* OtherActor, UPrimitiveC
 		OwnerActor = GetOwner();
 	}
 
+	if (OwnerActor == OtherActor) return;
+
 	bool bCanApplyEffects = CheckCanApplyEffect(OtherActor);
 	ETeamAttitude::Type Attitude = FGenericTeamId::GetAttitude(OwnerActor, OtherActor);
-
-	ARGX_CharacterBase* TargetCharacter = Cast<ARGX_CharacterBase>(OtherActor);
-	if (TargetCharacter != nullptr)
+	if (ARGX_CharacterBase* TargetCharacter = Cast<ARGX_CharacterBase>(OtherActor))
 	{
 		FVector Direction = TargetCharacter->GetActorLocation() - OwnerActor->GetActorLocation();
 		TargetCharacter->HitReactDirection = Direction.GetSafeNormal2D();
