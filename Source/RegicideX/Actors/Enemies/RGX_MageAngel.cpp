@@ -44,14 +44,3 @@ void ARGX_MageAngel::HandleDamage(float DamageAmount
 {
 	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser, HitReactFlag);
 }
-
-void ARGX_MageAngel::HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags)
-{
-	if (ARGX_MageAngelController* controller = GetController<ARGX_MageAngelController>())
-	{
-		const float currentHealth = GetHealth();
-		const float maxHealth = GetMaxHealth();
-
-		controller->OnMageAngelHealthChanged(currentHealth, maxHealth);
-	}
-}

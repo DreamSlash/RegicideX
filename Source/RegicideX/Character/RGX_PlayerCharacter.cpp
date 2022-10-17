@@ -13,8 +13,10 @@
 #include "RegicideX/Components/RGX_HitboxComponent.h"
 #include "RegicideX/Components/RGX_InputHandlerComponent.h"
 #include "RegicideX/Components/RGX_InteractComponent.h"
+#include "RegicideX/Components/RGX_MovementAssistComponent.h"
 #include "RegicideX/GameplayFramework/RGX_PlayerState.h"
 #include "RegicideX/GAS/AttributeSets/RGX_MovementAttributeSet.h"
+#include "RegicideX/GAS/AttributeSets/RGX_ManaAttributeSet.h"
 #include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RegicideX/Notifies/RGX_ANS_JumpComboSection.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -70,10 +72,11 @@ ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 	CombatAssistComponent		= CreateDefaultSubobject<URGX_CombatAssistComponent>(TEXT("CombatAssistComponent"));
 	InputHandlerComponent		= CreateDefaultSubobject<URGX_InputHandlerComponent>(TEXT("InputHandlerComponent"));
 	MovementAttributeSet		= CreateDefaultSubobject<URGX_MovementAttributeSet>(TEXT("MovementAttributeSet"));
+	ManaAttributeSet			= CreateDefaultSubobject<URGX_ManaAttributeSet>(TEXT("ManaAttributeSet"));
 	InteractComponent			= CreateDefaultSubobject<URGX_InteractComponent>(TEXT("InteractComponent"));
-	InteractComponent->InteractWidgetComponent = InteractWidgetComponent;
+	MovementAssistComponent		= CreateDefaultSubobject<URGX_MovementAssistComponent>(TEXT("MovementAssistComponent"));
 
-	CameraControllerComponent->OnTargetUpdated.__Internal_AddDynamic(CombatAssistComponent, &URGX_CombatAssistComponent::SetTargetFromOutside, "SetTargetFromOutside");
+	InteractComponent->InteractWidgetComponent = InteractWidgetComponent;
 }
 
 void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -119,6 +122,27 @@ void ARGX_PlayerCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	AddGameplayTag(FGameplayTag::RequestGameplayTag("PossessedBy.Player"));
+}
+
+void ARGX_PlayerCharacter::RotateToTarget(float DeltaTime)
+{
+	if (bIsStrafing)
+	{
+		if (CameraControllerComponent->CurrentTarget.IsValid())
+		{
+			const ARGX_EnemyBase* target = CameraControllerComponent->CurrentTarget.Get();
+
+			const FVector selfLocation = GetActorLocation();
+			const FVector targetLocation = target->GetActorLocation();
+
+			const FRotator selfRotation = GetActorRotation();
+			const FRotator lookRotation = UKismetMathLibrary::FindLookAtRotation(selfLocation, targetLocation);
+			const FRotator desiredRotation = FRotator(selfRotation.Pitch, lookRotation.Yaw, selfRotation.Roll);
+
+			const FRotator finalRotation = FMath::Lerp(selfRotation, desiredRotation, DeltaTime);
+			SetActorRotation(finalRotation);
+		}
+	}
 }
 
 void ARGX_PlayerCharacter::SetGenericTeamId(const FGenericTeamId& TeamID)
@@ -347,6 +371,28 @@ void ARGX_PlayerCharacter::HandleAction(const ERGX_PlayerActions Action)
 	}
 }
 
+void ARGX_PlayerCharacter::UpdateMana(const float AddedMana)
+{
+	if (ManaAttributeSet->GetMana() + AddedMana > ManaAttributeSet->GetMaxMana())
+		{
+		if (ManaAttributeSet->GetManaStack() == ManaAttributeSet->GetMaxManaStack())
+		{
+			ManaAttributeSet->SetMana(ManaAttributeSet->GetMaxMana());
+		}
+		else
+		{
+			ManaAttributeSet->SetManaStack(ManaAttributeSet->GetManaStack() + 1);
+			ManaAttributeSet->SetMana(0.0f);
+			OnAddStack();
+		}
+	}
+	else
+	{
+		ManaAttributeSet->SetMana(ManaAttributeSet->GetMana() + AddedMana);
+	}
+	OnUpdateMana();
+}
+
 void ARGX_PlayerCharacter::OnHitboxHit(UGameplayAbility* GameplayAbility, FGameplayEventData EventData, TSubclassOf<UCameraShakeBase> CameraShakeClass)
 {
 	URGX_MeleeAttackAbility* MeleeAbility = Cast<URGX_MeleeAttackAbility>(GameplayAbility);
@@ -458,7 +504,7 @@ void ARGX_PlayerCharacter::TargetRight()
 
 void ARGX_PlayerCharacter::CheckBrake(float DeltaTime)
 {
-	if (bIsBraking) return;
+	if (bIsBraking || bIsStrafing) return;
 
 	FVector LastInputDirection = GetLastMoveInputDirection();
 	FVector CurrentInputDirection = GetCurrentMoveInputDirection();
@@ -506,7 +552,7 @@ void ARGX_PlayerCharacter::EndBrake()
 	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
 	if (CharacterMovementComponent)
 	{
-		CharacterMovementComponent->MaxWalkSpeed = MoveSpeed;
+		CharacterMovementComponent->MaxWalkSpeed = GetCurrentMaxSpeed();
 		CharacterMovementComponent->RotationRate.Yaw = 540.0f;
 	}
 
@@ -594,6 +640,9 @@ void ARGX_PlayerCharacter::BeginPlay()
 
 	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ARGX_PlayerCharacter::OnCapsuleHit);
 
+	CameraControllerComponent->OnTargetUpdated.__Internal_AddUniqueDynamic(this, &ARGX_PlayerCharacter::OnTargetUpdatedImpl, "OnTargetUpdatedImpl");
+	CameraControllerComponent->OnTargetUpdated.__Internal_AddUniqueDynamic(CombatAssistComponent, &URGX_CombatAssistComponent::SetTargetFromOutside, "SetTargetFromOutside");
+
 	//LevelUp(Level);
 	//AbilitySystemComponent->ApplyGameplayEffectToSelf()
 }
@@ -622,6 +671,7 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 	//UE_LOG(LogTemp, Warning, TEXT("bIgnoreInputMoveVector: %s"), bIgnoreInputMoveVector ? TEXT("TRUE") : TEXT("FALSE"));
 
 	CheckBrake(DeltaTime);
+	RotateToTarget(DeltaTime);
 	
 	VelocityMagnitudeLastFrame = GetVelocity().Size();
 	LastMoveInput = CurrentMoveInput;
@@ -699,6 +749,11 @@ void ARGX_PlayerCharacter::RotatePlayerTowardsInput()
 	{
 		SetActorRotation(InputDirection.Rotation());
 	}
+}
+
+float ARGX_PlayerCharacter::GetCurrentMaxSpeed() const
+{
+	return bIsStrafing ? StrafingSpeed : MoveSpeed;
 }
 
 void ARGX_PlayerCharacter::HandleDamage(
@@ -863,6 +918,24 @@ void ARGX_PlayerCharacter::OnCapsuleHit(UPrimitiveComponent* HitComponent, AActo
 				OtherACS->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("GameplayEvent.Launched")), &EventData);
 			}
 		}
+	}
+}
+
+void ARGX_PlayerCharacter::OnTargetUpdatedImpl(ARGX_EnemyBase* NewTarget)
+{
+	bIsStrafing = NewTarget != nullptr;
+
+	if (bIsStrafing)
+	{
+		GetCharacterMovement()->bOrientRotationToMovement = false;
+		GetCharacterMovement()->MaxWalkSpeed = StrafingSpeed;
+		GetCharacterMovement()->MaxAcceleration = StrafingAcceleration;
+	}
+	else
+	{
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+		GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
+		GetCharacterMovement()->MaxAcceleration = MaxAcceleration;
 	}
 }
 

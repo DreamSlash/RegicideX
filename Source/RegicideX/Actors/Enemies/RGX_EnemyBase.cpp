@@ -117,7 +117,7 @@ void ARGX_EnemyBase::MoveToTarget(float DeltaTime, FVector TargetPos)
 	{
 		const FVector MyFront = this->GetActorForwardVector();
 		const FVector CurrentLocation = this->GetActorLocation();
-		FVector NewLocation = CurrentLocation + MyFront * MoveSpeed * DeltaTime;
+		FVector NewLocation = CurrentLocation + MyFront * GetCurrentMaxSpeed() * DeltaTime;
 		this->SetActorLocation(NewLocation);
 	}
 }
@@ -263,7 +263,7 @@ void ARGX_EnemyBase::CheckIfHasLostSightOfPlayer()
 		if (RegainSightCos < Dot)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Has Regained Sight"));
-			GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
+			GetCharacterMovement()->MaxWalkSpeed = GetCurrentMaxSpeed();
 			bHasLostSightOfPlayer = false;
 		}
 	}
@@ -383,6 +383,14 @@ void ARGX_EnemyBase::HandleHealthChanged(float DeltaValue, const struct FGamepla
 	if (ACS->bIsInitialized == true)
 	{
 		OnHealthChanged(DeltaValue, EventTags);
+	}
+
+	if (ARGX_EnemyBaseController* controller = GetController<ARGX_EnemyBaseController>())
+	{
+		const float currentHealth = GetHealth();
+		const float maxHealth = GetMaxHealth();
+
+		controller->OnEnemyHealthChanged(currentHealth, maxHealth);
 	}
 }
 

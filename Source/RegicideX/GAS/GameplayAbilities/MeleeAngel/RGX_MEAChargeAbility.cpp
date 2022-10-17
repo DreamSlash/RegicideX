@@ -59,7 +59,7 @@ void URGX_MEAChargeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Han
 	ARGX_MeleeAngel* MeleeAngel = Cast<ARGX_MeleeAngel>(Enemy);
 	if (MeleeAngel)
 	{
-		MeleeAngel->bFlying = true;
+		//MeleeAngel->bFlying = true;
 	}
 
 	const FVector CurrentLocation = Enemy->GetActorLocation();
@@ -110,7 +110,7 @@ void URGX_MEAChargeAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, 
 	if (MEAngel)
 	{
 		MEAngel->SetGravityScale(3.0);
-		MEAngel->bFlying = false;
+		//MEAngel->bFlying = false;
 		MEAngel->bCharging = false;
 		FRotator Rotation = MEAngel->GetActorRotation();
 		Rotation.Pitch = 0.0;

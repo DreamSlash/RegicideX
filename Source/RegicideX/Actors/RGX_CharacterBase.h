@@ -41,6 +41,24 @@ public:
 	
 	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+	UFUNCTION(BlueprintCallable)
+	virtual float GetCurrentMaxSpeed() const;
+
+	UFUNCTION(BlueprintCallable)
+	virtual void SetCurrentMaxSpeed(float Speed);
+
+	UFUNCTION(BlueprintCallable)
+	virtual float GetCurrentMaxAcceleration() const;
+
+	UFUNCTION(BlueprintCallable)
+	virtual void SetCurrentMaxAcceleration(float Acceleration);
+
+	UFUNCTION(BlueprintCallable)
+	virtual float GetCurrentGravityScale() const;
+
+	UFUNCTION(BlueprintCallable)
+	virtual void SetCurrentGravityScale(float Scale);
+
 	/** Returns current health, will be 0 if dead */
 	UFUNCTION(BlueprintCallable)
 	virtual float GetHealth() const;
@@ -66,6 +84,9 @@ public:
 		URGX_LaunchEventDataAsset* LaunchPayload,
 		float LaunchDelay = 0.2f);
 
+	UFUNCTION(BlueprintCallable)
+	void RotateDirectlyTowardsActor(const AActor* Target);
+
 	virtual void OnHitboxHit(UGameplayAbility* MeleeAbility, FGameplayEventData EventData, TSubclassOf<class UCameraShakeBase> CameraShakeClass);
 
 public:
@@ -77,19 +98,19 @@ public:
 	bool bCanRotate = true;
 
 	/** Vector in the direction the actor has to react when receiving damage*/
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	FVector HitReactDirection = FVector(0.0f);
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-	float MoveSpeed;
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float MoveSpeed = 800.0f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float MaxAcceleration = 2048.0f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float GravityScale = 3.0f;
 
-protected:
 	/** The level of this character, should not be modified directly once it has already spawned */
 	UPROPERTY(EditAnywhere, Category = Abilities)
 	int32 CharacterLevel;

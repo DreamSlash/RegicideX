@@ -22,9 +22,9 @@ EBTNodeResult::Type URGX_BTTask_MeleeAngelCharge::ExecuteTask(UBehaviorTreeCompo
 
 	//Hitbox->ActivateEffect();
 
-	MeleeAngelPawn->bFlying = true;
+	//MeleeAngelPawn->bFlying = true;
 
-	MoveSpeed = MeleeAngelPawn->MoveSpeed;
+	MoveSpeed = MeleeAngelPawn->GetCurrentMaxSpeed();
 	GoalLocation = MeleeAngelPawn->TargetActor->GetActorLocation();
 
 	const FRotator RotOffset = UKismetMathLibrary::FindLookAtRotation(MeleeAngelPawn->GetActorLocation(), GoalLocation);
@@ -64,9 +64,9 @@ void URGX_BTTask_MeleeAngelCharge::TickTask(UBehaviorTreeComponent& OwnerComp, u
 	{
 		TaskTime = 0.0f;
 		MeleeAngelPawn->SetGravityScale(1.0);
-		MeleeAngelPawn->bFlying = false;
+		//MeleeAngelPawn->bFlying = false;
 		MeleeAngelPawn->bCharging = false;
-		MeleeAngelPawn->MoveSpeed = MoveSpeed;
+		MeleeAngelPawn->SetCurrentMaxSpeed(MoveSpeed);
 		FRotator Rotation = MeleeAngelPawn->GetActorRotation();
 		Rotation.Pitch = 0.0;
 		MeleeAngelPawn->SetActorRotation(Rotation);
@@ -74,6 +74,6 @@ void URGX_BTTask_MeleeAngelCharge::TickTask(UBehaviorTreeComponent& OwnerComp, u
 		//Hitbox->DeactivateEffect();
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
-	MeleeAngelPawn->MoveSpeed += TaskTime * AccelerationMultiplier;
+	MeleeAngelPawn->SetCurrentMaxSpeed(MeleeAngelPawn->GetCurrentMaxSpeed() + (TaskTime * AccelerationMultiplier));
 	MeleeAngelPawn->MoveToTarget(DeltaSeconds, FVector());
 }

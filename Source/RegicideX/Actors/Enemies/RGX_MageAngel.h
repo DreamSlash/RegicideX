@@ -36,6 +36,4 @@ public:
 		ARGX_CharacterBase* InstigatorCharacter,
 		AActor* DamageCauser,
 		ERGX_AnimEvent HitReactFlag) override;
-
-	void HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags) override;
 };

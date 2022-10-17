@@ -26,3 +26,10 @@ void ARGX_DistanceAngelController::SetRandomLocationAroundTarget(float Distance)
 	UBlackboardComponent* BB = GetBlackboardComponent();
 	BB->SetValueAsVector(TEXT("TeleportLocation"), LocationAroundPlayer);
 }
+
+void ARGX_DistanceAngelController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+
+	StartLogic();
+}

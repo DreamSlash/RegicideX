@@ -81,7 +81,7 @@ FVector URGX_BTService_CalculateActorFuturePosition::CalculateFuturePosition(UBe
 	if (owner)
 	{
 		const float distance = FVector::Distance(owner->GetActorLocation(), Target->GetActorLocation());
-		const float timeToReachTarget = distance / owner->MoveSpeed;
+		const float timeToReachTarget = distance / owner->GetCurrentMaxSpeed();
 		const float time = std::min(timeToReachTarget, MaxReachTime);
 		if (GEngine)
 			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("timeToReachTarget %f"), timeToReachTarget));
