@@ -17,6 +17,8 @@
 #include "RegicideX/UI/RGX_EnemyHealthBar.h"
 #include "RegicideX/Components/RGX_InteractComponent.h"
 
+//#pragma optimize("", off)
+
 // Sets default values
 ARGX_EnemyBase::ARGX_EnemyBase()
 {
@@ -494,9 +496,10 @@ bool ARGX_EnemyBase::WasHitInTheBack() const
 	MyForward.Z = 0.0f;
 	MyForward.Normalize();
 
-	FVector ToTarget = GetActorLocation() - TargetActor->GetActorLocation();
+	FVector ToTarget = TargetActor->GetActorLocation() - GetActorLocation();
 	ToTarget.Z = 0.0f;
 	ToTarget.Normalize();
 
-	return FVector::DotProduct(MyForward, ToTarget) > 0.0f;
+	const float dot = FVector::DotProduct(MyForward, ToTarget);
+	return dot > 0.0f;
 }
