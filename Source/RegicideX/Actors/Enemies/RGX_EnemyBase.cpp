@@ -17,8 +17,6 @@
 #include "RegicideX/UI/RGX_EnemyHealthBar.h"
 #include "RegicideX/Components/RGX_InteractComponent.h"
 
-#pragma optimize("", off)
-
 // Sets default values
 ARGX_EnemyBase::ARGX_EnemyBase()
 {
