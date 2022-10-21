@@ -142,6 +142,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TMap<ERGX_AnimEvent, FAnimationArray> AnimMontageMap;
 
+	UPROPERTY(EditDefaultsOnly)
+	TMap<ERGX_AnimEvent, FAnimationArray> BackAnimMontageMap;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float TimeGravityZeroAfterKnockUp = 2.0f;
 
