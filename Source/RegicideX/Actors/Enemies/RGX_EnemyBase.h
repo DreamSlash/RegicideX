@@ -238,4 +238,5 @@ public:
 private:
 	FTimeline RotationTowardsTargetTimeline;
 
+	bool WasHitInTheBack() const;
 };
