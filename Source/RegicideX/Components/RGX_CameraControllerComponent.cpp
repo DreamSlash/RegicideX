@@ -82,23 +82,37 @@ float URGX_CameraControllerComponent::CalculateSpringArmDistanceByEnemies(const 
 
 	int32 numVisibleEnemies = 0;
 	int32 numNotVisibleEnemies = 0;
+	bool bIsAnyAngelInCombatRadius = false;
 	for (const AActor* target : Targets)
 	{
-		const float dot = CalculateDotProduct(playerLocation, cameraForward, target);
+		if (const ARGX_EnemyBase* enemy = Cast<ARGX_EnemyBase>(target))
+		{
+			const float dot = CalculateDotProduct(playerLocation, cameraForward, target);
 
-		if (dot < cosFOV)
-		{
-			++numNotVisibleEnemies;
-		}
-		else
-		{
-			++numVisibleEnemies;
+			if (dot < cosFOV)
+			{
+				++numNotVisibleEnemies;
+			}
+			else
+			{
+				++numVisibleEnemies;
+			}
+
+			switch (enemy->GetEnemyType())
+			{
+			case ERGX_EnemyType::DistanceAngel:
+			case ERGX_EnemyType::MageAngel:
+			case ERGX_EnemyType::MeleeAngel:
+				bIsAnyAngelInCombatRadius = true;
+				break;
+			}
 		}
 	}
 
 	const float visibleEnemiesZoomOut = ZoomOutPerVisibleEnemy * numVisibleEnemies;
 	const float notVisibleEnemiesZoomOut = ZoomOutPerNotVisibleEnemy * numNotVisibleEnemies;
-	const float newDistance = std::min(OriginalArmLength + visibleEnemiesZoomOut + notVisibleEnemiesZoomOut, MaxZoomOut);
+	const float angelsZoomOut = bIsAnyAngelInCombatRadius ? ZoomOutPerAngelNearby : 0.0f;
+	const float newDistance = std::min(OriginalArmLength + visibleEnemiesZoomOut + notVisibleEnemiesZoomOut + angelsZoomOut, MaxZoomOut);
 
 	return newDistance;
 }
@@ -170,17 +184,18 @@ FRotator URGX_CameraControllerComponent::CalculateDesiredRotation() const
 	const float desiredYaw = CalculateDesiredAngle(DesiredYawAngle);
 	const float desiredPitch = CalculateDesiredAngle(DesiredPitchAngle);
 
-	const FVector targetLocation = CurrentTarget->GetActorLocation();
+	const FVector targetLocation = CurrentTarget->TargetingTransform->GetComponentLocation();
 	const FVector playerLocation = SpringArm->GetComponentLocation();
 
 	// [SM] Check better way to play with two altitude levels
 	FVector aux = targetLocation - playerLocation;
-	aux.Z = 0.0;
+	//aux.Z = 0.0;
 	FMatrix matrix = FRotationMatrix::MakeFromX(aux);
 
 	FRotator desiredRotation = matrix.Rotator();
 	desiredRotation.Yaw += CalculateFinalYaw(desiredYaw);
-	desiredRotation.Pitch += CalculateFinalPitch(desiredPitch);
+	//desiredRotation.Pitch += CalculateFinalPitch(desiredPitch);
+	desiredRotation.Pitch = FMath::Clamp(desiredRotation.Pitch, MinPitchAngle, MaxPitchAngle);
 
 	return desiredRotation;
 }
@@ -189,7 +204,7 @@ float URGX_CameraControllerComponent::CalculateDesiredAngle(float DesiredAngle) 
 {
 	const float desiredAngleSin = FMath::Sin(FMath::DegreesToRadians(DesiredAngle));
 
-	const FVector targetLocation = CurrentTarget->GetActorLocation();
+	const FVector targetLocation = CurrentTarget->TargetingTransform->GetComponentLocation();
 	const FVector playerLocation = SpringArm->GetComponentLocation();
 
 	const float pivotDistance = FVector::Distance(playerLocation, targetLocation);
