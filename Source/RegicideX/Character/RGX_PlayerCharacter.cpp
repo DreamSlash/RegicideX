@@ -138,7 +138,7 @@ void ARGX_PlayerCharacter::RotateToTarget(float DeltaTime)
 			const FRotator lookRotation = UKismetMathLibrary::FindLookAtRotation(selfLocation, targetLocation);
 			const FRotator desiredRotation = FRotator(selfRotation.Pitch, lookRotation.Yaw, selfRotation.Roll);
 
-			const FRotator finalRotation = FMath::Lerp(selfRotation, desiredRotation, DeltaTime);
+			const FRotator finalRotation = FMath::Lerp(selfRotation, desiredRotation, RotationSpeedWhenStrafing*DeltaTime);
 			SetActorRotation(finalRotation);
 		}
 	}

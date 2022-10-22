@@ -82,6 +82,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseLookUpRate;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Strafing)
+	float RotationSpeedWhenStrafing = 5.0f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Strafing)
 	float StrafingSpeed = 400.f;
 
