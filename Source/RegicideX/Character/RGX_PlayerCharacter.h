@@ -88,10 +88,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Strafing)
 	float StrafingAcceleration = 2000.f;
 
-	// TODO [REFACTOR]: Move this to AbilitySystemComponent.
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TArray<FGameplayTag> PowerSkills;
-
 	UPROPERTY()
 	uint8 CurrentSkillSelected = 0;
 
@@ -118,9 +114,6 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EObjectTypeQuery> DodgeableObjectType;
-
-	UPROPERTY()
-	bool bIsFallingDown = false;
 
 	UPROPERTY()
 	bool bIsBraking;
@@ -241,6 +234,8 @@ protected:
 
 	void Landed(const FHitResult& Hit) override;
 
+	virtual void OnHandleEndKnockedUp() override;
+
 	UFUNCTION(BlueprintCallable)
 	void OnCapsuleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
@@ -275,7 +270,6 @@ protected:
 	void PerformFallAttack();
 	void PerformLaunchAttack();
 	void PerformHeavyAttack();
-	void ChangePowerSkill();
 
 	void ToggleTargeting();
 	void EnableTargeting();
@@ -287,13 +281,7 @@ protected:
 	void StartBrake();
 	void EndBrake();
 
-	//void ManagePowerSkillInput();
 	void TryToInteract();
-	// ----------------------------------
-
-	/* Level and experience*/
-	//void LevelUp(const float NewLevel);
-	// ----------------------
 
 	// Debug
 	void PrintDebugInformation();

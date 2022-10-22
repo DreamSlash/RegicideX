@@ -61,7 +61,7 @@ void URGX_CameraControllerComponent::TickComponent(float DeltaTime, ELevelTick T
 void URGX_CameraControllerComponent::CalculateSpringArmDistance(const TArray<AActor*>& Targets, float DeltaTime)
 {
 	const float distanceByEnemies = CalculateSpringArmDistanceByEnemies(Targets);
-	const bool bIsDoingAirCombo = (Owner->bIsFallingDown && Owner->IsAttacking());
+	const bool bIsDoingAirCombo = (Owner->IsFallingDown() && Owner->IsAttacking());
 	const float newDistance = distanceByEnemies + (bIsDoingAirCombo ? ZoomOutAirCombo : 0.0);
 
 	if (fabs(SpringArm->TargetArmLength - newDistance) > UpdateDistanceOffset)
