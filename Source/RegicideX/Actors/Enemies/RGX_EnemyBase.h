@@ -106,6 +106,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	URGX_HitboxesManagerComponent* HitboxesManager = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USceneComponent* TargetingTransform = nullptr;
+
 protected:
 
 	/** Target widget component to notify the player this is the enemy on target. */
@@ -239,4 +242,5 @@ private:
 	FTimeline RotationTowardsTargetTimeline;
 
 	bool WasHitInTheBack() const;
+	const FAnimationArray& GetAnimationList(ERGX_AnimEvent HitReactFlag) const;
 };
