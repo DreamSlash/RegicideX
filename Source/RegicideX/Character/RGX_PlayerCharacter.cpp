@@ -790,14 +790,14 @@ void ARGX_PlayerCharacter::OnCapsuleHit(UPrimitiveComponent* HitComponent, AActo
 {
 	if (bWasFallingDownThisFrame)
 	{
-		const FVector Normal = Hit.Normal;
-		const FVector PlayerLaunchForce = Normal * FVector(1.0f, 1.0f, -1.0f) * 100.0f;
-
-		LaunchCharacter(PlayerLaunchForce, true, true);
-
 		ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(OtherActor);
 		if (Enemy)
 		{
+			const FVector Normal = Hit.Normal;
+			const FVector PlayerLaunchForce = Normal * FVector(1.0f, 1.0f, -1.0f) * 100.0f;
+
+			LaunchCharacter(PlayerLaunchForce, true, true);
+
 			UAbilitySystemComponent* OtherACS = Enemy->FindComponentByClass<UAbilitySystemComponent>();
 			if (OtherACS)
 			{
