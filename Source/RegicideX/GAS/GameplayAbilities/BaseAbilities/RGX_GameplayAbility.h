@@ -26,6 +26,7 @@ enum class ERGX_AbilityInputID : uint8
 	Evasion				UMETA(DisplayName = "Evasion"),
 	CancelEvasion		UMETA(DisplayName = "CancelEvasion"),
 	PowerSkill			UMETA(DisplayName = "PowerSkill"),
+	ShootSkill			UMETA(DisplayName = "ShootSkill"),
 	CancelPowerSkill	UMETA(DisplayName = "CancelPowerSkill"),
 	Ability2			UMETA(DisplayName = "Ability2"),
 	Sprint				UMETA(DisplayName = "Sprint"),
