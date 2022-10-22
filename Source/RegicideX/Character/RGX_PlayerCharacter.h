@@ -91,10 +91,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Strafing)
 	float StrafingAcceleration = 2000.f;
 
-	// TODO [REFACTOR]: Move this to AbilitySystemComponent.
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TArray<FGameplayTag> PowerSkills;
-
 	UPROPERTY()
 	uint8 CurrentSkillSelected = 0;
 
@@ -277,7 +273,6 @@ protected:
 	void PerformFallAttack();
 	void PerformLaunchAttack();
 	void PerformHeavyAttack();
-	void ChangePowerSkill();
 
 	void ToggleTargeting();
 	void EnableTargeting();
@@ -289,13 +284,7 @@ protected:
 	void StartBrake();
 	void EndBrake();
 
-	//void ManagePowerSkillInput();
 	void TryToInteract();
-	// ----------------------------------
-
-	/* Level and experience*/
-	//void LevelUp(const float NewLevel);
-	// ----------------------
 
 	// Debug
 	void PrintDebugInformation();
