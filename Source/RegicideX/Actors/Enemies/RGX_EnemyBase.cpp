@@ -499,7 +499,7 @@ bool ARGX_EnemyBase::WasHitInTheBack() const
 	MyForward.Z = 0.0f;
 	MyForward.Normalize();
 
-	FVector ToTarget = TargetActor->GetActorLocation() - GetActorLocation();
+	FVector ToTarget = GetActorLocation() - TargetActor->GetActorLocation();
 	ToTarget.Z = 0.0f;
 	ToTarget.Normalize();
 
