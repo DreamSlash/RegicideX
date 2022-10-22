@@ -888,7 +888,10 @@ void ARGX_PlayerCharacter::Landed(const FHitResult& Hit)
 
 void ARGX_PlayerCharacter::OnHandleEndKnockedUp()
 {
-
+	if (IsAttacking() == false && IsDashing() == false)
+	{
+		ResetGravity();
+	}
 }
 
 void ARGX_PlayerCharacter::OnCapsuleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)

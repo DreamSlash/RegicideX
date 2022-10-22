@@ -353,7 +353,7 @@ void ARGX_CharacterBase::CheckKnockUpState()
 			// Reset gravity scale after a delay
 			FTimerDelegate TimerDel;
 			FTimerHandle TimerHandle;
-			TimerDel.BindUFunction(this, FName("HandleKnockedUp"));
+			TimerDel.BindUFunction(this, FName("HandleEndKnockedUp"));
 			GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, TimeGravityZeroAfterKnockUp, false);
 		}
 	}
