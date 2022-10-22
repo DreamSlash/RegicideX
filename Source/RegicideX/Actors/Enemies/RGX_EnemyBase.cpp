@@ -36,6 +36,9 @@ ARGX_EnemyBase::ARGX_EnemyBase()
 
 	HitboxesManager = CreateDefaultSubobject<URGX_HitboxesManagerComponent>(TEXT("HitboxesManager"));
 
+	TargetingTransform = CreateDefaultSubobject<USceneComponent>(TEXT("TargetingTransform"));
+	TargetingTransform->SetupAttachment(GetMesh());
+
 	bAbilitiesInitialized = false;
 }
 
@@ -312,12 +315,12 @@ void ARGX_EnemyBase::HandleDamage(
 
 			if (IsWeak() == false )
 			{
-				const FAnimationArray AnimationList = WasHitInTheBack() ? *BackAnimMontageMap.Find(HitReactFlag) : *AnimMontageMap.Find(HitReactFlag);
+				const FAnimationArray& animationList = GetAnimationList(HitReactFlag);
 				UAnimMontage* AnimToPlay = nullptr;
-				if (AnimationList.Animations.Num() > 0)
+				if (animationList.Animations.Num() > 0)
 				{
-					const int32 index = UKismetMathLibrary::RandomIntegerInRange(0, AnimationList.Animations.Num() - 1);
-					AnimToPlay = AnimationList.Animations[index];
+					const int32 index = UKismetMathLibrary::RandomIntegerInRange(0, animationList.Animations.Num() - 1);
+					AnimToPlay = animationList.Animations[index];
 				}
 				else
 				{
@@ -336,11 +339,11 @@ void ARGX_EnemyBase::HandleDamage(
 		RemoveGameplayTag(FGameplayTag::RequestGameplayTag("Status.Enemy.Weakened"));
 		//StopLogic("Character Dead");
 		UAnimMontage* AnimToPlay = nullptr;
-		const FAnimationArray AnimationList = WasHitInTheBack() ? *BackAnimMontageMap.Find(ERGX_AnimEvent::Death) : *AnimMontageMap.Find(ERGX_AnimEvent::Death);
-		if (AnimationList.Animations.Num() > 0)
+		const FAnimationArray& animationList = GetAnimationList(ERGX_AnimEvent::Death);
+		if (animationList.Animations.Num() > 0)
 		{
-			const int32 index = UKismetMathLibrary::RandomIntegerInRange(0, AnimationList.Animations.Num() - 1);
-			AnimToPlay = AnimationList.Animations[index];
+			const int32 index = UKismetMathLibrary::RandomIntegerInRange(0, animationList.Animations.Num() - 1);
+			AnimToPlay = animationList.Animations[index];
 		}
 		else
 		{
@@ -502,4 +505,14 @@ bool ARGX_EnemyBase::WasHitInTheBack() const
 
 	const float dot = FVector::DotProduct(MyForward, ToTarget);
 	return dot > 0.0f;
+}
+
+const FAnimationArray& ARGX_EnemyBase::GetAnimationList(ERGX_AnimEvent HitReactFlag) const
+{
+	if (BackAnimMontageMap.Contains(HitReactFlag) == false)
+	{
+		return *AnimMontageMap.Find(HitReactFlag);
+	}
+	
+	return (WasHitInTheBack() ? *BackAnimMontageMap.Find(HitReactFlag) : *AnimMontageMap.Find(HitReactFlag));
 }
