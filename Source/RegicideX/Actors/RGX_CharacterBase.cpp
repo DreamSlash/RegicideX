@@ -31,11 +31,22 @@ void ARGX_CharacterBase::UnPossessed()
 {
 }
 
+void ARGX_CharacterBase::HandleEndKnockedUp()
+{
+	OnHandleEndKnockedUp();
+}
+
+void ARGX_CharacterBase::OnHandleEndKnockedUp()
+{
+	ResetGravity();
+}
+
 void ARGX_CharacterBase::ResetGravity()
 {
 	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
 	if (CharacterMovementComponent)
 	{
+		CharacterMovementComponent->MaxAcceleration = MaxAcceleration;
 		CharacterMovementComponent->GravityScale = GravityScale;
 	}
 }
@@ -54,9 +65,23 @@ void ARGX_CharacterBase::BeginPlay()
 
 }
 
+void ARGX_CharacterBase::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	bWasFallingDownThisFrame = IsFallingDown();
+
+	CheckKnockUpState();
+}
+
 UAbilitySystemComponent* ARGX_CharacterBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
+}
+
+bool ARGX_CharacterBase::IsFallingDown()
+{
+	return GetCharacterMovement() && GetCharacterMovement()->IsFalling() && GetVelocity().Z < 0;
 }
 
 float ARGX_CharacterBase::GetCurrentMaxSpeed() const
@@ -162,6 +187,10 @@ void ARGX_CharacterBase::OnBeingLaunched(
 
 	LaunchCharacter(LaunchForce, bOverrideXY, bOverrideZ);
 
+	if (LaunchPayload->bKnockUp == true)
+	{
+		AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.KnockedUp")));
+	}
 	// TODO: If the character is in air maybe it is mandatory to apply a minimum Z force due to an Unreal bug
 }
 
@@ -305,6 +334,29 @@ FGenericTeamId ARGX_CharacterBase::GetGenericTeamId() const
 	static const FGenericTeamId PlayerTeam(0);
 	static const FGenericTeamId AITeam(1);
 	return Cast<APlayerController>(GetController()) ? PlayerTeam : AITeam;
+}
+
+void ARGX_CharacterBase::CheckKnockUpState()
+{
+	FGameplayTag KnockUpTag = FGameplayTag::RequestGameplayTag("Status.KnockedUp");
+	bool bWasKnockedUp = HasMatchingGameplayTag(KnockUpTag);
+	if (bWasKnockedUp == true && IsFallingDown())
+	{
+		RemoveGameplayTag(KnockUpTag);
+
+		UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+		if (CharacterMovementComponent)
+		{
+			// Change gravity scale
+			CharacterMovementComponent->GravityScale = 0.0f;
+
+			// Reset gravity scale after a delay
+			FTimerDelegate TimerDel;
+			FTimerHandle TimerHandle;
+			TimerDel.BindUFunction(this, FName("HandleEndKnockedUp"));
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, TimeGravityZeroAfterKnockUp, false);
+		}
+	}
 }
 
 void ARGX_CharacterBase::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
