@@ -139,6 +139,9 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	bool bInstigatorOrigin;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	bool bKnockUp;
 };
 
 UCLASS(BlueprintType)
