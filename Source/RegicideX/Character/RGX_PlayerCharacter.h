@@ -123,9 +123,6 @@ public:
 	TEnumAsByte<EObjectTypeQuery> DodgeableObjectType;
 
 	UPROPERTY()
-	bool bIsFallingDown = false;
-
-	UPROPERTY()
 	bool bIsBraking;
 
 	UPROPERTY()
@@ -243,6 +240,8 @@ protected:
 	virtual void AddControllerPitchInput(float Val) override;
 
 	void Landed(const FHitResult& Hit) override;
+
+	virtual void OnHandleEndKnockedUp() override;
 
 	UFUNCTION(BlueprintCallable)
 	void OnCapsuleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);

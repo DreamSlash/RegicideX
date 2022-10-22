@@ -650,15 +650,6 @@ void ARGX_PlayerCharacter::BeginPlay()
 void ARGX_PlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	if (GetCharacterMovement() && GetCharacterMovement()->IsFalling() && GetVelocity().Z < 0)
-	{
-		bIsFallingDown = true;
-	}
-	else
-	{
-		bIsFallingDown = false;
-	}
 
 	bool bWasStaggered = bStaggered;
 	bStaggered = HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Combat.InHurtReact")));
@@ -891,14 +882,21 @@ void ARGX_PlayerCharacter::Landed(const FHitResult& Hit)
 			AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
 			RemoveGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.HasAirDashed")));
 			bCanAirCombo = true;
-			bIsFallingDown = false;
 		}
+	}
+}
+
+void ARGX_PlayerCharacter::OnHandleEndKnockedUp()
+{
+	if (IsAttacking() == false && IsDashing() == false)
+	{
+		ResetGravity();
 	}
 }
 
 void ARGX_PlayerCharacter::OnCapsuleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (bIsFallingDown == true)
+	if (bWasFallingDownThisFrame)
 	{
 		const FVector Normal = Hit.Normal;
 		const FVector PlayerLaunchForce = Normal * FVector(1.0f, 1.0f, -1.0f) * 100.0f;

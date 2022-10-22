@@ -78,6 +78,11 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool IsAlive();
 
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+	bool IsFallingDown();
+
+	bool bWasFallingDownThisFrame;
+
 	UFUNCTION(BlueprintCallable)
 	void OnBeingLaunched(
 		AActor* ActorInstigator, 
@@ -146,12 +151,18 @@ protected:
 	TMap<ERGX_AnimEvent, FAnimationArray> BackAnimMontageMap;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	float TimeGravityZeroAfterKnockUp = 2.0f;
+	float TimeGravityZeroAfterKnockUp = 0.3f;
+
+	UFUNCTION()
+	void HandleEndKnockedUp();
+
+	virtual void OnHandleEndKnockedUp();
 
 	UFUNCTION()
 	void ResetGravity();
 
 	void BeginPlay() override;
+	void Tick(float DeltaTime) override;
 
 	/** Events called from attribute set changes to decouple the logic. They call BP events. */
 
@@ -216,6 +227,8 @@ protected:
 	virtual FGenericTeamId GetGenericTeamId() const override;
 
 	friend URGX_AttributeSet;
+
+	void CheckKnockUpState();
 
 public:
 	/** GameplayTagAssetInterface methods */
