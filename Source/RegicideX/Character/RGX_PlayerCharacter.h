@@ -270,6 +270,8 @@ protected:
 	void ManageJumpInput();
 	void ManageJumpInputReleased();
 
+	void ManageSpearAttackInput();
+
 	void PerformFallAttack();
 	void PerformLaunchAttack();
 	void PerformHeavyAttack();

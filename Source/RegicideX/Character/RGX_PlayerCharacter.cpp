@@ -90,6 +90,7 @@ void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAction("LightAttack", IE_Released, this, &ARGX_PlayerCharacter::ManageLightAttackInputRelease);
 	PlayerInputComponent->BindAction("HeavyAttack", IE_Pressed, this, &ARGX_PlayerCharacter::ManageHeavyAttackInput);
 	PlayerInputComponent->BindAction("HeavyAttack", IE_Released, this, &ARGX_PlayerCharacter::ManageHeavyAttackInputRelease);
+	PlayerInputComponent->BindAction("ShootSkill", IE_Pressed, this, &ARGX_PlayerCharacter::ManageSpearAttackInput);
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ARGX_PlayerCharacter::ManageJumpInput);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ARGX_PlayerCharacter::ManageJumpInputReleased);
@@ -268,6 +269,13 @@ void ARGX_PlayerCharacter::ManageJumpInput()
 void ARGX_PlayerCharacter::ManageJumpInputReleased()
 {
 	StopJumping();
+}
+
+void ARGX_PlayerCharacter::ManageSpearAttackInput()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Managing Spear power!"));
+	FGameplayEventData EventData;
+	int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("Power.Spears")), &EventData);
 }
 
 void ARGX_PlayerCharacter::TryToInteract()
