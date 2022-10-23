@@ -854,8 +854,8 @@ void ARGX_PlayerCharacter::OnTargetUpdatedImpl(ARGX_EnemyBase* NewTarget)
 	else
 	{
 		GetCharacterMovement()->bOrientRotationToMovement = true;
-		//GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
-		//GetCharacterMovement()->MaxAcceleration = MaxAcceleration;
+		GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
+		GetCharacterMovement()->MaxAcceleration = MaxAcceleration;
 	}
 }
 
