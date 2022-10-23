@@ -82,15 +82,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseLookUpRate;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Strafing)
+	float RotationSpeedWhenStrafing = 5.0f;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Strafing)
 	float StrafingSpeed = 400.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Strafing)
-	float StrafingAcceleration = 2000.f;
+	float StrafingBackwardsSpeed = 200.0f;
 
-	// TODO [REFACTOR]: Move this to AbilitySystemComponent.
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TArray<FGameplayTag> PowerSkills;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Strafing)
+	float StrafingAcceleration = 2000.f;
 
 	UPROPERTY()
 	uint8 CurrentSkillSelected = 0;
@@ -118,9 +120,6 @@ public:
 
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EObjectTypeQuery> DodgeableObjectType;
-
-	UPROPERTY()
-	bool bIsFallingDown = false;
 
 	UPROPERTY()
 	bool bIsBraking;
@@ -241,6 +240,8 @@ protected:
 
 	void Landed(const FHitResult& Hit) override;
 
+	virtual void OnHandleEndKnockedUp() override;
+
 	UFUNCTION(BlueprintCallable)
 	void OnCapsuleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
 
@@ -272,10 +273,11 @@ protected:
 	void ManageJumpInput();
 	void ManageJumpInputReleased();
 
+	void ManageSpearAttackInput();
+
 	void PerformFallAttack();
 	void PerformLaunchAttack();
 	void PerformHeavyAttack();
-	void ChangePowerSkill();
 
 	void ToggleTargeting();
 	void EnableTargeting();
@@ -287,19 +289,15 @@ protected:
 	void StartBrake();
 	void EndBrake();
 
-	//void ManagePowerSkillInput();
 	void TryToInteract();
-	// ----------------------------------
-
-	/* Level and experience*/
-	//void LevelUp(const float NewLevel);
-	// ----------------------
 
 	// Debug
 	void PrintDebugInformation();
 
 	void ChangeTimeScale();
 	// ----------------
+
+	void UpdateStrafingSpeed();
 
 public:
 	/** Stops any combo logic. It should be called at any action that interrupts an ongoing combo from the Combo system. */
