@@ -573,6 +573,7 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 
 	CheckBrake(DeltaTime);
 	RotateToTarget(DeltaTime);
+	UpdateStrafingSpeed();
 	
 	VelocityMagnitudeLastFrame = GetVelocity().Size();
 	LastMoveInput = CurrentMoveInput;
@@ -650,7 +651,7 @@ void ARGX_PlayerCharacter::RotatePlayerTowardsInput()
 
 float ARGX_PlayerCharacter::GetCurrentMaxSpeed() const
 {
-	return bIsStrafing ? StrafingSpeed : MoveSpeed;
+	return GetCharacterMovement()->MaxWalkSpeed;
 }
 
 void ARGX_PlayerCharacter::HandleDamage(
@@ -711,14 +712,24 @@ void ARGX_PlayerCharacter::MoveForward(float Value)
 	if (bStaggered || bIsControllerNull || bIsAxisValueLesserThanThreshold || bIgnoreInputMoveVector)
 		return;
 
+	FVector direction;
 	// find out which way is forward
-	const FRotator Rotation = Controller->GetControlRotation();
-	const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
+	if (bIsStrafing)
+	{
+		direction = GetActorForwardVector();
+	}
+	else
+	{
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
 
-	// get forward vector
-	const FVector Direction = UKismetMathLibrary::GetForwardVector(YawRotation);
+		// get forward vector
+		//const FVector Direction = UKismetMathLibrary::GetForwardVector(YawRotation);
+		direction = UKismetMathLibrary::GetForwardVector(YawRotation);
+	}
+
 	// add movement in that direction
-	AddMovementInput(Direction, Value);
+	AddMovementInput(direction, Value);
 	CurrentMoveInput.X = Value;
 }
 
@@ -731,14 +742,25 @@ void ARGX_PlayerCharacter::MoveRight(float Value)
 	if (bStaggered || bIsControllerNull || bIsAxisValueLesserThanThreshold || bIgnoreInputMoveVector)
 		return;
 
+	FVector direction;
 	// find out which way is forward
-	const FRotator Rotation = Controller->GetControlRotation();
-	const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
+	if (bIsStrafing)
+	{
+		direction = GetActorRightVector();
+	}
+	else
+	{
+		// find out which way is forward
+		const FRotator Rotation = Controller->GetControlRotation();
+		const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
 
-	// get right vector
-	const FVector Direction = UKismetMathLibrary::GetRightVector(YawRotation);
+		// get right vector
+		//const FVector Direction = UKismetMathLibrary::GetRightVector(YawRotation);
+		direction = UKismetMathLibrary::GetRightVector(YawRotation);
+	}
+
 	// add movement in that direction
-	AddMovementInput(Direction, Value);
+	AddMovementInput(direction, Value);
 	CurrentMoveInput.Y = Value;
 }
 
@@ -826,8 +848,8 @@ void ARGX_PlayerCharacter::OnTargetUpdatedImpl(ARGX_EnemyBase* NewTarget)
 	if (bIsStrafing)
 	{
 		GetCharacterMovement()->bOrientRotationToMovement = false;
-		GetCharacterMovement()->MaxWalkSpeed = StrafingSpeed;
-		GetCharacterMovement()->MaxAcceleration = StrafingAcceleration;
+		//GetCharacterMovement()->MaxWalkSpeed = StrafingSpeed;
+		//GetCharacterMovement()->MaxAcceleration = StrafingAcceleration;
 	}
 	else
 	{
@@ -840,4 +862,48 @@ void ARGX_PlayerCharacter::OnTargetUpdatedImpl(ARGX_EnemyBase* NewTarget)
 void ARGX_PlayerCharacter::OnJump_Implementation()
 {
 
+}
+
+void ARGX_PlayerCharacter::UpdateStrafingSpeed()
+{
+	if (bIsStrafing)
+	{
+		float direction = 0.0f;
+
+		const FVector velocity = GetVelocity();
+		if (!velocity.IsNearlyZero())
+		{
+			FMatrix RotMatrix = FRotationMatrix(GetActorRotation());
+			FVector ForwardVector = RotMatrix.GetScaledAxis(EAxis::X);
+			FVector RightVector = RotMatrix.GetScaledAxis(EAxis::Y);
+			FVector NormalizedVel = velocity.GetSafeNormal2D();
+
+			// get a cos(alpha) of forward vector vs velocity
+			float ForwardCosAngle = FVector::DotProduct(ForwardVector, NormalizedVel);
+			// now get the alpha and convert to degree
+			float ForwardDeltaDegree = FMath::RadiansToDegrees(FMath::Acos(ForwardCosAngle));
+
+			// depending on where right vector is, flip it
+			float RightCosAngle = FVector::DotProduct(RightVector, NormalizedVel);
+			if (RightCosAngle < 0)
+			{
+				ForwardDeltaDegree *= -1;
+			}
+
+			direction = ForwardDeltaDegree;
+		}
+
+		if (fabs(direction) < 40.f)
+		{
+			GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
+		}
+		else if (fabs(direction) < 135.f)
+		{
+			GetCharacterMovement()->MaxWalkSpeed = StrafingSpeed;
+		}
+		else
+		{
+			GetCharacterMovement()->MaxWalkSpeed = StrafingBackwardsSpeed;
+		}
+	}
 }

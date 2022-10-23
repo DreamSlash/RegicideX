@@ -89,6 +89,9 @@ public:
 	float StrafingSpeed = 400.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Strafing)
+	float StrafingBackwardsSpeed = 200.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Strafing)
 	float StrafingAcceleration = 2000.f;
 
 	UPROPERTY()
@@ -293,6 +296,8 @@ protected:
 
 	void ChangeTimeScale();
 	// ----------------
+
+	void UpdateStrafingSpeed();
 
 public:
 	/** Stops any combo logic. It should be called at any action that interrupts an ongoing combo from the Combo system. */
