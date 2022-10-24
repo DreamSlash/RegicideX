@@ -491,6 +491,7 @@ void ARGX_PlayerCharacter::CheckBrake(float DeltaTime)
 void ARGX_PlayerCharacter::StartBrake()
 {
 	bIsBraking = true;
+	return;
 
 	// Brake cancels current attack
 	FGameplayTagContainer TagContainer(FGameplayTag::RequestGameplayTag(FName("Ability.Melee")));
@@ -507,6 +508,8 @@ void ARGX_PlayerCharacter::StartBrake()
 
 void ARGX_PlayerCharacter::EndBrake()
 {
+	return;
+
 	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
 	if (CharacterMovementComponent)
 	{
@@ -647,11 +650,6 @@ void ARGX_PlayerCharacter::RotatePlayerTowardsInput()
 	{
 		SetActorRotation(InputDirection.Rotation());
 	}
-}
-
-float ARGX_PlayerCharacter::GetCurrentMaxSpeed() const
-{
-	return GetCharacterMovement()->MaxWalkSpeed;
 }
 
 void ARGX_PlayerCharacter::HandleDamage(

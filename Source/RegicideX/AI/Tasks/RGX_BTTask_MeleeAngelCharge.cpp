@@ -74,6 +74,6 @@ void URGX_BTTask_MeleeAngelCharge::TickTask(UBehaviorTreeComponent& OwnerComp, u
 		//Hitbox->DeactivateEffect();
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
-	MeleeAngelPawn->SetCurrentMaxSpeed(MeleeAngelPawn->GetCurrentMaxSpeed() + (TaskTime * AccelerationMultiplier));
+	MeleeAngelPawn->SetCurrentMaxSpeed(MeleeAngelPawn->GetOriginalMaxSpeed() + (TaskTime * AccelerationMultiplier));
 	MeleeAngelPawn->MoveToTarget(DeltaSeconds, FVector());
 }

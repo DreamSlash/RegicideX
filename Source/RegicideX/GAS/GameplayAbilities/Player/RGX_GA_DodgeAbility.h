@@ -17,7 +17,10 @@ class REGICIDEX_API URGX_DodgeAbility : public URGX_CastSkillAbility
 	void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled) override;
 
 protected:
-
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UGameplayEffect> InvulnerabilityEffect;
+
+	float PreviousMaxAcceleration = 0.0f;
+	float PreviousGravityScale = 0.0f;
+
 };

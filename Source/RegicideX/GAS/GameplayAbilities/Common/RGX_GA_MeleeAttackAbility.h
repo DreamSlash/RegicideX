@@ -21,4 +21,6 @@ protected:
 protected:
 	UPROPERTY(EditAnywhere)
 	float MoveVectorLength = 0.0f;
+
+	float PreviousMaxAcceleration = 0.0f;
 };
