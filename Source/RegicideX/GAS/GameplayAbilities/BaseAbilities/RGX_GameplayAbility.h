@@ -26,6 +26,7 @@ enum class ERGX_AbilityInputID : uint8
 	ShootSkill			UMETA(DisplayName = "ShootSkill"),
 	Sprint				UMETA(DisplayName = "Sprint"),
 	Jump				UMETA(DisplayName = "Jump"),
+	Heal				UMETA(DisplayName = "Heal"),
 };
 
 USTRUCT()
