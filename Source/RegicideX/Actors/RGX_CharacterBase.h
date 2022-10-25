@@ -42,16 +42,25 @@ public:
 	UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
 	UFUNCTION(BlueprintCallable)
+	virtual float GetOriginalMaxSpeed() const;
+
+	UFUNCTION(BlueprintCallable)
 	virtual float GetCurrentMaxSpeed() const;
 
 	UFUNCTION(BlueprintCallable)
 	virtual void SetCurrentMaxSpeed(float Speed);
 
 	UFUNCTION(BlueprintCallable)
+	virtual float GetOriginalMaxAcceleration() const;
+
+	UFUNCTION(BlueprintCallable)
 	virtual float GetCurrentMaxAcceleration() const;
 
 	UFUNCTION(BlueprintCallable)
 	virtual void SetCurrentMaxAcceleration(float Acceleration);
+
+	UFUNCTION(BlueprintCallable)
+	virtual float GetOriginalGravityScale() const;
 
 	UFUNCTION(BlueprintCallable)
 	virtual float GetCurrentGravityScale() const;

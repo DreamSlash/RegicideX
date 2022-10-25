@@ -423,7 +423,7 @@ void URGX_CombatAssistComponent::RemoveMovementVector()
 		UCharacterMovementComponent* CharacterMovementComponent = CharacterBase->GetCharacterMovement();
 		if (CharacterMovementComponent)
 		{
-			CharacterMovementComponent->MaxWalkSpeed = CharacterBase->GetCurrentMaxSpeed();
+			CharacterMovementComponent->MaxWalkSpeed = CharacterBase->GetOriginalMaxSpeed();
 		}
 	}
 }

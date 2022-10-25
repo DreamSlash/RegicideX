@@ -114,7 +114,7 @@ void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ARGX_PlayerCharacter::LookUpAtRate);
 
-	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"), FString("CancelTarget"), FString("EMCVAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::Confirm), static_cast<int32>(EMCVAbilityInputID::Cancel)));
+	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"), FString("CancelTarget"), FString("ERGX_AbilityInputID"), static_cast<int32>(ERGX_AbilityInputID::Confirm), static_cast<int32>(ERGX_AbilityInputID::Cancel)));
 }
 
 void ARGX_PlayerCharacter::PossessedBy(AController* NewController)
@@ -491,6 +491,7 @@ void ARGX_PlayerCharacter::CheckBrake(float DeltaTime)
 void ARGX_PlayerCharacter::StartBrake()
 {
 	bIsBraking = true;
+	return;
 
 	// Brake cancels current attack
 	FGameplayTagContainer TagContainer(FGameplayTag::RequestGameplayTag(FName("Ability.Melee")));
@@ -507,6 +508,8 @@ void ARGX_PlayerCharacter::StartBrake()
 
 void ARGX_PlayerCharacter::EndBrake()
 {
+	return;
+
 	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
 	if (CharacterMovementComponent)
 	{
@@ -647,11 +650,6 @@ void ARGX_PlayerCharacter::RotatePlayerTowardsInput()
 	{
 		SetActorRotation(InputDirection.Rotation());
 	}
-}
-
-float ARGX_PlayerCharacter::GetCurrentMaxSpeed() const
-{
-	return GetCharacterMovement()->MaxWalkSpeed;
 }
 
 void ARGX_PlayerCharacter::HandleDamage(

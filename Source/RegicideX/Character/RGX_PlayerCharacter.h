@@ -157,8 +157,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void RotatePlayerTowardsInput();
 
-	float GetCurrentMaxSpeed() const override;
-
 	/** Events called from attribute set changes to decouple the logic. They call BP events. */
 	virtual void HandleDamage(
 		float DamageAmount,

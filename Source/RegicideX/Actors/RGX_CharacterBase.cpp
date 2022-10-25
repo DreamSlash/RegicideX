@@ -84,34 +84,49 @@ bool ARGX_CharacterBase::IsFallingDown()
 	return GetCharacterMovement() && GetCharacterMovement()->IsFalling() && GetVelocity().Z < 0;
 }
 
-float ARGX_CharacterBase::GetCurrentMaxSpeed() const
+float ARGX_CharacterBase::GetOriginalMaxSpeed() const
 {
 	return MoveSpeed;
 }
 
-void ARGX_CharacterBase::SetCurrentMaxSpeed(float Speed)
+float ARGX_CharacterBase::GetCurrentMaxSpeed() const
 {
-	MoveSpeed = Speed;
+	return GetCharacterMovement()->MaxWalkSpeed;
 }
 
-float ARGX_CharacterBase::GetCurrentMaxAcceleration() const
+void ARGX_CharacterBase::SetCurrentMaxSpeed(float Speed)
+{
+	GetCharacterMovement()->MaxWalkSpeed = Speed;
+}
+
+float ARGX_CharacterBase::GetOriginalMaxAcceleration() const
 {
 	return MaxAcceleration;
 }
 
-void ARGX_CharacterBase::SetCurrentMaxAcceleration(float Acceleration)
+float ARGX_CharacterBase::GetCurrentMaxAcceleration() const
 {
-	MaxAcceleration = Acceleration;
+	return GetCharacterMovement()->MaxAcceleration;
 }
 
-float ARGX_CharacterBase::GetCurrentGravityScale() const
+void ARGX_CharacterBase::SetCurrentMaxAcceleration(float Acceleration)
+{
+	GetCharacterMovement()->MaxAcceleration = Acceleration;
+}
+
+float ARGX_CharacterBase::GetOriginalGravityScale() const
 {
 	return GravityScale;
 }
 
+float ARGX_CharacterBase::GetCurrentGravityScale() const
+{
+	return GetCharacterMovement()->GravityScale;
+}
+
 void ARGX_CharacterBase::SetCurrentGravityScale(float Scale)
 {
-	GravityScale = Scale;
+	GetCharacterMovement()->GravityScale = Scale;
 }
 
 float ARGX_CharacterBase::GetHealth() const

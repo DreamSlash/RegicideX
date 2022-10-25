@@ -268,7 +268,7 @@ void ARGX_EnemyBase::CheckIfHasLostSightOfPlayer()
 		if (RegainSightCos < Dot)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Has Regained Sight"));
-			GetCharacterMovement()->MaxWalkSpeed = GetCurrentMaxSpeed();
+			GetCharacterMovement()->MaxWalkSpeed = GetOriginalMaxSpeed();
 			bHasLostSightOfPlayer = false;
 		}
 	}
