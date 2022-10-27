@@ -21,7 +21,7 @@ void URGX_SpearsAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle
 	if (bActivationSuccessful == false)
 		return;
 
-	CastSpearsAttack(ActorInfo->AvatarActor.Get());
+	//CastSpearsAttack(ActorInfo->AvatarActor.Get());
 }
 
 void URGX_SpearsAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled)
@@ -29,12 +29,12 @@ void URGX_SpearsAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, con
 	Super::EndAbility(Handle, ActorInfo, ActivationInfo, bReplicateEndAbility, bWasCancelled);
 }
 
-void URGX_SpearsAbility::OnInputReleased(float TimeHeld)
-{
-	LaunchSpearsAttack();
-	UE_LOG(LogTemp, Warning, TEXT("On Released\n"));
-	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
-}
+//void URGX_SpearsAbility::OnInputReleased(float TimeHeld)
+//{
+//	LaunchSpearsAttack();
+//	UE_LOG(LogTemp, Warning, TEXT("On Released\n"));
+//	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
+//}
 
 void URGX_SpearsAbility::CastSpearsAttack(AActor* CasterActor)
 {
@@ -76,8 +76,10 @@ void URGX_SpearsAbility::CastSpearsAttack(AActor* CasterActor)
 		SpearsArray.Add(SpawnedSpear);
 	}
 
-	FTimerHandle TimerHandle;
-	GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &URGX_SpearsAbility::OnHoldSpearsTimeOut, ReleaseSpearTime, false);
+	OnHoldSpearsTimeOut();
+
+	//FTimerHandle TimerHandle;
+	//GetWorld()->GetTimerManager().SetTimer(TimerHandle, this, &URGX_SpearsAbility::OnHoldSpearsTimeOut, ReleaseSpearTime, false);
 }
 
 void URGX_SpearsAbility::LaunchSpearsAttack()
