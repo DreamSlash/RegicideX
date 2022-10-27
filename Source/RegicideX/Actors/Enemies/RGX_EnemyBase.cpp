@@ -245,6 +245,8 @@ void ARGX_EnemyBase::Tick(float DeltaTime)
 
 void ARGX_EnemyBase::CheckIfHasLostSightOfPlayer()
 {
+	if (TargetActor == nullptr) return;
+
 	const FVector MyForward = GetActorForwardVector();
 	const FVector VectorToTarget = TargetActor->GetActorLocation() - GetActorLocation();
 	const float Dot = FVector::DotProduct(MyForward, VectorToTarget);
@@ -495,6 +497,8 @@ void ARGX_EnemyBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 bool ARGX_EnemyBase::WasHitInTheBack() const
 {
+	if (TargetActor == nullptr) return false;
+
 	FVector MyForward = GetActorForwardVector();
 	MyForward.Z = 0.0f;
 	MyForward.Normalize();
