@@ -47,8 +47,8 @@ private:
 
 protected:
 
-	UFUNCTION()
-	void OnInputReleased(float TimeHeld);
+	//UFUNCTION()
+	//void OnInputReleased(float TimeHeld);
 
 	UFUNCTION(BlueprintCallable)
 	void CastSpearsAttack(AActor* CasterActor);
