@@ -574,7 +574,7 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 		InputHandlerComponent->ResetInputState();
 	}
 
-	CheckBrake(DeltaTime);
+	//CheckBrake(DeltaTime);
 	RotateToTarget(DeltaTime);
 	UpdateStrafingSpeed();
 	

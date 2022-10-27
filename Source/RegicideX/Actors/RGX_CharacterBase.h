@@ -93,10 +93,7 @@ public:
 	bool bWasFallingDownThisFrame;
 
 	UFUNCTION(BlueprintCallable)
-	void OnBeingLaunched(
-		AActor* ActorInstigator, 
-		URGX_LaunchEventDataAsset* LaunchPayload,
-		float LaunchDelay = 0.2f);
+	void OnBeingLaunched(AActor* ActorInstigator, URGX_LaunchEventDataAsset* LaunchPayload);
 
 	UFUNCTION(BlueprintCallable)
 	void RotateDirectlyTowardsActor(const AActor* Target);
@@ -166,6 +163,8 @@ protected:
 	void HandleEndKnockedUp();
 
 	virtual void OnHandleEndKnockedUp();
+
+	virtual bool CanBeLaunched(AActor* ActorInstigator, URGX_LaunchEventDataAsset* LaunchPayload);
 
 	UFUNCTION()
 	void ResetGravity();

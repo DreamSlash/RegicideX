@@ -166,11 +166,17 @@ bool ARGX_CharacterBase::IsAlive()
 	return GetHealth() > 0.0f ? true : false;
 }
 
+bool ARGX_CharacterBase::CanBeLaunched(AActor* ActorInstigator, URGX_LaunchEventDataAsset* LaunchPayload)
+{
+	return true;
+}
+
 void ARGX_CharacterBase::OnBeingLaunched(
 	AActor* ActorInstigator,
-	URGX_LaunchEventDataAsset* LaunchPayload,
-	float LaunchDelay)
+	URGX_LaunchEventDataAsset* LaunchPayload)
 {
+	if (CanBeLaunched(ActorInstigator, LaunchPayload) == false) return;
+
 	// Decompose payload
 	const FVector ActorLocation = GetActorLocation();
 	float VerticalForce = LaunchPayload->LaunchVerticalForce;
@@ -202,7 +208,7 @@ void ARGX_CharacterBase::OnBeingLaunched(
 
 	LaunchCharacter(LaunchForce, bOverrideXY, bOverrideZ);
 
-	if (LaunchPayload->bKnockUp == true)
+	if (LaunchPayload->bKnockUp == true && bCanBeKnockup == true)
 	{
 		AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.KnockedUp")));
 	}

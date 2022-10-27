@@ -12,6 +12,36 @@ ARGX_Peasant_Shield::ARGX_Peasant_Shield()
 
 }
 
+bool ARGX_Peasant_Shield::CanBeLaunched(AActor* ActorInstigator, URGX_LaunchEventDataAsset* LaunchPayload)
+{
+	bool bResult = Super::CanBeLaunched(ActorInstigator, LaunchPayload);
+	if (bResult == false) return false;
+
+	// if shield is not available the peasant can be launched
+	if (ShieldAmount <= 0.0f == true) return true;
+
+	// if shield is available and the launch attack comes from the front, the launch is mitigated
+	FVector MyForward = GetActorForwardVector();
+	MyForward.Z = 0.0f;
+	MyForward.Normalize();
+
+	FVector ToTarget = ActorInstigator->GetActorLocation() - GetActorLocation();
+	ToTarget.Z = 0.0f;
+	ToTarget.Normalize();
+
+	const float DotProduct = FVector::DotProduct(MyForward, ToTarget);
+
+	UE_LOG(LogTemp, Warning, TEXT("Dot Product: %f"), DotProduct);
+
+	if (DotProduct > 0.3f)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Shield canceled launch"));
+		return false;
+	}
+
+	return true;
+}
+
 float ARGX_Peasant_Shield::HandleDamageMitigation(float DamageAmount, const FHitResult& HitInfo, const FGameplayTagContainer& DamageTags, ARGX_CharacterBase* InstigatorCharacter, AActor* DamageCauser)
 {
 	if (bImmune)
