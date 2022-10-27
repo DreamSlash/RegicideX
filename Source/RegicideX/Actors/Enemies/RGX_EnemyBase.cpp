@@ -213,7 +213,9 @@ void ARGX_EnemyBase::Tick(float DeltaTime)
 				}
 			}
 		}
-		else */if (bCanRotate && bDefaultFocusPlayer)
+		*/
+
+		if (bCanRotate && bDefaultFocusPlayer)
 		{
 			RotateToTarget(DeltaTime);
 		}
@@ -295,6 +297,10 @@ void ARGX_EnemyBase::HandleDamage(
 		// Play reaction hit animation.
 		if (GetMovementComponent()->IsFalling())
 		{
+			FVector Direction = GetActorLocation() - InstigatorCharacter->GetActorLocation();
+			HitReactDirection = Direction.GetSafeNormal2D();
+			RotateDirectlyTowardsActor(InstigatorCharacter);
+
 			UAnimMontage* AnimToPlay = nullptr;
 			const FAnimationArray AnimationList = *AnimMontageMap.Find(ERGX_AnimEvent::AirHitReact);
 			if (AnimationList.Animations.Num() > 0)
@@ -317,7 +323,15 @@ void ARGX_EnemyBase::HandleDamage(
 
 			if (IsWeak() == false )
 			{
-				const FAnimationArray& animationList = GetAnimationList(HitReactFlag);
+				bool bWasHitInTheBack = WasHitInTheBack();
+				if (bWasHitInTheBack == false)
+				{
+					FVector Direction = GetActorLocation() - InstigatorCharacter->GetActorLocation();
+					HitReactDirection = Direction.GetSafeNormal2D();
+					RotateDirectlyTowardsActor(InstigatorCharacter);
+				}
+
+				const FAnimationArray& animationList = GetAnimationList(HitReactFlag, bWasHitInTheBack);
 				UAnimMontage* AnimToPlay = nullptr;
 				if (animationList.Animations.Num() > 0)
 				{
@@ -341,7 +355,8 @@ void ARGX_EnemyBase::HandleDamage(
 		RemoveGameplayTag(FGameplayTag::RequestGameplayTag("Status.Enemy.Weakened"));
 		//StopLogic("Character Dead");
 		UAnimMontage* AnimToPlay = nullptr;
-		const FAnimationArray& animationList = GetAnimationList(ERGX_AnimEvent::Death);
+		bool bWasHitInTheBack = WasHitInTheBack();
+		const FAnimationArray& animationList = GetAnimationList(ERGX_AnimEvent::Death, bWasHitInTheBack);
 		if (animationList.Animations.Num() > 0)
 		{
 			const int32 index = UKismetMathLibrary::RandomIntegerInRange(0, animationList.Animations.Num() - 1);
@@ -508,15 +523,17 @@ bool ARGX_EnemyBase::WasHitInTheBack() const
 	ToTarget.Normalize();
 
 	const float dot = FVector::DotProduct(MyForward, ToTarget);
-	return dot > 0.0f;
+	bool bResult = dot > 0.0f;
+
+	return bResult;
 }
 
-const FAnimationArray& ARGX_EnemyBase::GetAnimationList(ERGX_AnimEvent HitReactFlag) const
+const FAnimationArray& ARGX_EnemyBase::GetAnimationList(ERGX_AnimEvent HitReactFlag, bool bWasHitInTheBack) const
 {
 	if (BackAnimMontageMap.Contains(HitReactFlag) == false)
 	{
 		return *AnimMontageMap.Find(HitReactFlag);
 	}
 	
-	return (WasHitInTheBack() ? *BackAnimMontageMap.Find(HitReactFlag) : *AnimMontageMap.Find(HitReactFlag));
+	return (bWasHitInTheBack ? *BackAnimMontageMap.Find(HitReactFlag) : *AnimMontageMap.Find(HitReactFlag));
 }

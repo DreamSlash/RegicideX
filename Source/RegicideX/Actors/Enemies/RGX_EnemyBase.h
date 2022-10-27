@@ -242,5 +242,5 @@ private:
 	FTimeline RotationTowardsTargetTimeline;
 
 	bool WasHitInTheBack() const;
-	const FAnimationArray& GetAnimationList(ERGX_AnimEvent HitReactFlag) const;
+	const FAnimationArray& GetAnimationList(ERGX_AnimEvent HitReactFlag, bool bWasHitInTheBack) const;
 };

@@ -220,13 +220,6 @@ void URGX_HitboxComponent::HandleOverlappedActor(AActor* OtherActor, UPrimitiveC
 
 	bool bCanApplyEffects = CheckCanApplyEffect(OtherActor);
 	ETeamAttitude::Type Attitude = FGenericTeamId::GetAttitude(OwnerActor, OtherActor);
-	if (ARGX_CharacterBase* TargetCharacter = Cast<ARGX_CharacterBase>(OtherActor))
-	{
-		FVector Direction = TargetCharacter->GetActorLocation() - OwnerActor->GetActorLocation();
-		TargetCharacter->HitReactDirection = Direction.GetSafeNormal2D();
-		TargetCharacter->RotateDirectlyTowardsActor(OwnerActor);
-	}
-
 	if (Attitude == TeamToApply && bCanApplyEffects)
 	{
 		SendCollisionEvents(OwnerActor, OtherActor, bFromSweep, SweepResult);
