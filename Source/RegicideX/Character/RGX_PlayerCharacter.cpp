@@ -358,11 +358,12 @@ void ARGX_PlayerCharacter::HandleAction(const ERGX_PlayerActions Action)
 
 void ARGX_PlayerCharacter::UpdateMana(const float AddedMana)
 {
-	if (ManaAttributeSet->GetMana() + AddedMana > ManaAttributeSet->GetMaxMana())
+	if (ManaAttributeSet->GetMana() + AddedMana >= ManaAttributeSet->GetMaxMana())
 		{
 		if (ManaAttributeSet->GetManaStack() == ManaAttributeSet->GetMaxManaStack())
 		{
 			ManaAttributeSet->SetMana(ManaAttributeSet->GetMaxMana());
+			ManaAttributeSet->SetManaStack(ManaAttributeSet->GetMaxManaStack());
 		}
 		else
 		{
