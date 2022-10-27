@@ -96,7 +96,7 @@ public:
 	void OnBeingLaunched(AActor* ActorInstigator, URGX_LaunchEventDataAsset* LaunchPayload);
 
 	UFUNCTION(BlueprintCallable)
-	void RotateDirectlyTowardsActor(const AActor* Target);
+	void RotateDirectlyTowardsActor(const AActor* Target, bool bFaceBackwards = false);
 
 	virtual void OnHitboxHit(UGameplayAbility* MeleeAbility, FGameplayEventData EventData, TSubclassOf<class UCameraShakeBase> CameraShakeClass);
 

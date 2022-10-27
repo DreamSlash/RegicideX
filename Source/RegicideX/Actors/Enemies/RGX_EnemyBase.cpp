@@ -324,12 +324,9 @@ void ARGX_EnemyBase::HandleDamage(
 			if (IsWeak() == false )
 			{
 				bool bWasHitInTheBack = WasHitInTheBack();
-				if (bWasHitInTheBack == false)
-				{
-					FVector Direction = GetActorLocation() - InstigatorCharacter->GetActorLocation();
-					HitReactDirection = Direction.GetSafeNormal2D();
-					RotateDirectlyTowardsActor(InstigatorCharacter);
-				}
+				FVector Direction = GetActorLocation() - InstigatorCharacter->GetActorLocation();
+				HitReactDirection = Direction.GetSafeNormal2D();
+				RotateDirectlyTowardsActor(InstigatorCharacter, bWasHitInTheBack);
 
 				const FAnimationArray& animationList = GetAnimationList(HitReactFlag, bWasHitInTheBack);
 				UAnimMontage* AnimToPlay = nullptr;

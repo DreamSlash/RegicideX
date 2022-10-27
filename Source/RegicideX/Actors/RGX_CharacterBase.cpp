@@ -215,7 +215,7 @@ void ARGX_CharacterBase::OnBeingLaunched(
 	// TODO: If the character is in air maybe it is mandatory to apply a minimum Z force due to an Unreal bug
 }
 
-void ARGX_CharacterBase::RotateDirectlyTowardsActor(const AActor* Target)
+void ARGX_CharacterBase::RotateDirectlyTowardsActor(const AActor* Target, bool bFaceBackwards)
 {
 	const FRotator selfRotation = GetActorRotation();
 
@@ -223,7 +223,7 @@ void ARGX_CharacterBase::RotateDirectlyTowardsActor(const AActor* Target)
 	const FVector targetLocation = Target->GetActorLocation();
 	const FRotator lookRotation = UKismetMathLibrary::FindLookAtRotation(selfLocation, targetLocation);
 
-	const FRotator desiredRotation = FRotator(selfRotation.Pitch, lookRotation.Yaw, selfRotation.Roll);
+	const FRotator desiredRotation = FRotator(selfRotation.Pitch, bFaceBackwards ? lookRotation.Yaw + 180.0f : lookRotation.Yaw, selfRotation.Roll);
 
 	SetActorRotation(desiredRotation);
 }
