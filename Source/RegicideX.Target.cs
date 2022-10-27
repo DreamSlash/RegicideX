@@ -10,5 +10,7 @@ public class RegicideXTarget : TargetRules
 		Type = TargetType.Game;
 		DefaultBuildSettings = BuildSettingsVersion.V2;
 		ExtraModuleNames.Add("RegicideX");
+		bUseLoggingInShipping = true;
+		bOverrideBuildEnvironment = true;
 	}
 }
