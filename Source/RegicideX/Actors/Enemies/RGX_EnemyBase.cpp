@@ -297,10 +297,6 @@ void ARGX_EnemyBase::HandleDamage(
 		// Play reaction hit animation.
 		if (GetMovementComponent()->IsFalling())
 		{
-			FVector Direction = GetActorLocation() - InstigatorCharacter->GetActorLocation();
-			HitReactDirection = Direction.GetSafeNormal2D();
-			RotateDirectlyTowardsActor(InstigatorCharacter);
-
 			UAnimMontage* AnimToPlay = nullptr;
 			const FAnimationArray AnimationList = *AnimMontageMap.Find(ERGX_AnimEvent::AirHitReact);
 			if (AnimationList.Animations.Num() > 0)
@@ -324,9 +320,6 @@ void ARGX_EnemyBase::HandleDamage(
 			if (IsWeak() == false )
 			{
 				bool bWasHitInTheBack = WasHitInTheBack();
-				FVector Direction = GetActorLocation() - InstigatorCharacter->GetActorLocation();
-				HitReactDirection = Direction.GetSafeNormal2D();
-				RotateDirectlyTowardsActor(InstigatorCharacter, bWasHitInTheBack);
 
 				const FAnimationArray& animationList = GetAnimationList(HitReactFlag, bWasHitInTheBack);
 				UAnimMontage* AnimToPlay = nullptr;

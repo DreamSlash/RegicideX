@@ -238,6 +238,8 @@ protected:
 
 	void CheckKnockUpState();
 
+	virtual bool WasHitInTheBack() const { return false; }
+
 public:
 	/** GameplayTagAssetInterface methods */
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
