@@ -253,6 +253,13 @@ void ARGX_CharacterBase::HandleDamage(
 	}
 
 	OnDamaged(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser);
+
+	if (IsAlive())
+	{
+		FVector Direction = GetActorLocation() - InstigatorCharacter->GetActorLocation();
+		HitReactDirection = Direction.GetSafeNormal2D();
+		RotateDirectlyTowardsActor(InstigatorCharacter, WasHitInTheBack());
+	}
 }
 
 void ARGX_CharacterBase::HandleHealthChanged(float DeltaValue, const FGameplayTagContainer& EventTags)

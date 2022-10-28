@@ -174,6 +174,8 @@ protected:
 
 	void SpawnSouls(const int Quantity);
 
+	bool WasHitInTheBack() const override;
+
 public:
 	virtual FGenericTeamId GetGenericTeamId() const override;
 
@@ -241,6 +243,5 @@ public:
 private:
 	FTimeline RotationTowardsTargetTimeline;
 
-	bool WasHitInTheBack() const;
 	const FAnimationArray& GetAnimationList(ERGX_AnimEvent HitReactFlag, bool bWasHitInTheBack) const;
 };
