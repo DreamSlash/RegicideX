@@ -80,6 +80,7 @@ void URGX_DivineDescent::Tick(float DeltaTime)
 	}
 	else
 	{
+		owner->RotateToTarget(DeltaTime);
 		owner->SetActorLocation(NewLocation);
 	}
 
