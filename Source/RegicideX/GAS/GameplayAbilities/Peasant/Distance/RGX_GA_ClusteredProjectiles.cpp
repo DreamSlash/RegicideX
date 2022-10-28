@@ -55,6 +55,8 @@ void URGX_GA_ClusteredProjectiles::OnReceivedEvent(
 	{
 		Transform.SetTranslation(Point);
 		ARGX_Projectile* Bullet = GetWorld()->SpawnActor<ARGX_Projectile>(BulletBP, Transform);
+		if (!Bullet)
+			continue;
 		Bullet->SetGenericTeamId(TeamIdToApply);
 		Bullet->Instigator = GetAvatarActorFromActorInfo();
 	}
