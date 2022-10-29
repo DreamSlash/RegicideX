@@ -297,6 +297,9 @@ protected:
 
 	void UpdateStrafingSpeed();
 
+	UFUNCTION()
+	void ResetPawnCollisionResponse();
+
 public:
 	/** Stops any combo logic. It should be called at any action that interrupts an ongoing combo from the Combo system. */
 	UFUNCTION(BlueprintCallable)

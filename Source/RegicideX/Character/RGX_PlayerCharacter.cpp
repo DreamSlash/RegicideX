@@ -262,6 +262,16 @@ void ARGX_PlayerCharacter::ManageJumpInput()
 	GetAbilitySystemComponent()->CancelAbilities(&TagContainer);
 	OnInterrupted();
 
+	if (GetCapsuleComponent())
+	{
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+		// Reset collision with pawn after player has jumped
+		FTimerDelegate TimerDel;
+		FTimerHandle TimerHandle;
+		TimerDel.BindUFunction(this, FName("ResetPawnCollisionResponse"));
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, 0.25f, false);
+	}
+
 	Jump();
 	OnJump();
 }
@@ -798,6 +808,11 @@ void ARGX_PlayerCharacter::Landed(const FHitResult& Hit)
 		ECollisionChannel CollisionChannel = PrimitiveComponent->GetCollisionObjectType();
 		if (CollisionChannel == ECollisionChannel::ECC_WorldStatic)
 		{
+			if (GetCapsuleComponent())
+			{
+				GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+			}
+
 			InputHandlerComponent->ResetAirState();
 
 			AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
@@ -824,6 +839,8 @@ void ARGX_PlayerCharacter::OnCapsuleHit(UPrimitiveComponent* HitComponent, AActo
 		{
 			const FVector Normal = Hit.Normal;
 			const FVector PlayerLaunchForce = Normal * FVector(1.0f, 1.0f, -1.0f) * 100.0f;
+
+			GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
 
 			LaunchCharacter(PlayerLaunchForce, true, true);
 
@@ -904,5 +921,13 @@ void ARGX_PlayerCharacter::UpdateStrafingSpeed()
 		{
 			GetCharacterMovement()->MaxWalkSpeed = StrafingBackwardsSpeed;
 		}
+	}
+}
+
+void ARGX_PlayerCharacter::ResetPawnCollisionResponse()
+{	
+	if (GetCapsuleComponent())
+	{
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
 	}
 }
