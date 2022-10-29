@@ -25,12 +25,6 @@ ARGX_GroundExplosion::ARGX_GroundExplosion()
 
 	ExplosionCollider = CreateDefaultSubobject<USphereComponent>(TEXT("ExplosionCollider"));
 	ExplosionCollider->SetupAttachment(RootComponent);
-
-	CircumferenceDecal = CreateDefaultSubobject<UDecalComponent>(TEXT("CircumferenceDecal"));
-	CircumferenceDecal->SetupAttachment(RootComponent);
-
-	AreaDecal = CreateDefaultSubobject<UDecalComponent>(TEXT("AreaDecal"));
-	AreaDecal->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -38,36 +32,22 @@ void ARGX_GroundExplosion::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CircumRef = CircumferenceDecal->CreateDynamicMaterialInstance();
-	CircumRef->SetScalarParameterValue(FName("Circum1Area0"), 1.0);
-
-	AreaRef = AreaDecal->CreateDynamicMaterialInstance();
-	AreaRef->SetScalarParameterValue(FName("Circum1Area0"), 0.0);
-
-	if (AreaCurve)
+	FHitResult result;
+	FVector location = GetActorLocation();
+	if (GetWorld()->LineTraceSingleByChannel(result, location, location * FVector(1, 1, -1), ECollisionChannel::ECC_WorldStatic))
 	{
-		FOnTimelineFloat TimelineCallback;
-		FOnTimelineEventStatic TimelineFinishedCallback;
-		TimelineFinishedCallback.BindLambda([this]() { Explode(); });
-
-		AreaTimeLine.AddInterpFloat(AreaCurve, TimelineCallback);
-		AreaTimeLine.SetTimelineFinishedFunc(TimelineFinishedCallback);
-
-		AreaTimeLine.PlayFromStart();
+		location.Z = result.ImpactPoint.Z;
 	}
-	//GetWorld()->GetTimerManager().SetTimer(ExplosionTimerHandle)
+	UNiagaraComponent* tell = UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), TellVFX, location, GetActorRotation(), FVector(3.0f, 3.0f, 1.0f), true, false);
+	tell->SetFloatParameter(DurationParameter, ExplosionTime);
+	tell->ActivateSystem();
+
+	GetWorld()->GetTimerManager().SetTimer(ExplosionTimerHandle, [this]() { Explode(); }, ExplosionTime, false);
 }
 
 void ARGX_GroundExplosion::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (AreaCurve)
-	{
-		AreaTimeLine.TickTimeline(DeltaTime);
-
-		AreaRef->SetScalarParameterValue(FName("AreaValue"), AreaCurve->GetFloatValue(AreaTimeLine.GetPlaybackPosition()));
-	}
 }
 
 void ARGX_GroundExplosion::Explode()
@@ -86,7 +66,7 @@ void ARGX_GroundExplosion::Explode()
 	// Fix Z to hit the ground
 	FHitResult result;
 	FVector location = GetActorLocation();
-	DrawDebugLine(GetWorld(), location, location * FVector(1, 1, -1), FColor(255, 0, 0), true, 5.0f, 0, 5.0f);
+	//DrawDebugLine(GetWorld(), location, location * FVector(1, 1, -1), FColor(255, 0, 0), true, 5.0f, 0, 5.0f);
 	if (GetWorld()->LineTraceSingleByChannel(result, location, location * FVector(1, 1, -1), ECollisionChannel::ECC_WorldStatic))
 	{
 		location.Z = result.ImpactPoint.Z;

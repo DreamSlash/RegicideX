@@ -28,22 +28,19 @@ protected:
 	USphereComponent* ExplosionCollider = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UDecalComponent* CircumferenceDecal = nullptr;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UDecalComponent* AreaDecal = nullptr;
+	UNiagaraSystem* TellVFX = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float ExplosionTime = 3.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UCurveFloat* AreaCurve = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<AActor> TargetActor;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UNiagaraSystem* ExplosionVFX = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FName DurationParameter;
 
 protected:
 	// Called when the game starts or when spawned
@@ -57,9 +54,5 @@ public:
 
 private:
 	FTimerHandle ExplosionTimerHandle;
-	FTimeline AreaTimeLine;
-
-	UMaterialInstanceDynamic* CircumRef = nullptr;
-	UMaterialInstanceDynamic* AreaRef = nullptr;
 
 };
