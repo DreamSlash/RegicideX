@@ -291,9 +291,14 @@ void ARGX_EnemyBase::HandleDamage(
 
 	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser, HitReactFlag);
 
-	StopAnimMontage();
 	if (IsAlive())
 	{
+		bool bCanCancelAnimation = GetAbilitySystemComponent()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CannotHitReact"))) == false;
+		if (bCanCancelAnimation == false)
+			return;
+
+		StopAnimMontage();
+
 		// Play reaction hit animation.
 		if (GetMovementComponent()->IsFalling())
 		{
@@ -340,6 +345,7 @@ void ARGX_EnemyBase::HandleDamage(
 	}
 	else
 	{
+		StopAnimMontage();
 		// If damage killed the actor, we should kill its AI Logic and clean weak status as it is already dead.
 		bWeak = false;
 		RemoveGameplayTag(FGameplayTag::RequestGameplayTag("Status.Enemy.Weakened"));
