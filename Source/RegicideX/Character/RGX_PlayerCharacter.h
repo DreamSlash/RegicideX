@@ -6,6 +6,7 @@
 #include "RegicideX/Actors/RGX_CharacterBase.h"
 #include "RegicideX/Components/RGX_CombatAssistComponent.h"
 #include "RegicideX/Enums/RGX_InputEnums.h"
+#include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RGX_PlayerCharacter.generated.h"
 
 class USpringArmComponent;
@@ -213,6 +214,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	URGX_LaunchEventDataAsset* MoveAwayLaunchPayload;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FRGX_EffectContextContainer AutoDamageEffectContextContainer;
+
 protected:
 	/** Called for forwards/backwards input */
 	void MoveForward(float Value);
@@ -296,6 +300,9 @@ protected:
 	// ----------------
 
 	void UpdateStrafingSpeed();
+
+	UFUNCTION()
+	void ResetPawnCollisionResponse();
 
 public:
 	/** Stops any combo logic. It should be called at any action that interrupts an ongoing combo from the Combo system. */

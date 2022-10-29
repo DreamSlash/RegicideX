@@ -240,6 +240,8 @@ protected:
 
 	virtual bool WasHitInTheBack() const { return false; }
 
+	void AutoHurt();
+
 public:
 	/** GameplayTagAssetInterface methods */
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
