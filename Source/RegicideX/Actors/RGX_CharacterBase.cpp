@@ -387,6 +387,10 @@ void ARGX_CharacterBase::CheckKnockUpState()
 	}
 }
 
+void ARGX_CharacterBase::AutoHurt()
+{
+}
+
 void ARGX_CharacterBase::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
 {
 	AbilitySystemComponent->GetOwnedGameplayTags(TagContainer);
