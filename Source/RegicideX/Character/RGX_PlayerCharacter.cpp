@@ -17,7 +17,6 @@
 #include "RegicideX/GameplayFramework/RGX_PlayerState.h"
 #include "RegicideX/GAS/AttributeSets/RGX_MovementAttributeSet.h"
 #include "RegicideX/GAS/AttributeSets/RGX_ManaAttributeSet.h"
-#include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RegicideX/Notifies/RGX_ANS_JumpComboSection.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -28,6 +27,8 @@
 #include "Components/WidgetComponent.h"
 #include "RegicideX/GAS/GameplayAbilities/Common/RGX_GA_MeleeAttackAbility.h"
 #include "Camera/CameraShakeBase.h"
+#include "RegicideX/GAS/RGX_GameplayEffectContext.h"
+#include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GameplayAbility.h"
 
 ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 {
@@ -533,10 +534,15 @@ void ARGX_PlayerCharacter::EndBrake()
 
 void ARGX_PlayerCharacter::PrintDebugInformation()
 {
-	TArray<FGameplayAttribute> attributes;
-	AbilitySystemComponent->GetAllAttributes(attributes);
-
-	ComboSystemComponent->DrawDebugInfo();
+	UAbilitySystemComponent* ACS = GetAbilitySystemComponent();
+	if (ACS)
+	{
+		TSubclassOf<UGameplayEffect> GameplayEffectToApply = AutoDamageEffectContextContainer.EffectToApply;
+		FGameplayEffectContextHandle ContextHandle = ACS->MakeEffectContext();
+		FRGX_GameplayEffectContext* RGXContext = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
+		RGXContext->OptionalObject = AutoDamageEffectContextContainer.Payload;
+		ACS->ApplyGameplayEffectToTarget(GameplayEffectToApply->GetDefaultObject<UGameplayEffect>(), ACS, GetCharacterLevel(), ContextHandle);
+	}
 }
 
 void ARGX_PlayerCharacter::ChangeTimeScale()
@@ -677,8 +683,20 @@ void ARGX_PlayerCharacter::HandleDamage(
 
 	if (IsAlive())
 	{
-		const FAnimationArray AnimationList = *AnimMontageMap.Find(HitReactFlag);
 		UAnimMontage* AnimToPlay = nullptr;
+		ERGX_AnimEvent AnimEventFlag = HitReactFlag;
+
+		UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+		if (CharacterMovementComponent)
+		{
+			if(CharacterMovementComponent->IsFalling())
+			{
+				AnimEventFlag = ERGX_AnimEvent::KnockbackHitReact;
+			}
+		}
+
+		const FAnimationArray AnimationList = *AnimMontageMap.Find(AnimEventFlag);
+		
 		if (AnimationList.Animations.Num() > 0)
 		{
 			int32 Index = UKismetMathLibrary::RandomIntegerInRange(0, AnimationList.Animations.Num() - 1);

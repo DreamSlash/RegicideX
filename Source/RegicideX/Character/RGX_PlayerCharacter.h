@@ -6,6 +6,7 @@
 #include "RegicideX/Actors/RGX_CharacterBase.h"
 #include "RegicideX/Components/RGX_CombatAssistComponent.h"
 #include "RegicideX/Enums/RGX_InputEnums.h"
+#include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RGX_PlayerCharacter.generated.h"
 
 class USpringArmComponent;
@@ -212,6 +213,9 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	URGX_LaunchEventDataAsset* MoveAwayLaunchPayload;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FRGX_EffectContextContainer AutoDamageEffectContextContainer;
 
 protected:
 	/** Called for forwards/backwards input */
