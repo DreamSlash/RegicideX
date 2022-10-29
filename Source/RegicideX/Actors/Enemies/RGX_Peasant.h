@@ -22,10 +22,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	URGX_MovementAssistComponent* MovementAssistComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UNiagaraComponent* TellVFX = nullptr;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	int IdleAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	float TellVFXTime = 1.0f;
+
 	float GetDistanceToTarget() const;
+
+	UFUNCTION(BlueprintCallable)
+	void ActivateTellVFX();
 
 protected:
 
@@ -40,4 +49,8 @@ protected:
 
 	// Bool to signal if actor is going to get destroyed.
 	virtual void HandleDeath() override;
+
+private:
+	FTimerHandle TellVFXTimerHandle;
+
 };
