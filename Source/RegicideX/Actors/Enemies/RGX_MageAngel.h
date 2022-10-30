@@ -18,6 +18,9 @@ class REGICIDEX_API ARGX_MageAngel : public ARGX_EnemyBase
 	
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+		UCapsuleComponent* MageCapsule = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 		USceneComponent* RingWaveSource = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
@@ -36,6 +39,4 @@ public:
 		ARGX_CharacterBase* InstigatorCharacter,
 		AActor* DamageCauser,
 		ERGX_AnimEvent HitReactFlag) override;
-
-	void HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags) override;
 };

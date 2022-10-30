@@ -24,51 +24,59 @@ public:
 	UPROPERTY()
 		class UCameraComponent* Camera;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = DynamicCamera, EditAnywhere, BlueprintReadWrite)
 		float CombatRadius = 1200;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float TargetingConeAngle = 45.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float DesiredYawAngle = 20.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float MinYawAngle = 15.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float MaxYawAngle = 30.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float DesiredPitchAngle = 15.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float MinPitchAngle = 10.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-		float MaxPitchAngle = 20.0f;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = DynamicCamera, EditAnywhere, BlueprintReadWrite)
 		float MaxZoomOut = 2000.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = DynamicCamera, EditAnywhere, BlueprintReadWrite)
 		float ZoomOutPerVisibleEnemy = 50.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = DynamicCamera, EditAnywhere, BlueprintReadWrite)
 		float ZoomOutPerNotVisibleEnemy = 300.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = DynamicCamera, EditAnywhere, BlueprintReadWrite)
+		float ZoomOutPerAngelNearby = 300.0f;
+
+	UPROPERTY(Category = DynamicCamera, EditAnywhere, BlueprintReadWrite)
 		float ZoomOutAirCombo = 200.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = DynamicCamera, EditAnywhere, BlueprintReadWrite)
 		float CameraSpeed = 1.0f;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Category = DynamicCamera, EditAnywhere, BlueprintReadWrite)
 		float UpdateDistanceOffset = 10.0f;
+
+	UPROPERTY(Category = TargetingSystem, EditAnywhere, BlueprintReadWrite)
+		float TargetingConeAngle = 45.0f;
+
+	UPROPERTY(Category = TargetingSystem, EditAnywhere, BlueprintReadWrite)
+		float DesiredYawAngle = 20.0f;
+
+	UPROPERTY(Category = TargetingSystem, EditAnywhere, BlueprintReadWrite)
+		float MinYawAngle = 15.0f;
+
+	UPROPERTY(Category = TargetingSystem, EditAnywhere, BlueprintReadWrite)
+		float MaxYawAngle = 30.0f;
+
+	UPROPERTY(Category = TargetingSystem, EditAnywhere, BlueprintReadWrite)
+		float DesiredPitchAngle = 0.0f;
+
+	UPROPERTY(Category = TargetingSystem, EditAnywhere, BlueprintReadWrite)
+		float MinPitchAngle = -10.0f;
+
+	UPROPERTY(Category = TargetingSystem, EditAnywhere, BlueprintReadWrite)
+		float MaxPitchAngle = 10.0f;
 
 	UPROPERTY(BlueprintAssignable)
 		FRGX_TargetUpdatedDelegate OnTargetUpdated;
 
+	UPROPERTY()
+		bool bTargetingEnabled = false;
+
+	UPROPERTY()
+		TWeakObjectPtr<ARGX_EnemyBase> CurrentTarget;
 
 protected:
 	// Called when the game starts
@@ -112,11 +120,8 @@ private:
 	UPROPERTY()
 	class ARGX_PlayerCharacter* Owner = nullptr;
 
-	TWeakObjectPtr<ARGX_EnemyBase> CurrentTarget;
-
 	float OriginalArmLength;
 
-	bool bTargetingIsActive = false;
 	bool bFindNearestTargetExecuted = false;
 
 };

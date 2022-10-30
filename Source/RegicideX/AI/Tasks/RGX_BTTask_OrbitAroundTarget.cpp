@@ -147,7 +147,7 @@ void URGX_BTTask_OrbitAroundTarget::TickTask(UBehaviorTreeComponent& OwnerComp, 
 		CurrentOrbitTime = 0.0f;
 		OwnerComp.GetBlackboardComponent()->SetValueAsFloat(CurrentOrbitTimeName, CurrentOrbitTime);
 		Enemy->Orbiting = false;
-		Enemy->GetCharacterMovement()->MaxWalkSpeed = Enemy->MoveSpeed;
+		Enemy->GetCharacterMovement()->MaxWalkSpeed = Enemy->GetOriginalMaxSpeed();
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	}
 	else

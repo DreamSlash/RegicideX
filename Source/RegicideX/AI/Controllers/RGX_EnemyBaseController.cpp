@@ -19,6 +19,7 @@
 
 #include "Navigation/CrowdFollowingComponent.h"
 
+#include "RegicideX/Character/RGX_PlayerCharacter.h"
 #include "RegicideX/Actors/RGX_CombatManager.h"
 
 //#pragma optimize("", off)
@@ -58,6 +59,40 @@ void ARGX_EnemyBaseController::StartLogic()
 {
 	// Start Behavior Tree
 	BehaviorTreeComponent->StartTree(*Agent->BehaviorTree);
+
+	if (BehaviorPhases.Num() > 0)
+	{
+		BehaviorPhases.Sort([](const FBehaviorPhaseInfo& Left, const FBehaviorPhaseInfo& Right)
+			{
+				return Left.HealthThreshold >= Right.HealthThreshold;
+			});
+
+		UpdateDynamicBehavior(BehaviorPhases[BehaviorPhaseIndex++]);
+	}
+}
+
+void ARGX_EnemyBaseController::OnEnemyHealthChanged(float CurrentHealth, float MaxHealth)
+{
+	const float proportion = CurrentHealth / MaxHealth;
+
+	if (BehaviorPhaseIndex < (uint32)BehaviorPhases.Num())
+	{
+		const FBehaviorPhaseInfo& phaseInfo = BehaviorPhases[BehaviorPhaseIndex];
+		if (proportion < phaseInfo.HealthThreshold)
+		{
+			UpdateDynamicBehavior(phaseInfo);
+
+			++BehaviorPhaseIndex;
+		}
+	}
+}
+
+void ARGX_EnemyBaseController::UpdateDynamicBehavior(const FBehaviorPhaseInfo& PhaseInfo)
+{
+	for (auto it = PhaseInfo.TreeByTag.begin(); it != PhaseInfo.TreeByTag.end(); ++it)
+	{
+		BehaviorTreeComponent->SetDynamicSubtree(it.Key(), it.Value());
+	}
 }
 
 void ARGX_EnemyBaseController::DamageTaken()
@@ -109,7 +144,10 @@ bool ARGX_EnemyBaseController::InitializeBlackboard(UBlackboardComponent& Blackb
 		StrafeDirectionKeyId = Blackboard->GetKeyID("StrafeDirection");
 		StrafeLocationKeyId = Blackboard->GetKeyID("StrafeLocation");
 
-		BlackboardComp.SetValue<UBlackboardKeyType_Object>(TargetKeyId, Agent->TargetActor);
+		// [SM] Hack to get the player for angels, as they don't use the combat manager directly
+		AActor* player = Agent->TargetActor != nullptr ? Agent->TargetActor : CombatManager->Player.Get();
+
+		BlackboardComp.SetValue<UBlackboardKeyType_Object>(TargetKeyId, player);
 		BlackboardComp.SetValue<UBlackboardKeyType_Enum>(AIStateKeyId, ERGX_EnemyAIState::None);
 		BlackboardComp.SetValue<UBlackboardKeyType_Enum>(StrafeDirectionKeyId, ERGX_StrafeDirection::None);
 	}

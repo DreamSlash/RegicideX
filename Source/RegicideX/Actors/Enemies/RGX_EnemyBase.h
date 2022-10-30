@@ -106,6 +106,9 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	URGX_HitboxesManagerComponent* HitboxesManager = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	USceneComponent* TargetingTransform = nullptr;
+
 protected:
 
 	/** Target widget component to notify the player this is the enemy on target. */
@@ -170,6 +173,8 @@ protected:
 	// End of FGenericTeamId interface
 
 	void SpawnSouls(const int Quantity);
+
+	bool WasHitInTheBack() const override;
 
 public:
 	virtual FGenericTeamId GetGenericTeamId() const override;
@@ -238,4 +243,5 @@ public:
 private:
 	FTimeline RotationTowardsTargetTimeline;
 
+	const FAnimationArray& GetAnimationList(ERGX_AnimEvent HitReactFlag, bool bWasHitInTheBack) const;
 };

@@ -7,11 +7,16 @@
 #include "Components/SkeletalMeshComponent.h"
 #include "EngineUtils.h"
 #include "Kismet/GameplayStatics.h"
+#include "NiagaraComponent.h"
+
 #include "RegicideX/Components/RGX_MovementAssistComponent.h"
 
 ARGX_Peasant::ARGX_Peasant()
 {
 	MovementAssistComponent = CreateDefaultSubobject<URGX_MovementAssistComponent>(TEXT("MovementAssistComponent"));
+	TellVFX = CreateDefaultSubobject<UNiagaraComponent>(TEXT("TellNiagaraComponent"));
+	TellVFX->SetupAttachment(GetMesh());
+
 	GetMesh()->SetHiddenInGame(true, true);
 	bImmune = true;
 }
@@ -29,6 +34,13 @@ void ARGX_Peasant::BeginPlay()
 void ARGX_Peasant::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+}
+
+void ARGX_Peasant::ActivateTellVFX()
+{
+	TellVFX->Activate(true);
+
+	GetWorld()->GetTimerManager().SetTimer(TellVFXTimerHandle, [this]() { TellVFX->Deactivate(); }, TellVFXTime, false);
 }
 
 void ARGX_Peasant::Activate()

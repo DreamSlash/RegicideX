@@ -6,6 +6,7 @@
 #include "RegicideX/Actors/RGX_CharacterBase.h"
 #include "RegicideX/Components/RGX_CombatAssistComponent.h"
 #include "RegicideX/Enums/RGX_InputEnums.h"
+#include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RGX_PlayerCharacter.generated.h"
 
 class USpringArmComponent;
@@ -16,6 +17,7 @@ class URGX_ComboSystemComponent;
 class URGX_CombatAssistComponent;
 class URGX_InputHandlerComponent;
 class URGX_MovementAttributeSet;
+class URGX_ManaAttributeSet;
 class URGX_InteractComponent;
 class URGX_LaunchEventDataAsset;
 class UGameplayEffect;
@@ -56,9 +58,15 @@ class REGICIDEX_API ARGX_PlayerCharacter : public ARGX_CharacterBase
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class URGX_CameraControllerComponent* CameraControllerComponent = nullptr;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Movement, meta = (AllowPrivateAccess = "true"))
+	class URGX_MovementAssistComponent* MovementAssistComponent = nullptr;
+
 	// Attributes ---------------
 	UPROPERTY()
 	URGX_MovementAttributeSet* MovementAttributeSet = nullptr;
+
+	UPROPERTY()
+	URGX_ManaAttributeSet* ManaAttributeSet = nullptr;
 
 	// --------------------------
 public:
@@ -75,9 +83,17 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Camera)
 	float BaseLookUpRate;
 
-	// TODO [REFACTOR]: Move this to AbilitySystemComponent.
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	TArray<FGameplayTag> PowerSkills;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Strafing)
+	float RotationSpeedWhenStrafing = 5.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Strafing)
+	float StrafingSpeed = 400.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Strafing)
+	float StrafingBackwardsSpeed = 200.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Strafing)
+	float StrafingAcceleration = 2000.f;
 
 	UPROPERTY()
 	uint8 CurrentSkillSelected = 0;
@@ -86,15 +102,15 @@ public:
 	FGameplayTag CurrentSkillTag;
 
 	/** If true, player is in window to carry on with the combo if appropiate input is pressed. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(BlueprintReadWrite)
 	bool bCanCombo = false;
 
 	/** Signals if player has pressed an input to continue the on going combo. */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	UPROPERTY(BlueprintReadWrite)
 	bool bContinueCombo = false;
 
 	/** If true, we can jump to next section in the combo. */
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite)
 	bool bCanJumpToComboSection = false;
 
 	/** Holds the AnimNotifyState of the current attack, which has the information for the combo to follow. */
@@ -106,11 +122,11 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	TEnumAsByte<EObjectTypeQuery> DodgeableObjectType;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	bool bIsFallingDown = false;
-
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY()
 	bool bIsBraking;
+
+	UPROPERTY()
+	bool bIsStrafing = false;
 
 	void BeginPlay() override;
 
@@ -198,6 +214,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	URGX_LaunchEventDataAsset* MoveAwayLaunchPayload;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	FRGX_EffectContextContainer AutoDamageEffectContextContainer;
+
 protected:
 	/** Called for forwards/backwards input */
 	void MoveForward(float Value);
@@ -223,8 +242,13 @@ protected:
 
 	void Landed(const FHitResult& Hit) override;
 
+	virtual void OnHandleEndKnockedUp() override;
+
 	UFUNCTION(BlueprintCallable)
 	void OnCapsuleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit);
+
+	UFUNCTION()
+	void OnTargetUpdatedImpl(ARGX_EnemyBase* NewTarget);
 
 protected:
 	// --- APawn interface ---
@@ -232,6 +256,8 @@ protected:
 
 	void PossessedBy(AController* NewController) override;
 	// -----------------------
+
+	void RotateToTarget(float DeltaTime);
 
 	// FGenericTeamId interface
 	void SetGenericTeamId(const FGenericTeamId& TeamID) override;
@@ -249,10 +275,11 @@ protected:
 	void ManageJumpInput();
 	void ManageJumpInputReleased();
 
+	void ManageSpearAttackInput();
+
 	void PerformFallAttack();
 	void PerformLaunchAttack();
 	void PerformHeavyAttack();
-	void ChangePowerSkill();
 
 	void ToggleTargeting();
 	void EnableTargeting();
@@ -264,19 +291,18 @@ protected:
 	void StartBrake();
 	void EndBrake();
 
-	//void ManagePowerSkillInput();
 	void TryToInteract();
-	// ----------------------------------
-
-	/* Level and experience*/
-	//void LevelUp(const float NewLevel);
-	// ----------------------
 
 	// Debug
 	void PrintDebugInformation();
 
 	void ChangeTimeScale();
 	// ----------------
+
+	void UpdateStrafingSpeed();
+
+	UFUNCTION()
+	void ResetPawnCollisionResponse();
 
 public:
 	/** Stops any combo logic. It should be called at any action that interrupts an ongoing combo from the Combo system. */
@@ -293,6 +319,16 @@ public:
 	/* Input Handler calls this to let the player handle the action */
 	UFUNCTION()
 	void HandleAction(const ERGX_PlayerActions Action);
+
+	/* Called when hitting an enemy. By default mana is increased by 10.0f but we should change such input mana calculations when needed.*/
+	UFUNCTION()
+	void UpdateMana(const float AddedMana = 10.0f);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnAddStack();
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnUpdateMana();
 
 	virtual void OnHitboxHit(UGameplayAbility* MeleeAbility, FGameplayEventData EventData, TSubclassOf<UCameraShakeBase> CameraShakeClass) override;
 

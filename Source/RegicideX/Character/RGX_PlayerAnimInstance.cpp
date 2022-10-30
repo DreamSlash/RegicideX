@@ -34,7 +34,9 @@ void URGX_PlayerAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 	bIsDashing = PlayerCharacter->IsDashing();
 	bIsAlive = PlayerCharacter->IsAlive();
 	bIsBraking = PlayerCharacter->bIsBraking;
+	bIsStrafing = PlayerCharacter->bIsStrafing;
 
+	Direction = CalculateDirection(PlayerCharacter->GetVelocity(), PlayerCharacter->GetActorRotation());
 	CharacterRotationLastFrame = CharacterRotation;
 	CharacterRotation = PlayerCharacter->GetActorRotation();
 	const FRotator Delta = UKismetMathLibrary::NormalizedDeltaRotator(CharacterRotation, CharacterRotationLastFrame);

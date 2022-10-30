@@ -7,7 +7,7 @@
 #include "RegicideX/GAS/RGX_PayloadObjects.h"
 #include "RegicideX/Actors/RGX_CharacterBase.h"
 #include "RGX_BlueprintLibrary.generated.h"
-
+ 
 /**
  * 
  */
@@ -28,4 +28,7 @@ public:
 
 	UFUNCTION(BlueprintPure)
 	static FName GetPackageFromLevelAsset(const TSoftObjectPtr<UWorld>& World);
+
+	UFUNCTION(BlueprintCallable)
+	static bool TranslateCharacterMeshToPoint(ACharacter* Actor, FVector GoalPoint, float Alpha, float Tolerance);
 };

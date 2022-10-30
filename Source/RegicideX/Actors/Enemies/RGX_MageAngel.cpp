@@ -3,6 +3,7 @@
 
 #include "RGX_MageAngel.h"
 
+#include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 #include "RegicideX/AI/Controllers/RGX_MageAngelController.h"
@@ -11,6 +12,14 @@ ARGX_MageAngel::ARGX_MageAngel()
 	: ARGX_EnemyBase()
 {
 	PrimaryActorTick.bCanEverTick = true;
+
+	MageCapsule = CreateDefaultSubobject<UCapsuleComponent>(TEXT("MageCapsule"));
+	MageCapsule->SetCollisionProfileName(UCollisionProfile::Pawn_ProfileName);
+	MageCapsule->CanCharacterStepUpOn = ECB_No;
+	MageCapsule->SetShouldUpdatePhysicsVolume(true);
+	MageCapsule->SetCanEverAffectNavigation(false);
+	MageCapsule->bDynamicObstacle = true;
+	MageCapsule->SetupAttachment(GetMesh());
 
 	RingWaveSource = CreateDefaultSubobject<USceneComponent>(TEXT("RingWaveSource"));
 	RingWaveSource->SetupAttachment(RootComponent);
@@ -43,15 +52,4 @@ void ARGX_MageAngel::HandleDamage(float DamageAmount
 	, ERGX_AnimEvent HitReactFlag)
 {
 	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser, HitReactFlag);
-}
-
-void ARGX_MageAngel::HandleHealthChanged(float DeltaValue, const struct FGameplayTagContainer& EventTags)
-{
-	if (ARGX_MageAngelController* controller = GetController<ARGX_MageAngelController>())
-	{
-		const float currentHealth = GetHealth();
-		const float maxHealth = GetMaxHealth();
-
-		controller->OnMageAngelHealthChanged(currentHealth, maxHealth);
-	}
 }

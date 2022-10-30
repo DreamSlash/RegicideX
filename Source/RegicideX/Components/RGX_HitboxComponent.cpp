@@ -216,24 +216,17 @@ void URGX_HitboxComponent::HandleOverlappedActor(AActor* OtherActor, UPrimitiveC
 		OwnerActor = GetOwner();
 	}
 
+	if (OwnerActor == OtherActor) return;
+
 	bool bCanApplyEffects = CheckCanApplyEffect(OtherActor);
 	ETeamAttitude::Type Attitude = FGenericTeamId::GetAttitude(OwnerActor, OtherActor);
-
-	ARGX_CharacterBase* TargetCharacter = Cast<ARGX_CharacterBase>(OtherActor);
-	if (TargetCharacter != nullptr)
-	{
-		FVector Direction = OwnerActor->GetActorLocation() - TargetCharacter->GetActorLocation();
-		Direction.Normalize();
-		TargetCharacter->HitReactDirection = Direction;
-	}
-
 	if (Attitude == TeamToApply && bCanApplyEffects)
 	{
 		SendCollisionEvents(OwnerActor, OtherActor, bFromSweep, SweepResult);
 
 		ARGX_PlayerCharacter* Player = Cast<ARGX_PlayerCharacter>(OwnerActor);
-		if(Player)
-			OnHitting();
+		if (Player)
+			Player->UpdateMana();
 	}
 
 	HandleDestroyOnOverlap(OtherActor, Attitude, bCanApplyEffects);

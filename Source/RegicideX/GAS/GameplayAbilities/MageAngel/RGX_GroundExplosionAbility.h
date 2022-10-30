@@ -12,7 +12,7 @@ class REGICIDEX_API URGX_GroundExplosionAbility : public URGX_MageAngelExplosion
 	GENERATED_BODY()
 
 protected:
-	void OnExplode() override;
+	void OnGround() override;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)

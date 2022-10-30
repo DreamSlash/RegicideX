@@ -17,6 +17,8 @@
 #include "RegicideX/UI/RGX_EnemyHealthBar.h"
 #include "RegicideX/Components/RGX_InteractComponent.h"
 
+//#pragma optimize("", off)
+
 // Sets default values
 ARGX_EnemyBase::ARGX_EnemyBase()
 {
@@ -33,6 +35,9 @@ ARGX_EnemyBase::ARGX_EnemyBase()
 	DebugAttributesWidgetComponent->SetupAttachment(RootComponent);
 
 	HitboxesManager = CreateDefaultSubobject<URGX_HitboxesManagerComponent>(TEXT("HitboxesManager"));
+
+	TargetingTransform = CreateDefaultSubobject<USceneComponent>(TEXT("TargetingTransform"));
+	TargetingTransform->SetupAttachment(GetMesh());
 
 	bAbilitiesInitialized = false;
 }
@@ -117,7 +122,7 @@ void ARGX_EnemyBase::MoveToTarget(float DeltaTime, FVector TargetPos)
 	{
 		const FVector MyFront = this->GetActorForwardVector();
 		const FVector CurrentLocation = this->GetActorLocation();
-		FVector NewLocation = CurrentLocation + MyFront * MoveSpeed * DeltaTime;
+		FVector NewLocation = CurrentLocation + MyFront * GetCurrentMaxSpeed() * DeltaTime;
 		this->SetActorLocation(NewLocation);
 	}
 }
@@ -208,7 +213,9 @@ void ARGX_EnemyBase::Tick(float DeltaTime)
 				}
 			}
 		}
-		else */if (bCanRotate && bDefaultFocusPlayer)
+		*/
+
+		if (bCanRotate && bDefaultFocusPlayer)
 		{
 			RotateToTarget(DeltaTime);
 		}
@@ -240,6 +247,8 @@ void ARGX_EnemyBase::Tick(float DeltaTime)
 
 void ARGX_EnemyBase::CheckIfHasLostSightOfPlayer()
 {
+	if (TargetActor == nullptr) return;
+
 	const FVector MyForward = GetActorForwardVector();
 	const FVector VectorToTarget = TargetActor->GetActorLocation() - GetActorLocation();
 	const float Dot = FVector::DotProduct(MyForward, VectorToTarget);
@@ -263,7 +272,7 @@ void ARGX_EnemyBase::CheckIfHasLostSightOfPlayer()
 		if (RegainSightCos < Dot)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Has Regained Sight"));
-			GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
+			GetCharacterMovement()->MaxWalkSpeed = GetOriginalMaxSpeed();
 			bHasLostSightOfPlayer = false;
 		}
 	}
@@ -282,19 +291,14 @@ void ARGX_EnemyBase::HandleDamage(
 
 	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser, HitReactFlag);
 
-	FVector MyForward = GetActorForwardVector();
-	MyForward.Z = 0.0f;
-	MyForward.Normalize();
-
-	FVector ToTarget = TargetActor->GetActorLocation() - GetActorLocation();
-	ToTarget.Z = 0.0f;
-	ToTarget.Normalize();
-
-	const float DotProduct = FVector::DotProduct(MyForward, ToTarget);
-
-	StopAnimMontage();
 	if (IsAlive())
 	{
+		bool bCanCancelAnimation = GetAbilitySystemComponent()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CannotHitReact"))) == false;
+		if (bCanCancelAnimation == false)
+			return;
+
+		StopAnimMontage();
+
 		// Play reaction hit animation.
 		if (GetMovementComponent()->IsFalling())
 		{
@@ -320,19 +324,14 @@ void ARGX_EnemyBase::HandleDamage(
 
 			if (IsWeak() == false )
 			{
-				const FAnimationArray AnimationList = *AnimMontageMap.Find(HitReactFlag);
+				bool bWasHitInTheBack = WasHitInTheBack();
+
+				const FAnimationArray& animationList = GetAnimationList(HitReactFlag, bWasHitInTheBack);
 				UAnimMontage* AnimToPlay = nullptr;
-				if (AnimationList.Animations.Num() > 0)
+				if (animationList.Animations.Num() > 0)
 				{
-					if (DotProduct < 0.0 && AnimationList.Animations.Num() > 2)
-					{
-						AnimToPlay = AnimationList.Animations[2];
-					}
-					else 
-					{
-						int32 Index = UKismetMathLibrary::RandomIntegerInRange(0, AnimationList.Animations.Num() - 2);
-						AnimToPlay = AnimationList.Animations[Index];
-					}
+					const int32 index = UKismetMathLibrary::RandomIntegerInRange(0, animationList.Animations.Num() - 1);
+					AnimToPlay = animationList.Animations[index];
 				}
 				else
 				{
@@ -346,24 +345,18 @@ void ARGX_EnemyBase::HandleDamage(
 	}
 	else
 	{
+		StopAnimMontage();
 		// If damage killed the actor, we should kill its AI Logic and clean weak status as it is already dead.
 		bWeak = false;
 		RemoveGameplayTag(FGameplayTag::RequestGameplayTag("Status.Enemy.Weakened"));
 		//StopLogic("Character Dead");
 		UAnimMontage* AnimToPlay = nullptr;
-		const FAnimationArray AnimationList = *AnimMontageMap.Find(ERGX_AnimEvent::Death);
-		if (AnimationList.Animations.Num() > 0)
+		bool bWasHitInTheBack = WasHitInTheBack();
+		const FAnimationArray& animationList = GetAnimationList(ERGX_AnimEvent::Death, bWasHitInTheBack);
+		if (animationList.Animations.Num() > 0)
 		{
-			if (DotProduct < 0.0 && AnimationList.Animations.Num() > 1) 
-			{
-				AnimToPlay = AnimationList.Animations[1];
-			}
-			else 
-			{
-				//int32 Index = UKismetMathLibrary::RandomIntegerInRange(0, AnimationList.Animations.Num() - 1);
-				AnimToPlay = AnimationList.Animations[0];
-			}
-			
+			const int32 index = UKismetMathLibrary::RandomIntegerInRange(0, animationList.Animations.Num() - 1);
+			AnimToPlay = animationList.Animations[index];
 		}
 		else
 		{
@@ -383,6 +376,14 @@ void ARGX_EnemyBase::HandleHealthChanged(float DeltaValue, const struct FGamepla
 	if (ACS->bIsInitialized == true)
 	{
 		OnHealthChanged(DeltaValue, EventTags);
+	}
+
+	if (ARGX_EnemyBaseController* controller = GetController<ARGX_EnemyBaseController>())
+	{
+		const float currentHealth = GetHealth();
+		const float maxHealth = GetMaxHealth();
+
+		controller->OnEnemyHealthChanged(currentHealth, maxHealth);
 	}
 }
 
@@ -503,4 +504,32 @@ void ARGX_EnemyBase::EndPlay(const EEndPlayReason::Type EndPlayReason)
 		//MyGameMode->OnEnemyDeath(0);
 	}
 	Super::EndPlay(EndPlayReason);
+}
+
+bool ARGX_EnemyBase::WasHitInTheBack() const
+{
+	if (TargetActor == nullptr) return false;
+
+	FVector MyForward = GetActorForwardVector();
+	MyForward.Z = 0.0f;
+	MyForward.Normalize();
+
+	FVector ToTarget = GetActorLocation() - TargetActor->GetActorLocation();
+	ToTarget.Z = 0.0f;
+	ToTarget.Normalize();
+
+	const float dot = FVector::DotProduct(MyForward, ToTarget);
+	bool bResult = dot > 0.0f;
+
+	return bResult;
+}
+
+const FAnimationArray& ARGX_EnemyBase::GetAnimationList(ERGX_AnimEvent HitReactFlag, bool bWasHitInTheBack) const
+{
+	if (BackAnimMontageMap.Contains(HitReactFlag) == false)
+	{
+		return *AnimMontageMap.Find(HitReactFlag);
+	}
+	
+	return (bWasHitInTheBack ? *BackAnimMontageMap.Find(HitReactFlag) : *AnimMontageMap.Find(HitReactFlag));
 }

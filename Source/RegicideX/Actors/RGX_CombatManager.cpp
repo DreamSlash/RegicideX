@@ -5,7 +5,6 @@
 #include "Engine/World.h"
 #include "Kismet/GameplayStatics.h"
 
-#include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
 #include "RegicideX/AI/Controllers/RGX_EnemyBaseController.h"
 #include "RegicideX/Character/RGX_PlayerCharacter.h"
 
@@ -198,7 +197,7 @@ void ARGX_CombatManager::UpdateMeleeEnemies()
 			if (item.IsValid())
 			{
 				item.Distance = FVector::Dist2D(playerLocation, item.Enemy->GetActorLocation());
-				const float speed = item.Enemy->MoveSpeed;
+				const float speed = item.Enemy->GetCurrentMaxSpeed();
 
 				const float distanceScore = (item.Distance / speed) * DistanceWeight;
 				const float visibilityScore = (item.Enemy->IsInFrustum() ? 0.0 : IsNotInFrustumScore) * IsNotInFrustumWeight;
@@ -232,7 +231,7 @@ void ARGX_CombatManager::UpdateDistanceEnemies()
 			if (item.IsValid())
 			{
 				item.Distance = FVector::Dist2D(playerLocation, item.Enemy->GetActorLocation());
-				const float speed = item.Enemy->MoveSpeed;
+				const float speed = item.Enemy->GetCurrentMaxSpeed();
 
 				const float distanceScore = (item.Distance/speed) * DistanceWeight;
 				const float visibilityScore = (item.Enemy->IsInFrustum() ? 0.0 : IsNotInFrustumScore) * IsNotInFrustumWeight;

@@ -42,6 +42,7 @@ void URGX_DivineDescent::Tick(float DeltaTime)
 		return;
 
 	ARGX_MeleeAngel* owner = Cast<ARGX_MeleeAngel>(GetAvatarActorFromActorInfo());
+
 	if (owner == nullptr || owner->bCharging == false) {
 		return;
 	}
@@ -79,7 +80,13 @@ void URGX_DivineDescent::Tick(float DeltaTime)
 	}
 	else
 	{
+		owner->RotateToTarget(DeltaTime);
 		owner->SetActorLocation(NewLocation);
+	}
+
+	if (bAdditionalTranslationEnded == false)
+	{
+		bAdditionalTranslationEnded = URGX_BlueprintLibrary::TranslateCharacterMeshToPoint(owner, owner->HeightGoal, DeltaTime * 10.0f, 2.0f);
 	}
 }
 

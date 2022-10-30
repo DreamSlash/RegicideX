@@ -71,9 +71,6 @@ public:
 	UFUNCTION()
 	bool IsGoingToOverlapActor(AActor* Actor);
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnHitting();
-
 public:
 	FRGX_HitboxOverlapDelegate OnHitboxOverlap;
 

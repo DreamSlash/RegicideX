@@ -20,17 +20,13 @@ enum class ERGX_AbilityInputID : uint8
 	Confirm				UMETA(DisplayName = "Confirm"),
 	Cancel				UMETA(DisplayName = "Cancel"),
 	LightAttack			UMETA(DisplayName = "LightAttack"),
-	CancelLightAttack	UMETA(DisplayName = "CancelLightAttack"),
 	HeavyAttack			UMETA(DisplayName = "HeavyAttack"),
-	CancelHeavyAttack	UMETA(DisplayName = "CancelHeavyAttack"),
 	Evasion				UMETA(DisplayName = "Evasion"),
-	CancelEvasion		UMETA(DisplayName = "CancelEvasion"),
 	PowerSkill			UMETA(DisplayName = "PowerSkill"),
-	CancelPowerSkill	UMETA(DisplayName = "CancelPowerSkill"),
-	Ability2			UMETA(DisplayName = "Ability2"),
+	ShootSkill			UMETA(DisplayName = "ShootSkill"),
 	Sprint				UMETA(DisplayName = "Sprint"),
 	Jump				UMETA(DisplayName = "Jump"),
-	StopJump			UMETA(DisplayName = "StopJump")
+	Heal				UMETA(DisplayName = "Heal"),
 };
 
 USTRUCT()

@@ -16,7 +16,7 @@ class REGICIDEX_API URGX_RingWavesAbility : public URGX_MageAngelExplosionAbilit
 	GENERATED_BODY()
 
 protected:
-	void OnStartLoop() override;
+	void OnGround() override;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)

@@ -4,6 +4,7 @@
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameplayAbilitySpec.h"
 #include "Camera/CameraShakeBase.h"
+#include "Kismet/KismetMathLibrary.h"
 
 ARGX_CharacterBase::ARGX_CharacterBase()
 {
@@ -30,11 +31,22 @@ void ARGX_CharacterBase::UnPossessed()
 {
 }
 
+void ARGX_CharacterBase::HandleEndKnockedUp()
+{
+	OnHandleEndKnockedUp();
+}
+
+void ARGX_CharacterBase::OnHandleEndKnockedUp()
+{
+	ResetGravity();
+}
+
 void ARGX_CharacterBase::ResetGravity()
 {
 	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
 	if (CharacterMovementComponent)
 	{
+		CharacterMovementComponent->MaxAcceleration = MaxAcceleration;
 		CharacterMovementComponent->GravityScale = GravityScale;
 	}
 }
@@ -53,9 +65,68 @@ void ARGX_CharacterBase::BeginPlay()
 
 }
 
+void ARGX_CharacterBase::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+
+	bWasFallingDownThisFrame = IsFallingDown();
+
+	CheckKnockUpState();
+}
+
 UAbilitySystemComponent* ARGX_CharacterBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
+}
+
+bool ARGX_CharacterBase::IsFallingDown()
+{
+	return GetCharacterMovement() && GetCharacterMovement()->IsFalling() && GetVelocity().Z < 0;
+}
+
+float ARGX_CharacterBase::GetOriginalMaxSpeed() const
+{
+	return MoveSpeed;
+}
+
+float ARGX_CharacterBase::GetCurrentMaxSpeed() const
+{
+	return GetCharacterMovement()->MaxWalkSpeed;
+}
+
+void ARGX_CharacterBase::SetCurrentMaxSpeed(float Speed)
+{
+	GetCharacterMovement()->MaxWalkSpeed = Speed;
+}
+
+float ARGX_CharacterBase::GetOriginalMaxAcceleration() const
+{
+	return MaxAcceleration;
+}
+
+float ARGX_CharacterBase::GetCurrentMaxAcceleration() const
+{
+	return GetCharacterMovement()->MaxAcceleration;
+}
+
+void ARGX_CharacterBase::SetCurrentMaxAcceleration(float Acceleration)
+{
+	GetCharacterMovement()->MaxAcceleration = Acceleration;
+}
+
+float ARGX_CharacterBase::GetOriginalGravityScale() const
+{
+	return GravityScale;
+}
+
+float ARGX_CharacterBase::GetCurrentGravityScale() const
+{
+	return GetCharacterMovement()->GravityScale;
+}
+
+void ARGX_CharacterBase::SetCurrentGravityScale(float Scale)
+{
+	GetCharacterMovement()->GravityScale = Scale;
 }
 
 float ARGX_CharacterBase::GetHealth() const
@@ -95,11 +166,17 @@ bool ARGX_CharacterBase::IsAlive()
 	return GetHealth() > 0.0f ? true : false;
 }
 
+bool ARGX_CharacterBase::CanBeLaunched(AActor* ActorInstigator, URGX_LaunchEventDataAsset* LaunchPayload)
+{
+	return true;
+}
+
 void ARGX_CharacterBase::OnBeingLaunched(
 	AActor* ActorInstigator,
-	URGX_LaunchEventDataAsset* LaunchPayload,
-	float LaunchDelay)
+	URGX_LaunchEventDataAsset* LaunchPayload)
 {
+	if (CanBeLaunched(ActorInstigator, LaunchPayload) == false) return;
+
 	// Decompose payload
 	const FVector ActorLocation = GetActorLocation();
 	float VerticalForce = LaunchPayload->LaunchVerticalForce;
@@ -131,7 +208,24 @@ void ARGX_CharacterBase::OnBeingLaunched(
 
 	LaunchCharacter(LaunchForce, bOverrideXY, bOverrideZ);
 
+	if (LaunchPayload->bKnockUp == true && bCanBeKnockup == true)
+	{
+		AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.KnockedUp")));
+	}
 	// TODO: If the character is in air maybe it is mandatory to apply a minimum Z force due to an Unreal bug
+}
+
+void ARGX_CharacterBase::RotateDirectlyTowardsActor(const AActor* Target, bool bFaceBackwards)
+{
+	const FRotator selfRotation = GetActorRotation();
+
+	const FVector selfLocation = GetActorLocation();
+	const FVector targetLocation = Target->GetActorLocation();
+	const FRotator lookRotation = UKismetMathLibrary::FindLookAtRotation(selfLocation, targetLocation);
+
+	const FRotator desiredRotation = FRotator(selfRotation.Pitch, bFaceBackwards ? lookRotation.Yaw + 180.0f : lookRotation.Yaw, selfRotation.Roll);
+
+	SetActorRotation(desiredRotation);
 }
 
 void ARGX_CharacterBase::OnHitboxHit(UGameplayAbility* MeleeAbility, FGameplayEventData EventData, TSubclassOf<UCameraShakeBase> CameraShakeClass)
@@ -159,6 +253,13 @@ void ARGX_CharacterBase::HandleDamage(
 	}
 
 	OnDamaged(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser);
+
+	if (IsAlive())
+	{
+		FVector Direction = GetActorLocation() - InstigatorCharacter->GetActorLocation();
+		HitReactDirection = Direction.GetSafeNormal2D();
+		RotateDirectlyTowardsActor(InstigatorCharacter, WasHitInTheBack());
+	}
 }
 
 void ARGX_CharacterBase::HandleHealthChanged(float DeltaValue, const FGameplayTagContainer& EventTags)
@@ -261,6 +362,33 @@ FGenericTeamId ARGX_CharacterBase::GetGenericTeamId() const
 	static const FGenericTeamId PlayerTeam(0);
 	static const FGenericTeamId AITeam(1);
 	return Cast<APlayerController>(GetController()) ? PlayerTeam : AITeam;
+}
+
+void ARGX_CharacterBase::CheckKnockUpState()
+{
+	FGameplayTag KnockUpTag = FGameplayTag::RequestGameplayTag("Status.KnockedUp");
+	bool bWasKnockedUp = HasMatchingGameplayTag(KnockUpTag);
+	if (bWasKnockedUp == true && IsFallingDown())
+	{
+		RemoveGameplayTag(KnockUpTag);
+
+		UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+		if (CharacterMovementComponent)
+		{
+			// Change gravity scale
+			CharacterMovementComponent->GravityScale = 0.0f;
+
+			// Reset gravity scale after a delay
+			FTimerDelegate TimerDel;
+			FTimerHandle TimerHandle;
+			TimerDel.BindUFunction(this, FName("HandleEndKnockedUp"));
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, TimeGravityZeroAfterKnockUp, false);
+		}
+	}
+}
+
+void ARGX_CharacterBase::AutoHurt()
+{
 }
 
 void ARGX_CharacterBase::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const

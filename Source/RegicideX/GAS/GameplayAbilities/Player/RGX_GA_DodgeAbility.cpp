@@ -22,6 +22,9 @@ void URGX_DodgeAbility::ActivateAbility(const FGameplayAbilitySpecHandle Handle,
 		UCharacterMovementComponent* CharacterMovementComponent = PlayerCharacter->GetCharacterMovement();
 		if (CharacterMovementComponent)
 		{
+			PreviousMaxAcceleration = PlayerCharacter->GetCurrentMaxAcceleration();
+			PreviousGravityScale = PlayerCharacter->GetCurrentGravityScale();
+
 			CharacterMovementComponent->MaxAcceleration = 99999999.0f;
 			CharacterMovementComponent->GravityScale = 0.0f;
 		}
@@ -51,8 +54,8 @@ void URGX_DodgeAbility::EndAbility(const FGameplayAbilitySpecHandle Handle, cons
 	ARGX_PlayerCharacter* Character = Cast<ARGX_PlayerCharacter>(ActorInfo->AvatarActor);
 	if (Character)
 	{
-		Character->GetCharacterMovement()->MaxAcceleration = Character->MaxAcceleration;
-		Character->GetCharacterMovement()->GravityScale = Character->GravityScale;
+		Character->GetCharacterMovement()->MaxAcceleration = PreviousMaxAcceleration;
+		Character->GetCharacterMovement()->GravityScale = PreviousGravityScale;
 		Character->EnableMovementInput();
 
 		UCapsuleComponent* CapsuleComponent = Character->GetCapsuleComponent();

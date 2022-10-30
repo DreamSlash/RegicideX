@@ -35,6 +35,8 @@ void URGX_MeleeAttackAbility::ActivateAbility(const FGameplayAbilitySpecHandle H
 		UCharacterMovementComponent* CharacterMovementComponent = CharacterBase->GetCharacterMovement();
 		if (CharacterMovementComponent)
 		{
+			PreviousMaxAcceleration = CharacterMovementComponent->MaxAcceleration;
+
 			CharacterMovementComponent->MaxAcceleration = 99999999.0f;
 		}
 	}
@@ -66,7 +68,7 @@ void URGX_MeleeAttackAbility::EndAbility(const FGameplayAbilitySpecHandle Handle
 		UCharacterMovementComponent* CharacterMovementComponent = CharacterBase->GetCharacterMovement();
 		if (CharacterMovementComponent)
 		{
-			CharacterMovementComponent->MaxAcceleration = CharacterBase->MaxAcceleration;
+			CharacterMovementComponent->MaxAcceleration = PreviousMaxAcceleration;
 		}
 	}
 }

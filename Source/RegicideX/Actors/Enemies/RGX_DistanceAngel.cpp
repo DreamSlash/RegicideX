@@ -178,7 +178,8 @@ void ARGX_DistanceAngel::HandleDamage(
 	if (IsAlive() == false)
 	{
 		AAIController* AiController = Cast<AAIController>(GetController());
-		AiController->GetBrainComponent()->StopLogic(FString("Character has died."));
+		if(AiController)
+			AiController->GetBrainComponent()->StopLogic(FString("Character has died."));
 
 		SphereCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 		if (LaserBeamRef != nullptr)

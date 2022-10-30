@@ -13,9 +13,10 @@
 #include "RegicideX/Components/RGX_HitboxComponent.h"
 #include "RegicideX/Components/RGX_InputHandlerComponent.h"
 #include "RegicideX/Components/RGX_InteractComponent.h"
+#include "RegicideX/Components/RGX_MovementAssistComponent.h"
 #include "RegicideX/GameplayFramework/RGX_PlayerState.h"
 #include "RegicideX/GAS/AttributeSets/RGX_MovementAttributeSet.h"
-#include "RegicideX/GAS/RGX_PayloadObjects.h"
+#include "RegicideX/GAS/AttributeSets/RGX_ManaAttributeSet.h"
 #include "RegicideX/Notifies/RGX_ANS_JumpComboSection.h"
 #include "Kismet/KismetSystemLibrary.h"
 #include "Kismet/KismetMathLibrary.h"
@@ -26,6 +27,8 @@
 #include "Components/WidgetComponent.h"
 #include "RegicideX/GAS/GameplayAbilities/Common/RGX_GA_MeleeAttackAbility.h"
 #include "Camera/CameraShakeBase.h"
+#include "RegicideX/GAS/RGX_GameplayEffectContext.h"
+#include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GameplayAbility.h"
 
 ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 {
@@ -70,10 +73,11 @@ ARGX_PlayerCharacter::ARGX_PlayerCharacter()
 	CombatAssistComponent		= CreateDefaultSubobject<URGX_CombatAssistComponent>(TEXT("CombatAssistComponent"));
 	InputHandlerComponent		= CreateDefaultSubobject<URGX_InputHandlerComponent>(TEXT("InputHandlerComponent"));
 	MovementAttributeSet		= CreateDefaultSubobject<URGX_MovementAttributeSet>(TEXT("MovementAttributeSet"));
+	ManaAttributeSet			= CreateDefaultSubobject<URGX_ManaAttributeSet>(TEXT("ManaAttributeSet"));
 	InteractComponent			= CreateDefaultSubobject<URGX_InteractComponent>(TEXT("InteractComponent"));
-	InteractComponent->InteractWidgetComponent = InteractWidgetComponent;
+	MovementAssistComponent		= CreateDefaultSubobject<URGX_MovementAssistComponent>(TEXT("MovementAssistComponent"));
 
-	CameraControllerComponent->OnTargetUpdated.__Internal_AddDynamic(CombatAssistComponent, &URGX_CombatAssistComponent::SetTargetFromOutside, "SetTargetFromOutside");
+	InteractComponent->InteractWidgetComponent = InteractWidgetComponent;
 }
 
 void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -87,11 +91,11 @@ void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAction("LightAttack", IE_Released, this, &ARGX_PlayerCharacter::ManageLightAttackInputRelease);
 	PlayerInputComponent->BindAction("HeavyAttack", IE_Pressed, this, &ARGX_PlayerCharacter::ManageHeavyAttackInput);
 	PlayerInputComponent->BindAction("HeavyAttack", IE_Released, this, &ARGX_PlayerCharacter::ManageHeavyAttackInputRelease);
+	PlayerInputComponent->BindAction("ShootSkill", IE_Pressed, this, &ARGX_PlayerCharacter::ManageSpearAttackInput);
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &ARGX_PlayerCharacter::ManageJumpInput);
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ARGX_PlayerCharacter::ManageJumpInputReleased);
 
-	PlayerInputComponent->BindAction("SwitchPowerSkill", IE_Pressed, this, &ARGX_PlayerCharacter::ChangePowerSkill);
 	PlayerInputComponent->BindAction("TimeScale", IE_Pressed, this, &ARGX_PlayerCharacter::ChangeTimeScale);
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &ARGX_PlayerCharacter::TryToInteract);
 	PlayerInputComponent->BindAction("ToggleTargeting", IE_Pressed, this, &ARGX_PlayerCharacter::ToggleTargeting);
@@ -111,7 +115,7 @@ void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ARGX_PlayerCharacter::LookUpAtRate);
 
-	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"), FString("CancelTarget"), FString("EMCVAbilityInputID"), static_cast<int32>(EMCVAbilityInputID::Confirm), static_cast<int32>(EMCVAbilityInputID::Cancel)));
+	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"), FString("CancelTarget"), FString("ERGX_AbilityInputID"), static_cast<int32>(ERGX_AbilityInputID::Confirm), static_cast<int32>(ERGX_AbilityInputID::Cancel)));
 }
 
 void ARGX_PlayerCharacter::PossessedBy(AController* NewController)
@@ -119,6 +123,27 @@ void ARGX_PlayerCharacter::PossessedBy(AController* NewController)
 	Super::PossessedBy(NewController);
 
 	AddGameplayTag(FGameplayTag::RequestGameplayTag("PossessedBy.Player"));
+}
+
+void ARGX_PlayerCharacter::RotateToTarget(float DeltaTime)
+{
+	if (bIsStrafing)
+	{
+		if (CameraControllerComponent->CurrentTarget.IsValid())
+		{
+			const ARGX_EnemyBase* target = CameraControllerComponent->CurrentTarget.Get();
+
+			const FVector selfLocation = GetActorLocation();
+			const FVector targetLocation = target->GetActorLocation();
+
+			const FRotator selfRotation = GetActorRotation();
+			const FRotator lookRotation = UKismetMathLibrary::FindLookAtRotation(selfLocation, targetLocation);
+			const FRotator desiredRotation = FRotator(selfRotation.Pitch, lookRotation.Yaw, selfRotation.Roll);
+
+			const FRotator finalRotation = FMath::Lerp(selfRotation, desiredRotation, RotationSpeedWhenStrafing*DeltaTime);
+			SetActorRotation(finalRotation);
+		}
+	}
 }
 
 void ARGX_PlayerCharacter::SetGenericTeamId(const FGenericTeamId& TeamID)
@@ -238,6 +263,16 @@ void ARGX_PlayerCharacter::ManageJumpInput()
 	GetAbilitySystemComponent()->CancelAbilities(&TagContainer);
 	OnInterrupted();
 
+	if (GetCapsuleComponent())
+	{
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+		// Reset collision with pawn after player has jumped
+		FTimerDelegate TimerDel;
+		FTimerHandle TimerHandle;
+		TimerDel.BindUFunction(this, FName("ResetPawnCollisionResponse"));
+		GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, 0.25f, false);
+	}
+
 	Jump();
 	OnJump();
 }
@@ -247,21 +282,13 @@ void ARGX_PlayerCharacter::ManageJumpInputReleased()
 	StopJumping();
 }
 
-/*
-void ARGX_PlayerCharacter::ManagePowerSkillInput()
+void ARGX_PlayerCharacter::ManageSpearAttackInput()
 {
-	// TODO: Make a component for managing skills?
-
-	if (PowerSkills.Num() <= CurrentSkillSelected)
-	{
-		return;
-	}
-
-	// Fire next attack
+	UE_LOG(LogTemp, Warning, TEXT("Managing Spear power!"));
 	FGameplayEventData EventData;
-	AbilitySystemComponent->HandleGameplayEvent(PowerSkills[CurrentSkillSelected], &EventData);
+	int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("Power.Spears")), &EventData);
 }
-*/
+
 void ARGX_PlayerCharacter::TryToInteract()
 {
 	if (bStaggered == true)
@@ -299,10 +326,6 @@ bool ARGX_PlayerCharacter::IsBeingAttacked()
 		return true;
 	}
 
-	// Check dynamic colliders that potentially will hit us in the next frames
-	//UKismetSystemLibrary::CapsuleOverlapActors(
-		//GetWorld(), PlayerLocation, OutRadius * 1.5f, OutHalfHeight * 1.2f, TraceObjectTypes, nullptr, IgnoreActors, OutActors);
-
 	UKismetSystemLibrary::CapsuleOverlapActors(
 		GetWorld(), PlayerLocation, OutRadius * 4.0f, OutHalfHeight * 2.4f, TraceObjectTypes, nullptr, IgnoreActors, OutActors);
 
@@ -331,20 +354,40 @@ void ARGX_PlayerCharacter::HandleAction(const ERGX_PlayerActions Action)
 	switch(Action)
 	{
 	case ERGX_PlayerActions::LaunchAttack:
-		//UE_LOG(LogTemp, Warning, TEXT("LaunchAttack\n"));
 		PerformLaunchAttack();
 		break;
 	case ERGX_PlayerActions::FallAttack:
-		//UE_LOG(LogTemp, Warning, TEXT("FallAttack\n"));
 		PerformFallAttack();
 		break;
 	case ERGX_PlayerActions::HeavyAttack:
 		PerformHeavyAttack();
 		break;
 	default:
-		//UE_LOG(LogTemp, Warning, TEXT("Manuela\n"));
 		break;
 	}
+}
+
+void ARGX_PlayerCharacter::UpdateMana(const float AddedMana)
+{
+	if (ManaAttributeSet->GetMana() + AddedMana >= ManaAttributeSet->GetMaxMana())
+		{
+		if (ManaAttributeSet->GetManaStack() == ManaAttributeSet->GetMaxManaStack())
+		{
+			ManaAttributeSet->SetMana(ManaAttributeSet->GetMaxMana());
+			ManaAttributeSet->SetManaStack(ManaAttributeSet->GetMaxManaStack());
+		}
+		else
+		{
+			ManaAttributeSet->SetManaStack(ManaAttributeSet->GetManaStack() + 1);
+			ManaAttributeSet->SetMana(0.0f);
+			OnAddStack();
+		}
+	}
+	else
+	{
+		ManaAttributeSet->SetMana(ManaAttributeSet->GetMana() + AddedMana);
+	}
+	OnUpdateMana();
 }
 
 void ARGX_PlayerCharacter::OnHitboxHit(UGameplayAbility* GameplayAbility, FGameplayEventData EventData, TSubclassOf<UCameraShakeBase> CameraShakeClass)
@@ -368,8 +411,6 @@ void ARGX_PlayerCharacter::PerformFallAttack()
 {
 	FGameplayEventData EventData;
 	int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("Combo.Air.Takedown")), &EventData);
-
-	//UE_LOG(LogTemp, Warning, TEXT("Triggered Abilities: %d\n"), TriggeredAbilities);
 }
 
 void ARGX_PlayerCharacter::PerformLaunchAttack()
@@ -377,8 +418,6 @@ void ARGX_PlayerCharacter::PerformLaunchAttack()
 	// Launch Attack
 	FGameplayEventData EventData;
 	int32 TriggeredAbilities = AbilitySystemComponent->HandleGameplayEvent(FGameplayTag::RequestGameplayTag(FName("Combo.Launch")), &EventData);
-
-	//UE_LOG(LogTemp, Warning, TEXT("Triggered Abilities: %d\n"), TriggeredAbilities);
 }
 
 void ARGX_PlayerCharacter::PerformHeavyAttack()
@@ -412,25 +451,6 @@ void ARGX_PlayerCharacter::PerformHeavyAttack()
 	}
 }
 
-void ARGX_PlayerCharacter::ChangePowerSkill()
-{
-	if (PowerSkills.Num() < 2)
-		return;
-
-	RemoveGameplayTag(PowerSkills[CurrentSkillSelected]);
-	CurrentSkillSelected++;
-
-	if (CurrentSkillSelected == PowerSkills.Num())
-	{
-		CurrentSkillSelected = 0;
-	}
-
-	AddGameplayTag(PowerSkills[CurrentSkillSelected]);
-
-	FString SkillName = PowerSkills[CurrentSkillSelected].ToString();
-	//UE_LOG(LogTemp, Warning, TEXT("Power Skill Selected: %s\n"), *SkillName);
-}
-
 void ARGX_PlayerCharacter::ToggleTargeting()
 {
 	CameraControllerComponent->ToggleTargeting();
@@ -458,9 +478,7 @@ void ARGX_PlayerCharacter::TargetRight()
 
 void ARGX_PlayerCharacter::CheckBrake(float DeltaTime)
 {
-	return;
-
-	if (bIsBraking) return;
+	if (bIsBraking || bIsStrafing) return;
 
 	FVector LastInputDirection = GetLastMoveInputDirection();
 	FVector CurrentInputDirection = GetCurrentMoveInputDirection();
@@ -471,12 +489,13 @@ void ARGX_PlayerCharacter::CheckBrake(float DeltaTime)
 	UE_LOG(LogTemp, Warning, TEXT("CurrentInputDirection: %f,%f,%f"), CurrentInputDirection.X, CurrentInputDirection.Y, CurrentInputDirection.Z);
 
 	const float Dot = FVector::DotProduct(LastInputDirection, CurrentInputDirection);
-	bool bDotCondition = Dot < 0.5f;
+	bool bDotCondition = Dot < -0.5f;
 	UE_LOG(LogTemp, Warning, TEXT("Dot: %f"), Dot);
-	//UE_LOG(LogTemp, Warning, TEXT("bDotCondition: %s"), bDotCondition ? TEXT("TRUE") : TEXT("FALSE"));
 	bool bVelocityThreshold = VelocityMagnitudeLastFrame > MinVelocityForBrake;
 	if (bDotCondition && bVelocityThreshold == true && GetCharacterMovement()->IsFalling() == false)
 	{
+		if (GEngine)
+			GEngine->AddOnScreenDebugMessage(-1, 15.0f, FColor::Yellow, FString::Printf(TEXT("Start Braking")));
 		StartBrake();	
 	}
 }
@@ -484,6 +503,7 @@ void ARGX_PlayerCharacter::CheckBrake(float DeltaTime)
 void ARGX_PlayerCharacter::StartBrake()
 {
 	bIsBraking = true;
+	return;
 
 	// Brake cancels current attack
 	FGameplayTagContainer TagContainer(FGameplayTag::RequestGameplayTag(FName("Ability.Melee")));
@@ -500,59 +520,29 @@ void ARGX_PlayerCharacter::StartBrake()
 
 void ARGX_PlayerCharacter::EndBrake()
 {
+	return;
+
 	UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
 	if (CharacterMovementComponent)
 	{
-		CharacterMovementComponent->MaxWalkSpeed = MoveSpeed;
+		CharacterMovementComponent->MaxWalkSpeed = GetCurrentMaxSpeed();
 		CharacterMovementComponent->RotationRate.Yaw = 540.0f;
 	}
 
 	bIsBraking = false;
 }
 
-//void ARGX_PlayerCharacter::LevelUp(const float NewLevel)
-//{
-//	Level = NewLevel;
-//
-//	FGameplayEffectContextHandle ContextHandle = AbilitySystemComponent->MakeEffectContext();
-//	FRGX_GameplayEffectContext* FRGXContext = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
-//
-//	FString ContextString;
-//	FRealCurve* MaxHealth = MaxHealthLevelCurve->FindCurve(FName("MaxHealth"), ContextString);
-//	FRealCurve* AttackPower = AttackPowerLevelCurve->FindCurve(FName("AttackPower"), ContextString);
-//	FRGXContext->NewMaxHealth = MaxHealth->Eval(Level);
-//	FRGXContext->NewAttackPower = AttackPower->Eval(Level);
-//	AbilitySystemComponent->ApplyGameplayEffectToSelf(LevelUpEffect.GetDefaultObject(), 1.0f, ContextHandle);
-//	AbilitySystemComponent->ApplyGameplayEffectToSelf(FullHealthEffect.GetDefaultObject(), 1.0, ContextHandle);
-//}
-
 void ARGX_PlayerCharacter::PrintDebugInformation()
 {
-	TArray<FGameplayAttribute> attributes;
-	AbilitySystemComponent->GetAllAttributes(attributes);
-
-	/*
-	for (FGameplayAttribute& attribute : attributes)
+	UAbilitySystemComponent* ACS = GetAbilitySystemComponent();
+	if (ACS)
 	{
-		FString AttributeName = attribute.GetName();
-		UE_LOG(LogTemp, Warning, TEXT("Attribute Name: %s\n"), *AttributeName);
-
-		float AttributeValue = AbilitySystemComponent->GetNumericAttribute(attribute);
-		UE_LOG(LogTemp, Warning, TEXT("Attribute Value: %f\n"), AttributeValue);
+		TSubclassOf<UGameplayEffect> GameplayEffectToApply = AutoDamageEffectContextContainer.EffectToApply;
+		FGameplayEffectContextHandle ContextHandle = ACS->MakeEffectContext();
+		FRGX_GameplayEffectContext* RGXContext = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
+		RGXContext->OptionalObject = AutoDamageEffectContextContainer.Payload;
+		ACS->ApplyGameplayEffectToTarget(GameplayEffectToApply->GetDefaultObject<UGameplayEffect>(), ACS, GetCharacterLevel(), ContextHandle);
 	}
-
-	bool bHasTag = HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag("Power.Spears"));
-	if (bHasTag)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Has Power Spears tag: TRUE\n"));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Has Power Spears tag: FALSE\n"));
-	}
-	*/
-
-	ComboSystemComponent->DrawDebugInfo();
 }
 
 void ARGX_PlayerCharacter::ChangeTimeScale()
@@ -583,30 +573,15 @@ void ARGX_PlayerCharacter::BeginPlay()
 
 	AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
 
-	if (PowerSkills.Num() < 1 == false)
-	{
-		CurrentSkillTag = PowerSkills[0];
-		AddGameplayTag(CurrentSkillTag);
-	}
-
 	GetCapsuleComponent()->OnComponentHit.AddDynamic(this, &ARGX_PlayerCharacter::OnCapsuleHit);
 
-	//LevelUp(Level);
-	//AbilitySystemComponent->ApplyGameplayEffectToSelf()
+	CameraControllerComponent->OnTargetUpdated.__Internal_AddUniqueDynamic(this, &ARGX_PlayerCharacter::OnTargetUpdatedImpl, "OnTargetUpdatedImpl");
+	CameraControllerComponent->OnTargetUpdated.__Internal_AddUniqueDynamic(CombatAssistComponent, &URGX_CombatAssistComponent::SetTargetFromOutside, "SetTargetFromOutside");
 }
 
 void ARGX_PlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
-	if (GetCharacterMovement() && GetCharacterMovement()->IsFalling() && GetVelocity().Z < 0)
-	{
-		bIsFallingDown = true;
-	}
-	else
-	{
-		bIsFallingDown = false;
-	}
 
 	bool bWasStaggered = bStaggered;
 	bStaggered = HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("State.Combat.InHurtReact")));
@@ -616,16 +591,12 @@ void ARGX_PlayerCharacter::Tick(float DeltaTime)
 		InputHandlerComponent->ResetInputState();
 	}
 
-	//UE_LOG(LogTemp, Warning, TEXT("bIgnoreInputMoveVector: %s"), bIgnoreInputMoveVector ? TEXT("TRUE") : TEXT("FALSE"));
-
-	CheckBrake(DeltaTime);
+	//CheckBrake(DeltaTime);
+	RotateToTarget(DeltaTime);
+	UpdateStrafingSpeed();
 	
 	VelocityMagnitudeLastFrame = GetVelocity().Size();
 	LastMoveInput = CurrentMoveInput;
-
-	//UE_LOG(LogTemp, Warning, TEXT("Recent Rotation: %f"), RecentRotation);
-
-	//UKismetSystemLibrary::DrawDebugCircle(GetWorld(), GetActorLocation(), 100.0f, 24, FLinearColor::Green, 0.0f, 0.0f, FVector(0.0f, 1.0f, 0.0f), FVector(1.0f, 0.0f, 0.0f));
 }
 
 UAbilitySystemComponent* ARGX_PlayerCharacter::GetAbilitySystemComponent() const
@@ -712,8 +683,20 @@ void ARGX_PlayerCharacter::HandleDamage(
 
 	if (IsAlive())
 	{
-		const FAnimationArray AnimationList = *AnimMontageMap.Find(HitReactFlag);
 		UAnimMontage* AnimToPlay = nullptr;
+		ERGX_AnimEvent AnimEventFlag = HitReactFlag;
+
+		UCharacterMovementComponent* CharacterMovementComponent = GetCharacterMovement();
+		if (CharacterMovementComponent)
+		{
+			if(CharacterMovementComponent->IsFalling())
+			{
+				AnimEventFlag = ERGX_AnimEvent::KnockbackHitReact;
+			}
+		}
+
+		const FAnimationArray AnimationList = *AnimMontageMap.Find(AnimEventFlag);
+		
 		if (AnimationList.Animations.Num() > 0)
 		{
 			int32 Index = UKismetMathLibrary::RandomIntegerInRange(0, AnimationList.Animations.Num() - 1);
@@ -749,52 +732,63 @@ void ARGX_PlayerCharacter::HandleDamage(
 
 void ARGX_PlayerCharacter::MoveForward(float Value)
 {
-	if (bStaggered)
+	CurrentMoveInput.X = 0.0f;
+
+	const bool bIsControllerNull = Controller == nullptr;
+	const bool bIsAxisValueLesserThanThreshold = std::abs(Value) <= 0.0;
+	if (bStaggered || bIsControllerNull || bIsAxisValueLesserThanThreshold || bIgnoreInputMoveVector)
 		return;
 
-	if ((Controller != nullptr) && (Value != 0.0f) && !bIgnoreInputMoveVector)
+	FVector direction;
+	// find out which way is forward
+	if (bIsStrafing)
 	{
-		// find out which way is forward
+		direction = GetActorForwardVector();
+	}
+	else
+	{
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
 
 		// get forward vector
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-		// add movement in that direction
-		AddMovementInput(Direction, Value);
-		CurrentMoveInput.X = Value;
-		//UE_LOG(LogTemp, Warning, TEXT("CurrentMoveInput.X: %f"), CurrentMoveInput.X);
+		//const FVector Direction = UKismetMathLibrary::GetForwardVector(YawRotation);
+		direction = UKismetMathLibrary::GetForwardVector(YawRotation);
 	}
-	else
-	{
-		CurrentMoveInput.X = 0.0f;
-		//UE_LOG(LogTemp, Warning, TEXT("CurrentMoveInput.X: %f"), CurrentMoveInput.X);
-	}
+
+	// add movement in that direction
+	AddMovementInput(direction, Value);
+	CurrentMoveInput.X = Value;
 }
 
 void ARGX_PlayerCharacter::MoveRight(float Value)
 {
-	if (bStaggered)
+	CurrentMoveInput.Y = 0.0f;
+
+	const bool bIsControllerNull = Controller == nullptr;
+	const bool bIsAxisValueLesserThanThreshold = std::abs(Value) <= 0.0;
+	if (bStaggered || bIsControllerNull || bIsAxisValueLesserThanThreshold || bIgnoreInputMoveVector)
 		return;
 
-	if ((Controller != nullptr) && (Value != 0.0f) && !bIgnoreInputMoveVector)
+	FVector direction;
+	// find out which way is forward
+	if (bIsStrafing)
+	{
+		direction = GetActorRightVector();
+	}
+	else
 	{
 		// find out which way is forward
 		const FRotator Rotation = Controller->GetControlRotation();
 		const FRotator YawRotation(0.0f, Rotation.Yaw, 0.0f);
 
 		// get right vector
-		const FVector Direction = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-		// add movement in that direction
-		AddMovementInput(Direction, Value);
-		CurrentMoveInput.Y = Value;
-		//UE_LOG(LogTemp, Warning, TEXT("CurrentMoveInput.Y: %f"), CurrentMoveInput.Y);
+		//const FVector Direction = UKismetMathLibrary::GetRightVector(YawRotation);
+		direction = UKismetMathLibrary::GetRightVector(YawRotation);
 	}
-	else
-	{
-		CurrentMoveInput.Y = 0.0f;
-		//UE_LOG(LogTemp, Warning, TEXT("CurrentMoveInput.Y: %f"), CurrentMoveInput.Y);
-	}
+
+	// add movement in that direction
+	AddMovementInput(direction, Value);
+	CurrentMoveInput.Y = Value;
 }
 
 void ARGX_PlayerCharacter::TurnAtRate(float Rate)
@@ -802,7 +796,6 @@ void ARGX_PlayerCharacter::TurnAtRate(float Rate)
 	// TODO: Only TurnAtRate or AddControllerYawInput should modify YawChange at a time, depending if the user is using mouse or controller
 	CameraControllerComponent->CheckYawInput(Rate);
 	float YawFinalChange = Rate * BaseTurnRate * GetWorld()->GetDeltaSeconds();
-	//UE_LOG(LogTemp, Warning, TEXT("YawChange: %f"), YawChange);
 	Super::AddControllerYawInput(YawFinalChange);
 }
 
@@ -816,7 +809,6 @@ void ARGX_PlayerCharacter::AddControllerYawInput(float Val)
 {
 	Super::AddControllerYawInput(Val);
 	YawChange = Val;
-	//UE_LOG(LogTemp, Warning, TEXT("YawChange: %f"), YawChange);
 }
 
 void ARGX_PlayerCharacter::AddControllerPitchInput(float Val)
@@ -834,28 +826,42 @@ void ARGX_PlayerCharacter::Landed(const FHitResult& Hit)
 		ECollisionChannel CollisionChannel = PrimitiveComponent->GetCollisionObjectType();
 		if (CollisionChannel == ECollisionChannel::ECC_WorldStatic)
 		{
+			if (GetCapsuleComponent())
+			{
+				GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+			}
+
 			InputHandlerComponent->ResetAirState();
 
 			AddGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.CanAirCombo")));
 			RemoveGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.HasAirDashed")));
 			bCanAirCombo = true;
-			bIsFallingDown = false;
 		}
+	}
+}
+
+void ARGX_PlayerCharacter::OnHandleEndKnockedUp()
+{
+	if (IsAttacking() == false && IsDashing() == false)
+	{
+		ResetGravity();
 	}
 }
 
 void ARGX_PlayerCharacter::OnCapsuleHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit)
 {
-	if (bIsFallingDown == true)
+	if (bWasFallingDownThisFrame)
 	{
-		const FVector Normal = Hit.Normal;
-		const FVector PlayerLaunchForce = Normal * FVector(1.0f, 1.0f, -1.0f) * 100.0f;
-
-		LaunchCharacter(PlayerLaunchForce, true, true);
-
 		ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(OtherActor);
 		if (Enemy)
 		{
+			const FVector Normal = Hit.Normal;
+			const FVector PlayerLaunchForce = Normal * FVector(1.0f, 1.0f, -1.0f) * 100.0f;
+
+			GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Ignore);
+
+			LaunchCharacter(PlayerLaunchForce, true, true);
+
 			UAbilitySystemComponent* OtherACS = Enemy->FindComponentByClass<UAbilitySystemComponent>();
 			if (OtherACS)
 			{
@@ -869,7 +875,77 @@ void ARGX_PlayerCharacter::OnCapsuleHit(UPrimitiveComponent* HitComponent, AActo
 	}
 }
 
+void ARGX_PlayerCharacter::OnTargetUpdatedImpl(ARGX_EnemyBase* NewTarget)
+{
+	bIsStrafing = NewTarget != nullptr;
+
+	if (bIsStrafing)
+	{
+		GetCharacterMovement()->bOrientRotationToMovement = false;
+		//GetCharacterMovement()->MaxWalkSpeed = StrafingSpeed;
+		//GetCharacterMovement()->MaxAcceleration = StrafingAcceleration;
+	}
+	else
+	{
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+		GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
+		GetCharacterMovement()->MaxAcceleration = MaxAcceleration;
+	}
+}
+
 void ARGX_PlayerCharacter::OnJump_Implementation()
 {
 
+}
+
+void ARGX_PlayerCharacter::UpdateStrafingSpeed()
+{
+	if (bIsStrafing)
+	{
+		float direction = 0.0f;
+
+		const FVector velocity = GetVelocity();
+		if (!velocity.IsNearlyZero())
+		{
+			FMatrix RotMatrix = FRotationMatrix(GetActorRotation());
+			FVector ForwardVector = RotMatrix.GetScaledAxis(EAxis::X);
+			FVector RightVector = RotMatrix.GetScaledAxis(EAxis::Y);
+			FVector NormalizedVel = velocity.GetSafeNormal2D();
+
+			// get a cos(alpha) of forward vector vs velocity
+			float ForwardCosAngle = FVector::DotProduct(ForwardVector, NormalizedVel);
+			// now get the alpha and convert to degree
+			float ForwardDeltaDegree = FMath::RadiansToDegrees(FMath::Acos(ForwardCosAngle));
+
+			// depending on where right vector is, flip it
+			float RightCosAngle = FVector::DotProduct(RightVector, NormalizedVel);
+			if (RightCosAngle < 0)
+			{
+				ForwardDeltaDegree *= -1;
+			}
+
+			direction = ForwardDeltaDegree;
+		}
+
+		if (fabs(direction) < 40.f)
+		{
+			GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
+		}
+		else if (fabs(direction) < 135.f)
+		{
+			GetCharacterMovement()->MaxWalkSpeed = StrafingSpeed;
+		}
+		else
+		{
+			GetCharacterMovement()->MaxWalkSpeed = StrafingBackwardsSpeed;
+		}
+	}
+}
+
+void ARGX_PlayerCharacter::ResetPawnCollisionResponse()
+{	
+	if (GetCapsuleComponent())
+	{
+		GetCapsuleComponent()->SetCollisionResponseToChannel(ECollisionChannel::ECC_Pawn, ECollisionResponse::ECR_Block);
+	}
 }
