@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="Event" id="{fb1745e6-9798-4c60-9c1f-fb34d7eb13b4}">
 		<property name="name">
-			<value>received_sword_hit</value>
+			<value>GroundHit</value>
 		</property>
 		<property name="outputFormat">
 			<value>1</value>
@@ -92,6 +92,9 @@
 		<property name="length">
 			<value>0.5</value>
 		</property>
+		<property name="pitch">
+			<value>-10</value>
+		</property>
 		<property name="playlistMode">
 			<value>1</value>
 		</property>
@@ -109,6 +112,9 @@
 		</relationship>
 	</object>
 	<object class="EventMixerGroup" id="{18a72993-029e-4928-819f-16ea084cd82f}">
+		<property name="volume">
+			<value>-10</value>
+		</property>
 		<property name="name">
 			<value>Basic_Hit</value>
 		</property>
