@@ -165,35 +165,35 @@ FVector ARGX_DistanceAngel::GetEyeWorldLocation()
 	return GetTransform().TransformPosition(SphereCollider->GetRelativeLocation());
 }
 
-void ARGX_DistanceAngel::HandleDamage(
-	float DamageAmount,
-	const FHitResult& HitInfo,
-	const struct FGameplayTagContainer& DamageTags,
-	ARGX_CharacterBase* InstigatorCharacter,
-	AActor* DamageCauser,
-	ERGX_AnimEvent HitReactFlag)
-{
-	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser, HitReactFlag);
-
-	if (IsAlive() == false)
-	{
-		AAIController* AiController = Cast<AAIController>(GetController());
-		if(AiController)
-			AiController->GetBrainComponent()->StopLogic(FString("Character has died."));
-
-		SphereCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-		if (LaserBeamRef != nullptr)
-		{
-			LaserBeamRef->Destroy();
-		}
-
-		Ring_2_Mesh->SetSimulatePhysics(true);
-		PrimaryActorTick.bCanEverTick = false;
-		DestroyMyself(22.0f);
-
-		HandleDeath();
-	}
-}
+//void ARGX_DistanceAngel::HandleDamage(
+//	float DamageAmount,
+//	const FHitResult& HitInfo,
+//	const struct FGameplayTagContainer& DamageTags,
+//	ARGX_CharacterBase* InstigatorCharacter,
+//	AActor* DamageCauser,
+//	ERGX_AnimEvent HitReactFlag)
+//{
+//	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser, HitReactFlag);
+//
+//	if (IsAlive() == false)
+//	{
+//		AAIController* AiController = Cast<AAIController>(GetController());
+//		if(AiController)
+//			AiController->GetBrainComponent()->StopLogic(FString("Character has died."));
+//
+//		SphereCollider->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+//		if (LaserBeamRef != nullptr)
+//		{
+//			LaserBeamRef->Destroy();
+//		}
+//
+//		Ring_2_Mesh->SetSimulatePhysics(true);
+//		PrimaryActorTick.bCanEverTick = false;
+//		DestroyMyself(22.0f);
+//
+//		HandleDeath();
+//	}
+//}
 
 void ARGX_DistanceAngel::ApplyForceFieldEffects(AActor* OtherActor)
 {
@@ -216,8 +216,8 @@ void ARGX_DistanceAngel::ApplyForceFieldEffects(AActor* OtherActor)
 	//BHHitboxComponent->DeactivateHitbox();
 }
 
-void ARGX_DistanceAngel::HandleDeath()
-{
-	Super::HandleDeath();
-	OnHandleDeath();
-}
+//void ARGX_DistanceAngel::HandleDeath()
+//{
+//	Super::HandleDeath();
+//	OnHandleDeath();
+//}

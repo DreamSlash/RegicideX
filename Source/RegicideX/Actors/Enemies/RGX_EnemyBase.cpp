@@ -349,7 +349,7 @@ void ARGX_EnemyBase::HandleDamage(
 		// If damage killed the actor, we should kill its AI Logic and clean weak status as it is already dead.
 		bWeak = false;
 		RemoveGameplayTag(FGameplayTag::RequestGameplayTag("Status.Enemy.Weakened"));
-		//StopLogic("Character Dead");
+		StopLogic("Character Dead");
 		UAnimMontage* AnimToPlay = nullptr;
 		bool bWasHitInTheBack = WasHitInTheBack();
 		const FAnimationArray& animationList = GetAnimationList(ERGX_AnimEvent::Death, bWasHitInTheBack);
