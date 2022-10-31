@@ -167,17 +167,17 @@
 	<object class="SpatialiserEffect" id="{e6662942-475c-4e19-9bfc-50822033503b}" />
 	<object class="SingleSound" id="{742f70f9-6bf2-4e21-8593-40b147023f56}">
 		<relationship name="audioFile">
-			<destination>{8f03eded-ab05-4bc3-89ed-a26a72f678fd}</destination>
+			<destination>{91f0e743-d436-492b-b635-2db36a39662d}</destination>
 		</relationship>
 	</object>
 	<object class="SingleSound" id="{6f88a745-fcb4-4c42-9f30-062b72385872}">
 		<relationship name="audioFile">
-			<destination>{b590c17a-607f-478d-855b-5320f2ea2ef8}</destination>
+			<destination>{91f0e743-d436-492b-b635-2db36a39662d}</destination>
 		</relationship>
 	</object>
 	<object class="SingleSound" id="{ba1c9110-ac41-472c-ad06-d4e82058cd2b}">
 		<relationship name="audioFile">
-			<destination>{dad71b8e-8091-4812-90cc-df01173e794e}</destination>
+			<destination>{91f0e743-d436-492b-b635-2db36a39662d}</destination>
 		</relationship>
 	</object>
 	<object class="SingleSound" id="{642ff5ee-1be4-4b1a-8e71-120219d59357}">
@@ -185,7 +185,7 @@
 			<value>3.20000005</value>
 		</property>
 		<relationship name="audioFile">
-			<destination>{8f03eded-ab05-4bc3-89ed-a26a72f678fd}</destination>
+			<destination>{91f0e743-d436-492b-b635-2db36a39662d}</destination>
 		</relationship>
 	</object>
 	<object class="SingleSound" id="{cfcb9dc1-1387-4c7c-a32c-bd3e501d92d8}">
@@ -193,7 +193,7 @@
 			<value>4.5</value>
 		</property>
 		<relationship name="audioFile">
-			<destination>{b590c17a-607f-478d-855b-5320f2ea2ef8}</destination>
+			<destination>{91f0e743-d436-492b-b635-2db36a39662d}</destination>
 		</relationship>
 	</object>
 	<object class="SingleSound" id="{1f673546-8082-4ca8-b9c8-894b83956e89}">
@@ -201,7 +201,7 @@
 			<value>3.4000001</value>
 		</property>
 		<relationship name="audioFile">
-			<destination>{dad71b8e-8091-4812-90cc-df01173e794e}</destination>
+			<destination>{91f0e743-d436-492b-b635-2db36a39662d}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusFader" id="{544628c7-8f97-4302-81ea-ecad2ba9fc79}" />

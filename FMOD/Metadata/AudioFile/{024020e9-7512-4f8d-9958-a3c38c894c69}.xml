@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <objects serializationModel="Studio.02.02.00">
-	<object class="AudioFile" id="{b590c17a-607f-478d-855b-5320f2ea2ef8}">
+	<object class="AudioFile" id="{024020e9-7512-4f8d-9958-a3c38c894c69}">
 		<property name="assetPath">
-			<value>Vanish/Vanish02.wav</value>
+			<value>Music/HOSN_Choir_Loop_01_Dm_95BPM.wav</value>
+		</property>
+		<property name="isStreaming">
+			<value>true</value>
 		</property>
 		<property name="frequencyInKHz">
-			<value>96</value>
+			<value>44.0999985</value>
 		</property>
 		<property name="channelCount">
 			<value>2</value>
 		</property>
 		<property name="length">
-			<value>2.2946354166666665</value>
+			<value>12.631541950113379</value>
 		</property>
 		<relationship name="masterAssetFolder">
 			<destination>{7e66b5dd-574b-4959-981c-0287962c7622}</destination>

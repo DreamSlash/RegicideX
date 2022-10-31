@@ -4,9 +4,6 @@
 		<property name="assetPath">
 			<value>Music/AI_Cerberus_90bpm_Asunder_34_Tight_FullMix.wav</value>
 		</property>
-		<property name="isStreaming">
-			<value>true</value>
-		</property>
 		<property name="frequencyInKHz">
 			<value>48</value>
 		</property>

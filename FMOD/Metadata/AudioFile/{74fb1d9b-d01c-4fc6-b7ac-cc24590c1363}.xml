@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="AudioFile" id="{74fb1d9b-d01c-4fc6-b7ac-cc24590c1363}">
 		<property name="assetPath">
-			<value>Music/HOSN_Synth_Pulse_Loop_03_D_90BPM.wav</value>
+			<value>HOSN_Synth_Pulse_Loop_03_D_90BPM.wav</value>
 		</property>
 		<property name="isStreaming">
 			<value>true</value>

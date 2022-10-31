@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <objects serializationModel="Studio.02.02.00">
-	<object class="AudioFile" id="{e0d8babb-42aa-4414-9606-76de0a803f37}">
+	<object class="AudioFile" id="{fabd21dd-0e78-43b8-b2f3-1514ef55f7e3}">
 		<property name="assetPath">
-			<value>PeasantGrunt/zombie_grunt2.mp3</value>
+			<value>Vanish/ESM_GB_fx_foley_one_shot_firebrst_inflammation_light_02_burn_fire_flame.wav</value>
 		</property>
 		<property name="frequencyInKHz">
-			<value>44.0999985</value>
+			<value>96</value>
 		</property>
 		<property name="channelCount">
 			<value>2</value>
 		</property>
 		<property name="length">
-			<value>1.3583673469387756</value>
+			<value>1.3835625</value>
 		</property>
 		<relationship name="masterAssetFolder">
 			<destination>{7e66b5dd-574b-4959-981c-0287962c7622}</destination>

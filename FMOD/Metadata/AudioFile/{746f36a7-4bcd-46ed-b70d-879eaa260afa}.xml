@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="AudioFile" id="{746f36a7-4bcd-46ed-b70d-879eaa260afa}">
 		<property name="assetPath">
-			<value>Music/AI_Cerberus_120bpm_Flight_34_Loose_FullMix.wav</value>
+			<value>AI_Cerberus_120bpm_Flight_34_Loose_FullMix.wav</value>
 		</property>
 		<property name="isStreaming">
 			<value>true</value>

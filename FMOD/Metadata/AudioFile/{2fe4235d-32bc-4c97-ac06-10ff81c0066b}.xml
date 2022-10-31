@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <objects serializationModel="Studio.02.02.00">
-	<object class="AudioFile" id="{c60fb79d-61ef-40de-b164-867a0df515dc}">
+	<object class="AudioFile" id="{2fe4235d-32bc-4c97-ac06-10ff81c0066b}">
 		<property name="assetPath">
-			<value>PeasantGrunt/zombie_grunt1.mp3</value>
+			<value>Music/HOSN_String_Loop_13_Dm_95BPM.wav</value>
 		</property>
 		<property name="frequencyInKHz">
 			<value>44.0999985</value>
@@ -11,7 +11,7 @@
 			<value>2</value>
 		</property>
 		<property name="length">
-			<value>1.3844897959183673</value>
+			<value>10.105283446712019</value>
 		</property>
 		<relationship name="masterAssetFolder">
 			<destination>{7e66b5dd-574b-4959-981c-0287962c7622}</destination>
