@@ -78,3 +78,8 @@ DerivedDataCache/*
 lfs/*
 packages/*
 Tools/*
+
+#FMOD
+FMOD/.unsaved
+FMOD/.user
+FMOD/.cache

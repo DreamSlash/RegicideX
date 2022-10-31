@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="Bank" id="{9ccda7a6-9231-4bed-b502-a33ed0b247b5}">
+		<property name="name">
+			<value>DistanceAngel</value>
+		</property>
+		<relationship name="folder">
+			<destination>{49bb6e17-6fe0-4d41-b5bc-9c231c9e2722}</destination>
+		</relationship>
+	</object>
+</objects>

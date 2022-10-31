@@ -133,16 +133,16 @@ public:
 	FVector GetEyeWorldLocation();
 
 	// Overridable Events
-	virtual void HandleDamage(
+	/*virtual void HandleDamage(
 		float DamageAmount,
 		const FHitResult& HitInfo,
 		const struct FGameplayTagContainer& DamageTags,
 		ARGX_CharacterBase* InstigatorCharacter,
 		AActor* DamageCauser,
-		ERGX_AnimEvent HitReactFlag) override;
+		ERGX_AnimEvent HitReactFlag) override;*/
 
 	UFUNCTION(BlueprintCallable)
 	void ApplyForceFieldEffects(AActor* OtherActor);
 
-	virtual void HandleDeath() override;
+	//virtual void HandleDeath() override;
 };
