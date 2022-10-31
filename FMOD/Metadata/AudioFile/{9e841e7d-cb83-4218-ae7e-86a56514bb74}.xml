@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="AudioFile" id="{9e841e7d-cb83-4218-ae7e-86a56514bb74}">
 		<property name="assetPath">
-			<value>Wing07.wma</value>
+			<value>Wings/Wing07.wma</value>
 		</property>
 		<property name="frequencyInKHz">
 			<value>44.0999985</value>

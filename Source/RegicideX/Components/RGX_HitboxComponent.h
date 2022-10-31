@@ -102,7 +102,7 @@ protected:
 	UPROPERTY()
 	TArray<UShapeComponent*> Shapes;
 
-	UPROPERTY(EditDefaultsOnly, Category = HitboxComponent)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = HitboxComponent)
 	TEnumAsByte<ETeamAttitude::Type> TeamToApply = ETeamAttitude::Hostile;
 
 	UPROPERTY(EditDefaultsOnly, Category = HitboxComponent)
