@@ -6,7 +6,7 @@
 #include "RegicideX/Components/RGX_HitboxesManagerComponent.h"
 #include "RegicideX/Components/RGX_HitboxComponent.h"
 
-#pragma optimize("", off)
+//#pragma optimize("", off)
 
 URGX_MoveForwardAbilityTask::URGX_MoveForwardAbilityTask(const FObjectInitializer& ObjectInitializer)
 	: UAbilityTask(ObjectInitializer)
