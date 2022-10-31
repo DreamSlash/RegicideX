@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="AudioFile" id="{f6293bee-386c-42c0-b484-d1318274980a}">
 		<property name="assetPath">
-			<value>AI_Cerberus_120bpm_Ceremony_34_Loose_LoStem.wav</value>
+			<value>Music/AI_Cerberus_120bpm_Ceremony_34_Loose_LoStem.wav</value>
 		</property>
 		<property name="isStreaming">
 			<value>true</value>

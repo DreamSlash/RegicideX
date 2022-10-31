@@ -220,7 +220,9 @@ void URGX_HitboxComponent::HandleOverlappedActor(AActor* OtherActor, UPrimitiveC
 
 	bool bCanApplyEffects = CheckCanApplyEffect(OtherActor);
 	ETeamAttitude::Type Attitude = FGenericTeamId::GetAttitude(OwnerActor, OtherActor);
-	if (Attitude == TeamToApply && bCanApplyEffects)
+	const bool bIsNeutral = TeamToApply == ETeamAttitude::Neutral;
+	const bool bIsTeamToApply = Attitude == TeamToApply;
+	if ((bIsNeutral || bIsTeamToApply) && bCanApplyEffects)
 	{
 		SendCollisionEvents(OwnerActor, OtherActor, bFromSweep, SweepResult);
 

@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="AudioFile" id="{b590c17a-607f-478d-855b-5320f2ea2ef8}">
 		<property name="assetPath">
-			<value>ESM_GB_fx_foley_one_shot_firebrst_flame_extinguish_short_01_burn_fire_flame.wav</value>
+			<value>Vanish/Vanish02.wav</value>
 		</property>
 		<property name="frequencyInKHz">
 			<value>96</value>
