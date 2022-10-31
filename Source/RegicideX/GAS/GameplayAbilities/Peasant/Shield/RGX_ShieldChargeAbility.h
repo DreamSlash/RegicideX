@@ -26,9 +26,15 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float ChargeDuration = 3.0f;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FName JumpToSectionIfOverlapped;
+
 private:
 	UFUNCTION()
 	void OnChargeFinished();
+
+	UFUNCTION()
+	void OnOverlapped();
 
 private:
 	FTimerHandle ChargeTimerHandle;

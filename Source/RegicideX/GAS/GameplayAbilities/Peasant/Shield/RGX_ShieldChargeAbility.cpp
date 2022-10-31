@@ -36,8 +36,9 @@ void URGX_ShieldChargeAbility::HandleReceivedEvent(FGameplayTag EventTag, FGamep
 
 void URGX_ShieldChargeAbility::StartCharge()
 {
-	URGX_MoveForwardAbilityTask* task = URGX_MoveForwardAbilityTask::MoveForwardAbilityTask(this, NAME_None, ChargeDuration);
+	URGX_MoveForwardAbilityTask* task = URGX_MoveForwardAbilityTask::MoveForwardAbilityTask(this, NAME_None, ChargeDuration, HitboxTag);
 	task->OnFinished.AddDynamic(this, &URGX_ShieldChargeAbility::OnChargeFinished);
+	task->OnOverlapped.AddDynamic(this, &URGX_ShieldChargeAbility::OnOverlapped);
 	task->ReadyForActivation();
 
 	/*bCharge = true;
@@ -47,6 +48,11 @@ void URGX_ShieldChargeAbility::StartCharge()
 void URGX_ShieldChargeAbility::OnChargeFinished()
 {
 	EndAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), false, false);
+}
+
+void URGX_ShieldChargeAbility::OnOverlapped()
+{
+	MontageJumpToSection(JumpToSectionIfOverlapped);
 }
 
 //void URGX_ShieldChargeAbility::Tick(float DeltaTime)

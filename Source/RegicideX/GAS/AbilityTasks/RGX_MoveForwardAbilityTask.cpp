@@ -3,6 +3,8 @@
 #include "RegicideX/GAS/AbilityTasks/RGX_MoveForwardAbilityTask.h"
 
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
+#include "RegicideX/Components/RGX_HitboxesManagerComponent.h"
+#include "RegicideX/Components/RGX_HitboxComponent.h"
 
 #pragma optimize("", off)
 
@@ -12,11 +14,12 @@ URGX_MoveForwardAbilityTask::URGX_MoveForwardAbilityTask(const FObjectInitialize
 	bTickingTask = true;
 }
 
-URGX_MoveForwardAbilityTask* URGX_MoveForwardAbilityTask::MoveForwardAbilityTask(UGameplayAbility* OwningAbility, FName TaskInstanceName, float Duration)
+URGX_MoveForwardAbilityTask* URGX_MoveForwardAbilityTask::MoveForwardAbilityTask(UGameplayAbility* OwningAbility, FName TaskInstanceName, float Duration, FGameplayTag HitboxTag)
 {
 	URGX_MoveForwardAbilityTask* task = NewAbilityTask<URGX_MoveForwardAbilityTask>(OwningAbility, TaskInstanceName);
 
 	task->Duration = Duration;
+	task->HitboxTag = HitboxTag;
 
 	return task;
 }
@@ -24,6 +27,17 @@ URGX_MoveForwardAbilityTask* URGX_MoveForwardAbilityTask::MoveForwardAbilityTask
 void URGX_MoveForwardAbilityTask::Activate()
 {
 	Super::Activate();
+
+	if (ARGX_EnemyBase* owner = Cast<ARGX_EnemyBase>(GetAvatarActor()))
+	{
+		if (URGX_HitboxesManagerComponent* managerHB = Cast<URGX_HitboxesManagerComponent>(owner->GetComponentByClass(URGX_HitboxesManagerComponent::StaticClass())))
+		{
+			if (URGX_HitboxComponent* hitbox = managerHB->GetHitboxByTag(HitboxTag))
+			{
+				hitbox->OnHitboxOverlap.__Internal_AddDynamic(this, &URGX_MoveForwardAbilityTask::OnHitboxOverlap, "OnHitboxOverlap");
+			}
+		}
+	}
 
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]() { bEndTask = true; }, Duration, false);
 }
@@ -33,7 +47,10 @@ void URGX_MoveForwardAbilityTask::TickTask(float DeltaTime)
 	if (bEndTask)
 	{
 		EndTask();
-		OnFinished.Broadcast();
+
+		if (OnFinished.IsBound())
+			OnFinished.Broadcast();
+
 		return;
 	}
 
@@ -50,12 +67,17 @@ void URGX_MoveForwardAbilityTask::TickTask(float DeltaTime)
 	}
 		
 	pawn->AddMovementInput(owner->GetActorForwardVector());
-	if (GEngine)
-		GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, FString::Printf(TEXT("Speed: %f"), owner->GetVelocity().Size2D()));
-		//GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Blue, owner->GetActorForwardVector().ToText().ToString());
 }
 
 void URGX_MoveForwardAbilityTask::OnDestroy(bool AbilityIsEnding)
 {
 	Super::OnDestroy(AbilityIsEnding);
+}
+
+void URGX_MoveForwardAbilityTask::OnHitboxOverlap(AActor* OverlappedActor)
+{
+	EndTask();
+
+	if (OnOverlapped.IsBound())
+		OnOverlapped.Broadcast();
 }
