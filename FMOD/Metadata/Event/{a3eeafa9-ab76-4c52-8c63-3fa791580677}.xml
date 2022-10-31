@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <objects serializationModel="Studio.02.02.00">
 	<object class="Event" id="{a3eeafa9-ab76-4c52-8c63-3fa791580677}">
-		<property name="note" />
 		<property name="name">
 			<value>Dash</value>
 		</property>
@@ -73,6 +72,9 @@
 		</relationship>
 	</object>
 	<object class="EventMixerMaster" id="{9291eb62-3a2f-4a79-903c-b7b21bd35e64}">
+		<property name="volume">
+			<value>-8</value>
+		</property>
 		<relationship name="effectChain">
 			<destination>{cca8a867-71ce-43b2-b29a-be7851589c4a}</destination>
 		</relationship>
@@ -116,6 +118,7 @@
 	</object>
 	<object class="MixerBusEffectChain" id="{cca8a867-71ce-43b2-b29a-be7851589c4a}">
 		<relationship name="effects">
+			<destination>{c186a9e9-8834-456b-984a-5d0a8dd0d0ad}</destination>
 			<destination>{55d4e44a-ce59-4b99-986f-1272a557a375}</destination>
 		</relationship>
 	</object>
@@ -127,6 +130,11 @@
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{a6878a85-51b9-4fc0-93ca-50421ad7c287}" />
+	<object class="ThreeEQEffect" id="{c186a9e9-8834-456b-984a-5d0a8dd0d0ad}">
+		<property name="midGain">
+			<value>-11</value>
+		</property>
+	</object>
 	<object class="MixerBusFader" id="{55d4e44a-ce59-4b99-986f-1272a557a375}" />
 	<object class="MixerBusFader" id="{4032a84e-0fb0-41ff-bc14-4206e810162f}" />
 </objects>
