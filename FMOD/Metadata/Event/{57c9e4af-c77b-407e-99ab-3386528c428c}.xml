@@ -62,7 +62,11 @@
 			<destination>{7f0901cf-d1d1-4da1-b9d2-3152618cc0b8}</destination>
 		</relationship>
 	</object>
-	<object class="EventAutomatableProperties" id="{28445ad3-44e3-4751-a97a-428f2e25e156}" />
+	<object class="EventAutomatableProperties" id="{28445ad3-44e3-4751-a97a-428f2e25e156}">
+		<property name="maximumDistance">
+			<value>10</value>
+		</property>
+	</object>
 	<object class="MarkerTrack" id="{541a5b16-2cca-4137-af61-035585299830}" />
 	<object class="GroupTrack" id="{7bca71a6-bbe9-42f1-a65d-555a6b09cc51}">
 		<relationship name="mixerGroup">
@@ -80,6 +84,9 @@
 		</relationship>
 	</object>
 	<object class="EventMixerMaster" id="{3af53250-e6aa-4abd-b168-f864a8739743}">
+		<property name="volume">
+			<value>5</value>
+		</property>
 		<relationship name="effectChain">
 			<destination>{439f7c42-eeb8-40ce-baeb-7bccab3d47c8}</destination>
 		</relationship>
@@ -121,7 +128,11 @@
 			<destination>{674e9264-6c4a-47d4-baf5-d3beb0eb6ffe}</destination>
 		</relationship>
 	</object>
-	<object class="MixerBusPanner" id="{ba2762c1-3b3d-4197-9427-a6fdfe46d485}" />
+	<object class="MixerBusPanner" id="{ba2762c1-3b3d-4197-9427-a6fdfe46d485}">
+		<property name="surroundLFELevel">
+			<value>-9.5</value>
+		</property>
+	</object>
 	<object class="MultiSound" id="{e5d29295-1db0-46f2-aa8f-1a29722393ee}">
 		<relationship name="sounds">
 			<destination>{47fb268b-e721-4198-bbc0-38a7e05433e0}</destination>
@@ -141,14 +152,14 @@
 	<object class="MixerBusPanner" id="{5c4d3339-9b36-48ff-b842-465b7ef5dbd2}" />
 	<object class="MixerBusFader" id="{d570e26e-6ea6-499b-8e23-55110843eb44}" />
 	<object class="SpatialiserEffect" id="{674e9264-6c4a-47d4-baf5-d3beb0eb6ffe}">
-		<property name="extentMode">
-			<value>1</value>
+		<property name="maximumDistance">
+			<value>10</value>
 		</property>
 		<property name="soundSize">
-			<value>10000</value>
+			<value>13</value>
 		</property>
 		<property name="minimumExtent">
-			<value>182</value>
+			<value>170</value>
 		</property>
 	</object>
 	<object class="SingleSound" id="{47fb268b-e721-4198-bbc0-38a7e05433e0}">
