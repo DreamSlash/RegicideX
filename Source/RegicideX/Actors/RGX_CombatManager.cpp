@@ -58,6 +58,10 @@ void ARGX_CombatManager::Tick(float DeltaTime)
 	if (Player == nullptr)
 	{
 		Player = Cast<ARGX_PlayerCharacter>(UGameplayStatics::GetActorOfClass(this, ARGX_PlayerCharacter::StaticClass()));
+		if (Player == nullptr)
+		{
+			return;
+		}
 	}
 
 	if (bAddedNewEnemies || bEnemyDead || FVector::Dist2D(LastPlayerPosition, Player->GetActorLocation()) > InvalidateOffset)
