@@ -67,7 +67,7 @@
 			<value>0.300000012</value>
 		</property>
 		<property name="maximumDistance">
-			<value>50</value>
+			<value>30</value>
 		</property>
 	</object>
 	<object class="MarkerTrack" id="{3d6d4bfb-4610-45c5-9215-27cde4add2cf}" />
@@ -123,6 +123,9 @@
 		</relationship>
 	</object>
 	<object class="EventMixerGroup" id="{3ea2d5b4-6b1a-4f9f-8c2b-5b0909b4141b}">
+		<property name="volume">
+			<value>-8.5</value>
+		</property>
 		<property name="name">
 			<value>Audio 1</value>
 		</property>
@@ -184,6 +187,7 @@
 	</object>
 	<object class="MixerBusEffectChain" id="{d983c3ba-72b1-493f-ba52-4e5e406e7eab}">
 		<relationship name="effects">
+			<destination>{ce960b6a-262c-4f4b-8ba9-1e461f311e53}</destination>
 			<destination>{c62b6b83-1563-450d-9729-deca53eed501}</destination>
 			<destination>{c4613a90-ccb2-4eb1-be73-6055fa685c57}</destination>
 		</relationship>
@@ -195,10 +199,18 @@
 			<value>0.300000012</value>
 		</property>
 		<property name="maximumDistance">
-			<value>50</value>
+			<value>30</value>
 		</property>
 		<property name="minimumExtent">
 			<value>360</value>
+		</property>
+	</object>
+	<object class="PitchShifterEffect" id="{ce960b6a-262c-4f4b-8ba9-1e461f311e53}">
+		<property name="pitch">
+			<value>1.13999999</value>
+		</property>
+		<property name="overlap">
+			<value>3.4000001</value>
 		</property>
 	</object>
 	<object class="MixerBusFader" id="{c62b6b83-1563-450d-9729-deca53eed501}" />

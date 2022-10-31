@@ -299,6 +299,11 @@ void ARGX_Arena::HandleFinishWave(URGX_OngoingWave* FinishedWave)
 			HandleFinishArena();
 		}
 	}
+
+	if (OnWaveFinished.IsBound())
+	{
+		OnWaveFinished.Broadcast(FinishedWave);
+	}
 }
 
 void ARGX_Arena::HandleFinishArena()

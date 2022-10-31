@@ -27,6 +27,7 @@ void ARGX_LinearArenasGameMode::BeginPlay()
 			Arena->OnArenaActivated.AddDynamic(this, &ARGX_LinearArenasGameMode::OnArenaActivated);
 			Arena->OnArenaDeactivated.AddDynamic(this, &ARGX_LinearArenasGameMode::OnArenaDeactivated);
 			Arena->OnArenaEnemyKilled.AddDynamic(this, &ARGX_LinearArenasGameMode::OnArenaEnemyKilled);
+			Arena->OnWaveFinished.AddDynamic(this, &ARGX_LinearArenasGameMode::OnWaveFinished);
 		}
 	}
 }
@@ -40,6 +41,7 @@ void ARGX_LinearArenasGameMode::EndPlay(const EEndPlayReason::Type EndPlayReason
 		Arena->OnArenaActivated.RemoveDynamic(this, &ARGX_LinearArenasGameMode::OnArenaActivated);
 		Arena->OnArenaDeactivated.RemoveDynamic(this, &ARGX_LinearArenasGameMode::OnArenaDeactivated);
 		Arena->OnArenaEnemyKilled.RemoveDynamic(this, &ARGX_LinearArenasGameMode::OnArenaEnemyKilled);
+		Arena->OnWaveFinished.RemoveDynamic(this, &ARGX_LinearArenasGameMode::OnWaveFinished);
 	}
 }
 
@@ -74,4 +76,9 @@ void ARGX_LinearArenasGameMode::OnArenaEnemyKilled(ARGX_EnemyBase* EnemyKilled)
 		Score += ScoreToAdd;
 		BP_OnArenaEnemyKilled();
 	}
+}
+
+void ARGX_LinearArenasGameMode::OnWaveFinished(URGX_OngoingWave* FinishedWave)
+{
+	BP_OnWaveFinished(FinishedWave);
 }

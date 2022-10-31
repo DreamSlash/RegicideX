@@ -72,8 +72,6 @@ private:
 	void SpawnWaveEnemyTypeGroup(const FName& EnemyWaveName, int32 NumEnemies, URGX_OngoingWave* Wave);
 	void SpawnWaveEnemy(TSubclassOf<class ARGX_EnemyBase> EnemyClass, int32 SpawnerIdx, URGX_OngoingWave* Wave);
 	void SpawnConstantPeasant();
-
-
 	
 	UFUNCTION()
 	void HandleSpawnWave(URGX_OngoingWave* Wave);
@@ -87,6 +85,8 @@ private:
 	void HandleFinishWave(URGX_OngoingWave* FinishedWave);
 	UFUNCTION()
 	void HandleFinishArena();
+
+
 	
 
 	UFUNCTION()
@@ -102,6 +102,8 @@ public:
 	FArenaDeactivatedSignature OnArenaDeactivated;
 	UPROPERTY(BlueprintAssignable)
 	FArenaOnEnemyKilledSignature OnArenaEnemyKilled;
+	UPROPERTY(BlueprintAssignable)
+	FWaveFinishedSignature OnWaveFinished;
 
 	// TODO: Move assignation to callback. Unused Function right now
 	UPROPERTY()
