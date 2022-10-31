@@ -24,7 +24,6 @@ void ARGX_Arena::BeginPlay()
 	//InitializeSpawners();
 
 	//Store Player CHaracter Reference
-	PlayerCharacter = Cast<ARGX_PlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
 
 	// TODO: Check and remove if useless
 	//ArenaArea->OnComponentBeginOverlap.AddDynamic(this, &ARGX_Arena::OnComponentBeginOverlap);
@@ -357,6 +356,13 @@ void ARGX_Arena::OnConstantPeasantDeath(ARGX_EnemyBase* Enemy)
 void ARGX_Arena::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (PlayerCharacter == nullptr)
+	{
+		PlayerCharacter = Cast<ARGX_PlayerCharacter>(UGameplayStatics::GetPlayerCharacter(GetWorld(), 0));
+		if (PlayerCharacter == nullptr)
+			return;
+	}
 
 	if (bActivated == false || bFinished == true) return;
 
