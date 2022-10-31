@@ -76,8 +76,14 @@ void URGX_MoveForwardAbilityTask::OnDestroy(bool AbilityIsEnding)
 
 void URGX_MoveForwardAbilityTask::OnHitboxOverlap(AActor* OverlappedActor)
 {
-	EndTask();
+	if (ARGX_EnemyBase* owner = Cast<ARGX_EnemyBase>(GetAvatarActor()))
+	{
+		if (owner->TargetActor == OverlappedActor)
+		{
+			EndTask();
 
-	if (OnOverlapped.IsBound())
-		OnOverlapped.Broadcast();
+			if (OnOverlapped.IsBound())
+				OnOverlapped.Broadcast();
+		}
+	}
 }
