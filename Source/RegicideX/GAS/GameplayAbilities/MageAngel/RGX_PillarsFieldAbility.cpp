@@ -36,8 +36,8 @@ void URGX_PillarsFieldAbility::OnGround()
 		FTransform pillarTransform(location);
 
 		FHitResult Result;
-		//DrawDebugLine(GetWorld(), location, location * FVector(1, 1, -1), FColor(255, 0, 0), true, 5.0f, 0, 5.0f);
-		if (GetWorld()->LineTraceSingleByChannel(Result, location, location * FVector(1,1,-1), ECollisionChannel::ECC_WorldStatic))
+		FVector endLocation = location; endLocation.Z = -100.f;
+		if (GetWorld()->LineTraceSingleByChannel(Result, location, endLocation, ECollisionChannel::ECC_GameTraceChannel17))
 		{
 			FVector newLocation = location;
 			newLocation.Z = Result.ImpactPoint.Z;

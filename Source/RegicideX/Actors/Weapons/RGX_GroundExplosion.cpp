@@ -34,7 +34,8 @@ void ARGX_GroundExplosion::BeginPlay()
 
 	FHitResult result;
 	FVector location = GetActorLocation();
-	if (GetWorld()->LineTraceSingleByChannel(result, location, location * FVector(1, 1, -1), ECollisionChannel::ECC_WorldStatic))
+	FVector endLocation = GetActorLocation(); endLocation.Z = -100.f;
+	if (GetWorld()->LineTraceSingleByChannel(result, location, endLocation, ECollisionChannel::ECC_GameTraceChannel7))
 	{
 		location.Z = result.ImpactPoint.Z;
 	}
@@ -66,8 +67,8 @@ void ARGX_GroundExplosion::Explode()
 	// Fix Z to hit the ground
 	FHitResult result;
 	FVector location = GetActorLocation();
-	//DrawDebugLine(GetWorld(), location, location * FVector(1, 1, -1), FColor(255, 0, 0), true, 5.0f, 0, 5.0f);
-	if (GetWorld()->LineTraceSingleByChannel(result, location, location * FVector(1, 1, -1), ECollisionChannel::ECC_WorldStatic))
+	FVector endLocation = GetActorLocation(); endLocation.Z = -100.f;
+	if (GetWorld()->LineTraceSingleByChannel(result, location, endLocation, ECollisionChannel::ECC_GameTraceChannel7))
 	{
 		location.Z = result.ImpactPoint.Z;
 	}

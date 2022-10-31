@@ -54,7 +54,8 @@ void URGX_PillarsPartyAbility::SpawnPillarAtLocation(const FVector& Location) co
 	FTransform pillarTransform(Location);
 
 	FHitResult Result;
-	if (GetWorld()->LineTraceSingleByChannel(Result, Location, Location * FVector(1, 1, -1), ECollisionChannel::ECC_WorldStatic))
+	FVector endLocation = Location; endLocation.Z = -100.f;
+	if (GetWorld()->LineTraceSingleByChannel(Result, Location, endLocation, ECollisionChannel::ECC_GameTraceChannel7))
 	{
 		FVector newLocation = Location;
 		newLocation.Z = Result.ImpactPoint.Z;
