@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <objects serializationModel="Studio.02.02.00">
-	<object class="AudioFile" id="{65c814ee-f13b-40e5-820d-55686a788077}">
+	<object class="AudioFile" id="{1f3b8f34-169d-42b3-94e3-1aa6c057ce5d}">
 		<property name="assetPath">
-			<value>Music/ESM_AAAEH_vocal_male_one_shot_voxefrt_henchman_british_male_dry_pain_deep_cry_wince.wav</value>
+			<value>ESM_One_Shot_Vocal_Spider_Queen_Monster_Death_2_Insect_Bug_Screech_Squeal_Pain_Hurt_Moan_Groan.wav</value>
 		</property>
 		<property name="frequencyInKHz">
 			<value>96</value>
 		</property>
 		<property name="channelCount">
-			<value>2</value>
+			<value>1</value>
 		</property>
 		<property name="length">
-			<value>1.0293333333333334</value>
+			<value>0.88956250000000003</value>
 		</property>
 		<relationship name="masterAssetFolder">
 			<destination>{7e66b5dd-574b-4959-981c-0287962c7622}</destination>

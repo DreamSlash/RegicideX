@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <objects serializationModel="Studio.02.02.00">
-	<object class="AudioFile" id="{05a40255-fecb-4b7c-a596-92d597932430}">
+	<object class="AudioFile" id="{4bd8f2ce-33f7-49f7-b804-15c2150974eb}">
 		<property name="assetPath">
-			<value>Music/HOSN_String_Loop_07_Dm_95BPM.wav</value>
+			<value>ESM_One_Shot_Vocal_Spider_Queen_Monster_Death_1_Insect_Bug_Screech_Squeal_Pain_Hurt_Moan_Groan.wav</value>
 		</property>
 		<property name="frequencyInKHz">
-			<value>44.0999985</value>
+			<value>96</value>
 		</property>
 		<property name="channelCount">
-			<value>2</value>
+			<value>1</value>
 		</property>
 		<property name="length">
-			<value>10.105215419501134</value>
+			<value>1.4179895833333334</value>
 		</property>
 		<relationship name="masterAssetFolder">
 			<destination>{7e66b5dd-574b-4959-981c-0287962c7622}</destination>

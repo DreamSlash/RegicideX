@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="AudioFile" id="{647f068c-2b6b-460a-a2f3-de27d73f8eb8}">
 		<property name="assetPath">
-			<value>ESM_AAAEH_vocal_male_one_shot_voxefrt_henchman_british_male_dry_fighting_hit_gut_shot.wav</value>
+			<value>Music/ESM_AAAEH_vocal_male_one_shot_voxefrt_henchman_british_male_dry_fighting_hit_gut_shot.wav</value>
 		</property>
 		<property name="frequencyInKHz">
 			<value>96</value>
