@@ -33,7 +33,10 @@ public:
 	void BP_OnArenaEnemyKilled();
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void BP_OnWaveFinished(class URGX_OngoingWave* FinishedWave);
+	void BP_OnWaveSpawned(class URGX_OngoingWave* SpawnedWave);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BP_OnWaveFinished(URGX_OngoingWave* FinishedWave);
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void BP_OnPlayerWins();
@@ -50,6 +53,9 @@ private:
 
 	UFUNCTION()
 	void OnArenaEnemyKilled(class ARGX_EnemyBase* EnemyKilled);
+
+	UFUNCTION()
+	void OnWaveSpawned(URGX_OngoingWave* SpawnedWave);
 
 	UFUNCTION()
 	void OnWaveFinished(URGX_OngoingWave* FinishedWave);
