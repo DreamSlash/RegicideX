@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="AudioFile" id="{4e5295a0-968e-41cb-826e-d02adfb54629}">
 		<property name="assetPath">
-			<value>HOSN_String_Loop_14_Dm_95BPM.wav</value>
+			<value>Music/HOSN_String_Loop_14_Dm_95BPM.wav</value>
 		</property>
 		<property name="isStreaming">
 			<value>true</value>

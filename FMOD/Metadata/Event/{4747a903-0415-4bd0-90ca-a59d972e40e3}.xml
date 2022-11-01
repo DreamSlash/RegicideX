@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="Event" id="{4747a903-0415-4bd0-90ca-a59d972e40e3}">
 		<property name="name">
-			<value>Mage_Angel_Cast</value>
+			<value>MageAngelBomb</value>
 		</property>
 		<property name="outputFormat">
 			<value>2</value>

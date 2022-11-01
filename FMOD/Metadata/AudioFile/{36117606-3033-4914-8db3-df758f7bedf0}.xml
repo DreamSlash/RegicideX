@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="AudioFile" id="{36117606-3033-4914-8db3-df758f7bedf0}">
 		<property name="assetPath">
-			<value>HOSN_FX_Boom_05.wav</value>
+			<value>Music/HOSN_FX_Boom_05.wav</value>
 		</property>
 		<property name="frequencyInKHz">
 			<value>44.0999985</value>

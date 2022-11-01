@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="AudioFile" id="{65c814ee-f13b-40e5-820d-55686a788077}">
 		<property name="assetPath">
-			<value>ESM_AAAEH_vocal_male_one_shot_voxefrt_henchman_british_male_dry_pain_deep_cry_wince.wav</value>
+			<value>Music/ESM_AAAEH_vocal_male_one_shot_voxefrt_henchman_british_male_dry_pain_deep_cry_wince.wav</value>
 		</property>
 		<property name="frequencyInKHz">
 			<value>96</value>
