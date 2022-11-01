@@ -30,7 +30,7 @@ public:
 	int RemainingSeconds = 5;
 
 	UPROPERTY(EditDefaultsOnly)
-	float TargetMaxRange = 500.0f;
+	float TargetMaxRange = INFINITY;// 500.0f;
 
 	UPROPERTY()
 	float Angle;
@@ -56,7 +56,7 @@ public:
 
 	void Tick(float DeltaTime) override;
 
-	void LaunchProjectile();
+	void LaunchProjectile(const AActor* target = nullptr);
 
 	UFUNCTION(BlueprintNativeEvent)
 	void HandleHit(AActor* OtherActor);
