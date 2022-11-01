@@ -94,6 +94,7 @@ void URGX_BTTask_PlayMontage::OnReceiveNotify(FName NotifyName, const FBranching
 EBTNodeResult::Type URGX_BTTask_PlayMontage::AbortTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
 	CleanUp();
+	StopMontage();
 	return EBTNodeResult::Aborted;
 }
 

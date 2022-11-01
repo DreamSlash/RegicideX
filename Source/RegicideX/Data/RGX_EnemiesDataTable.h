@@ -33,7 +33,7 @@ struct FRGX_EnemyTypeDataTable : public FTableRowBase
 	int BaseScore;
 };
 
-UCLASS()
+UCLASS(BlueprintType)
 class URGX_ArenaWaveDataAsset : public UPrimaryDataAsset
 {
 	GENERATED_BODY()
@@ -54,4 +54,6 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TSet<int> SpawnerIdxAvailable; // Wave will spawn in spawners with those indices if they are available. If array is empty it will spawn in all spawners available
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	float WaveIntensity = 0.0f;
 };

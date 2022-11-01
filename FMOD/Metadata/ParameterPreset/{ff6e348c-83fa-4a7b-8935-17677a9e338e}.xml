@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="ParameterPreset" id="{ff6e348c-83fa-4a7b-8935-17677a9e338e}">
 		<property name="name">
-			<value>MusicPhases</value>
+			<value>Intensity</value>
 		</property>
 		<relationship name="folder">
 			<destination>{6be8c97c-395e-4142-b252-133f81e54842}</destination>
@@ -13,7 +13,7 @@
 	</object>
 	<object class="GameParameter" id="{d8e83a7f-e1f8-4f22-b51e-f8eef9307977}">
 		<property name="maximum">
-			<value>6</value>
+			<value>100</value>
 		</property>
 		<property name="initialValue">
 			<value>0</value>

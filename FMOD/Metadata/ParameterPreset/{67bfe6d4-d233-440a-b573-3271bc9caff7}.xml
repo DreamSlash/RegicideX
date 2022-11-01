@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="ParameterPreset" id="{67bfe6d4-d233-440a-b573-3271bc9caff7}">
+		<property name="name">
+			<value>ArenaWon</value>
+		</property>
+		<relationship name="folder">
+			<destination>{6be8c97c-395e-4142-b252-133f81e54842}</destination>
+		</relationship>
+		<relationship name="parameter">
+			<destination>{3ac03b1d-4a87-473d-98b2-6003bc0c2def}</destination>
+		</relationship>
+	</object>
+	<object class="GameParameter" id="{3ac03b1d-4a87-473d-98b2-6003bc0c2def}">
+		<property name="parameterType">
+			<value>2</value>
+		</property>
+		<property name="maximum">
+			<value>2</value>
+		</property>
+		<property name="enumerationLabels">
+			<value>FALSE</value>
+			<value>TRUE</value>
+		</property>
+		<property name="initialValue">
+			<value>1</value>
+		</property>
+	</object>
+</objects>

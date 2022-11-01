@@ -12,12 +12,21 @@ class ARGX_CombatManager;
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FArenaActivatedSignature, class ARGX_Arena*, ArenaActivated);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FArenaDeactivatedSignature, ARGX_Arena*, ArenaDeactivated);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FArenaOnEnemyKilledSignature, class ARGX_EnemyBase*, EnemyKilled);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWaveFinishedSignature, class URGX_OngoingWave*, FinishedWave);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWaveSpawnedSignature, class URGX_OngoingWave*, SpawnedWave);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FWaveFinishedSignature, URGX_OngoingWave*, FinishedWave);
 
 // TODO: Move assignation to callback. Unused Function right now
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FSpawnEnemyCallbackSignature, ARGX_EnemyBase*, Enemy, URGX_OngoingWave*, Wave);
 
-UCLASS()
+/* This enum maps to the ArenaWon parameter in FMOD */
+UENUM(BlueprintType)
+enum class ERGX_ArenaState : uint8
+{
+	NOT_WON	= 0	UMETA(DisplayName = "NOT_WON"),
+	WON			UMETA(DisplayName = "WON")
+};
+
+UCLASS(BlueprintType)
 class REGICIDEX_API URGX_OngoingWave : public UObject
 {
 	GENERATED_BODY()
@@ -26,7 +35,7 @@ public:
 	/**
 	 * @brief Data of the outgoing wave
 	 */
-	UPROPERTY()
+	UPROPERTY(BlueprintReadOnly)
 	URGX_ArenaWaveDataAsset* WaveData;
 	int32 EnemiesLeft = 0;
 	bool bEnemiesSpawned = false;
@@ -86,9 +95,6 @@ private:
 	UFUNCTION()
 	void HandleFinishArena();
 
-
-	
-
 	UFUNCTION()
 	void OnEnemyDeath(ARGX_EnemyBase* Enemy);
 
@@ -102,6 +108,8 @@ public:
 	FArenaDeactivatedSignature OnArenaDeactivated;
 	UPROPERTY(BlueprintAssignable)
 	FArenaOnEnemyKilledSignature OnArenaEnemyKilled;
+	UPROPERTY(BlueprintAssignable)
+	FWaveSpawnedSignature OnWaveSpawned;
 	UPROPERTY(BlueprintAssignable)
 	FWaveFinishedSignature OnWaveFinished;
 

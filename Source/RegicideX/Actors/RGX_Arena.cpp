@@ -113,17 +113,13 @@ void ARGX_Arena::HandleSpawnWave(URGX_OngoingWave* Wave)
 	const TArray<FName> EnemyWaveNames = DT_EnemyRefs->GetRowNames();
 	const URGX_ArenaWaveDataAsset* CurrentWaveData = Wave->WaveData;
 
-	
-
 	if (EnemyWaveNames.Num() != CurrentWaveData->NumEnemies.Num())
 	{
 		UE_LOG(LogTemp, Error, TEXT("WaveData num enemies different from total number of enemy types available"));
 		return;
 	}
 
-
 	Wave->bEnemiesSpawned = true;
-
 	
 	LastSpawnerIdx = -1;
 	for (int i = 0; i < CurrentWaveData->NumEnemies.Num(); ++i)
@@ -132,7 +128,11 @@ void ARGX_Arena::HandleSpawnWave(URGX_OngoingWave* Wave)
 	}
 
 	Wave->bEnemiesSpawned = true;
-	
+
+	if (OnWaveSpawned.IsBound())
+	{
+		OnWaveSpawned.Broadcast(Wave);
+	}
 }
 
 void ARGX_Arena::SpawnWaveEnemyRandomMode(TSubclassOf<class ARGX_EnemyBase> EnemyClass, URGX_OngoingWave* Wave)
