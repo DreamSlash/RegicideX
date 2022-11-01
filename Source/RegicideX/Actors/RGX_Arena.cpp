@@ -132,7 +132,11 @@ void ARGX_Arena::HandleSpawnWave(URGX_OngoingWave* Wave)
 	}
 
 	Wave->bEnemiesSpawned = true;
-	
+
+	if (OnWaveSpawned.IsBound())
+	{
+		OnWaveSpawned.Broadcast(Wave);
+	}
 }
 
 void ARGX_Arena::SpawnWaveEnemyRandomMode(TSubclassOf<class ARGX_EnemyBase> EnemyClass, URGX_OngoingWave* Wave)
