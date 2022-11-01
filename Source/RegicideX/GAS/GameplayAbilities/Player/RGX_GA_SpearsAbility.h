@@ -45,6 +45,8 @@ private:
 
 	UAbilityTask_WaitInputRelease* WaitInputReleaseTask = nullptr;
 
+	AActor* Caster = nullptr;
+
 protected:
 
 	//UFUNCTION()
