@@ -1333,6 +1333,9 @@
 		</relationship>
 	</object>
 	<object class="EventMixerGroup" id="{14fdc1db-dafd-4c73-b070-d10d5d1a5ac3}">
+		<property name="volume">
+			<value>-12</value>
+		</property>
 		<property name="name">
 			<value>Synth</value>
 		</property>
@@ -2572,7 +2575,7 @@
 	</object>
 	<object class="EventMixerGroup" id="{960f3b4d-9272-4b1e-beae-592d6585235a}">
 		<property name="volume">
-			<value>3.5</value>
+			<value>5</value>
 		</property>
 		<property name="name">
 			<value>Brass</value>
@@ -2602,6 +2605,9 @@
 		</relationship>
 	</object>
 	<object class="EventMixerGroup" id="{52fa7e91-81eb-4691-bb97-0acac6a2d659}">
+		<property name="volume">
+			<value>6.5</value>
+		</property>
 		<property name="name">
 			<value>Choir</value>
 		</property>
@@ -4372,7 +4378,7 @@
 			<value>0</value>
 		</property>
 		<property name="maximum">
-			<value>20</value>
+			<value>0</value>
 		</property>
 		<relationship name="parameter">
 			<destination>{d8e83a7f-e1f8-4f22-b51e-f8eef9307977}</destination>
