@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="Event" id="{257f3de1-6493-4e8c-9b84-5aa4e4f6fc21}">
 		<property name="name">
-			<value>GuidedBomb</value>
+			<value>DistanceGuidedBomb</value>
 		</property>
 		<property name="outputFormat">
 			<value>2</value>
@@ -59,7 +59,14 @@
 			<destination>{7f0901cf-d1d1-4da1-b9d2-3152618cc0b8}</destination>
 		</relationship>
 	</object>
-	<object class="EventAutomatableProperties" id="{7c4259b4-a0bb-4bcc-9c6a-7e0e26246461}" />
+	<object class="EventAutomatableProperties" id="{7c4259b4-a0bb-4bcc-9c6a-7e0e26246461}">
+		<property name="isPersistent">
+			<value>true</value>
+		</property>
+		<property name="priority">
+			<value>4</value>
+		</property>
+	</object>
 	<object class="MarkerTrack" id="{bebcb651-077e-4ced-a739-32acf83fb9eb}" />
 	<object class="Timeline" id="{56591961-f3a4-4cc6-a2c1-242562a70c9d}">
 		<property name="isProxyEnabled">
