@@ -81,7 +81,7 @@
 	</object>
 	<object class="EventMixerMaster" id="{3ce01eda-0da6-41c2-8f43-4fc5bb459402}">
 		<property name="volume">
-			<value>-22.5</value>
+			<value>-10</value>
 		</property>
 		<relationship name="effectChain">
 			<destination>{3cd29a89-1102-45da-b798-60fb6adc753a}</destination>
@@ -125,8 +125,8 @@
 	</object>
 	<object class="MixerBusEffectChain" id="{3cd29a89-1102-45da-b798-60fb6adc753a}">
 		<relationship name="effects">
-			<destination>{08b0648e-b7bd-4709-947d-b7497890207f}</destination>
 			<destination>{abcafafe-dbe4-44e5-99c3-cfdad15fa3ed}</destination>
+			<destination>{08b0648e-b7bd-4709-947d-b7497890207f}</destination>
 			<destination>{9bdd6d58-b65c-4583-bea9-034c48b73d1e}</destination>
 			<destination>{21b200cb-a26a-4fc5-b3d1-2d2058e86d85}</destination>
 			<destination>{95fee346-1f4d-442a-8031-88540fbb7332}</destination>
@@ -161,6 +161,11 @@
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{75e2d688-3708-4a52-a97f-bd92a47d9911}" />
+	<object class="DistortionEffect" id="{abcafafe-dbe4-44e5-99c3-cfdad15fa3ed}">
+		<property name="level">
+			<value>0.714999974</value>
+		</property>
+	</object>
 	<object class="FlangerEffect" id="{08b0648e-b7bd-4709-947d-b7497890207f}">
 		<property name="rate">
 			<value>0.579999983</value>
@@ -169,34 +174,26 @@
 			<value>65</value>
 		</property>
 	</object>
-	<object class="DistortionEffect" id="{abcafafe-dbe4-44e5-99c3-cfdad15fa3ed}">
-		<property name="level">
-			<value>0.579999983</value>
-		</property>
-	</object>
 	<object class="MixerBusFader" id="{9bdd6d58-b65c-4583-bea9-034c48b73d1e}" />
 	<object class="SpatialiserEffect" id="{21b200cb-a26a-4fc5-b3d1-2d2058e86d85}" />
 	<object class="SFXReverbEffect" id="{95fee346-1f4d-442a-8031-88540fbb7332}">
-		<property name="decayTime">
-			<value>3000</value>
+		<property name="earlyDelay">
+			<value>7</value>
 		</property>
 		<property name="lateDelay">
-			<value>29</value>
+			<value>11</value>
 		</property>
 		<property name="HFDecayRatio">
-			<value>70</value>
-		</property>
-		<property name="lowShelfGain">
-			<value>-24</value>
+			<value>83</value>
 		</property>
 		<property name="highCut">
-			<value>5650</value>
+			<value>14500</value>
 		</property>
 		<property name="earlyLateMix">
-			<value>80</value>
+			<value>96</value>
 		</property>
 		<property name="wetLevel">
-			<value>0.5</value>
+			<value>-8</value>
 		</property>
 		<property name="dryLevel">
 			<value>-24.5</value>

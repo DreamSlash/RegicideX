@@ -151,14 +151,26 @@
 		</property>
 	</object>
 	<object class="SFXReverbEffect" id="{5a60223e-28ad-403a-9f6a-3c977eb83d2b}">
-		<property name="decayTime">
-			<value>4700</value>
+		<property name="earlyDelay">
+			<value>7</value>
+		</property>
+		<property name="lateDelay">
+			<value>11</value>
+		</property>
+		<property name="HFDecayRatio">
+			<value>83</value>
 		</property>
 		<property name="lowShelfGain">
-			<value>-22</value>
+			<value>-8</value>
+		</property>
+		<property name="highCut">
+			<value>14500</value>
+		</property>
+		<property name="earlyLateMix">
+			<value>96</value>
 		</property>
 		<property name="wetLevel">
-			<value>2.5</value>
+			<value>-8</value>
 		</property>
 		<property name="dryLevel">
 			<value>-13</value>

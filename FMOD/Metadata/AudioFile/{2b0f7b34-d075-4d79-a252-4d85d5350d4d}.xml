@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <objects serializationModel="Studio.02.02.00">
-	<object class="AudioFile" id="{75ea7dd9-d5a9-4251-8574-3b469250ac25}">
+	<object class="AudioFile" id="{2b0f7b34-d075-4d79-a252-4d85d5350d4d}">
 		<property name="assetPath">
-			<value>Mele/AdamantiumClawsOut_HV.8.wav</value>
+			<value>Mele/DeepBreath_04.wav</value>
 		</property>
 		<property name="frequencyInKHz">
 			<value>96</value>
@@ -11,7 +11,7 @@
 			<value>2</value>
 		</property>
 		<property name="length">
-			<value>0.65066666666666662</value>
+			<value>2.4141979166666667</value>
 		</property>
 		<relationship name="masterAssetFolder">
 			<destination>{7e66b5dd-574b-4959-981c-0287962c7622}</destination>

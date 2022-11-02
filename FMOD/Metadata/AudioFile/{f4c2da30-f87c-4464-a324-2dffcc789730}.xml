@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="AudioFile" id="{f4c2da30-f87c-4464-a324-2dffcc789730}">
 		<property name="assetPath">
-			<value>AdamantiumClawsOut_HV.9.wav</value>
+			<value>Mele/AdamantiumClawsOut_HV.9.wav</value>
 		</property>
 		<property name="frequencyInKHz">
 			<value>96</value>

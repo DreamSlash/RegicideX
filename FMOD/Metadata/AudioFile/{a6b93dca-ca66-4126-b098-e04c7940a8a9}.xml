@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <objects serializationModel="Studio.02.02.00">
-	<object class="AudioFile" id="{92cc1b3e-5565-4c29-9c89-bba1c0ee1ef3}">
+	<object class="AudioFile" id="{a6b93dca-ca66-4126-b098-e04c7940a8a9}">
 		<property name="assetPath">
-			<value>ah3.mp3</value>
+			<value>Mele/DeepBreath_03.wav</value>
 		</property>
 		<property name="frequencyInKHz">
-			<value>44.0999985</value>
+			<value>96</value>
 		</property>
 		<property name="channelCount">
 			<value>2</value>
 		</property>
 		<property name="length">
-			<value>0.78367346938775506</value>
+			<value>2.2012499999999999</value>
 		</property>
 		<relationship name="masterAssetFolder">
 			<destination>{7e66b5dd-574b-4959-981c-0287962c7622}</destination>

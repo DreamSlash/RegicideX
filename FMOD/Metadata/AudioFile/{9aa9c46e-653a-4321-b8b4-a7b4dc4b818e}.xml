@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="AudioFile" id="{9aa9c46e-653a-4321-b8b4-a7b4dc4b818e}">
 		<property name="assetPath">
-			<value>ESM_Demon_Vocal_Jump_2_Monster_Game_Voice.wav</value>
+			<value>Mele/ESM_Demon_Vocal_Jump_2_Monster_Game_Voice.wav</value>
 		</property>
 		<property name="frequencyInKHz">
 			<value>96</value>

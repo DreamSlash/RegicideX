@@ -121,7 +121,6 @@
 	</object>
 	<object class="MixerBusEffectChain" id="{fa772285-219d-403b-88ae-7df59b4f4ae6}">
 		<relationship name="effects">
-			<destination>{b712c9b6-0a4b-45e4-a6f7-3cc1f55b1f84}</destination>
 			<destination>{9892ca28-af0d-460f-ac77-f6b5bef9dcab}</destination>
 			<destination>{33e17dee-b121-4037-8a14-ebd0341b1cbd}</destination>
 			<destination>{5e714312-15f6-45c3-9477-29c72bb97f1e}</destination>
@@ -150,26 +149,15 @@
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{0db329c7-419e-4d36-a011-2b5145a186e2}" />
-	<object class="ThreeEQEffect" id="{b712c9b6-0a4b-45e4-a6f7-3cc1f55b1f84}">
-		<property name="lowGain">
-			<value>-14.5</value>
-		</property>
-		<property name="midGain">
-			<value>4</value>
-		</property>
-		<property name="highGain">
-			<value>-2</value>
-		</property>
-	</object>
 	<object class="PitchShifterEffect" id="{9892ca28-af0d-460f-ac77-f6b5bef9dcab}">
 		<property name="pitch">
-			<value>0.859999955</value>
+			<value>0.769999981</value>
 		</property>
 		<property name="fftSize">
 			<value>256</value>
 		</property>
 		<property name="overlap">
-			<value>1</value>
+			<value>25.2000008</value>
 		</property>
 		<property name="maxChannels">
 			<value>5.5</value>
@@ -204,7 +192,7 @@
 			<value>96</value>
 		</property>
 		<property name="wetLevel">
-			<value>0</value>
+			<value>-8</value>
 		</property>
 		<property name="dryLevel">
 			<value>-10</value>
