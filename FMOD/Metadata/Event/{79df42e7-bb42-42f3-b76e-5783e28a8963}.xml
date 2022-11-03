@@ -63,8 +63,11 @@
 		</relationship>
 	</object>
 	<object class="EventAutomatableProperties" id="{687e9675-d896-446e-836c-e0f0aa940f4e}">
+		<property name="priority">
+			<value>4</value>
+		</property>
 		<property name="maximumDistance">
-			<value>5.80000019</value>
+			<value>60</value>
 		</property>
 	</object>
 	<object class="MarkerTrack" id="{e490b8ca-939d-48aa-b2e1-d3fd37b9d975}" />
@@ -153,13 +156,13 @@
 	<object class="MixerBusPanner" id="{4efa0695-7583-49c0-b9bf-d281eaa834fd}" />
 	<object class="PitchShifterEffect" id="{f6968512-b7c7-4143-aaa3-8c10dbbed0a8}">
 		<property name="pitch">
-			<value>0.849999964</value>
+			<value>0.729999959</value>
 		</property>
 	</object>
 	<object class="MixerBusFader" id="{b6ad9c3f-2f60-462c-a829-29b60ba9e103}" />
 	<object class="SpatialiserEffect" id="{968caa1e-593f-4417-8f9b-9bcd319c86d2}">
 		<property name="maximumDistance">
-			<value>5.80000019</value>
+			<value>60</value>
 		</property>
 	</object>
 	<object class="SingleSound" id="{01bd4c8c-e339-4501-bd79-75290f06562a}">
