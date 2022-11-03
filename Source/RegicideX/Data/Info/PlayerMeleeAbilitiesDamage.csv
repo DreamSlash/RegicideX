@@ -3,8 +3,14 @@ LightAttack1_Damage,50,100,150
 LightAttack1_Scaling,0.5,0.6,0.7
 LightAttack2_Damage,60,110,160
 LightAttack2_Scaling,0.5,0.6,0.7
-LightAttack3_Damage,60,110,160
+LightAttack3_Damage,75,110,160
 LightAttack3_Scaling,0.5,0.6,0.7
+HeavyAttack1_Damage,50,100,150
+HeavyAttack1_Scaling,1.0,0.6,0.7
+HeavyAttack2_Damage,75,110,160
+HeavyAttack2_Scaling,1.0,0.6,0.7
+HeavyAttack3_Damage,100,110,160
+HeavyAttack3_Scaling,1.0,0.6,0.7
 AirLightAttack1_Damage,60,110,160
 AirLightAttack1_Scaling,0.5,0.6,0.7
 AirLightAttack2_Damage,70,120,170
