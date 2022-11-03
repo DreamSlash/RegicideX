@@ -736,7 +736,7 @@ void ARGX_PlayerCharacter::MoveForward(float Value)
 
 	const bool bIsControllerNull = Controller == nullptr;
 	const bool bIsAxisValueLesserThanThreshold = std::abs(Value) <= 0.0;
-	if (bStaggered || bIsControllerNull || bIsAxisValueLesserThanThreshold || bIgnoreInputMoveVector)
+	if (bStaggered || bIsControllerNull || bIsAxisValueLesserThanThreshold)
 		return;
 
 	FVector direction;
@@ -756,7 +756,8 @@ void ARGX_PlayerCharacter::MoveForward(float Value)
 	}
 
 	// add movement in that direction
-	AddMovementInput(direction, Value);
+	if (bIgnoreInputMoveVector == false)
+		AddMovementInput(direction, Value);
 	CurrentMoveInput.X = Value;
 }
 
@@ -766,7 +767,7 @@ void ARGX_PlayerCharacter::MoveRight(float Value)
 
 	const bool bIsControllerNull = Controller == nullptr;
 	const bool bIsAxisValueLesserThanThreshold = std::abs(Value) <= 0.0;
-	if (bStaggered || bIsControllerNull || bIsAxisValueLesserThanThreshold || bIgnoreInputMoveVector)
+	if (bStaggered || bIsControllerNull || bIsAxisValueLesserThanThreshold)
 		return;
 
 	FVector direction;
@@ -787,7 +788,8 @@ void ARGX_PlayerCharacter::MoveRight(float Value)
 	}
 
 	// add movement in that direction
-	AddMovementInput(direction, Value);
+	if (bIgnoreInputMoveVector == false)
+		AddMovementInput(direction, Value);
 	CurrentMoveInput.Y = Value;
 }
 
