@@ -258,12 +258,6 @@ void ARGX_PlayerCharacter::ManageHeavyAttackInputRelease()
 
 void ARGX_PlayerCharacter::ManageJumpInput()
 {
-	// Jump is blocked if any other ability with fullbody is being executed
-	FGameplayTagContainer container;
-	GetAbilitySystemComponent()->GetBlockedAbilityTags(container);
-	if (container.HasTag(FGameplayTag::RequestGameplayTag(FName("Ability.Fullbody"))))
-		return;
-
 	// Jump cancels current attack
 	FGameplayTagContainer TagContainer(FGameplayTag::RequestGameplayTag(FName("Ability.Melee")));
 	GetAbilitySystemComponent()->CancelAbilities(&TagContainer);
