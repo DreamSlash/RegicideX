@@ -59,7 +59,11 @@
 			<destination>{7f0901cf-d1d1-4da1-b9d2-3152618cc0b8}</destination>
 		</relationship>
 	</object>
-	<object class="EventAutomatableProperties" id="{a0309165-7d1d-4a49-9c51-d501dddbc9b7}" />
+	<object class="EventAutomatableProperties" id="{a0309165-7d1d-4a49-9c51-d501dddbc9b7}">
+		<property name="maximumDistance">
+			<value>70</value>
+		</property>
+	</object>
 	<object class="MarkerTrack" id="{2cbcb33b-4673-4bc4-9959-6930e9207384}" />
 	<object class="Timeline" id="{2cd3ecb5-7590-4341-a0a7-cae14f0e9e9e}">
 		<property name="isProxyEnabled">
@@ -107,5 +111,9 @@
 	</object>
 	<object class="MixerBusFader" id="{b177f264-449f-4aca-9a90-4be82fd5dfd6}" />
 	<object class="MixerBusFader" id="{b8dc3cdf-a4d7-45f1-ae4f-7a988885efd7}" />
-	<object class="SpatialiserEffect" id="{98dd87c7-9e07-4761-99d3-b0f6cd55abfe}" />
+	<object class="SpatialiserEffect" id="{98dd87c7-9e07-4761-99d3-b0f6cd55abfe}">
+		<property name="maximumDistance">
+			<value>70</value>
+		</property>
+	</object>
 </objects>
