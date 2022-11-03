@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="Event" id="{f381788d-9268-4507-a246-5d08a2953eed}">
 		<property name="name">
-			<value>ForceField</value>
+			<value>DistanceForceField</value>
 		</property>
 		<property name="outputFormat">
 			<value>2</value>
