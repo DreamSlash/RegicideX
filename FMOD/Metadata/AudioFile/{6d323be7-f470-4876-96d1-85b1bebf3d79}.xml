@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{6d323be7-f470-4876-96d1-85b1bebf3d79}">
+		<property name="assetPath">
+			<value>ESM_Oneshot_Alien_Game_Vocal_Alien_Insectoid_Attack_2_Monster_Creature_Sharp_Squishy_Glitchy.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>96</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>0.97709374999999998</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{7e66b5dd-574b-4959-981c-0287962c7622}</destination>
+		</relationship>
+	</object>
+</objects>
