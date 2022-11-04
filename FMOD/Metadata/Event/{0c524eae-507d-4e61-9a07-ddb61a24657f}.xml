@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="Event" id="{0c524eae-507d-4e61-9a07-ddb61a24657f}">
 		<property name="name">
-			<value>Distance_Angel_Cast</value>
+			<value>DistanceGuidedBombCast</value>
 		</property>
 		<property name="outputFormat">
 			<value>2</value>
