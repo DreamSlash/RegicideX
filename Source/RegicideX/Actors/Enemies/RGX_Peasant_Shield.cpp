@@ -6,6 +6,7 @@
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "RegicideX/AI/Controllers/RGX_PeasantShieldController.h"
 #include "RegicideX/Character/RGX_PlayerCharacter.h"
 
 ARGX_Peasant_Shield::ARGX_Peasant_Shield() 
@@ -96,7 +97,11 @@ float ARGX_Peasant_Shield::HandleDamageMitigation(float DamageAmount, const FHit
 				PlayAnimMontage(AMShieldBreaks);
 				if (ShieldMesh) 
 					ShieldMesh->DestroyComponent();
-				OnShieldCracked();
+
+				if (ARGX_PeasantShieldController* controller = Cast<ARGX_PeasantShieldController>(GetController()))
+				{
+					controller->OnShieldBroken();
+				}
 			}
 			return 0.0f;
 		}
