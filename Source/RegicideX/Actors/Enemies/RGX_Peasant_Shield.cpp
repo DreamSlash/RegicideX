@@ -75,9 +75,22 @@ float ARGX_Peasant_Shield::HandleDamageMitigation(float DamageAmount, const FHit
 		// If attack is a HeavyAttack, shield takes damage.
 		if (Player && Player->GetAbilitySystemComponent()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Ability.Player.HeavyAttack"))))
 		{
+			TArray<UStaticMeshComponent*> Components;
+			GetComponents<UStaticMeshComponent>(Components);
+			for (UStaticMeshComponent* Component : Components)
+			{
+				if (Component->GetName() == FString("Shield"))
+				{
+					UStaticMesh* ShieldMesh = Component->GetStaticMesh();
+					if (!ShieldMesh)
+						break;
+
+					OnShieldCracked();
+				}
+			}
 			UE_LOG(LogTemp, Warning, TEXT("Shield is damaged! Attack was heavy."));
 			ShieldAmount -= DamageAmount;
-			ShieldAmount > 0.0f ? PlayAnimMontage(AMShieldBlock) : PlayAnimMontage(AMShieldBreaks);
+			ShieldAmount > 0.0f ? PlayAnimMontage(AMShieldBlockBreaks) : PlayAnimMontage(AMShieldBreaks);
 			return 0.0f;
 		}
 

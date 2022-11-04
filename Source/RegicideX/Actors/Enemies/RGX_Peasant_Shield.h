@@ -21,10 +21,16 @@ public:
 		UAnimMontage* AMShieldBlock = nullptr;
 
 	UPROPERTY(EditDefaultsOnly)
+		UAnimMontage* AMShieldBlockBreaks = nullptr;
+
+	UPROPERTY(EditDefaultsOnly)
 		UAnimMontage* AMShieldBreaks = nullptr;
 
 	UPROPERTY(EditDefaultsOnly)
 		float ShieldAmount = 100.0f;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnShieldCracked();
 
 protected:
 	virtual bool CanBeLaunched(AActor* ActorInstigator, URGX_LaunchEventDataAsset* LaunchPayload) override;
