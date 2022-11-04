@@ -11,17 +11,17 @@ void URGX_ANS_CurveMovement::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnim
 	const FVector forwardVector = owner->GetActorForwardVector();
 	float speed = GetSpeed(MeshComp);
 
-	if (URGX_MovementAssistComponent* moveAssistComp = Cast<URGX_MovementAssistComponent>(owner->GetComponentByClass(URGX_MovementAssistComponent::StaticClass())))
-	{
-		moveAssistComp->SetDirection(FVector(0.0, 0.0, 0.0));
-		moveAssistComp->SetMagnitudeAndSpeed(Magnitude, speed);
-		moveAssistComp->EnableMovementAssist();
-	}
-	else if (URGX_CombatAssistComponent* combatAssistComp = Cast<URGX_CombatAssistComponent>(owner->GetComponentByClass(URGX_CombatAssistComponent::StaticClass())))
+	if (URGX_CombatAssistComponent* combatAssistComp = Cast<URGX_CombatAssistComponent>(owner->GetComponentByClass(URGX_CombatAssistComponent::StaticClass())))
 	{
 		combatAssistComp->AddMovementVector(forwardVector, speed, bIsAttacking);
 		combatAssistComp->EnableMovementVector();
 		combatAssistComp->SetAttackMoveDuration(TotalDuration);
+	}
+	else if (URGX_MovementAssistComponent* moveAssistComp = Cast<URGX_MovementAssistComponent>(owner->GetComponentByClass(URGX_MovementAssistComponent::StaticClass())))
+	{
+		moveAssistComp->SetDirection(FVector(0.0, 0.0, 0.0));
+		moveAssistComp->SetMagnitudeAndSpeed(Magnitude, speed);
+		moveAssistComp->EnableMovementAssist();
 	}
 }
 
@@ -32,13 +32,15 @@ void URGX_ANS_CurveMovement::NotifyTick(USkeletalMeshComponent* MeshComp, UAnimS
 		AActor* owner = MeshComp->GetOwner();
 		float speed = GetSpeed(MeshComp);
 
-		if (URGX_MovementAssistComponent* moveAssistComp = Cast<URGX_MovementAssistComponent>(owner->GetComponentByClass(URGX_MovementAssistComponent::StaticClass())))
+		if (URGX_CombatAssistComponent* combatAssistComp = Cast<URGX_CombatAssistComponent>(owner->GetComponentByClass(URGX_CombatAssistComponent::StaticClass())))
+		{
+			const FVector forwardVector = owner->GetActorForwardVector();
+			combatAssistComp->AddMovementVector(forwardVector, speed, bIsAttacking);
+			combatAssistComp->SetMovementSpeed(speed);
+		}
+		else if (URGX_MovementAssistComponent* moveAssistComp = Cast<URGX_MovementAssistComponent>(owner->GetComponentByClass(URGX_MovementAssistComponent::StaticClass())))
 		{
 			moveAssistComp->SetMagnitudeAndSpeed(Magnitude, speed);
-		}
-		else if (URGX_CombatAssistComponent* combatAssistComp = Cast<URGX_CombatAssistComponent>(owner->GetComponentByClass(URGX_CombatAssistComponent::StaticClass())))
-		{
-			combatAssistComp->SetMovementSpeed(speed);
 		}
 	}
 }
@@ -47,13 +49,13 @@ void URGX_ANS_CurveMovement::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSe
 {
 	AActor* owner = MeshComp->GetOwner();
 
-	if (URGX_MovementAssistComponent* moveAssistComp = Cast<URGX_MovementAssistComponent>(owner->GetComponentByClass(URGX_MovementAssistComponent::StaticClass())))
-	{
-		moveAssistComp->DisableMovementAssist();
-	}
-	else if (URGX_CombatAssistComponent* combatAssistComp = Cast<URGX_CombatAssistComponent>(owner->GetComponentByClass(URGX_CombatAssistComponent::StaticClass())))
+	if (URGX_CombatAssistComponent* combatAssistComp = Cast<URGX_CombatAssistComponent>(owner->GetComponentByClass(URGX_CombatAssistComponent::StaticClass())))
 	{
 		combatAssistComp->RemoveMovementVector();
+	}
+	else if (URGX_MovementAssistComponent* moveAssistComp = Cast<URGX_MovementAssistComponent>(owner->GetComponentByClass(URGX_MovementAssistComponent::StaticClass())))
+	{
+		moveAssistComp->DisableMovementAssist();
 	}
 }
 
