@@ -14,7 +14,6 @@ class REGICIDEX_API ARGX_Peasant_Shield : public ARGX_Peasant
 	GENERATED_BODY()
 
 public:
-
 	ARGX_Peasant_Shield();
 
 	UPROPERTY(EditDefaultsOnly)
