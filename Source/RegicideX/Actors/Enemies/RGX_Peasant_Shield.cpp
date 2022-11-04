@@ -72,15 +72,16 @@ float ARGX_Peasant_Shield::HandleDamageMitigation(float DamageAmount, const FHit
 
 	if (DotProduct > 0.5f)
 	{
-		PlayAnimMontage(AMShieldBlock);
 		// If attack is a HeavyAttack, shield takes damage.
 		if (Player && Player->GetAbilitySystemComponent()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Ability.Player.HeavyAttack"))))
 		{
 			UE_LOG(LogTemp, Warning, TEXT("Shield is damaged! Attack was heavy."));
-			ShieldAmount -= 50.0f;
+			ShieldAmount -= DamageAmount;
+			ShieldAmount > 0.0f ? PlayAnimMontage(AMShieldBlock) : PlayAnimMontage(AMShieldBreaks);
 			return 0.0f;
 		}
 
+		PlayAnimMontage(AMShieldBlock);
 		UE_LOG(LogTemp, Warning, TEXT("Shield mitigated damage. Shield health: %d"), ShieldAmount);
 		AAIController* AICont = Cast<AAIController>(this->GetController());
 		UBlackboardComponent* BB = AICont->GetBlackboardComponent();
