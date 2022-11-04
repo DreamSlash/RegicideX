@@ -77,20 +77,26 @@ float ARGX_Peasant_Shield::HandleDamageMitigation(float DamageAmount, const FHit
 		{
 			TArray<UStaticMeshComponent*> Components;
 			GetComponents<UStaticMeshComponent>(Components);
+			UStaticMeshComponent* ShieldMesh = nullptr;
 			for (UStaticMeshComponent* Component : Components)
 			{
 				if (Component->GetName() == FString("Shield"))
 				{
-					UStaticMesh* ShieldMesh = Component->GetStaticMesh();
-					if (!ShieldMesh)
-						break;
-
+					ShieldMesh = Component;
 					OnShieldCracked();
 				}
 			}
 			UE_LOG(LogTemp, Warning, TEXT("Shield is damaged! Attack was heavy."));
 			ShieldAmount -= DamageAmount;
-			ShieldAmount > 0.0f ? PlayAnimMontage(AMShieldBlockBreaks) : PlayAnimMontage(AMShieldBreaks);
+			if (ShieldAmount > 0.0f) 
+			{
+				PlayAnimMontage(AMShieldBlockBreaks);
+			}
+			else {
+				PlayAnimMontage(AMShieldBreaks);
+				if (ShieldMesh) 
+					ShieldMesh->DestroyComponent();
+			}
 			return 0.0f;
 		}
 
