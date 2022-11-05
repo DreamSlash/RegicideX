@@ -1,7 +1,7 @@
 #include "RGX_PillarsPartyAbility.h"
 
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
-#include "RegicideX/Actors/Weapons/RGX_ExplosivePillar.h"
+#include "RegicideX/Actors/Weapons/RGX_ExplosiveMine.h"
 
 #include "DrawDebugHelpers.h"
 #include "NavigationSystem.h"
@@ -63,7 +63,7 @@ void URGX_PillarsPartyAbility::SpawnPillarAtLocation(const FVector& Location) co
 	}
 
 	FActorSpawnParameters params;
-	GetWorld()->SpawnActor<ARGX_ExplosivePillar>(PillarActorClass, pillarTransform, params);
+	GetWorld()->SpawnActor<ARGX_ExplosiveMine>(PillarActorClass, pillarTransform, params);
 }
 
 //void URGX_PillarsPartyAbility::OnSpawnPillar()

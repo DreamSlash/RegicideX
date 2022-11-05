@@ -104,7 +104,7 @@ void ARGX_ExplosiveMine::BeginRise()
 {
 	if (RiseCurve)
 	{
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), TellVFX, GetActorLocation(), GetActorRotation(), FVector(1.0f, 1.0f, 1.0f));
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), TellVFX, GetActorLocation(), GetActorRotation());
 
 		FOnTimelineFloat TimelineCallback;
 		FOnTimelineEventStatic TimelineFinishedCallback;
@@ -131,6 +131,11 @@ void ARGX_ExplosiveMine::BeginRise()
 void ARGX_ExplosiveMine::BeginActivation()
 {
 	bIsActivated = true;
+
+	if (ActivationTellVFX)
+	{
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ActivationTellVFX, Sphere->GetComponentLocation(), GetActorRotation());
+	}
 }
 
 void ARGX_ExplosiveMine::Activate()
@@ -160,6 +165,6 @@ void ARGX_ExplosiveMine::Explode()
 		}
 	}
 
-	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionVFX, Sphere->GetComponentLocation(), GetActorRotation(), FVector(3.0f, 3.0f, 1.0f));
+	UNiagaraFunctionLibrary::SpawnSystemAtLocation(GetWorld(), ExplosionVFX, Sphere->GetComponentLocation(), GetActorRotation());
 	Destroy();
 }

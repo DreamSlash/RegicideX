@@ -1,7 +1,7 @@
 #include "RGX_PillarsFieldAbility.h"
 
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
-#include "RegicideX/Actors/Weapons/RGX_ExplosivePillar.h"
+#include "RegicideX/Actors/Weapons/RGX_ExplosiveMine.h"
 
 #include "DrawDebugHelpers.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
@@ -49,6 +49,6 @@ void URGX_PillarsFieldAbility::OnGround()
 		params.Instigator = mageAngel;*/
 		//params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
-		GetWorld()->SpawnActor<ARGX_ExplosivePillar>(PillarActorClass, pillarTransform, params);
+		GetWorld()->SpawnActor<ARGX_ExplosiveMine>(PillarActorClass, pillarTransform, params);
 	}
 }

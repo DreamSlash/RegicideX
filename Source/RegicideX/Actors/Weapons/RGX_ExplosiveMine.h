@@ -48,6 +48,9 @@ protected:
 	class UNiagaraSystem* TellVFX = nullptr;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UNiagaraSystem* ActivationTellVFX = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UNiagaraSystem* ExplosionVFX = nullptr;
 
 public:
