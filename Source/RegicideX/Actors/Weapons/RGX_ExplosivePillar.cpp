@@ -31,9 +31,6 @@ ARGX_ExplosivePillar::ARGX_ExplosivePillar()
 
 	ExplosionSource = CreateDefaultSubobject<USceneComponent>(TEXT("ExplosionSource"));
 	ExplosionSource->SetupAttachment(RootComponent);
-
-	ActivationCollider->OnComponentBeginOverlap.AddUniqueDynamic(this, &ARGX_ExplosivePillar::Activate);
-	PillarCollider->OnComponentBeginOverlap.AddUniqueDynamic(this, &ARGX_ExplosivePillar::Detonate);
 }
 
 // Called when the game starts or when spawned
@@ -49,6 +46,8 @@ void ARGX_ExplosivePillar::BeginPlay()
 		FOnTimelineEventStatic TimelineFinishedCallback;
 		TimelineFinishedCallback.BindLambda([this]()
 			{
+				bIsRising = false;
+				ActivationCollider->OnComponentBeginOverlap.AddUniqueDynamic(this, &ARGX_ExplosivePillar::Activate);
 				GetWorld()->GetTimerManager().SetTimer(ActivationTimerHandle, [this]() { Activate(); }, TimeToActivate, false);
 				//DrawDebugCapsule(GetWorld(), ActivationCollider->GetComponentLocation(), ActivationCollider->GetScaledCapsuleHalfHeight(), ActivationCollider->GetScaledCapsuleRadius(), ActivationCollider->GetComponentRotation().Quaternion(), FColor::Yellow, false, TimeToActivate);
 			});
@@ -138,6 +137,7 @@ void ARGX_ExplosivePillar::Rise()
 
 void ARGX_ExplosivePillar::Activate()
 {
+	PillarCollider->OnComponentBeginOverlap.AddUniqueDynamic(this, &ARGX_ExplosivePillar::Detonate);
 	GetWorld()->GetTimerManager().SetTimer(ExplosionTimerHandle, [this]() { Explode(); }, TimeToExplode, false);
 
 	//DrawDebugSphere(GetWorld(), ExplosionSource->GetComponentLocation(), ExplosionRadius, 16, FColor::Red, false, TimeToExplode);
