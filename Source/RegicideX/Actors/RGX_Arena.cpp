@@ -133,6 +133,8 @@ void ARGX_Arena::HandleSpawnWave(URGX_OngoingWave* Wave)
 	{
 		OnWaveSpawned.Broadcast(Wave);
 	}
+
+	InitConstantSpawnData(Wave);
 }
 
 void ARGX_Arena::SpawnWaveEnemyRandomMode(TSubclassOf<class ARGX_EnemyBase> EnemyClass, URGX_OngoingWave* Wave)
@@ -142,7 +144,7 @@ void ARGX_Arena::SpawnWaveEnemyRandomMode(TSubclassOf<class ARGX_EnemyBase> Enem
 
 	if (AvailableSpawnersIdx.Num() == 0)
 	{
-		SpawnerIdx = FMath::RandRange(0, EnemySpawners.Num() - 1);
+		SpawnWaveEnemy(EnemyClass, GetRandomizedIndexArray(EnemySpawners.Num()), Wave);
 	}
 	else
 	{
@@ -150,9 +152,9 @@ void ARGX_Arena::SpawnWaveEnemyRandomMode(TSubclassOf<class ARGX_EnemyBase> Enem
 		{
 			SpawnerIdx = FMath::RandRange(0, EnemySpawners.Num() - 1);
 		} while (AvailableSpawnersIdx.Contains(SpawnerIdx) == false);
-	}
 
-	SpawnWaveEnemy(EnemyClass, SpawnerIdx, Wave);
+		SpawnWaveEnemy(EnemyClass, SpawnerIdx, Wave);
+	}
 }
 
 void ARGX_Arena::SpawnWaveEnemyRoundRobinMode(TSubclassOf<class ARGX_EnemyBase> EnemyClass, URGX_OngoingWave* Wave)
@@ -242,6 +244,25 @@ void ARGX_Arena::SpawnWaveEnemy(TSubclassOf<ARGX_EnemyBase> EnemyClass, int32 Sp
 	}
 }
 
+void ARGX_Arena::SpawnWaveEnemy(TSubclassOf<ARGX_EnemyBase> EnemyClass, const TArray<int32>& Spawners, URGX_OngoingWave* Wave)
+{
+	for (int32 spawnerIdx : Spawners)
+	{
+		if (EnemySpawners[spawnerIdx])
+		{
+			if (ARGX_EnemyBase* Enemy = (Cast<ARGX_EnemySpawner>(EnemySpawners[spawnerIdx])->Spawn(EnemyClass)))
+			{
+				Enemy->OnHandleDeathEvent.AddDynamic(this, &ARGX_Arena::OnEnemyDeath);
+				Enemy->OnHandleDeathEvent.AddDynamic(Wave, &URGX_OngoingWave::OnEnemyDeath);
+				Enemy->TargetActor = PlayerCharacter;
+				Wave->EnemiesLeft++;
+				EnemiesLeft++;
+				return;
+			}
+		}
+	}
+}
+
 void ARGX_Arena::SpawnConstantPeasant()
 {
 	if (PeasantClass.Get() == nullptr) return;
@@ -276,6 +297,7 @@ void ARGX_Arena::OnHandleFinishWave(URGX_OngoingWave* FinishedWave)
 	FTimerDelegate TimerDel;
 	FTimerHandle TimerHandle;
 	TimerDel.BindUFunction(this, FName("HandleFinishWave"), FinishedWave);
+	ClearConstantSpawnData();
 	GetWorld()->GetTimerManager().SetTimer(TimerHandle, TimerDel, TimeBetweenWaves, false);
 }
 
@@ -314,6 +336,7 @@ void ARGX_Arena::HandleFinishArena()
 
 	bFinished = true;
 	bActivated = false;
+	ClearConstantSpawnData();
 
 	if (OnArenaDeactivated.IsBound())
 	{
@@ -356,6 +379,34 @@ void ARGX_Arena::OnConstantPeasantDeath(ARGX_EnemyBase* Enemy)
 	{
 		HandleFinishArena();
 	}
+}
+
+void ARGX_Arena::OnConstantEnemyDeath(ARGX_EnemyBase* Enemy)
+{
+	TSubclassOf<ARGX_EnemyBase> enemyClass = Enemy->GetClass();
+	ConstantEnemiesSpawnData[enemyClass].NumEnemiesAlive--;
+	EnemiesLeft--;
+
+	if (OnArenaEnemyKilled.IsBound())
+	{
+		OnArenaEnemyKilled.Broadcast(Enemy);
+	}
+
+	if (EnemiesLeft == 0)
+	{
+		if (URGX_OngoingWave* owner = ConstantEnemiesSpawnData[enemyClass].OwnerWave.Get())
+		{
+			if (owner->OnWaveFinished.IsBound())
+			{
+				owner->OnWaveFinished.Broadcast(owner);
+			}
+		}
+	}
+
+	/*if (EnemiesLeft == 0 && CurrentWaves.Num() == 0)
+	{
+		HandleFinishArena();
+	}*/
 }
 
 void ARGX_Arena::Tick(float DeltaTime)
@@ -423,4 +474,73 @@ void URGX_OngoingWave::OnEnemyDeath(ARGX_EnemyBase* Enemy)
 			OnWaveFinished.Broadcast(this);
 		}
 	}
+}
+
+void ARGX_Arena::InitConstantSpawnData(URGX_OngoingWave* Wave)
+{
+	if (URGX_ArenaWaveDataAsset* waveData = Wave->WaveData)
+	{
+		for (const FRGX_ConstantEnemiesData& constantEnemiesData : waveData->ConstantEnemiesData)
+		{
+			FRGX_ConstantSpawnsData spawnData;
+			spawnData.OwnerWave = Wave;
+
+			//TWeakObjectPtr<ARGX_Arena> weak; weak = this;
+			TWeakObjectPtr<URGX_OngoingWave> wave = Wave;
+			GetWorld()->GetTimerManager().SetTimer(spawnData.TimerHandle, [this, &constantEnemiesData, wave]()
+				{
+					if (wave.IsValid() == false)
+						return;
+
+					while (ConstantEnemiesSpawnData[constantEnemiesData.EnemyActorClass].NumEnemiesAlive < constantEnemiesData.MaxNumConstantEnemies)
+					{
+						bool spawned = false;
+						TArray<int32> spawners = GetRandomizedIndexArray(EnemySpawners.Num());
+						for (int32 spawnerIdx : spawners)
+						{
+							if (ARGX_EnemyBase* Enemy = (Cast<ARGX_EnemySpawner>(EnemySpawners[spawnerIdx])->Spawn(constantEnemiesData.EnemyActorClass)))
+							{
+								Enemy->OnHandleDeathEvent.AddDynamic(this, &ARGX_Arena::OnConstantEnemyDeath);
+								Enemy->TargetActor = PlayerCharacter;
+								wave->EnemiesLeft++;
+								EnemiesLeft++;
+								ConstantEnemiesSpawnData[constantEnemiesData.EnemyActorClass].NumEnemiesAlive++;
+								spawned = true;
+								break;
+							}
+						}
+
+						if (spawned == false)
+							break;
+					}
+				}, constantEnemiesData.TimeBetweenSpawns, true);
+
+			ConstantEnemiesSpawnData.Add(constantEnemiesData.EnemyActorClass, spawnData);
+		}
+	}
+}
+
+void ARGX_Arena::ClearConstantSpawnData()
+{
+	for (auto it = ConstantEnemiesSpawnData.begin(); it != ConstantEnemiesSpawnData.end(); ++it)
+	{
+		GetWorld()->GetTimerManager().ClearTimer(it->Value.TimerHandle);
+	}
+	ConstantEnemiesSpawnData.Empty();
+}
+
+TArray<int32> ARGX_Arena::GetRandomizedIndexArray(int32 Size) const
+{
+	TArray<int32> result;
+
+	TArray<int32> aux;
+	for (int32 i = 0; i < Size; ++i) aux.Add(i);
+	while (aux.Num() > 0)
+	{
+		int32 rand = FMath::RandRange(0, aux.Num() - 1);
+		result.Add(aux[rand]);
+		aux.RemoveAt(rand);
+	}
+
+	return result;
 }

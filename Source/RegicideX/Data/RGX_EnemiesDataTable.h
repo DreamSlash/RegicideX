@@ -33,6 +33,21 @@ struct FRGX_EnemyTypeDataTable : public FTableRowBase
 	int BaseScore;
 };
 
+USTRUCT(BlueprintType)
+struct FRGX_ConstantEnemiesData
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<ARGX_EnemyBase> EnemyActorClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int32 MaxNumConstantEnemies = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float TimeBetweenSpawns = 30.f;
+};
+
 UCLASS(BlueprintType)
 class URGX_ArenaWaveDataAsset : public UPrimaryDataAsset
 {
@@ -56,4 +71,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float WaveIntensity = 0.0f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TArray<FRGX_ConstantEnemiesData> ConstantEnemiesData;
 };
