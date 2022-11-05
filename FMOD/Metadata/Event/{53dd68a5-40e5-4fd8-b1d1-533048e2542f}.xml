@@ -59,7 +59,11 @@
 			<destination>{7f0901cf-d1d1-4da1-b9d2-3152618cc0b8}</destination>
 		</relationship>
 	</object>
-	<object class="EventAutomatableProperties" id="{46cf42a5-8c78-4e36-83d5-092de7e1a5d2}" />
+	<object class="EventAutomatableProperties" id="{46cf42a5-8c78-4e36-83d5-092de7e1a5d2}">
+		<property name="maximumDistance">
+			<value>85</value>
+		</property>
+	</object>
 	<object class="MarkerTrack" id="{b5a3975f-ee13-4811-a282-057532cbc7aa}" />
 	<object class="Timeline" id="{ba0afcca-adb9-4c50-9f88-cfc121580866}">
 		<property name="isProxyEnabled">
@@ -98,6 +102,7 @@
 			<destination>{e1eb7546-bdf6-43fa-8089-c2d3eba2b454}</destination>
 			<destination>{2f0d5eb8-4735-46f6-b2db-05a1b8606230}</destination>
 			<destination>{901c1673-bacc-4055-b074-fc7d1c6445bc}</destination>
+			<destination>{8b3f3333-20f0-4121-94fb-03f537db979b}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{d95a61aa-da13-480a-80a3-426fb435b772}" />
@@ -115,14 +120,19 @@
 			<value>0.5</value>
 		</property>
 		<property name="midGain">
-			<value>-5.5</value>
+			<value>-1</value>
 		</property>
 		<property name="highGain">
-			<value>-21</value>
+			<value>-28.5</value>
 		</property>
 	</object>
 	<object class="MixerBusFader" id="{2f0d5eb8-4735-46f6-b2db-05a1b8606230}" />
-	<object class="SpatialiserEffect" id="{901c1673-bacc-4055-b074-fc7d1c6445bc}" />
+	<object class="SpatialiserEffect" id="{901c1673-bacc-4055-b074-fc7d1c6445bc}">
+		<property name="maximumDistance">
+			<value>85</value>
+		</property>
+	</object>
+	<object class="SFXReverbEffect" id="{8b3f3333-20f0-4121-94fb-03f537db979b}" />
 	<object class="SingleSound" id="{1d35327a-950d-4bd3-8fa3-1bb95bf0fa4b}">
 		<property name="pitch">
 			<value>1</value>
