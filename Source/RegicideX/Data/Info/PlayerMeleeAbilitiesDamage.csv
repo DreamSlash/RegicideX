@@ -5,11 +5,11 @@ LightAttack2_Damage,60
 LightAttack2_Scaling,0.5
 LightAttack3_Damage,75
 LightAttack3_Scaling,0.5
-HeavyAttack1_Damage,50
+HeavyAttack1_Damage,75
 HeavyAttack1_Scaling,1.0
-HeavyAttack2_Damage,75
+HeavyAttack2_Damage,100
 HeavyAttack2_Scaling,1.0
-HeavyAttack3_Damage,100
+HeavyAttack3_Damage,150
 HeavyAttack3_Scaling,1.0
 AirLightAttack1_Damage,60
 AirLightAttack1_Scaling,0.5
