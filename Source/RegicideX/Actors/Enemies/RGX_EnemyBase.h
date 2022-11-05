@@ -176,6 +176,8 @@ protected:
 
 	bool WasHitInTheBack() const override;
 
+	virtual bool CanBeLaunched(AActor* ActorInstigator, URGX_LaunchEventDataAsset* LaunchPayload) override;
+
 public:
 	virtual FGenericTeamId GetGenericTeamId() const override;
 

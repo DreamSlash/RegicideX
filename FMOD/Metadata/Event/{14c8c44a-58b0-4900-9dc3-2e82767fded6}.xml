@@ -143,6 +143,7 @@
 		<relationship name="effects">
 			<destination>{4361a366-921e-4c8f-9640-8750f79d335d}</destination>
 			<destination>{a7080f3c-93af-4225-bd63-296a900a7ca2}</destination>
+			<destination>{14f7c1ef-2d06-430f-8219-299abbbcf895}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{c9ba1d8d-358b-4b0a-868f-fc32cb7d4324}" />
@@ -205,6 +206,7 @@
 			<value>360</value>
 		</property>
 	</object>
+	<object class="SFXReverbEffect" id="{14f7c1ef-2d06-430f-8219-299abbbcf895}" />
 	<object class="PitchShifterEffect" id="{ce960b6a-262c-4f4b-8ba9-1e461f311e53}">
 		<property name="pitch">
 			<value>1.13999999</value>

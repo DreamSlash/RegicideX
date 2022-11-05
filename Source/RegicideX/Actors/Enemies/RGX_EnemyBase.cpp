@@ -524,6 +524,17 @@ bool ARGX_EnemyBase::WasHitInTheBack() const
 	return bResult;
 }
 
+bool ARGX_EnemyBase::CanBeLaunched(AActor* ActorInstigator, URGX_LaunchEventDataAsset* LaunchPayload)
+{
+	bool bCanBeLaunched = Super::CanBeLaunched(ActorInstigator, LaunchPayload);
+	if (bCanBeLaunched == false) return false;
+
+	bool bIsSpawning = HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Status.Spawning")));
+	if (bIsSpawning) return false;
+
+	return true;
+}
+
 const FAnimationArray& ARGX_EnemyBase::GetAnimationList(ERGX_AnimEvent HitReactFlag, bool bWasHitInTheBack) const
 {
 	if (BackAnimMontageMap.Contains(HitReactFlag) == false)

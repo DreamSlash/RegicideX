@@ -81,7 +81,7 @@
 	</object>
 	<object class="EventMixerMaster" id="{3ce01eda-0da6-41c2-8f43-4fc5bb459402}">
 		<property name="volume">
-			<value>-22.5</value>
+			<value>-10</value>
 		</property>
 		<relationship name="effectChain">
 			<destination>{3cd29a89-1102-45da-b798-60fb6adc753a}</destination>
@@ -98,9 +98,9 @@
 			<value>1</value>
 		</property>
 		<relationship name="sounds">
-			<destination>{f530b9d0-150b-44c4-8383-68860880e206}</destination>
-			<destination>{2e800c4a-daf5-4cad-a6db-d825e5434612}</destination>
-			<destination>{adb23292-a2f9-42e4-82e8-ab3b68e0c908}</destination>
+			<destination>{fb8d3b64-b699-4f74-92c0-7f20d8b99864}</destination>
+			<destination>{22b7651c-9f70-48c8-b341-931cf0f58561}</destination>
+			<destination>{6bf0a1e4-62df-47f2-b5db-fb2d932ad494}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusEffectChain" id="{62a23594-91ac-4414-9fee-578771283a52}">
@@ -125,33 +125,32 @@
 	</object>
 	<object class="MixerBusEffectChain" id="{3cd29a89-1102-45da-b798-60fb6adc753a}">
 		<relationship name="effects">
-			<destination>{08b0648e-b7bd-4709-947d-b7497890207f}</destination>
-			<destination>{abcafafe-dbe4-44e5-99c3-cfdad15fa3ed}</destination>
+			<destination>{4015e274-c060-4d69-b52c-8b304262babb}</destination>
 			<destination>{9bdd6d58-b65c-4583-bea9-034c48b73d1e}</destination>
 			<destination>{21b200cb-a26a-4fc5-b3d1-2d2058e86d85}</destination>
 			<destination>{95fee346-1f4d-442a-8031-88540fbb7332}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{4e990618-7707-4432-a3b7-604711a76e25}" />
-	<object class="SingleSound" id="{f530b9d0-150b-44c4-8383-68860880e206}">
-		<property name="pitch">
-			<value>10</value>
-		</property>
+	<object class="SingleSound" id="{fb8d3b64-b699-4f74-92c0-7f20d8b99864}">
 		<relationship name="audioFile">
-			<destination>{a41f6942-e94e-4fd1-ab8c-ec09e8dbe80e}</destination>
+			<destination>{3286caeb-5c26-45f7-a76d-09e4c5767a3d}</destination>
 		</relationship>
 	</object>
-	<object class="SingleSound" id="{2e800c4a-daf5-4cad-a6db-d825e5434612}">
-		<relationship name="audioFile">
-			<destination>{a41f6942-e94e-4fd1-ab8c-ec09e8dbe80e}</destination>
-		</relationship>
-	</object>
-	<object class="SingleSound" id="{adb23292-a2f9-42e4-82e8-ab3b68e0c908}">
+	<object class="SingleSound" id="{22b7651c-9f70-48c8-b341-931cf0f58561}">
 		<property name="pitch">
 			<value>5</value>
 		</property>
 		<relationship name="audioFile">
-			<destination>{a41f6942-e94e-4fd1-ab8c-ec09e8dbe80e}</destination>
+			<destination>{ce1a8b95-9a45-4d55-9ca1-e38aadec35c8}</destination>
+		</relationship>
+	</object>
+	<object class="SingleSound" id="{6bf0a1e4-62df-47f2-b5db-fb2d932ad494}">
+		<property name="pitch">
+			<value>10</value>
+		</property>
+		<relationship name="audioFile">
+			<destination>{2aaf22a4-1262-41b1-899b-5776d4f71094}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusFader" id="{4df51ad7-aaa0-43e6-8102-eba9eca4ade5}" />
@@ -161,42 +160,37 @@
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{75e2d688-3708-4a52-a97f-bd92a47d9911}" />
-	<object class="FlangerEffect" id="{08b0648e-b7bd-4709-947d-b7497890207f}">
-		<property name="rate">
-			<value>0.579999983</value>
+	<object class="ThreeEQEffect" id="{4015e274-c060-4d69-b52c-8b304262babb}">
+		<property name="highGain">
+			<value>-16</value>
 		</property>
-		<property name="mix">
-			<value>65</value>
+		<property name="lowCrossover">
+			<value>680</value>
 		</property>
-	</object>
-	<object class="DistortionEffect" id="{abcafafe-dbe4-44e5-99c3-cfdad15fa3ed}">
-		<property name="level">
-			<value>0.579999983</value>
+		<property name="highCrossover">
+			<value>1100</value>
 		</property>
 	</object>
 	<object class="MixerBusFader" id="{9bdd6d58-b65c-4583-bea9-034c48b73d1e}" />
 	<object class="SpatialiserEffect" id="{21b200cb-a26a-4fc5-b3d1-2d2058e86d85}" />
 	<object class="SFXReverbEffect" id="{95fee346-1f4d-442a-8031-88540fbb7332}">
 		<property name="decayTime">
-			<value>3000</value>
+			<value>270</value>
+		</property>
+		<property name="earlyDelay">
+			<value>13</value>
 		</property>
 		<property name="lateDelay">
-			<value>29</value>
+			<value>20</value>
 		</property>
 		<property name="HFDecayRatio">
-			<value>70</value>
-		</property>
-		<property name="lowShelfGain">
-			<value>-24</value>
+			<value>79</value>
 		</property>
 		<property name="highCut">
-			<value>5650</value>
+			<value>9000</value>
 		</property>
 		<property name="earlyLateMix">
-			<value>80</value>
-		</property>
-		<property name="wetLevel">
-			<value>0.5</value>
+			<value>86</value>
 		</property>
 		<property name="dryLevel">
 			<value>-24.5</value>

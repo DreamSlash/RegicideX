@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="AudioFile" id="{9ba499e6-958c-4e52-a6b7-e424f4d5f149}">
 		<property name="assetPath">
-			<value>ESM_One_Shot_Vocal_Wraith_Monster_Scream_Spirit_Fairy_Ghost_Creature.wav</value>
+			<value>Mele/ESM_One_Shot_Vocal_Wraith_Monster_Scream_Spirit_Fairy_Ghost_Creature.wav</value>
 		</property>
 		<property name="frequencyInKHz">
 			<value>96</value>

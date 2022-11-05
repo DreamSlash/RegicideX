@@ -30,10 +30,10 @@ public:
 
 	ARGX_DistanceAngel();
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* Ring_2_Mesh = nullptr;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* ForceFieldSphere = nullptr;
 
 	UPROPERTY(EditAnywhere)

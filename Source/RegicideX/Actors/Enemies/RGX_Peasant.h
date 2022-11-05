@@ -31,6 +31,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float TellVFXTime = 1.0f;
 
+public:
 	float GetDistanceToTarget() const;
 
 	UFUNCTION(BlueprintCallable)

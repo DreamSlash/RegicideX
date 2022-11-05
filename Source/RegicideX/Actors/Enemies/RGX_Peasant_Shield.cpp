@@ -6,6 +6,8 @@
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "RegicideX/AI/Controllers/RGX_PeasantShieldController.h"
+#include "RegicideX/Character/RGX_PlayerCharacter.h"
 
 ARGX_Peasant_Shield::ARGX_Peasant_Shield() 
 {
@@ -55,15 +57,7 @@ float ARGX_Peasant_Shield::HandleDamageMitigation(float DamageAmount, const FHit
 		return DamageAmount;
 	}
 
-	/*
-	const FVector StartPos = GetActorLocation() + GetActorForwardVector() * 200.0f;
-	const FVector EndPos = StartPos + GetActorForwardVector() * 2000.0f;
-	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray;
-	ObjectTypesArray.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel1));
-	TArray<AActor*> ActorsToIgnore;
-	FHitResult OutHit;
-	bool Hitted = UKismetSystemLibrary::SphereTraceSingleForObjects(GetWorld(), StartPos, EndPos, 100.0f, ObjectTypesArray, false, ActorsToIgnore, EDrawDebugTrace::None, OutHit, true);
-	*/
+	ARGX_PlayerCharacter* Player = Cast<ARGX_PlayerCharacter>(InstigatorCharacter);
 
 	FVector MyForward = GetActorForwardVector();
 	MyForward.Z = 0.0f;
@@ -79,12 +73,44 @@ float ARGX_Peasant_Shield::HandleDamageMitigation(float DamageAmount, const FHit
 
 	if (DotProduct > 0.5f)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Shield mitigated damage"));
-		ShieldAmount -= 50.0f;
+		// If attack is a HeavyAttack, shield takes damage.
+		if (Player && Player->GetAbilitySystemComponent()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Ability.Player.HeavyAttack"))))
+		{
+			TArray<UStaticMeshComponent*> Components;
+			GetComponents<UStaticMeshComponent>(Components);
+			UStaticMeshComponent* ShieldMesh = nullptr;
+			for (UStaticMeshComponent* Component : Components)
+			{
+				if (Component->GetName() == FString("Shield"))
+				{
+					ShieldMesh = Component;
+					OnShieldCracked();
+				}
+			}
+			UE_LOG(LogTemp, Warning, TEXT("Shield is damaged! Attack was heavy."));
+			ShieldAmount -= DamageAmount;
+			if (ShieldAmount > 0.0f) 
+			{
+				PlayAnimMontage(AMShieldBlockBreaks);
+			}
+			else {
+				PlayAnimMontage(AMShieldBreaks);
+				if (ShieldMesh) 
+					ShieldMesh->DestroyComponent();
+
+				if (ARGX_PeasantShieldController* controller = Cast<ARGX_PeasantShieldController>(GetController()))
+				{
+					controller->OnShieldBroken();
+				}
+			}
+			return 0.0f;
+		}
+
+		PlayAnimMontage(AMShieldBlock);
+		UE_LOG(LogTemp, Warning, TEXT("Shield mitigated damage. Shield health: %d"), ShieldAmount);
 		AAIController* AICont = Cast<AAIController>(this->GetController());
 		UBlackboardComponent* BB = AICont->GetBlackboardComponent();
 		BB->SetValueAsBool("bWasHit", true);
-		PlayAnimMontage(AMShieldBlock);
 		return 0.0f;
 	}
 	else

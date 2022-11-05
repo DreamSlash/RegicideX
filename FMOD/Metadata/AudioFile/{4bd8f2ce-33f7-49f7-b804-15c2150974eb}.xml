@@ -2,7 +2,7 @@
 <objects serializationModel="Studio.02.02.00">
 	<object class="AudioFile" id="{4bd8f2ce-33f7-49f7-b804-15c2150974eb}">
 		<property name="assetPath">
-			<value>ESM_One_Shot_Vocal_Spider_Queen_Monster_Death_1_Insect_Bug_Screech_Squeal_Pain_Hurt_Moan_Groan.wav</value>
+			<value>Mele/ESM_One_Shot_Vocal_Spider_Queen_Monster_Death_1_Insect_Bug_Screech_Squeal_Pain_Hurt_Moan_Groan.wav</value>
 		</property>
 		<property name="frequencyInKHz">
 			<value>96</value>

@@ -78,12 +78,16 @@ public:
 	uint8 RandomNumberKeyId;
 	uint8 AIStateKeyId;
 	uint8 ConsecutiveHitsKeyId;
+	uint8 MitigatedHitsKeyId;
 	uint8 StrafeDirectionKeyId;
 	uint8 StrafeLocationKeyId;
 
 public:
 	UFUNCTION(BlueprintCallable)
 		virtual void DamageTaken();
+
+	UFUNCTION(BlueprintCallable)
+		virtual void DamageMitigated();
 
 	UFUNCTION(BlueprintCallable)
 		ERGX_EnemyAIState::Type GetEnemyAIState() const;
@@ -104,6 +108,7 @@ private:
 
 private:
 	FTimerHandle TimerHandle;
+	FTimerHandle MitigatedHandle;
 
 	uint32 BehaviorPhaseIndex = 0;
 
