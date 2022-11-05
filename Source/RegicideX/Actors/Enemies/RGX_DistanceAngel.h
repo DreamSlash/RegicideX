@@ -33,7 +33,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* Ring_2_Mesh = nullptr;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UStaticMeshComponent* ForceFieldSphere = nullptr;
 
 	UPROPERTY(EditAnywhere)
