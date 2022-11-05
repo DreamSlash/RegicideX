@@ -47,6 +47,18 @@ public:
 	void OnEnemyDeath(ARGX_EnemyBase* Enemy);
 };
 
+USTRUCT()
+struct FRGX_ConstantSpawnsData
+{
+	GENERATED_BODY();
+	
+	FTimerHandle TimerHandle;
+	int32 NumEnemiesAlive = 0;
+
+	UPROPERTY()
+	TWeakObjectPtr<URGX_OngoingWave> OwnerWave;
+};
+
 /* This class has a shape which represents the arena where the player will fight. All actors that add logic to said arena
 * must be inside this shape (like spawners) to have an effect. The arena is activated by event when the player enters
 * the shape, and there should be some guarantee the player does not leave until the arena is finished.
@@ -80,6 +92,7 @@ private:
 	void SpawnWave(URGX_OngoingWave* Wave);
 	void SpawnWaveEnemyTypeGroup(const FName& EnemyWaveName, int32 NumEnemies, URGX_OngoingWave* Wave);
 	void SpawnWaveEnemy(TSubclassOf<class ARGX_EnemyBase> EnemyClass, int32 SpawnerIdx, URGX_OngoingWave* Wave);
+	void SpawnWaveEnemy(TSubclassOf<class ARGX_EnemyBase> EnemyClass, const TArray<int32>& Spawners, URGX_OngoingWave* Wave);
 	void SpawnConstantPeasant();
 	
 	UFUNCTION()
@@ -100,6 +113,14 @@ private:
 
 	UFUNCTION()
 	void OnConstantPeasantDeath(ARGX_EnemyBase* Enemy);
+
+	UFUNCTION()
+	void OnConstantEnemyDeath(ARGX_EnemyBase* Enemy);
+
+	void InitConstantSpawnData(URGX_OngoingWave* Wave);
+	void ClearConstantSpawnData();
+
+	TArray<int32> GetRandomizedIndexArray(int32 Size) const;
 
 public:
 
@@ -184,6 +205,9 @@ private:
 
 	UPROPERTY()
 	TWeakObjectPtr<ARGX_CombatManager> CombatManager;
+
+	// Constant spawner stuff
+	TMap<TSubclassOf<ARGX_EnemyBase>, FRGX_ConstantSpawnsData> ConstantEnemiesSpawnData;
 
 public:
 	UFUNCTION(BlueprintCallable)
