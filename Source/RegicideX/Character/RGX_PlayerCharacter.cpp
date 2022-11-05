@@ -686,6 +686,7 @@ void ARGX_PlayerCharacter::HandleDamage(
 	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser, HitReactFlag);
 
 	StopAnimMontage();
+	OnInterrupted();
 
 	if (IsAlive())
 	{
