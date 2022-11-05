@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{e751e850-4a22-4d0d-8110-c40235bb1a75}">
+		<property name="assetPath">
+			<value>ESM_Empire_Game_Warfare_Shield_Bash_Wood_Metal_Weapon_Impact_Fight_Knight_2.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>96</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>1.3455208333333333</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{7e66b5dd-574b-4959-981c-0287962c7622}</destination>
+		</relationship>
+	</object>
+</objects>

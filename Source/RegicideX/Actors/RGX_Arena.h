@@ -102,6 +102,10 @@ private:
 	void OnConstantPeasantDeath(ARGX_EnemyBase* Enemy);
 
 public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	FName ArenaName;
+
 	UPROPERTY(BlueprintAssignable)
 	FArenaActivatedSignature OnArenaActivated;
 	UPROPERTY(BlueprintAssignable)

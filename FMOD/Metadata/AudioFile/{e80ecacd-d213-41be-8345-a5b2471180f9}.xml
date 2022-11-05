@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{e80ecacd-d213-41be-8345-a5b2471180f9}">
+		<property name="assetPath">
+			<value>SPLC-7226_FX_Oneshot_Wood_Axe_Chops_Single_Hits.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>48</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>2.3794374999999999</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{7e66b5dd-574b-4959-981c-0287962c7622}</destination>
+		</relationship>
+	</object>
+</objects>
