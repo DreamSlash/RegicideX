@@ -102,6 +102,7 @@ void ARGX_EnemyBaseController::DamageTaken()
 		int currentValue = Blackboard->GetValue<UBlackboardKeyType_Int>(ConsecutiveHitsKeyId);
 		Blackboard->SetValue<UBlackboardKeyType_Int>(ConsecutiveHitsKeyId, ++currentValue);
 
+		GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]() {
 			if (Blackboard && Blackboard->GetBlackboardAsset())
 			{
