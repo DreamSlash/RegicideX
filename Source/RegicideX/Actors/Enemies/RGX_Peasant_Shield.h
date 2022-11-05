@@ -32,6 +32,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnShieldCracked();
 
+	UFUNCTION(BlueprintImplementableEvent)
+		void OnShieldDestroyed();
+
 protected:
 	virtual bool CanBeLaunched(AActor* ActorInstigator, URGX_LaunchEventDataAsset* LaunchPayload) override;
 

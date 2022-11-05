@@ -94,9 +94,7 @@ float ARGX_Peasant_Shield::HandleDamageMitigation(float DamageAmount, const FHit
 			}
 			else {
 				PlayAnimMontage(AMShieldBreaks);
-				if (ShieldMesh) 
-					ShieldMesh->DestroyComponent();
-				OnShieldCracked();
+				OnShieldDestroyed();
 			}
 			return 0.0f;
 		}
