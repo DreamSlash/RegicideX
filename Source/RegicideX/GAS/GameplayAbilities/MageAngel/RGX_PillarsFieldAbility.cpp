@@ -28,6 +28,9 @@ void URGX_PillarsFieldAbility::OnGround()
 {
 	Super::OnGround();
 
+	AActor* avatarActor = GetAvatarActorFromActorInfo();
+	APawn* enemy = Cast<APawn>(avatarActor);
+
 	FOccluderVertexArray locations;
 	PillarsPositionsResult->GetAllAsLocations(locations);
 
@@ -45,6 +48,8 @@ void URGX_PillarsFieldAbility::OnGround()
 		}
 
 		FActorSpawnParameters params;
+		params.Instigator = enemy;
+		//FActorSpawnParameters params;
 		/*params.Owner = mageAngel;
 		params.Instigator = mageAngel;*/
 		//params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
