@@ -5,5 +5,5 @@ KickAttack_Damage,25
 KickAttack_Scaling,1
 BasicBullet_Damage,20
 BasicBullet_Scaling,1
-SuicidalExplosion_Damage,200
+SuicidalExplosion_Damage,130
 SuicidalExplosion_Scaling,1
