@@ -25,5 +25,5 @@ LungeAttack_Damage,100
 LungeAttack_Scaling,0.5
 PowerSpears_Damage,75
 PowerSpears_Scaling,1
-AutoDamage_Damage,5
+AutoDamage_Damage,100
 AutoDamage_Scaling,0.0
