@@ -54,6 +54,7 @@ public:
 	ARGX_EnemyBaseController(const FObjectInitializer& ObjectInitializer);
 
 	void BeginPlay() override;
+	void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 	void OnPossess(APawn* InPawn) override;
 
 public:
