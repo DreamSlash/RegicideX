@@ -42,7 +42,8 @@ void ARGX_EnemyBaseController::BeginPlay()
 
 void ARGX_EnemyBaseController::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
+	GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+	GetWorld()->GetTimerManager().ClearTimer(MitigatedHandle);
 
 	Super::EndPlay(EndPlayReason);
 }
