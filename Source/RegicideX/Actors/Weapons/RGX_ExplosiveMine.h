@@ -53,6 +53,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UNiagaraSystem* ExplosionVFX = nullptr;
 
+	UPROPERTY()
+	class AActor* TargetActor = nullptr;
+
 public:
 	UFUNCTION(BlueprintCallable)
 		void Activate(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
@@ -63,9 +66,12 @@ public:
 public:
 	void Tick(float DeltaTime) override;
 
+	void SetTargetActor(AActor* Target);
+
 protected:
 	// Called when the game starts or when spawned
 	void BeginPlay() override;
+	void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
 	void BeginRise();
 	void BeginActivation();

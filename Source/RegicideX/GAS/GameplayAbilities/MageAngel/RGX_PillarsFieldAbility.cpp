@@ -54,6 +54,12 @@ void URGX_PillarsFieldAbility::OnGround()
 		params.Instigator = mageAngel;*/
 		//params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
-		GetWorld()->SpawnActor<ARGX_ExplosiveMine>(PillarActorClass, pillarTransform, params);
+		if (ARGX_ExplosiveMine* mine = GetWorld()->SpawnActor<ARGX_ExplosiveMine>(PillarActorClass, pillarTransform, params))
+		{
+			if (ARGX_EnemyBase* enemyBase = Cast<ARGX_EnemyBase>(avatarActor))
+			{
+				mine->SetTargetActor(enemyBase->TargetActor);
+			}
+		}
 	}
 }
