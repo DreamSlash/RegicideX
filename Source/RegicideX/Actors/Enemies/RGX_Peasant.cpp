@@ -41,7 +41,13 @@ void ARGX_Peasant::ActivateTellVFX()
 {
 	TellVFX->Activate(true);
 
-	GetWorld()->GetTimerManager().SetTimer(TellVFXTimerHandle, [this]() { TellVFX->Deactivate(); }, TellVFXTime, false);
+	/*GetWorld()->GetTimerManager().SetTimer(TellVFXTimerHandle, 
+	[this]() 
+		{ 
+			if (TellVFX == nullptr) return;
+			TellVFX->Deactivate(); 
+		}
+	,TellVFXTime, false);*/ 
 }
 
 void ARGX_Peasant::Activate()
