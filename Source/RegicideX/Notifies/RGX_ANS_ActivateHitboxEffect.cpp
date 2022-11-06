@@ -7,22 +7,28 @@
 
 void URGX_ANS_ActivateHitboxEffect::NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration)
 {
-	AActor* Owner = MeshComp->GetOwner();
-
-	URGX_HitboxesManagerComponent* HitboxesManagerComponent = Owner->FindComponentByClass<URGX_HitboxesManagerComponent>();
-	if (HitboxesManagerComponent)
+	if (AActor* Owner = MeshComp->GetOwner())
 	{
-		URGX_HitboxComponent* Hitbox = HitboxesManagerComponent->GetHitboxByTag(HitboxTag);
+		if (URGX_HitboxesManagerComponent* HitboxesManagerComponent = Owner->FindComponentByClass<URGX_HitboxesManagerComponent>())
+		{
+			if (URGX_HitboxComponent* Hitbox = HitboxesManagerComponent->GetHitboxByTag(HitboxTag))
+			{
+				Hitbox->ActivateHitbox(true);
+			}
+		}
 	}
 }
 
 void URGX_ANS_ActivateHitboxEffect::NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
-	AActor* Owner = MeshComp->GetOwner();
-
-	URGX_HitboxesManagerComponent* HitboxesManagerComponent = Owner->FindComponentByClass<URGX_HitboxesManagerComponent>();
-	if (HitboxesManagerComponent)
+	if (AActor* Owner = MeshComp->GetOwner())
 	{
-		URGX_HitboxComponent* Hitbox = HitboxesManagerComponent->GetHitboxByTag(HitboxTag);
+		if (URGX_HitboxesManagerComponent* HitboxesManagerComponent = Owner->FindComponentByClass<URGX_HitboxesManagerComponent>())
+		{
+			if (URGX_HitboxComponent* Hitbox = HitboxesManagerComponent->GetHitboxByTag(HitboxTag))
+			{
+				Hitbox->DeactivateHitbox();
+			}
+		}
 	}
 }
