@@ -1,11 +1,11 @@
 ,1
 LightAttack1_Damage,30
 LightAttack1_Scaling,1
-LightAttack2_Damage,45
+LightAttack2_Damage,50
 LightAttack2_Scaling,1
-LightAttack3_Damage,60
+LightAttack3_Damage,50
 LightAttack3_Scaling,1
-ChargeAttack_Damage,75
+ChargeAttack_Damage,60
 ChargeAttack_Scaling,1
 SweepAttack_Damage,30
 SweepAttack_Scaling,1
