@@ -385,6 +385,7 @@ void ARGX_Arena::OnConstantEnemyDeath(ARGX_EnemyBase* Enemy)
 {
 	TSubclassOf<ARGX_EnemyBase> enemyClass = Enemy->GetClass();
 	ConstantEnemiesSpawnData[enemyClass].NumEnemiesAlive--;
+	ConstantEnemiesSpawnData[enemyClass].OwnerWave->EnemiesLeft--;
 	EnemiesLeft--;
 
 	if (OnArenaEnemyKilled.IsBound())
@@ -487,7 +488,7 @@ void ARGX_Arena::InitConstantSpawnData(URGX_OngoingWave* Wave)
 
 			//TWeakObjectPtr<ARGX_Arena> weak; weak = this;
 			TWeakObjectPtr<URGX_OngoingWave> wave = Wave;
-			GetWorld()->GetTimerManager().SetTimer(spawnData.TimerHandle, [this, &constantEnemiesData, wave]()
+			GetWorld()->GetTimerManager().SetTimer(spawnData.TimerHandle, [this, constantEnemiesData, wave]()
 				{
 					if (wave.IsValid() == false)
 						return;
