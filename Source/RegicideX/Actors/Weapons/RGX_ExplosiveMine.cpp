@@ -40,6 +40,17 @@ void ARGX_ExplosiveMine::BeginPlay()
 	BeginRise();
 }
 
+void ARGX_ExplosiveMine::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
+	Super::EndPlay(EndPlayReason);
+}
+
+void ARGX_ExplosiveMine::SetTargetActor(AActor* Target)
+{
+	TargetActor = Target;
+}
+
 void ARGX_ExplosiveMine::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
@@ -111,8 +122,16 @@ void ARGX_ExplosiveMine::BeginRise()
 		TimelineFinishedCallback.BindLambda([this]()
 			{
 				bIsRising = false;
-				ActivationCollider->OnComponentBeginOverlap.AddUniqueDynamic(this, &ARGX_ExplosiveMine::Activate);
-				GetWorld()->GetTimerManager().SetTimer(AutoActivationTimerHandle, [this]() { Activate(); }, TimeAutoactivation, false);
+
+				if (ActivationCollider->IsOverlappingActor(TargetActor))
+				{
+					Activate();
+				}
+				else
+				{
+					ActivationCollider->OnComponentBeginOverlap.AddUniqueDynamic(this, &ARGX_ExplosiveMine::Activate);
+					GetWorld()->GetTimerManager().SetTimer(AutoActivationTimerHandle, [this]() { Activate(); }, TimeAutoactivation, false);
+				}
 				//DrawDebugCapsule(GetWorld(), ActivationCollider->GetComponentLocation(), ActivationCollider->GetScaledCapsuleHalfHeight(), ActivationCollider->GetScaledCapsuleRadius(), ActivationCollider->GetComponentRotation().Quaternion(), FColor::Yellow, false, TimeToActivate);
 			});
 
