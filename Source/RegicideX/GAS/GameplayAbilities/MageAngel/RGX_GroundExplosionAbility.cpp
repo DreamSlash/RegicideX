@@ -7,11 +7,15 @@ void URGX_GroundExplosionAbility::OnGround()
 {
 	Super::OnGround();
 
-	const AActor* AvatarActor = GetAvatarActorFromActorInfo();
-	const ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(AvatarActor);
+	AActor* avatarActor = GetAvatarActorFromActorInfo();
+	APawn* enemy = Cast<APawn>(avatarActor);
+	const ARGX_EnemyBase* Enemy = Cast<ARGX_EnemyBase>(avatarActor);
 	const AActor* Player = Enemy->TargetActor;
 
 	const FVector ExplosionLocation = Player->GetActorLocation();
 	const FTransform ExplosionTransform(ExplosionLocation);
-	GetWorld()->SpawnActor<ARGX_GroundExplosion>(ExplosionActorClass, ExplosionTransform);
+
+	FActorSpawnParameters params;
+	params.Instigator = enemy;
+	GetWorld()->SpawnActor<ARGX_GroundExplosion>(ExplosionActorClass, ExplosionTransform, params);
 }

@@ -45,6 +45,7 @@ bool ARGX_EffectApplierActor::OnPlayerOverlaps(AActor* Player)
 		{
 			FGameplayEffectContextHandle effectContext = ASC->MakeEffectContext();
 			FRGX_GameplayEffectContext* gameplayEffectContext = static_cast<FRGX_GameplayEffectContext*>(effectContext.Get());
+			gameplayEffectContext->AddInstigator(GetInstigator(), this);
 			gameplayEffectContext->OptionalObject = effectContextContainer.Payload;
 
 			const UGameplayEffect* gameplayEffect = effectContextContainer.EffectToApply->GetDefaultObject<UGameplayEffect>();
