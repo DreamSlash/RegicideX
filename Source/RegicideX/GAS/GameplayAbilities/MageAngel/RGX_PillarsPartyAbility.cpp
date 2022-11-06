@@ -62,7 +62,11 @@ void URGX_PillarsPartyAbility::SpawnPillarAtLocation(const FVector& Location) co
 		pillarTransform.SetLocation(newLocation);
 	}
 
+	AActor* avatarActor = GetAvatarActorFromActorInfo();
+	APawn* enemy = Cast<APawn>(avatarActor);
+
 	FActorSpawnParameters params;
+	params.Instigator = enemy;
 	GetWorld()->SpawnActor<ARGX_ExplosiveMine>(PillarActorClass, pillarTransform, params);
 }
 

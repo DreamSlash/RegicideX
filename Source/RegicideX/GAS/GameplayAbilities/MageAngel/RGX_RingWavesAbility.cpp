@@ -15,10 +15,14 @@ void URGX_RingWavesAbility::OnGround()
 
 void URGX_RingWavesAbility::OnSpawnRingWave()
 {
-	const AActor* AvatarActor = GetAvatarActorFromActorInfo();
-	const ARGX_MageAngel* MageAngel = Cast<const ARGX_MageAngel>(AvatarActor);
+	AActor* avatarActor = GetAvatarActorFromActorInfo();
+	APawn* enemy = Cast<APawn>(avatarActor);
+	const ARGX_MageAngel* MageAngel = Cast<const ARGX_MageAngel>(avatarActor);
 	const FTransform RingTransform(MageAngel->RingWaveSource->GetComponentLocation());
-	GetWorld()->SpawnActor<ARGX_RingWave>(RingActorClass, RingTransform);
+
+	FActorSpawnParameters params;
+	params.Instigator = enemy;
+	GetWorld()->SpawnActor<ARGX_RingWave>(RingActorClass, RingTransform, params);
 
 	if (--PendingWaves > 0)
 	{
