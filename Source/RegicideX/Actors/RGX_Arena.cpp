@@ -51,7 +51,7 @@ void ARGX_Arena::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	// TODO: Check and remove if useless
 	//ArenaArea->OnComponentBeginOverlap.RemoveDynamic(this, &ARGX_Arena::OnComponentBeginOverlap);
 	//ArenaArea->OnComponentEndOverlap.RemoveDynamic(this, &ARGX_Arena::OnComponentEndOverlap);
-
+	ClearConstantSpawnData();
 	Super::EndPlay(EndPlayReason); //Must be called at the end of the function
 }
 

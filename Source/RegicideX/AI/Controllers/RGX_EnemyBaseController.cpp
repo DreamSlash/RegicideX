@@ -40,6 +40,13 @@ void ARGX_EnemyBaseController::BeginPlay()
 	//TargetActor = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 }
 
+void ARGX_EnemyBaseController::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
+
+	Super::EndPlay(EndPlayReason);
+}
+
 void ARGX_EnemyBaseController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
