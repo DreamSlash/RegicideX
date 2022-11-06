@@ -157,7 +157,7 @@ protected:
 		const FHitResult& SweepResult);
 
 	bool CheckCanApplyEffect(const AActor* OtherActor);
-	void SendCollisionEvents(AActor* OwnerActor, AActor* OtherActor, bool bFromSweep, const FHitResult& SweepResult);
+	virtual void SendCollisionEvents(AActor* OwnerActor, AActor* OtherActor, bool bFromSweep, const FHitResult& SweepResult);
 	void HandleDestroyOnOverlap(AActor* OtherActor, ETeamAttitude::Type Attitude, bool bCanApplyEffects);
 
 private:
