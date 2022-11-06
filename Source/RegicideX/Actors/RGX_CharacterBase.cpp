@@ -256,9 +256,12 @@ void ARGX_CharacterBase::HandleDamage(
 
 	if (IsAlive())
 	{
-		FVector Direction = GetActorLocation() - InstigatorCharacter->GetActorLocation();
-		HitReactDirection = Direction.GetSafeNormal2D();
-		RotateDirectlyTowardsActor(InstigatorCharacter, WasHitInTheBack());
+		if (InstigatorCharacter)
+		{
+			FVector Direction = GetActorLocation() - InstigatorCharacter->GetActorLocation();
+			HitReactDirection = Direction.GetSafeNormal2D();
+			RotateDirectlyTowardsActor(InstigatorCharacter, WasHitInTheBack());
+		}
 	}
 }
 
