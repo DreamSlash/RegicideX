@@ -42,7 +42,9 @@ void ARGX_ExplosiveMine::BeginPlay()
 
 void ARGX_ExplosiveMine::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	GetWorld()->GetTimerManager().ClearAllTimersForObject(this);
+	GetWorld()->GetTimerManager().ClearTimer(DelayTellTimerHandle);
+	GetWorld()->GetTimerManager().ClearTimer(AutoActivationTimerHandle);
+	GetWorld()->GetTimerManager().ClearTimer(ExplosionTimerHandle);
 	Super::EndPlay(EndPlayReason);
 }
 
