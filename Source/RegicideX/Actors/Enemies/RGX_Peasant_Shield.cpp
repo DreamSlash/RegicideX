@@ -95,8 +95,10 @@ float ARGX_Peasant_Shield::HandleDamageMitigation(float DamageAmount, const FHit
 			}
 			else {
 				PlayAnimMontage(AMShieldBreaks);
-				if (ShieldMesh) 
-					ShieldMesh->DestroyComponent();
+				if (ShieldMesh)
+				{
+					OnShieldDestroyed();
+				}
 
 				if (ARGX_PeasantShieldController* controller = Cast<ARGX_PeasantShieldController>(GetController()))
 				{
