@@ -6,6 +6,7 @@
 #include "RGX_Peasant.h"
 #include "RGX_Peasant_Shield.generated.h"
 
+class UDestructibleComponent;
 
 UCLASS()
 class REGICIDEX_API ARGX_Peasant_Shield : public ARGX_Peasant
@@ -28,11 +29,14 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 		float ShieldAmount = 100.0f;
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnShieldCracked();
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+		UStaticMeshComponent* ShieldMeshComponent = nullptr;
 
-	UFUNCTION(BlueprintImplementableEvent)
-		void OnShieldDestroyed();
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+		UDestructibleComponent* DestructibleShieldComponent = nullptr;
+
+	UPROPERTY(EditDefaultsOnly)
+		UMaterialInterface* BrokenDecal = nullptr;
 
 protected:
 	virtual bool CanBeLaunched(AActor* ActorInstigator, URGX_LaunchEventDataAsset* LaunchPayload) override;
