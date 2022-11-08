@@ -2,8 +2,19 @@
 
 
 #include "RegicideX/GameplayFramework/RGX_GameInstance.h"
-#include "MoviePlayer.h"
 #include "Blueprint/UserWidget.h"
+#include "MoviePlayer.h"
+#include "GameFramework/GameUserSettings.h"
+
+void URGX_GameInstance::StartGameInstance()
+{
+	Super::StartGameInstance();
+
+	UGameUserSettings* Settings = GetEngine()->GetGameUserSettings();
+	Settings->SetFullscreenMode(EWindowMode::Fullscreen);
+	Settings->SetScreenResolution(FIntPoint(1920, 1080));
+	Settings->ApplySettings(true);
+}
 
 void URGX_GameInstance::BeginLoadingScreen(const FString& MapName)
 {
