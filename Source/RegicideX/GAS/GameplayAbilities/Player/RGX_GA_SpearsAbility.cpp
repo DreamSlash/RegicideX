@@ -55,28 +55,39 @@ void URGX_SpearsAbility::CastSpearsAttack(AActor* CasterActor)
 		const FVector SpawnLocation = CasterActor->GetActorLocation() + SpearOffset;
 
 		const FRotator SpawnRotation = CasterActor->GetActorRotation();
-
-		ARGX_SpearProjectile* SpawnedSpear = GetWorld()->SpawnActor<ARGX_SpearProjectile>(SpearProjectileClass, SpawnLocation, SpawnRotation);
-		SpawnedSpear->Angle = SpearAngle;
-		SpawnedSpear->Instigator = CasterActor;
-
-		FGameplayEffectContextHandle ContextHandle = MakeEffectContext(GetCurrentAbilitySpecHandle(), CurrentActorInfo);
-		FRGX_GameplayEffectContext* Context = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
-		Context->ScalingAttributeFactor = 1.0f;
-
-		URGX_HitboxComponent* HitboxComponent = SpawnedSpear->FindComponentByClass<URGX_HitboxComponent>();
-
-		if (const IGenericTeamAgentInterface* TeamAgent = Cast<IGenericTeamAgentInterface>(CasterActor))
+		
+		
+		if(ARGX_SpearProjectile* SpawnedSpear = GetWorld()->SpawnActor<ARGX_SpearProjectile>(SpearProjectileClass, SpawnLocation, SpawnRotation))
 		{
-			SpawnedSpear->SetGenericTeamId(TeamAgent->GetGenericTeamId());
+			SpawnedSpear->Angle = SpearAngle;
+			SpawnedSpear->Instigator = CasterActor;
+			SpawnedSpear->SpawnIndex = i;
+
+			FGameplayEffectContextHandle ContextHandle = MakeEffectContext(GetCurrentAbilitySpecHandle(), CurrentActorInfo);
+			FRGX_GameplayEffectContext* Context = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
+			Context->ScalingAttributeFactor = 1.0f;
+
+			//URGX_HitboxComponent* HitboxComponent = SpawnedSpear->FindComponentByClass<URGX_HitboxComponent>();
+
+			if (const IGenericTeamAgentInterface* TeamAgent = Cast<IGenericTeamAgentInterface>(CasterActor))
+			{
+				SpawnedSpear->SetGenericTeamId(TeamAgent->GetGenericTeamId());
+			}
+
+			//OnHoldSpearsTimeOut();
+			SpearsArray.Add(SpawnedSpear);
+			LaunchSpearsAttack();
+		}
+		else
+		{
+			UE_LOG(LogTemp, Warning, TEXT("Spear Not Casted\n"));
 		}
 
-		SpearsArray.Add(SpawnedSpear);
 	}
 
-	LaunchSpearsAttack();
+	
 	EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false, false);
-	//OnHoldSpearsTimeOut();
+	
 }
 
 void URGX_SpearsAbility::LaunchSpearsAttack()

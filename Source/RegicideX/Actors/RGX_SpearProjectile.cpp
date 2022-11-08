@@ -1,4 +1,3 @@
-
 #include "RGX_SpearProjectile.h"
 #include "Components/MCV_AbilitySystemComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
@@ -33,23 +32,21 @@ void ARGX_SpearProjectile::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+
 	if (bWasLaunched == true)
 		return;
-	
+
 	// TODO: Meter en una funcion
-	FVector CasterLocation = Instigator->GetActorLocation();
-	FVector CasterRight = Instigator->GetActorRightVector();
-	FVector CasterForward = Instigator->GetActorForwardVector();
+	const FVector CasterLocation = Instigator->GetActorLocation();
+	const FVector CasterRight = Instigator->GetActorRightVector();
+	const FVector CasterForward = Instigator->GetActorForwardVector();
 
 	FVector CasterOffset = FVector(0.0f);
 	CasterOffset = CasterRight.RotateAngleAxis(Angle, CasterForward) * DistanceFromCaster;
 
-	FVector NewLocation = CasterLocation + CasterOffset;
+	SetActorLocation(CasterLocation + CasterOffset);
 
-	SetActorLocation(NewLocation);
-
-	FRotator NewRotation = Instigator->GetActorRotation();
-	SetActorRotation(NewRotation);
+	SetActorRotation(Instigator->GetActorRotation());
 }
 
 void ARGX_SpearProjectile::LaunchProjectile(const AActor* target)
@@ -57,43 +54,57 @@ void ARGX_SpearProjectile::LaunchProjectile(const AActor* target)
 	bWasLaunched = true;
 	SetLifeSpan(RemainingSeconds);
 
+	FVector WorldVelocity;
+	const float ProjectileSpeed = ProjectileMovementComponent->GetMaxSpeed();
+
 	if (target)
 	{
-		FVector SpearLocation = GetActorLocation();
-		FVector TargetLocation = target->GetActorLocation();
-		FVector Direction = TargetLocation - SpearLocation;
-		Direction.Normalize();
+		if (Cast<ARGX_EnemyBase>(target))
+		{
+			const FVector SpearLocation = GetActorLocation();
+			const USkeletalMeshComponent* TargetMesh = Cast<ARGX_EnemyBase>(target)->GetMesh();
+			const FVector TargetLocation = TargetMesh->GetSkeletalCenterOfMass();
+			FVector Direction = TargetLocation - SpearLocation;
+			Direction.Normalize();
 
-		float ProjectileSpeed = ProjectileMovementComponent->GetMaxSpeed();
-		FVector WorldVelocity = Direction * ProjectileSpeed;
+			WorldVelocity = Direction * ProjectileSpeed;
 
-		FTransform Transform = GetActorTransform();
-		FVector LocalVelocity = Transform.InverseTransformVectorNoScale(WorldVelocity);
+			ProjectileMovementComponent->HomingTargetComponent = Cast<ARGX_EnemyBase>(target)->TargetingTransform;
+		}
+		else
+		{
+			const FVector SpearLocation = GetActorLocation();
+			const FVector TargetLocation = target->GetActorLocation();
+			FVector Direction = TargetLocation - SpearLocation;
+			Direction.Normalize();
 
-		ProjectileMovementComponent->SetVelocityInLocalSpace(LocalVelocity);
+			WorldVelocity = Direction * ProjectileSpeed;
+
+			ProjectileMovementComponent->HomingTargetComponent = target->GetRootComponent();
+		}
 	}
 	else
 	{
-		float ProjectileSpeed = ProjectileMovementComponent->GetMaxSpeed();
-		FVector WorldVelocity = GetActorForwardVector() * ProjectileSpeed;
-
-		FTransform Transform = GetActorTransform();
-		FVector LocalVelocity = Transform.InverseTransformVectorNoScale(WorldVelocity);
-
-		ProjectileMovementComponent->SetVelocityInLocalSpace(LocalVelocity);
+		WorldVelocity = GetActorForwardVector() * ProjectileSpeed;
 	}
+
+	LaunchVelocity = GetActorTransform().InverseTransformVectorNoScale(WorldVelocity);
+	ProjectileMovementComponent->SetVelocityInLocalSpace(LaunchVelocity);
 }
 
 void ARGX_SpearProjectile::HandleHit_Implementation(AActor* OtherActor)
 {
+	UE_LOG(LogTemp, Warning, TEXT("Call to HandleHit_Implementation\n"));
 }
 
-void ARGX_SpearProjectile::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpule, const FHitResult& Hit)
+void ARGX_SpearProjectile::OnComponentHit(UPrimitiveComponent* HitComponent, AActor* OtherActor,
+                                          UPrimitiveComponent* OtherComp, FVector NormalImpule, const FHitResult& Hit)
 {
-	UE_LOG(LogTemp, Warning, TEXT("Manuela this is a bullet\n"));
+	UE_LOG(LogTemp, Warning, TEXT("Call to OnComponentHit\n"));
 }
 
-bool ARGX_SpearProjectile::IsHostile(const IGameplayTagAssetInterface* InstigatorTagInterface, const IGameplayTagAssetInterface* OtherTagInterface) const
+bool ARGX_SpearProjectile::IsHostile(const IGameplayTagAssetInterface* InstigatorTagInterface,
+                                     const IGameplayTagAssetInterface* OtherTagInterface) const
 {
 	return false;
 }
