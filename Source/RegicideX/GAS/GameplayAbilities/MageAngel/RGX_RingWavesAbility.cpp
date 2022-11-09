@@ -4,6 +4,13 @@
 #include "RegicideX/Actors/Enemies/RGX_MageAngel.h"
 #include "RegicideX/Actors/Weapons/RGX_RingWave.h"
 
+void URGX_RingWavesAbility::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility)
+{
+	GetWorld()->GetTimerManager().ClearTimer(DelayTimerHandle);
+
+	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
+}
+
 void URGX_RingWavesAbility::OnGround()
 {
 	Super::OnGround();
