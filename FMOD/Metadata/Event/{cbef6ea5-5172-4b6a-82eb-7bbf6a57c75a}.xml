@@ -60,8 +60,14 @@
 		</relationship>
 	</object>
 	<object class="EventAutomatableProperties" id="{e08121fe-4728-4547-9b25-e639825629c2}">
+		<property name="maxVoices">
+			<value>50</value>
+		</property>
+		<property name="priority">
+			<value>1</value>
+		</property>
 		<property name="maximumDistance">
-			<value>60</value>
+			<value>15</value>
 		</property>
 	</object>
 	<object class="MarkerTrack" id="{17871c56-e796-4cf3-a33c-75aa2a8fcea9}" />
@@ -218,7 +224,7 @@
 	<object class="MixerBusFader" id="{f07968a9-e873-4cb3-95d6-022a19fa7929}" />
 	<object class="SpatialiserEffect" id="{e6dfeb69-b522-4fba-a5c6-fcf4ae6beee2}">
 		<property name="maximumDistance">
-			<value>60</value>
+			<value>15</value>
 		</property>
 	</object>
 	<object class="ThreeEQEffect" id="{d4e781d9-d783-4a58-9508-528040018159}">
@@ -238,7 +244,7 @@
 			<value>0</value>
 		</property>
 		<property name="value">
-			<value>0</value>
+			<value>-5</value>
 		</property>
 	</object>
 	<object class="AutomationPoint" id="{87993af8-3b83-46f1-8218-0e86b95e2634}">
@@ -246,7 +252,7 @@
 			<value>0.99425287356321834</value>
 		</property>
 		<property name="value">
-			<value>10</value>
+			<value>5</value>
 		</property>
 	</object>
 </objects>

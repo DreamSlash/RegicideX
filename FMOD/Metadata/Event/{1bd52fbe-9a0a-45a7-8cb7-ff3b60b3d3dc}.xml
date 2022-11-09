@@ -431,7 +431,7 @@
 	</object>
 	<object class="EventMixerMaster" id="{8846110b-10e6-4582-811c-f6e569c13270}">
 		<property name="volume">
-			<value>-11</value>
+			<value>-8</value>
 		</property>
 		<relationship name="effectChain">
 			<destination>{2ddc32cd-4bb9-4b35-ab2c-fcf927d41bd1}</destination>
@@ -1235,7 +1235,7 @@
 	</object>
 	<object class="EventMixerGroup" id="{42115f7e-63eb-4863-9b45-81e1d58c03b5}">
 		<property name="volume">
-			<value>-8</value>
+			<value>-11</value>
 		</property>
 		<property name="name">
 			<value>RithmViolin</value>
@@ -2578,7 +2578,7 @@
 	</object>
 	<object class="EventMixerGroup" id="{2ac677df-cea1-467d-a225-f5bcf647b9b8}">
 		<property name="volume">
-			<value>-6.5</value>
+			<value>-10</value>
 		</property>
 		<property name="name">
 			<value>Percussion</value>
@@ -2609,7 +2609,7 @@
 	</object>
 	<object class="EventMixerGroup" id="{960f3b4d-9272-4b1e-beae-592d6585235a}">
 		<property name="volume">
-			<value>5</value>
+			<value>-4</value>
 		</property>
 		<property name="name">
 			<value>Brass</value>
@@ -2639,9 +2639,6 @@
 		</relationship>
 	</object>
 	<object class="EventMixerGroup" id="{52fa7e91-81eb-4691-bb97-0acac6a2d659}">
-		<property name="volume">
-			<value>6.5</value>
-		</property>
 		<property name="name">
 			<value>Choir</value>
 		</property>

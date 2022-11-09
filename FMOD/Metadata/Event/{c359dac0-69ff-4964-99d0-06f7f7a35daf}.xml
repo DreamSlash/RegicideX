@@ -64,8 +64,14 @@
 		<property name="isPersistent">
 			<value>true</value>
 		</property>
+		<property name="maxVoices">
+			<value>5</value>
+		</property>
 		<property name="priority">
 			<value>4</value>
+		</property>
+		<property name="maximumDistance">
+			<value>10</value>
 		</property>
 	</object>
 	<object class="MarkerTrack" id="{ec3b7b06-1029-41cb-8306-85aeff917c78}" />
@@ -134,5 +140,9 @@
 	<object class="MixerBusPanner" id="{99d068da-3357-4976-a5e0-8fc8337df2c1}" />
 	<object class="MixerBusFader" id="{41b474ee-729c-4397-9c8c-0fd1458da745}" />
 	<object class="MixerBusFader" id="{0a705097-ca82-4b66-839f-f2077197369a}" />
-	<object class="SpatialiserEffect" id="{4c6814e4-c350-47f6-8c0a-d8db94930b14}" />
+	<object class="SpatialiserEffect" id="{4c6814e4-c350-47f6-8c0a-d8db94930b14}">
+		<property name="maximumDistance">
+			<value>10</value>
+		</property>
+	</object>
 </objects>

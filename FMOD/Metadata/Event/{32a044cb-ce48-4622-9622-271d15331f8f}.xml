@@ -62,7 +62,14 @@
 			<destination>{7f0901cf-d1d1-4da1-b9d2-3152618cc0b8}</destination>
 		</relationship>
 	</object>
-	<object class="EventAutomatableProperties" id="{8a1ae0fc-a080-403f-992b-4ee7b1d2222e}" />
+	<object class="EventAutomatableProperties" id="{8a1ae0fc-a080-403f-992b-4ee7b1d2222e}">
+		<property name="maxVoices">
+			<value>1</value>
+		</property>
+		<property name="priority">
+			<value>4</value>
+		</property>
+	</object>
 	<object class="MarkerTrack" id="{8299c2e1-e7e4-42b8-ada2-5976162829a0}" />
 	<object class="GroupTrack" id="{114051d1-5713-4bfd-b559-5da268fe59c7}">
 		<relationship name="mixerGroup">
@@ -81,7 +88,7 @@
 	</object>
 	<object class="EventMixerMaster" id="{3ce01eda-0da6-41c2-8f43-4fc5bb459402}">
 		<property name="volume">
-			<value>-10</value>
+			<value>5</value>
 		</property>
 		<relationship name="effectChain">
 			<destination>{3cd29a89-1102-45da-b798-60fb6adc753a}</destination>
@@ -133,6 +140,9 @@
 	</object>
 	<object class="MixerBusPanner" id="{4e990618-7707-4432-a3b7-604711a76e25}" />
 	<object class="SingleSound" id="{fb8d3b64-b699-4f74-92c0-7f20d8b99864}">
+		<property name="pitch">
+			<value>-5</value>
+		</property>
 		<relationship name="audioFile">
 			<destination>{3286caeb-5c26-45f7-a76d-09e4c5767a3d}</destination>
 		</relationship>
@@ -146,9 +156,6 @@
 		</relationship>
 	</object>
 	<object class="SingleSound" id="{6bf0a1e4-62df-47f2-b5db-fb2d932ad494}">
-		<property name="pitch">
-			<value>10</value>
-		</property>
 		<relationship name="audioFile">
 			<destination>{2aaf22a4-1262-41b1-899b-5776d4f71094}</destination>
 		</relationship>
@@ -175,22 +182,22 @@
 	<object class="SpatialiserEffect" id="{21b200cb-a26a-4fc5-b3d1-2d2058e86d85}" />
 	<object class="SFXReverbEffect" id="{95fee346-1f4d-442a-8031-88540fbb7332}">
 		<property name="decayTime">
-			<value>270</value>
-		</property>
-		<property name="earlyDelay">
-			<value>13</value>
+			<value>3900</value>
 		</property>
 		<property name="lateDelay">
-			<value>20</value>
+			<value>29</value>
 		</property>
 		<property name="HFDecayRatio">
-			<value>79</value>
+			<value>70</value>
 		</property>
 		<property name="highCut">
-			<value>9000</value>
+			<value>5650</value>
 		</property>
 		<property name="earlyLateMix">
-			<value>86</value>
+			<value>80</value>
+		</property>
+		<property name="wetLevel">
+			<value>-9.80000019</value>
 		</property>
 		<property name="dryLevel">
 			<value>-24.5</value>
