@@ -87,13 +87,19 @@ public:
 	float RotationSpeedWhenStrafing = 5.0f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Strafing)
-	float StrafingSpeed = 400.f;
+	float StrafingSpeed = 600.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Strafing)
+	float BackwardStrafingSpeed = 400.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Strafing)
 	float StrafingAcceleration = 2000.f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Strafing)
 	float AngleToActivateStrafingSpeed = 40.f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Strafing)
+	float AngleToActivateBackwardStrafingSpeed = 120.f;
 
 	UPROPERTY()
 	uint8 CurrentSkillSelected = 0;

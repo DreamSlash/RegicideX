@@ -940,9 +940,13 @@ void ARGX_PlayerCharacter::UpdateStrafingSpeed()
 		{
 			GetCharacterMovement()->MaxWalkSpeed = MoveSpeed;
 		}
-		else
+		else if (fabs(direction) < AngleToActivateBackwardStrafingSpeed)
 		{
 			GetCharacterMovement()->MaxWalkSpeed = StrafingSpeed;
+		}
+		else
+		{
+			GetCharacterMovement()->MaxWalkSpeed = BackwardStrafingSpeed;
 		}
 	}
 }
