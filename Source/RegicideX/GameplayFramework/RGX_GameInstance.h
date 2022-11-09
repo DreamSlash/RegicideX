@@ -20,7 +20,7 @@ public:
 		void StartGameInstance() override;
 
 	UFUNCTION(BlueprintCallable)
-	virtual void BeginLoadingScreen(const FString& MapName);
+	virtual void BeginLoadingScreen(bool bPlayUntilStopped, float PlayTime);
 
 	UFUNCTION(BlueprintCallable)
 	virtual void EndLoadingScreen(UWorld* InLoadedWorld);
@@ -29,5 +29,5 @@ public:
 	TSubclassOf<class UUserWidget> WidgetClass;
 
 	UPROPERTY()
-	UUserWidget* LoadingWidget;
+	UUserWidget* LoadingWidget = nullptr;
 };

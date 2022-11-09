@@ -16,37 +16,22 @@ void URGX_GameInstance::StartGameInstance()
 	Settings->ApplySettings(true);
 }
 
-void URGX_GameInstance::BeginLoadingScreen(const FString& MapName)
+void URGX_GameInstance::BeginLoadingScreen(bool bPlayUntilStopped, float PlayTime)
 {
 	if(!IsRunningDedicatedServer())
 	{
-		FLoadingScreenAttributes LoadingScreen;
-		LoadingScreen.bAutoCompleteWhenLoadingCompletes = true;
-
 		LoadingWidget = CreateWidget<UUserWidget>(this, WidgetClass);
 		TSharedPtr<SWidget> WidgetPtr = LoadingWidget->TakeWidget();
+
+		FLoadingScreenAttributes LoadingScreen;
+		LoadingScreen.bAutoCompleteWhenLoadingCompletes = true;
 		LoadingScreen.WidgetLoadingScreen = WidgetPtr;
-
-		// Play Movies Setting
-		/*
-		* LoadingScreen.MoviePaths.Add("movie_name")M
-		* LoadingScreen.bMoviesAreSkippable = true;
-		* LoadingScreen.bWaitForManualStop = true;
-		* LoadingScreen.PlaybackType = EMoviePlaybackType::MT_Looped;
-		*/
-
+		LoadingScreen.bWaitForManualStop = true;
 		GetMoviePlayer()->SetupLoadingScreen(LoadingScreen);
 	}
 }
 
 void URGX_GameInstance::EndLoadingScreen(UWorld* InLoadedWorld)
-{
-	if (!IsRunningDedicatedServer())
-	{
-		if (LoadingWidget)
-		{
-			LoadingWidget->RemoveFromParent();
-			LoadingWidget->MarkPendingKill();
-		}
-	}
+{ 
+	GetMoviePlayer()->StopMovie();
 }
