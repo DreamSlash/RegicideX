@@ -19,10 +19,10 @@ public:
 	UFUNCTION()
 		void StartGameInstance() override;
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	virtual void BeginLoadingScreen(bool bPlayUntilStopped, float PlayTime);
 
-	UFUNCTION(BlueprintCallable)
+	UFUNCTION()
 	virtual void EndLoadingScreen(UWorld* InLoadedWorld);
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Loading Screen")
