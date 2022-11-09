@@ -197,6 +197,7 @@ FVector ARGX_DistanceAngel::GetEyeWorldLocation()
 
 void ARGX_DistanceAngel::ApplyForceFieldEffects(AActor* OtherActor)
 {
+	if (OtherActor != TargetActor) return;
 	UAbilitySystemComponent* SourceACS = AbilitySystemComponent; 
 	UAbilitySystemComponent* TargetACS = OtherActor->FindComponentByClass<UAbilitySystemComponent>();
 	if (SourceACS && TargetACS)

@@ -1,7 +1,7 @@
 ,1,10,20
-Pillar_Damage,20,30,40
+Pillar_Damage,30,30,40
 Pillar_Scaling,0.5,0.5,0.5
-RingWave_Damage,20,30,40
+RingWave_Damage,40,30,40
 RingWave_Scaling,0.5,0.5,0.5
-GroundExplosion_Damage,20,30,40
+GroundExplosion_Damage,30,30,40
 GroundExplosion_Scaling,0.5,0.5,0.5

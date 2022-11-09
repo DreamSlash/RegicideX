@@ -15,6 +15,10 @@ class REGICIDEX_API URGX_GameInstance : public UGameInstance
 	GENERATED_BODY()
 	
 public:
+
+	UFUNCTION()
+		void StartGameInstance() override;
+
 	UFUNCTION(BlueprintCallable)
 	virtual void BeginLoadingScreen(const FString& MapName);
 

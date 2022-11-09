@@ -1,7 +1,7 @@
 #include "RGX_PillarsFieldAbility.h"
 
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
-#include "RegicideX/Actors/Weapons/RGX_ExplosivePillar.h"
+#include "RegicideX/Actors/Weapons/RGX_ExplosiveMine.h"
 
 #include "DrawDebugHelpers.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
@@ -28,6 +28,9 @@ void URGX_PillarsFieldAbility::OnGround()
 {
 	Super::OnGround();
 
+	AActor* avatarActor = GetAvatarActorFromActorInfo();
+	APawn* enemy = Cast<APawn>(avatarActor);
+
 	FOccluderVertexArray locations;
 	PillarsPositionsResult->GetAllAsLocations(locations);
 
@@ -45,10 +48,18 @@ void URGX_PillarsFieldAbility::OnGround()
 		}
 
 		FActorSpawnParameters params;
+		params.Instigator = enemy;
+		//FActorSpawnParameters params;
 		/*params.Owner = mageAngel;
 		params.Instigator = mageAngel;*/
 		//params.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
-		GetWorld()->SpawnActor<ARGX_ExplosivePillar>(PillarActorClass, pillarTransform, params);
+		if (ARGX_ExplosiveMine* mine = GetWorld()->SpawnActor<ARGX_ExplosiveMine>(PillarActorClass, pillarTransform, params))
+		{
+			if (ARGX_EnemyBase* enemyBase = Cast<ARGX_EnemyBase>(avatarActor))
+			{
+				mine->SetTargetActor(enemyBase->TargetActor);
+			}
+		}
 	}
 }

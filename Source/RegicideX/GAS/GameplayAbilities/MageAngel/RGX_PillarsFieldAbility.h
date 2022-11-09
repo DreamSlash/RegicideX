@@ -4,7 +4,7 @@
 #include "RegicideX/GAS/GameplayAbilities/MageAngel/RGX_MageAngelExplosionAbility.h"
 #include "RGX_PillarsFieldAbility.generated.h"
 
-class ARGX_ExplosivePillar;
+class ARGX_ExplosiveMine;
 
 struct FEnvQueryResult;
 
@@ -29,7 +29,7 @@ protected:
 	class UEnvQuery* PillarsPositionsQuery;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSubclassOf<ARGX_ExplosivePillar> PillarActorClass;
+	TSubclassOf<ARGX_ExplosiveMine> PillarActorClass;
 
 private:
 	void PillarsPositionsQueryFinished(TSharedPtr<FEnvQueryResult> Result);

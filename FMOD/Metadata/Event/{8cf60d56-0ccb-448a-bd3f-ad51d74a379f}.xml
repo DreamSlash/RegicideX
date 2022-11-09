@@ -138,8 +138,10 @@
 	</object>
 	<object class="MixerBusEffectChain" id="{6321ad15-30ec-44d3-a413-352b039c80d4}">
 		<relationship name="effects">
+			<destination>{b4a1f0fd-3589-4756-965e-c8df60fd59ad}</destination>
 			<destination>{ae1f0578-c32b-4317-8c8b-b75fcf16350d}</destination>
 			<destination>{c93f8d71-0373-4ae5-aa8b-9eed4c57a706}</destination>
+			<destination>{60c76573-27d5-47cd-b314-33e305bf24ca}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{56c06bde-9309-45d5-a309-24f149fbc7b0}" />
@@ -189,6 +191,17 @@
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{fd805f8c-43df-4203-b4e3-24aff96a7445}" />
+	<object class="ThreeEQEffect" id="{b4a1f0fd-3589-4756-965e-c8df60fd59ad}">
+		<property name="highGain">
+			<value>-16</value>
+		</property>
+		<property name="lowCrossover">
+			<value>680</value>
+		</property>
+		<property name="highCrossover">
+			<value>1100</value>
+		</property>
+	</object>
 	<object class="MixerBusFader" id="{ae1f0578-c32b-4317-8c8b-b75fcf16350d}" />
 	<object class="SpatialiserEffect" id="{c93f8d71-0373-4ae5-aa8b-9eed4c57a706}">
 		<property name="minimumDistance">
@@ -199,6 +212,26 @@
 		</property>
 		<property name="minimumExtent">
 			<value>360</value>
+		</property>
+	</object>
+	<object class="SFXReverbEffect" id="{60c76573-27d5-47cd-b314-33e305bf24ca}">
+		<property name="decayTime">
+			<value>3900</value>
+		</property>
+		<property name="lateDelay">
+			<value>29</value>
+		</property>
+		<property name="HFDecayRatio">
+			<value>70</value>
+		</property>
+		<property name="highCut">
+			<value>5650</value>
+		</property>
+		<property name="earlyLateMix">
+			<value>80</value>
+		</property>
+		<property name="wetLevel">
+			<value>-9.80000019</value>
 		</property>
 	</object>
 	<object class="MixerBusFader" id="{9ae67bbc-c1c4-4e9e-bc4a-c3d52794949a}" />

@@ -125,6 +125,8 @@ void URGX_CombatAssistComponent::EndPlay(EEndPlayReason::Type EndPlayReason)
 
 void URGX_CombatAssistComponent::UpdateTarget()
 {
+	return;
+
 	// Check nearby potential targets
 	// TODO: Do not check this every frame.
 	if (bIsUpdateTargetEnabled)

@@ -15,7 +15,8 @@ ARGX_Peasant::ARGX_Peasant()
 {
 	MovementAssistComponent = CreateDefaultSubobject<URGX_MovementAssistComponent>(TEXT("MovementAssistComponent"));
 	TellVFX = CreateDefaultSubobject<UNiagaraComponent>(TEXT("TellNiagaraComponent"));
-	TellVFX->SetupAttachment(GetMesh());
+	TellVFX->AttachTo(GetMesh(), FName("Bip001-Head"));
+	//TellVFX->SetupAttachment(GetMesh());
 
 	GetMesh()->SetHiddenInGame(true, true);
 	bImmune = true;
@@ -40,7 +41,13 @@ void ARGX_Peasant::ActivateTellVFX()
 {
 	TellVFX->Activate(true);
 
-	GetWorld()->GetTimerManager().SetTimer(TellVFXTimerHandle, [this]() { TellVFX->Deactivate(); }, TellVFXTime, false);
+	/*GetWorld()->GetTimerManager().SetTimer(TellVFXTimerHandle, 
+	[this]() 
+		{ 
+			if (TellVFX == nullptr) return;
+			TellVFX->Deactivate(); 
+		}
+	,TellVFXTime, false);*/ 
 }
 
 void ARGX_Peasant::Activate()

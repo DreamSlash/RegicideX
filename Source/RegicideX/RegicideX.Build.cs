@@ -11,10 +11,10 @@ public class RegicideX : ModuleRules
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay",
 		"GameplayTags", "AIModule", "GameplayTasks", "NavigationSystem", "UMG"});
 
-
 		PublicDependencyModuleNames.Add("GameplayAbilities");
 		PublicDependencyModuleNames.Add("MCVGASFramework");
 		PublicDependencyModuleNames.Add("Niagara");
 		PublicDependencyModuleNames.Add("MoviePlayer");
+		PublicDependencyModuleNames.Add("ApexDestruction");
 	}
 }

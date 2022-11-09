@@ -5,11 +5,24 @@
 
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Kismet/GameplayStatics.h"
 #include "Kismet/KismetSystemLibrary.h"
+#include "DestructibleComponent.h"
+#include "DestructibleMesh.h"
+#include "RegicideX/AI/Controllers/RGX_PeasantShieldController.h"
+#include "RegicideX/Character/RGX_PlayerCharacter.h"
 
 ARGX_Peasant_Shield::ARGX_Peasant_Shield() 
 {
+	ShieldMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("ShieldMeshComponent"));
+	ShieldMeshComponent->SetupAttachment(GetMesh(), FName("Bip001-L-Hand"));
 
+	DestructibleShieldComponent = CreateDefaultSubobject<UDestructibleComponent>(TEXT("DestructibleShieldComponent"));
+	DestructibleShieldComponent->SetupAttachment(GetMesh(), FName("Bip001-L-Hand"));
+
+	DestructibleShieldComponent->SetHiddenInGame(true);
+	DestructibleShieldComponent->SetSimulatePhysics(false);
+	DestructibleShieldComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_Camera, ECollisionResponse::ECR_Ignore);
 }
 
 bool ARGX_Peasant_Shield::CanBeLaunched(AActor* ActorInstigator, URGX_LaunchEventDataAsset* LaunchPayload)
@@ -55,15 +68,7 @@ float ARGX_Peasant_Shield::HandleDamageMitigation(float DamageAmount, const FHit
 		return DamageAmount;
 	}
 
-	/*
-	const FVector StartPos = GetActorLocation() + GetActorForwardVector() * 200.0f;
-	const FVector EndPos = StartPos + GetActorForwardVector() * 2000.0f;
-	TArray<TEnumAsByte<EObjectTypeQuery>> ObjectTypesArray;
-	ObjectTypesArray.Add(UEngineTypes::ConvertToObjectType(ECollisionChannel::ECC_GameTraceChannel1));
-	TArray<AActor*> ActorsToIgnore;
-	FHitResult OutHit;
-	bool Hitted = UKismetSystemLibrary::SphereTraceSingleForObjects(GetWorld(), StartPos, EndPos, 100.0f, ObjectTypesArray, false, ActorsToIgnore, EDrawDebugTrace::None, OutHit, true);
-	*/
+	ARGX_PlayerCharacter* Player = Cast<ARGX_PlayerCharacter>(InstigatorCharacter);
 
 	FVector MyForward = GetActorForwardVector();
 	MyForward.Z = 0.0f;
@@ -79,12 +84,53 @@ float ARGX_Peasant_Shield::HandleDamageMitigation(float DamageAmount, const FHit
 
 	if (DotProduct > 0.5f)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Shield mitigated damage"));
-		ShieldAmount -= 50.0f;
+		// If attack is a HeavyAttack, shield takes damage.
+		if (Player && Player->GetAbilitySystemComponent()->HasMatchingGameplayTag(FGameplayTag::RequestGameplayTag(FName("Ability.Player.HeavyAttack"))))
+		{
+			if (ShieldMeshComponent)
+			{
+				TArray<FName> Sockets = ShieldMeshComponent->GetAllSocketNames();
+				const int32 Size = Sockets.Num();
+
+				float random = FMath::FRand();
+				FVector DecalSize = FMath::Lerp(FVector(10.0f, 100.0f, 100.0f), FVector(10.0f, 50.0f, 50.0f), random);
+				FRotator Rotator = FRotator::MakeFromEuler(FVector(random * 360.0f, 0.0f, 90.0f));
+				
+				UGameplayStatics::SpawnDecalAttached(BrokenDecal, DecalSize, ShieldMeshComponent, Sockets[FMath::FRandRange(0, Size)], FVector(0.0f), Rotator, EAttachLocation::KeepRelativeOffset, 0.0f);
+			}
+
+			UE_LOG(LogTemp, Warning, TEXT("Shield is damaged! Attack was heavy."));
+			ShieldAmount -= DamageAmount;
+			if (ShieldAmount > 0.0f) 
+			{
+				PlayAnimMontage(AMShieldBlockBreaks);
+			}
+			else {
+				PlayAnimMontage(AMShieldBreaks);
+				if (ShieldMeshComponent)
+				{
+					ShieldMeshComponent->DestroyComponent();
+					DestructibleShieldComponent->SetHiddenInGame(false);
+					DestructibleShieldComponent->SetSimulatePhysics(true);
+					FVector DamageOrigin = GetMesh()->GetBoneLocation(FName("Bip001-L-Hand"));
+					DestructibleShieldComponent->DetachFromParent();
+					DestructibleShieldComponent->ApplyRadiusDamage(5.0f, DamageOrigin, 0.1f, 1000.0f, false);
+				}
+
+				// Change peasant behavior after shield is broken.
+				if (ARGX_PeasantShieldController* controller = Cast<ARGX_PeasantShieldController>(GetController()))
+				{
+					controller->OnShieldBroken();
+				}
+			}
+			return 0.0f;
+		}
+
+		PlayAnimMontage(AMShieldBlock);
+		UE_LOG(LogTemp, Warning, TEXT("Shield mitigated damage. Shield health: %d"), ShieldAmount);
 		AAIController* AICont = Cast<AAIController>(this->GetController());
 		UBlackboardComponent* BB = AICont->GetBlackboardComponent();
 		BB->SetValueAsBool("bWasHit", true);
-		PlayAnimMontage(AMShieldBlock);
 		return 0.0f;
 	}
 	else

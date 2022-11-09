@@ -258,6 +258,12 @@ void ARGX_PlayerCharacter::ManageHeavyAttackInputRelease()
 
 void ARGX_PlayerCharacter::ManageJumpInput()
 {
+	// Jump is blocked if any other ability with fullbody is being executed
+	FGameplayTagContainer container;
+	GetAbilitySystemComponent()->GetBlockedAbilityTags(container);
+	if (container.HasTag(FGameplayTag::RequestGameplayTag(FName("Ability.Fullbody"))))
+		return;
+
 	// Jump cancels current attack
 	FGameplayTagContainer TagContainer(FGameplayTag::RequestGameplayTag(FName("Ability.Melee")));
 	GetAbilitySystemComponent()->CancelAbilities(&TagContainer);
@@ -680,6 +686,7 @@ void ARGX_PlayerCharacter::HandleDamage(
 	Super::HandleDamage(DamageAmount, HitInfo, DamageTags, InstigatorCharacter, DamageCauser, HitReactFlag);
 
 	StopAnimMontage();
+	OnInterrupted();
 
 	if (IsAlive())
 	{
@@ -736,7 +743,7 @@ void ARGX_PlayerCharacter::MoveForward(float Value)
 
 	const bool bIsControllerNull = Controller == nullptr;
 	const bool bIsAxisValueLesserThanThreshold = std::abs(Value) <= 0.0;
-	if (bStaggered || bIsControllerNull || bIsAxisValueLesserThanThreshold || bIgnoreInputMoveVector)
+	if (bStaggered || bIsControllerNull || bIsAxisValueLesserThanThreshold)
 		return;
 
 	FVector direction;
@@ -756,7 +763,8 @@ void ARGX_PlayerCharacter::MoveForward(float Value)
 	}
 
 	// add movement in that direction
-	AddMovementInput(direction, Value);
+	if (bIgnoreInputMoveVector == false)
+		AddMovementInput(direction, Value);
 	CurrentMoveInput.X = Value;
 }
 
@@ -766,7 +774,7 @@ void ARGX_PlayerCharacter::MoveRight(float Value)
 
 	const bool bIsControllerNull = Controller == nullptr;
 	const bool bIsAxisValueLesserThanThreshold = std::abs(Value) <= 0.0;
-	if (bStaggered || bIsControllerNull || bIsAxisValueLesserThanThreshold || bIgnoreInputMoveVector)
+	if (bStaggered || bIsControllerNull || bIsAxisValueLesserThanThreshold)
 		return;
 
 	FVector direction;
@@ -787,7 +795,8 @@ void ARGX_PlayerCharacter::MoveRight(float Value)
 	}
 
 	// add movement in that direction
-	AddMovementInput(direction, Value);
+	if (bIgnoreInputMoveVector == false)
+		AddMovementInput(direction, Value);
 	CurrentMoveInput.Y = Value;
 }
 

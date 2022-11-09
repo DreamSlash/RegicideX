@@ -40,6 +40,14 @@ void ARGX_EnemyBaseController::BeginPlay()
 	//TargetActor = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
 }
 
+void ARGX_EnemyBaseController::EndPlay(const EEndPlayReason::Type EndPlayReason)
+{
+	GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+	GetWorld()->GetTimerManager().ClearTimer(MitigatedHandle);
+
+	Super::EndPlay(EndPlayReason);
+}
+
 void ARGX_EnemyBaseController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
@@ -102,12 +110,29 @@ void ARGX_EnemyBaseController::DamageTaken()
 		int currentValue = Blackboard->GetValue<UBlackboardKeyType_Int>(ConsecutiveHitsKeyId);
 		Blackboard->SetValue<UBlackboardKeyType_Int>(ConsecutiveHitsKeyId, ++currentValue);
 
+		GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
 		GetWorld()->GetTimerManager().SetTimer(TimerHandle, [this]() {
 			if (Blackboard && Blackboard->GetBlackboardAsset())
 			{
 				Blackboard->SetValue<UBlackboardKeyType_Int>(ConsecutiveHitsKeyId, 0);
 			}
 		}, TimeConsecutiveHits, false);
+	}
+}
+
+void ARGX_EnemyBaseController::DamageMitigated()
+{
+	if (Blackboard && Blackboard->GetBlackboardAsset())
+	{
+		int currentValue = Blackboard->GetValue<UBlackboardKeyType_Int>(MitigatedHitsKeyId);
+		Blackboard->SetValue<UBlackboardKeyType_Int>(MitigatedHitsKeyId, ++currentValue);
+
+		GetWorld()->GetTimerManager().SetTimer(MitigatedHandle, [this]() {
+			if (Blackboard && Blackboard->GetBlackboardAsset())
+			{
+				Blackboard->SetValue<UBlackboardKeyType_Int>(MitigatedHitsKeyId, 0);
+			}
+			}, TimeConsecutiveHits, false);
 	}
 }
 
@@ -141,6 +166,7 @@ bool ARGX_EnemyBaseController::InitializeBlackboard(UBlackboardComponent& Blackb
 		RandomNumberKeyId = Blackboard->GetKeyID("RandomNumber");
 		AIStateKeyId = Blackboard->GetKeyID("AIState");
 		ConsecutiveHitsKeyId = Blackboard->GetKeyID("ConsecutiveHits");
+		MitigatedHitsKeyId = Blackboard->GetKeyID("MitigatedHits");
 		StrafeDirectionKeyId = Blackboard->GetKeyID("StrafeDirection");
 		StrafeLocationKeyId = Blackboard->GetKeyID("StrafeLocation");
 

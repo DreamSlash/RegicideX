@@ -23,7 +23,7 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	UStaticMeshComponent* StaticMeshComponent = nullptr;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	UProjectileMovementComponent* ProjectileMovementComponent = nullptr;
 
 	UPROPERTY(EditDefaultsOnly)
@@ -35,6 +35,12 @@ public:
 	UPROPERTY()
 	float Angle;
 
+	UPROPERTY(BlueprintReadOnly)
+	int SpawnIndex = 0;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float DelayTime = 0.0f;
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<ARGX_EnemyBase> EnemyClass;
 
@@ -45,6 +51,9 @@ protected:
 
 	UPROPERTY()
 	bool bWasLaunched = false;
+
+	UPROPERTY(BlueprintReadOnly)
+	FVector LaunchVelocity = FVector(0, 0, 0);
 
 	UPROPERTY()
 	ARGX_EnemyBase* ClosestEnemy = nullptr;

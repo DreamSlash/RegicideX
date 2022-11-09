@@ -1,7 +1,7 @@
 #include "RGX_PillarsPartyAbility.h"
 
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
-#include "RegicideX/Actors/Weapons/RGX_ExplosivePillar.h"
+#include "RegicideX/Actors/Weapons/RGX_ExplosiveMine.h"
 
 #include "DrawDebugHelpers.h"
 #include "NavigationSystem.h"
@@ -62,8 +62,18 @@ void URGX_PillarsPartyAbility::SpawnPillarAtLocation(const FVector& Location) co
 		pillarTransform.SetLocation(newLocation);
 	}
 
+	AActor* avatarActor = GetAvatarActorFromActorInfo();
+	APawn* enemy = Cast<APawn>(avatarActor);
+
 	FActorSpawnParameters params;
-	GetWorld()->SpawnActor<ARGX_ExplosivePillar>(PillarActorClass, pillarTransform, params);
+	params.Instigator = enemy;
+	if (ARGX_ExplosiveMine* mine = GetWorld()->SpawnActor<ARGX_ExplosiveMine>(PillarActorClass, pillarTransform, params))
+	{
+		if (ARGX_EnemyBase* enemyBase = Cast<ARGX_EnemyBase>(avatarActor))
+		{
+			mine->SetTargetActor(enemyBase->TargetActor);
+		}
+	}
 }
 
 //void URGX_PillarsPartyAbility::OnSpawnPillar()

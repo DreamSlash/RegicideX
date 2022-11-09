@@ -5,7 +5,7 @@
 #include "RegicideX/GAS/GameplayAbilities/MageAngel/RGX_MageAngelExplosionAbility.h"
 #include "RGX_PillarsPartyAbility.generated.h"
 
-class ARGX_ExplosivePillar;
+class ARGX_ExplosiveMine;
 
 UCLASS()
 class REGICIDEX_API URGX_PillarsPartyAbility : public URGX_MageAngelExplosionAbility
@@ -40,7 +40,7 @@ protected:
 	float DelayBetweenPillars = 0.5f;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	TSubclassOf<ARGX_ExplosivePillar> PillarActorClass;
+	TSubclassOf<ARGX_ExplosiveMine> PillarActorClass;
 
 private:
 	void PositionsQueryFinished(TSharedPtr<FEnvQueryResult> Result);
