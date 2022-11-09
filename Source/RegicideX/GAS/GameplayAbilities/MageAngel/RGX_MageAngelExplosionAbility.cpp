@@ -11,6 +11,13 @@ void URGX_MageAngelExplosionAbility::ActivateAbility(const FGameplayAbilitySpecH
 	bEndGroundLoop = false;
 }
 
+void URGX_MageAngelExplosionAbility::CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility)
+{
+	GetWorld()->GetTimerManager().ClearTimer(TimerHandle);
+
+	Super::CancelAbility(Handle, ActorInfo, ActivationInfo, bReplicateCancelAbility);
+}
+
 void URGX_MageAngelExplosionAbility::OnReceivedEvent(FGameplayTag EventTag, FGameplayEventData EventData)
 {
 	// Should use constexpr

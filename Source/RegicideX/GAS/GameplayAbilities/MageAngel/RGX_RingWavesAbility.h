@@ -15,6 +15,9 @@ class REGICIDEX_API URGX_RingWavesAbility : public URGX_MageAngelExplosionAbilit
 {
 	GENERATED_BODY()
 
+public:
+	void CancelAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateCancelAbility) override;
+
 protected:
 	void OnGround() override;
 
