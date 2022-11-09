@@ -42,7 +42,8 @@ void UExecution_Damage::Execute_Implementation(const FGameplayEffectCustomExecut
 
 	// If invulnerable or dead, not damage execution to apply.
 	if (TargetTags->HasTag(FGameplayTag::RequestGameplayTag(FName("Status.Invulnerable"))) == true ||
-		TargetTags->HasTag(FGameplayTag::RequestGameplayTag(FName("Status.Dead"))) == true)
+		TargetTags->HasTag(FGameplayTag::RequestGameplayTag(FName("Status.Dead"))) == true || 
+		TargetTags->HasTag(FGameplayTag::RequestGameplayTag(FName("Status.Immortality"))) == true)
 	{
 		return;
 	}

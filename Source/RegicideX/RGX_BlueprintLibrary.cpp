@@ -102,3 +102,27 @@ bool URGX_BlueprintLibrary::TranslateCharacterMeshToPoint(ACharacter* Actor, FVe
 
 	return false;
 }
+
+void URGX_BlueprintLibrary::ApplyEventsToActors(ARGX_CharacterBase* OwnerCharacter, TArray<AActor*> Actors, TArray<FRGX_EffectContextContainer> EffectsToApply)
+{
+	for (AActor* OtherActor : Actors)
+	{
+		UAbilitySystemComponent* SourceACS = OwnerCharacter->FindComponentByClass<UAbilitySystemComponent>();
+		UAbilitySystemComponent* TargetACS = OtherActor->FindComponentByClass<UAbilitySystemComponent>();
+		if (SourceACS && TargetACS)
+		{
+			FGameplayEffectContextHandle ContextHandle = SourceACS->MakeEffectContext();
+			FRGX_GameplayEffectContext* RGXContext = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
+
+			for (FRGX_EffectContextContainer& EffectContextContainer : EffectsToApply)
+			{
+				if (ensureMsgf(EffectContextContainer.EffectToApply.Get(), TEXT("[Error] OnHitboxOverlap: %s Effect was nullptr"), *OwnerCharacter->GetName()))
+				{
+					RGXContext->OptionalObject = EffectContextContainer.Payload;
+					SourceACS->ApplyGameplayEffectToTarget(EffectContextContainer.EffectToApply->GetDefaultObject<UGameplayEffect>(), TargetACS, OwnerCharacter->GetCharacterLevel(), ContextHandle);
+				}
+			}
+		}
+	}
+}
+

@@ -31,4 +31,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	static bool TranslateCharacterMeshToPoint(ACharacter* Actor, FVector GoalPoint, float Alpha, float Tolerance);
+
+	UFUNCTION(BlueprintCallable)
+	static void ApplyEventsToActors(ARGX_CharacterBase* OwnerCharacter, TArray<AActor*>Actors, TArray<FRGX_EffectContextContainer> EffectsToApply);
 };
