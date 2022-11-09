@@ -63,6 +63,12 @@
 		</relationship>
 	</object>
 	<object class="EventAutomatableProperties" id="{a8417233-91ff-455f-a6f2-da2ecc31d024}">
+		<property name="maxVoices">
+			<value>10</value>
+		</property>
+		<property name="priority">
+			<value>4</value>
+		</property>
 		<property name="maximumDistance">
 			<value>85</value>
 		</property>
@@ -135,6 +141,9 @@
 		<property name="startOffset">
 			<value>5</value>
 		</property>
+		<property name="volume">
+			<value>-8</value>
+		</property>
 		<property name="playlistMode">
 			<value>1</value>
 		</property>
@@ -145,6 +154,9 @@
 		</relationship>
 	</object>
 	<object class="MultiSound" id="{32e3a82f-ee78-4807-b7e4-bc03d56fd7a7}">
+		<property name="volume">
+			<value>-2.5</value>
+		</property>
 		<property name="pitch">
 			<value>5</value>
 		</property>
@@ -156,7 +168,7 @@
 	</object>
 	<object class="MultiSound" id="{1618a21a-398d-449d-aa64-78457fb9837c}">
 		<property name="volume">
-			<value>-1</value>
+			<value>-5</value>
 		</property>
 		<relationship name="sounds">
 			<destination>{b5a45ef3-df8d-4a39-b86a-71710ab135dc}</destination>

@@ -63,8 +63,14 @@
 		</relationship>
 	</object>
 	<object class="EventAutomatableProperties" id="{5d30b037-2ded-4636-aa0e-8adb43b70c65}">
+		<property name="maxVoices">
+			<value>1</value>
+		</property>
+		<property name="priority">
+			<value>4</value>
+		</property>
 		<property name="maximumDistance">
-			<value>90</value>
+			<value>700</value>
 		</property>
 	</object>
 	<object class="MarkerTrack" id="{931262fb-c956-49c4-8e83-befb9b1b5405}" />
@@ -85,7 +91,7 @@
 	</object>
 	<object class="EventMixerMaster" id="{787e496c-26b5-426b-8e7c-66b1b0c8e780}">
 		<property name="volume">
-			<value>-10</value>
+			<value>-7.5</value>
 		</property>
 		<relationship name="effectChain">
 			<destination>{e674aa9a-348a-4a26-878d-b2391498a4d1}</destination>
@@ -176,27 +182,27 @@
 	<object class="MixerBusFader" id="{447f507e-fdd1-43e8-a060-f3af8cc09ebf}" />
 	<object class="SpatialiserEffect" id="{acb54128-bd7e-455b-a443-c8da9894301f}">
 		<property name="maximumDistance">
-			<value>90</value>
+			<value>700</value>
 		</property>
 	</object>
 	<object class="SFXReverbEffect" id="{5a60223e-28ad-403a-9f6a-3c977eb83d2b}">
 		<property name="decayTime">
-			<value>270</value>
-		</property>
-		<property name="earlyDelay">
-			<value>13</value>
+			<value>3900</value>
 		</property>
 		<property name="lateDelay">
-			<value>20</value>
+			<value>29</value>
 		</property>
 		<property name="HFDecayRatio">
-			<value>79</value>
+			<value>70</value>
 		</property>
 		<property name="highCut">
-			<value>9000</value>
+			<value>5650</value>
 		</property>
 		<property name="earlyLateMix">
-			<value>86</value>
+			<value>80</value>
+		</property>
+		<property name="wetLevel">
+			<value>-9.80000019</value>
 		</property>
 		<property name="dryLevel">
 			<value>-13</value>
