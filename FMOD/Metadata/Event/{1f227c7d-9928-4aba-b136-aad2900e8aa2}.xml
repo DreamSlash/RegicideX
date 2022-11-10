@@ -63,6 +63,9 @@
 		<property name="maxVoices">
 			<value>10</value>
 		</property>
+		<property name="priority">
+			<value>4</value>
+		</property>
 		<property name="maximumDistance">
 			<value>80</value>
 		</property>

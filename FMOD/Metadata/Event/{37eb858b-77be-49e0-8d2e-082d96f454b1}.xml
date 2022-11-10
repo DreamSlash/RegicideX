@@ -66,9 +66,6 @@
 		<property name="priority">
 			<value>4</value>
 		</property>
-		<property name="maximumDistance">
-			<value>70</value>
-		</property>
 	</object>
 	<object class="MarkerTrack" id="{45d2ca62-2124-4dac-b386-11ea30a9fb0e}" />
 	<object class="GroupTrack" id="{a983560a-4be7-4bb8-b146-0cb16bd6b9cc}">
@@ -87,6 +84,9 @@
 		</relationship>
 	</object>
 	<object class="EventMixerMaster" id="{e4d96245-868a-4d36-9d37-af0b0c5102be}">
+		<property name="volume">
+			<value>-5</value>
+		</property>
 		<relationship name="effectChain">
 			<destination>{6cea0e58-9a52-4cf5-a2d2-f9b898b7c71f}</destination>
 		</relationship>
@@ -124,8 +124,10 @@
 	</object>
 	<object class="MixerBusEffectChain" id="{6cea0e58-9a52-4cf5-a2d2-f9b898b7c71f}">
 		<relationship name="effects">
+			<destination>{ab3e714f-31a5-435a-a7e2-91f2cb8e82ad}</destination>
 			<destination>{2de88ed0-49b6-4d30-ad4d-3c244077c1b1}</destination>
 			<destination>{20c7d618-bec9-414b-a82c-169c18ac426e}</destination>
+			<destination>{f4459379-f75e-49d7-bf22-bb654aef9e1c}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{3fa1f5ca-2f62-4d5f-8ff2-f849e55d4f05}" />
@@ -143,10 +145,37 @@
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{f9fa3140-25d2-4a6e-becc-12c3d816f634}" />
+	<object class="ThreeEQEffect" id="{ab3e714f-31a5-435a-a7e2-91f2cb8e82ad}">
+		<property name="lowGain">
+			<value>-5.5</value>
+		</property>
+		<property name="midGain">
+			<value>-19.5</value>
+		</property>
+	</object>
 	<object class="MixerBusFader" id="{2de88ed0-49b6-4d30-ad4d-3c244077c1b1}" />
-	<object class="SpatialiserEffect" id="{20c7d618-bec9-414b-a82c-169c18ac426e}">
-		<property name="maximumDistance">
+	<object class="SpatialiserEffect" id="{20c7d618-bec9-414b-a82c-169c18ac426e}" />
+	<object class="SFXReverbEffect" id="{f4459379-f75e-49d7-bf22-bb654aef9e1c}">
+		<property name="decayTime">
+			<value>3900</value>
+		</property>
+		<property name="lateDelay">
+			<value>29</value>
+		</property>
+		<property name="HFDecayRatio">
 			<value>70</value>
+		</property>
+		<property name="lowShelfGain">
+			<value>-26</value>
+		</property>
+		<property name="highCut">
+			<value>5650</value>
+		</property>
+		<property name="earlyLateMix">
+			<value>80</value>
+		</property>
+		<property name="wetLevel">
+			<value>-9.80000019</value>
 		</property>
 	</object>
 	<object class="SingleSound" id="{f1dd2e0e-cd3f-4468-a985-20dffb125992}">
