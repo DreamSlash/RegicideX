@@ -35,3 +35,21 @@ void URGX_GameInstance::EndLoadingScreen(UWorld* InLoadedWorld)
 { 
 	GetMoviePlayer()->StopMovie();
 }
+
+void URGX_GameInstance::ShowLoadingScreen()
+{
+	if (LoadingWidget == nullptr)
+	{
+		LoadingWidget = CreateWidget(this, WidgetClass, "LoadingScreen");
+	}
+		
+	LoadingWidget->AddToViewport();
+}
+
+void URGX_GameInstance::HideLoadingScreen()
+{
+	if (LoadingWidget && LoadingWidget->IsInViewport())
+	{
+		LoadingWidget->RemoveFromParent();
+	}
+}

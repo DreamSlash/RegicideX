@@ -15,7 +15,13 @@ class REGICIDEX_API URGX_GameInstance : public UGameInstance
 	GENERATED_BODY()
 	
 public:
+	UFUNCTION(BlueprintCallable)
+	void ShowLoadingScreen();
 
+	UFUNCTION(BlueprintCallable)
+	void HideLoadingScreen();
+
+public:
 	UFUNCTION()
 		void StartGameInstance() override;
 
@@ -28,6 +34,7 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Loading Screen")
 	TSubclassOf<class UUserWidget> WidgetClass;
 
-	UPROPERTY()
+	UPROPERTY(BlueprintReadWrite)
 	UUserWidget* LoadingWidget = nullptr;
+
 };
