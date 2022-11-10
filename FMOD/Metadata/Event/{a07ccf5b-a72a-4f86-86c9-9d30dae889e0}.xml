@@ -60,8 +60,14 @@
 		</relationship>
 	</object>
 	<object class="EventAutomatableProperties" id="{2565d521-bce7-4c6d-ade5-fccd94783227}">
+		<property name="maxVoices">
+			<value>10</value>
+		</property>
+		<property name="priority">
+			<value>4</value>
+		</property>
 		<property name="maximumDistance">
-			<value>40</value>
+			<value>100</value>
 		</property>
 	</object>
 	<object class="MarkerTrack" id="{f25debd7-bb89-4b39-a67c-6a26a7a1736e}" />
@@ -76,6 +82,9 @@
 		</relationship>
 	</object>
 	<object class="EventMixerMaster" id="{b8fb5c89-6f2f-4134-a6e2-996fcdffdf36}">
+		<property name="volume">
+			<value>-5</value>
+		</property>
 		<relationship name="effectChain">
 			<destination>{f201e11c-cb42-44df-b89d-e44bd6906104}</destination>
 		</relationship>
@@ -101,6 +110,7 @@
 		<relationship name="effects">
 			<destination>{14848966-088f-400c-bd7c-39b8949d3fdc}</destination>
 			<destination>{e0162ce7-efa4-4ab3-ba9a-09b1de040073}</destination>
+			<destination>{5d3ff281-96b5-44d3-b0cd-37869459b102}</destination>
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{6b4e2daa-b404-4bd0-a041-202238250daa}" />
@@ -113,7 +123,8 @@
 	<object class="MixerBusFader" id="{14848966-088f-400c-bd7c-39b8949d3fdc}" />
 	<object class="SpatialiserEffect" id="{e0162ce7-efa4-4ab3-ba9a-09b1de040073}">
 		<property name="maximumDistance">
-			<value>40</value>
+			<value>100</value>
 		</property>
 	</object>
+	<object class="SFXReverbEffect" id="{5d3ff281-96b5-44d3-b0cd-37869459b102}" />
 </objects>

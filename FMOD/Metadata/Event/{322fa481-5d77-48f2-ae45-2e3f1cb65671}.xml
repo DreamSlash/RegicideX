@@ -63,6 +63,9 @@
 		</relationship>
 	</object>
 	<object class="EventAutomatableProperties" id="{d3db16be-6ce9-418f-9180-329482c7f818}">
+		<property name="maxVoices">
+			<value>3</value>
+		</property>
 		<property name="maximumDistance">
 			<value>40</value>
 		</property>
@@ -126,7 +129,6 @@
 	</object>
 	<object class="MixerBusEffectChain" id="{fa772285-219d-403b-88ae-7df59b4f4ae6}">
 		<relationship name="effects">
-			<destination>{2200f2df-f95a-4614-98cc-a00b82e0fcc2}</destination>
 			<destination>{33e17dee-b121-4037-8a14-ebd0341b1cbd}</destination>
 			<destination>{5e714312-15f6-45c3-9477-29c72bb97f1e}</destination>
 			<destination>{f8f7450c-efd9-4d97-ab19-ef3871e7b7ec}</destination>
@@ -171,17 +173,6 @@
 		</relationship>
 	</object>
 	<object class="MixerBusPanner" id="{0db329c7-419e-4d36-a011-2b5145a186e2}" />
-	<object class="ThreeEQEffect" id="{2200f2df-f95a-4614-98cc-a00b82e0fcc2}">
-		<property name="highGain">
-			<value>-16</value>
-		</property>
-		<property name="lowCrossover">
-			<value>680</value>
-		</property>
-		<property name="highCrossover">
-			<value>1100</value>
-		</property>
-	</object>
 	<object class="MixerBusFader" id="{33e17dee-b121-4037-8a14-ebd0341b1cbd}" />
 	<object class="SpatialiserEffect" id="{5e714312-15f6-45c3-9477-29c72bb97f1e}">
 		<property name="maximumDistance">
