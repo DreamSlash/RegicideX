@@ -72,9 +72,7 @@ void ARGX_EnemyBase::BeginPlay()
 
 	// For initializing health bar
 	AddStartupGameplayAbilities();
-	HandleHealthChanged(0.0f, FGameplayTagContainer());
-
-	//TargetActor = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	//HandleHealthChanged(0.0f, FGameplayTagContainer());
 }
 
 void ARGX_EnemyBase::PossessedBy(AController* NewController)
