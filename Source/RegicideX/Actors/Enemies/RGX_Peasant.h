@@ -25,6 +25,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UNiagaraComponent* TellVFX = nullptr;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UNiagaraComponent* FinalTellVFX = nullptr;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 	int IdleAction;
 
@@ -35,7 +38,7 @@ public:
 	float GetDistanceToTarget() const;
 
 	UFUNCTION(BlueprintCallable)
-	void ActivateTellVFX();
+	void ActivateTellVFX(bool isFinal = false);
 
 protected:
 

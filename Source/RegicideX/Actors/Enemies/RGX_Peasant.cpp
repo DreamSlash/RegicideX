@@ -16,7 +16,8 @@ ARGX_Peasant::ARGX_Peasant()
 	MovementAssistComponent = CreateDefaultSubobject<URGX_MovementAssistComponent>(TEXT("MovementAssistComponent"));
 	TellVFX = CreateDefaultSubobject<UNiagaraComponent>(TEXT("TellNiagaraComponent"));
 	TellVFX->AttachTo(GetMesh(), FName("Bip001-Head"));
-	//TellVFX->SetupAttachment(GetMesh());
+	FinalTellVFX = CreateDefaultSubobject<UNiagaraComponent>(TEXT("FinalTellNiagaraComponent"));
+	FinalTellVFX->AttachTo(GetMesh(), FName("Bip001-Head"));
 
 	GetMesh()->SetHiddenInGame(true, true);
 	bImmune = true;
@@ -37,32 +38,17 @@ void ARGX_Peasant::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ARGX_Peasant::ActivateTellVFX()
+void ARGX_Peasant::ActivateTellVFX(bool isFinal)
 {
-	TellVFX->Activate(true);
-
-	/*GetWorld()->GetTimerManager().SetTimer(TellVFXTimerHandle, 
-	[this]() 
-		{ 
-			if (TellVFX == nullptr) return;
-			TellVFX->Deactivate(); 
-		}
-	,TellVFXTime, false);*/ 
+	if (isFinal)
+		FinalTellVFX->Activate(true);
+	else
+		TellVFX->Activate(true);
 }
 
 void ARGX_Peasant::Activate()
 {
 	Super::Activate();
-
-	//SetActorEnableCollision(true);
-	//GetMesh()->SetScalarParameterValueOnMaterials(FName("Amount (S)"), 0.0f); // Recover from evaporation effect when dying
-	//GetMesh()->bPauseAnims = false; // Recover from pausing anims in GA_PeasantDeath
-
-	//AAIController* PeasantController = Cast<AAIController>(GetController());
-	//if (PeasantController)
-	//{
-	//	PeasantController->GetBrainComponent()->StartLogic();
-	//}
 }
 
 void ARGX_Peasant::Deactivate()
