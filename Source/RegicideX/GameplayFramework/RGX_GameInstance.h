@@ -25,12 +25,6 @@ public:
 	UFUNCTION()
 		void StartGameInstance() override;
 
-	UFUNCTION()
-	virtual void BeginLoadingScreen(bool bPlayUntilStopped, float PlayTime);
-
-	UFUNCTION()
-	virtual void EndLoadingScreen(UWorld* InLoadedWorld);
-
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Loading Screen")
 	TSubclassOf<class UUserWidget> WidgetClass;
 

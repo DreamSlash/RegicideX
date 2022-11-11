@@ -42,6 +42,22 @@ void ARGX_LoadLevelTrigger::OnTeleportDone()
 	}
 }
 
+void ARGX_LoadLevelTrigger::UnloadLevels()
+{
+	if (URGX_GameInstance* gameInstance = Cast<URGX_GameInstance>(GetGameInstance()))
+	{
+		FLatentActionInfo LatentInfo;
+		for (const FName& levelName : LevelsToUnload)
+		{
+			if (ULevelStreaming* levelStreamingInfo = UGameplayStatics::GetStreamingLevel(GetWorld(), levelName))
+			{
+				UGameplayStatics::UnloadStreamLevel(GetWorld(), levelName, LatentInfo, true);
+				++LatentInfo.UUID;
+			}
+		}
+	}
+}
+
 void ARGX_LoadLevelTrigger::OnPortalOverlapped(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	ARGX_PlayerCharacter* player = Cast<ARGX_PlayerCharacter>(OtherActor);
