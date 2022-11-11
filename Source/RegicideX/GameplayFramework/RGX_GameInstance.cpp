@@ -16,22 +16,20 @@ void URGX_GameInstance::StartGameInstance()
 	Settings->ApplySettings(true);
 }
 
-void URGX_GameInstance::BeginLoadingScreen(bool bPlayUntilStopped, float PlayTime)
+void URGX_GameInstance::ShowLoadingScreen()
 {
-	if(!IsRunningDedicatedServer())
+	if (LoadingWidget == nullptr)
 	{
-		LoadingWidget = CreateWidget<UUserWidget>(this, WidgetClass);
-		TSharedPtr<SWidget> WidgetPtr = LoadingWidget->TakeWidget();
-
-		FLoadingScreenAttributes LoadingScreen;
-		LoadingScreen.bAutoCompleteWhenLoadingCompletes = true;
-		LoadingScreen.WidgetLoadingScreen = WidgetPtr;
-		LoadingScreen.bWaitForManualStop = true;
-		GetMoviePlayer()->SetupLoadingScreen(LoadingScreen);
+		LoadingWidget = CreateWidget(this, WidgetClass, "LoadingScreen");
 	}
+		
+	LoadingWidget->AddToViewport();
 }
 
-void URGX_GameInstance::EndLoadingScreen(UWorld* InLoadedWorld)
-{ 
-	GetMoviePlayer()->StopMovie();
+void URGX_GameInstance::HideLoadingScreen()
+{
+	if (LoadingWidget && LoadingWidget->IsInViewport())
+	{
+		LoadingWidget->RemoveFromParent();
+	}
 }
