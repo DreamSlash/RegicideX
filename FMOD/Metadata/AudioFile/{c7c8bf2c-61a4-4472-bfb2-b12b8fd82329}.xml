@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{c7c8bf2c-61a4-4472-bfb2-b12b8fd82329}">
+		<property name="assetPath">
+			<value>HOSN_Piano_Loop_02_Dm_121BPM.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>44.0999985</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>7.9338775510204078</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{7e66b5dd-574b-4959-981c-0287962c7622}</destination>
+		</relationship>
+	</object>
+</objects>

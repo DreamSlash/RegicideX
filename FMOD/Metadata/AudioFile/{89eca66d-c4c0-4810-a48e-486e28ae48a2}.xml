@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<objects serializationModel="Studio.02.02.00">
+	<object class="AudioFile" id="{89eca66d-c4c0-4810-a48e-486e28ae48a2}">
+		<property name="assetPath">
+			<value>Vocal_Dm_BPM_137_-_03.wav</value>
+		</property>
+		<property name="frequencyInKHz">
+			<value>192</value>
+		</property>
+		<property name="channelCount">
+			<value>2</value>
+		</property>
+		<property name="length">
+			<value>8.7591249999999992</value>
+		</property>
+		<relationship name="masterAssetFolder">
+			<destination>{7e66b5dd-574b-4959-981c-0287962c7622}</destination>
+		</relationship>
+	</object>
+</objects>
