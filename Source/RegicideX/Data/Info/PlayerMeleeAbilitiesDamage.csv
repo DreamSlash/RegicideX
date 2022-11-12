@@ -23,7 +23,9 @@ FallAttack_Damage,50
 FallAttack_Scaling,0.5
 LungeAttack_Damage,100
 LungeAttack_Scaling,0.5
-PowerSpears_Damage,75
+PowerSpears_Damage,150
 PowerSpears_Scaling,1
 AutoDamage_Damage,100
 AutoDamage_Scaling,0.0
+PowerArea_Damage,0.0
+PowerArea_Scaling,0.0
