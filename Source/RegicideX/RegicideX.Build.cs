@@ -16,5 +16,6 @@ public class RegicideX : ModuleRules
 		PublicDependencyModuleNames.Add("Niagara");
 		PublicDependencyModuleNames.Add("MoviePlayer");
 		PublicDependencyModuleNames.Add("ApexDestruction");
+		PublicDependencyModuleNames.Add("MediaAssets");
 	}
 }

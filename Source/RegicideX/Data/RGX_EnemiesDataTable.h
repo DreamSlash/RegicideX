@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataTable.h"
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
+#include "MediaSource.h"
 #include "RGX_EnemiesDataTable.generated.h"
 
 UENUM(BlueprintType)
@@ -74,4 +75,10 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	TArray<FRGX_ConstantEnemiesData> ConstantEnemiesData;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	UMediaSource* MediaSource = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	USoundWave* SoundWave = nullptr;
 };
