@@ -63,9 +63,9 @@ void URGX_SpearsAbility::CastSpearsAttack(AActor* CasterActor)
 			SpawnedSpear->Instigator = CasterActor;
 			SpawnedSpear->SpawnIndex = i;
 
-			FGameplayEffectContextHandle ContextHandle = MakeEffectContext(GetCurrentAbilitySpecHandle(), CurrentActorInfo);
-			FRGX_GameplayEffectContext* Context = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
-			Context->ScalingAttributeFactor = 1.0f;
+			//FGameplayEffectContextHandle ContextHandle = MakeEffectContext(GetCurrentAbilitySpecHandle(), CurrentActorInfo);
+			//FRGX_GameplayEffectContext* Context = static_cast<FRGX_GameplayEffectContext*>(ContextHandle.Get());
+			//Context->ScalingAttributeFactor = 1.0f;
 
 			//URGX_HitboxComponent* HitboxComponent = SpawnedSpear->FindComponentByClass<URGX_HitboxComponent>();
 

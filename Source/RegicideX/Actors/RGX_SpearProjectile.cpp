@@ -55,7 +55,7 @@ void ARGX_SpearProjectile::LaunchProjectile(const AActor* target)
 	SetLifeSpan(RemainingSeconds);
 
 	FVector WorldVelocity;
-	const float ProjectileSpeed = ProjectileMovementComponent->GetMaxSpeed();
+	const float ProjectileSpeed = ProjectileMovementComponent->InitialSpeed;
 
 	if (target)
 	{
