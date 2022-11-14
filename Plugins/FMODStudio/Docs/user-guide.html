@@ -139,15 +139,7 @@
 <h3 id="host-platform-integration"><a href="#host-platform-integration">2.1.1 Host Platform Integration</a></h3>
 <p>The supported host platforms are Windows, Mac and Linux.</p>
 <p>The integration packages for these platforms should be extracted to <code>MyGame\Plugins\</code> (replace <code>MyGame</code> with the root directory of your Unreal project). After extracting the base package into <code>MyGame\Plugins</code> you should have this kind of structure:</p>
-<div class="highlight language-text"><pre><span></span>    MyGame
-    +--- Binaries
-    +--- Config
-    +--- Content
-    +--- Plugins
-        +--- FMODStudio
-    +--- Source
-</pre></div>
-
+<p><img alt="Host Platform Integration" src="images/host-platform-integration.png" /></p>
 <h3 id="additional-platforms"><a href="#additional-platforms">2.1.2 Additional Platforms</a></h3>
 <p>After installing the integration plugin for your host platform you may need to install additional plugins for other platforms which you are targetting.</p>
 <h4 id="windows-desktop"><a href="#windows-desktop">Windows Desktop</a></h4>
@@ -177,19 +169,8 @@
 <h4 id="stadia"><a href="#stadia">Stadia</a></h4>
 <p>Install the Stadia plugin following the instructions for <a class="apilink" href="#platform-specific-integrations" title="">Platform Specific Integrations</a>.</p>
 <h3 id="platform-specific-integrations"><a href="#platform-specific-integrations">2.1.3 Platform Specific Integrations</a></h3>
-<p>When adding addition platform specific integration packages you should extract them directly into the project root directory. After extracting them you should have this kind of structure:</p>
-<div class="highlight language-text"><pre><span></span>    MyGame
-    +--- Binaries
-    +--- Config
-    +--- Content
-    +--- Plugins
-    +--- Platforms
-        +--- &lt;Platform Name&gt;
-            +--- Plugins
-                +--- FMODStudio
-    +--- Source
-</pre></div>
-
+<p>When adding additional platform specific integration packages you should extract them directly into the project root directory. After extracting them you should have this kind of structure:</p>
+<p><img alt="Platform Specific Integrations" src="images/platform-specific-integrations.png" /></p>
 <p>Additional platform specific installation instructions may be included in the <code>Extras</code> directory of the integration plugin packages.</p>
 <h3 id="old-versions"><a href="#old-versions">2.1.4 Old Versions</a></h3>
 <p>The integration consists of a single FMODStudio folder which can be placed in either the <code>Engine/Plugins</code> directory or your Unreal game's Plugin directory <code>{ProjectName}/Plugins</code>. The next steps show how to install it into your Engine directory, so it will be available for all projects using Unreal.</p>
@@ -577,47 +558,14 @@ AudioMixerModuleName=
 <p>The audio device can be disabled for every platform that you want to ship with.</p>
 <h2 id="source-control"><a href="#source-control">2.16 Source Control</a></h2>
 <p>Not all of the plugin files are required to be checked in to source control, below the necessary files are marked:</p>
-<div class="highlight language-text"><pre><span></span>    MyGame
-    +--- Binaries
-    +--- Config
-    +--- Content
-        +--- FMOD
-            +--- Desktop                &lt;--- Desktop banks are used in editor and Win/Mac/Linux builds.
-            +--- Mobile                 &lt;--- Include any other banks you need.
-    +--- Plugins
-        +--- FMODStudio
-            +--- Binaries               &lt;---
-            +--- Config
-            +--- Content                &lt;---
-            +--- Docs
-            +--- Intermediate
-            +--- Resources
-            +--- Source                 &lt;---
-            +--- FMODStudio.uplugin     &lt;---
-    +--- Source
-</pre></div>
-
+<p><img alt="Source Control Files to Add" src="images/source-control.png" /></p>
 <p>Other files/folders are optional and will depend on your teams setup.</p>
 <div class="admonition warning">
 <p>FMOD Banks cannot be added using the In-Editor source control, as the editor only interacts with UAssets, they need to be added to source control from outside of the UE Editor.</p>
 </div>
 <p>From UE4.26 onwards, we changed the generated assets in the plugin from in memory to serialized to disk.<br />
 Now it is possible to add these generated assets to source control which will remove the need for each team member to build their own. This occurs automatically when banks are modified/loaded in the editor. If you need to build them from command line see <a class="apilink" href="#commandlet" title="">Commandlet</a>.</p>
-<div class="highlight language-text"><pre><span></span>    MyGame
-    +--- Binaries
-    +--- Config
-    +--- Content
-        +--- FMOD
-            (Generated Asset Folders)
-            +--- Banks
-            +--- Buses
-            +--- Events
-            +--- PrivateIntegrationData
-            +--- Reverbs
-            +--- Snapshots
-            +--- VCAs
-</pre></div>
-
+<p><img alt="Source Control Generated Assets" src="images/source-control-generated-assets.png" /></p>
 <h2 id="commandlet"><a href="#commandlet">2.17 Commandlet</a></h2>
 <p>From UE4.26 onwards, FMOD for Unreal now provides a Commandlet for generating the serialized UAssets without having to open the Editor.</p>
 <div class="highlight language-text"><pre><span></span>{editor-executable} {ProjectPath.uproject} -run=FMODGenerateAssets [-rebuild]
@@ -629,7 +577,7 @@ Now it is possible to add these generated assets to source control which will re
 </ul>
 <p>This can be especially useful for build machines that don't normally run the Editor at all, which is what normally triggers the assets to be built, and does not require the generated assets to be checked in to source control.</p></div>
 
-<p class="manual-footer">Unreal Integration 2.02.08 (2022-08-15). &copy; 2022 Firelight Technologies Pty Ltd.</p>
+<p class="manual-footer">Unreal Integration 2.02.10 (2022-10-28). &copy; 2022 Firelight Technologies Pty Ltd.</p>
 </body>
 </html>
 
