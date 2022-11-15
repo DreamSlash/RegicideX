@@ -22,22 +22,28 @@ void URGX_RingWavesAbility::OnGround()
 
 void URGX_RingWavesAbility::OnSpawnRingWave()
 {
-	AActor* avatarActor = GetAvatarActorFromActorInfo();
-	APawn* enemy = Cast<APawn>(avatarActor);
-	const ARGX_MageAngel* MageAngel = Cast<const ARGX_MageAngel>(avatarActor);
-	const FTransform RingTransform(MageAngel->RingWaveSource->GetComponentLocation());
-
-	FActorSpawnParameters params;
-	params.Instigator = enemy;
-	GetWorld()->SpawnActor<ARGX_RingWave>(RingActorClass, RingTransform, params);
-
-	if (--PendingWaves > 0)
+	if (AActor* avatarActor = GetAvatarActorFromActorInfo())
 	{
-		StartDelay();
+		APawn* enemy = Cast<APawn>(avatarActor);
+		const ARGX_MageAngel* MageAngel = Cast<const ARGX_MageAngel>(avatarActor);
+		const FTransform RingTransform(MageAngel->RingWaveSource->GetComponentLocation());
+
+		FActorSpawnParameters params;
+		params.Instigator = enemy;
+		GetWorld()->SpawnActor<ARGX_RingWave>(RingActorClass, RingTransform, params);
+
+		if (--PendingWaves > 0)
+		{
+			StartDelay();
+		}
+		else
+		{
+			bEndGroundLoop = true;
+		}
 	}
 	else
 	{
-		bEndGroundLoop = true;
+		CancelAbility(GetCurrentAbilitySpecHandle(), GetCurrentActorInfo(), GetCurrentActivationInfo(), true);
 	}
 }
 
