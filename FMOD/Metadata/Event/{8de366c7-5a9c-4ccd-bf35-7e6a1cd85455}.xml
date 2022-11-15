@@ -70,7 +70,7 @@
 			<value>true</value>
 		</property>
 		<property name="maximumDistance">
-			<value>80</value>
+			<value>50</value>
 		</property>
 	</object>
 	<object class="MarkerTrack" id="{c862a377-c3e5-4422-9347-9ea03d5311c2}" />
@@ -91,7 +91,7 @@
 	</object>
 	<object class="EventMixerMaster" id="{38c5a58f-2036-45b4-9a6b-b07c06c7e84f}">
 		<property name="volume">
-			<value>-10</value>
+			<value>-12</value>
 		</property>
 		<relationship name="effectChain">
 			<destination>{d2fa3dbe-ed49-43da-8c70-c414eea03607}</destination>
@@ -160,7 +160,7 @@
 			<value>1</value>
 		</property>
 		<property name="maximumDistance">
-			<value>80</value>
+			<value>50</value>
 		</property>
 		<property name="soundSize">
 			<value>10000</value>
