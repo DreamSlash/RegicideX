@@ -66,6 +66,9 @@
 		<property name="priority">
 			<value>4</value>
 		</property>
+		<property name="maximumDistance">
+			<value>60</value>
+		</property>
 	</object>
 	<object class="MarkerTrack" id="{45d2ca62-2124-4dac-b386-11ea30a9fb0e}" />
 	<object class="GroupTrack" id="{a983560a-4be7-4bb8-b146-0cb16bd6b9cc}">
@@ -154,7 +157,11 @@
 		</property>
 	</object>
 	<object class="MixerBusFader" id="{2de88ed0-49b6-4d30-ad4d-3c244077c1b1}" />
-	<object class="SpatialiserEffect" id="{20c7d618-bec9-414b-a82c-169c18ac426e}" />
+	<object class="SpatialiserEffect" id="{20c7d618-bec9-414b-a82c-169c18ac426e}">
+		<property name="maximumDistance">
+			<value>60</value>
+		</property>
+	</object>
 	<object class="SFXReverbEffect" id="{f4459379-f75e-49d7-bf22-bb654aef9e1c}">
 		<property name="decayTime">
 			<value>3900</value>
