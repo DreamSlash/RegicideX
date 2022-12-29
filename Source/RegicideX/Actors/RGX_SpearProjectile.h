@@ -52,7 +52,7 @@ protected:
 	UPROPERTY()
 	bool bWasLaunched = false;
 
-	UPROPERTY(BlueprintReadOnly)
+	UPROPERTY(BlueprintReadWrite)
 	FVector LaunchVelocity = FVector(0, 0, 0);
 
 	UPROPERTY()
@@ -65,6 +65,7 @@ public:
 
 	void Tick(float DeltaTime) override;
 
+	UFUNCTION(BlueprintCallable)
 	void LaunchProjectile(const AActor* target = nullptr);
 
 	UFUNCTION(BlueprintNativeEvent)

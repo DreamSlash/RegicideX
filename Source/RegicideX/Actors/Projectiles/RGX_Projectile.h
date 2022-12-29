@@ -32,9 +32,11 @@ public:
 
 public:
 	/** Assigns Team Agent to given TeamID */
+	UFUNCTION(BlueprintCallable)
 	virtual void SetGenericTeamId(const FGenericTeamId& TeamID) override;
 
 	/** Retrieve team identifier in form of FGenericTeamId */
+	UFUNCTION(BlueprintCallable)
 	virtual FGenericTeamId GetGenericTeamId() const override;
 
 public:
