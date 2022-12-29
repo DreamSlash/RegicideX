@@ -16,6 +16,11 @@ The game is fast paced and movility is key, giving importance to dashes, dodges,
 
 The final wave of each arena presents a new angel as a final boss to put the player's skills to test and overcome the arena, being able to advance to the next one.
 
+<p float="left">
+  <img src="https://github.com/AlvarAlonso/RegicideX/blob/main/Captures/dodge_laser.gif" alt="dodge_laser" width="49%"/>
+  <img src="https://github.com/AlvarAlonso/RegicideX/blob/main/Captures/air_combo.gif" alt="air_combo" width="49%"/>
+</p>
+
 ## Technical Notes
 
 This project uses Unreal Engine 4. 
