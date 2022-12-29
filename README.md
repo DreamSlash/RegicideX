@@ -64,3 +64,6 @@ We have a payload system where Gameplay Effects take data assets as a parameter 
 AI's slot system is heavily parametrized to make every arena or wave potentially different (enemies acting more or less agressive for example). This parameters could even be change dynamically at runtime.
 
 Camera is also heavily parametrized.
+
+## Gallery
+![alt text](https://github.com/AlvarAlonso/RegicideX/blob/main/Captures/letsdance.gif "Let's Dance")
