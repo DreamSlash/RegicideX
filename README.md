@@ -53,6 +53,7 @@ The AI features a slot system to make the combat more organized and less chaotic
 With our slot system, enemies "take turns" so no more that a specified number of enemies moves to the player vicinity and no more than a specified number are able to attack at the same time. Game is fast, so the subset of enemies that go to the vicinity of the player is changing dynamically. Non activated enemies (vicinity enemies that can't attack right now or farther enemies) can orbit or move around the player, taunt him or switch position with another enemy.
 Ranged and melee enemies are managed separately because they are different use cases. Ranged have their own slots that manage how many ranged enemies can be shooting to the player at the same time.
 
+
 #### Behaviour Trees
 
 We feature behaviour trees with pretty complex behaviour. Enemies whose behaviour changes dynamically (for example depending on the amount of health left), with long attack sequences dependant on context conditions and complex idle behaviours (not just standing by but orbiting, playing some extra animations...). They are also easy to expand.
