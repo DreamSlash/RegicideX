@@ -5,16 +5,18 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "Engine/DataTable.h"
+
 #include "RGX_LinearArenasGameMode.generated.h"
 
-/**
- * 
- */
+class ULevelSequence;
+
 UCLASS()
 class REGICIDEX_API ARGX_LinearArenasGameMode : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
+		DECLARE_DELEGATE(FOnEndingCutsceneFinishedDelegate);
+
 public:
 	virtual void StartPlay() override;
 
@@ -44,6 +46,9 @@ public:
 	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
 	void BP_OnPlayerLoses();
 
+	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
+	void BP_OnTriggerCredits();
+
 private:
 	UFUNCTION()
 	void OnArenaActivated(class ARGX_Arena* ActivatedArena);
@@ -61,8 +66,25 @@ private:
 	void OnWaveFinished(URGX_OngoingWave* FinishedWave);
 
 public:
+	UFUNCTION()
+	void TriggerCredits();
+
+	void FinalArenaFinished();
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	const UDataTable* DT_EnemyTypesInfo = nullptr;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UUserWidget> CreditsWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UUserWidget> PlayerWinsWidgetClass;
+
+	UPROPERTY(BlueprintReadWrite)
+	int32 Score;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	ULevelSequence* EndingSequence = nullptr;
 
 private:
 	bool bWinCondition = false;
@@ -70,8 +92,4 @@ private:
 	ARGX_Arena* CurrentArena;
 
 	TArray<ARGX_Arena*> Arenas;
-
-public:
-	UPROPERTY(BlueprintReadWrite)
-	int32 Score;
 };

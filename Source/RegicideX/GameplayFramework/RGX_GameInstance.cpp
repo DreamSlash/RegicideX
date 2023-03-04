@@ -33,3 +33,8 @@ void URGX_GameInstance::HideLoadingScreen()
 		LoadingWidget->RemoveFromParent();
 	}
 }
+
+void URGX_GameInstance::ResetMusic()
+{
+	
+}

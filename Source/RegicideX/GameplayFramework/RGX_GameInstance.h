@@ -6,9 +6,6 @@
 #include "Engine/GameInstance.h"
 #include "RGX_GameInstance.generated.h"
 
-/**
- * 
- */
 UCLASS()
 class REGICIDEX_API URGX_GameInstance : public UGameInstance
 {
@@ -21,9 +18,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void HideLoadingScreen();
 
-public:
 	UFUNCTION()
-		void StartGameInstance() override;
+	void StartGameInstance() override;
+
+	void ResetMusic();
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Loading Screen")
 	TSubclassOf<class UUserWidget> WidgetClass;
