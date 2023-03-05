@@ -28,6 +28,7 @@
 #include "RegicideX/GAS/GameplayAbilities/Common/RGX_GA_MeleeAttackAbility.h"
 #include "Camera/CameraShakeBase.h"
 #include "RegicideX/GAS/RGX_GameplayEffectContext.h"
+#include "RegicideX/GameplayFramework/RGX_LinearArenasGameMode.h"
 #include "RegicideX/GAS/GameplayAbilities/BaseAbilities/RGX_GameplayAbility.h"
 
 ARGX_PlayerCharacter::ARGX_PlayerCharacter()
@@ -114,6 +115,9 @@ void ARGX_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 	PlayerInputComponent->BindAxis("TurnRate", this, &ARGX_PlayerCharacter::TurnAtRate);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 	PlayerInputComponent->BindAxis("LookUpRate", this, &ARGX_PlayerCharacter::LookUpAtRate);
+
+	ARGX_LinearArenasGameMode* GameMode = Cast<ARGX_LinearArenasGameMode>(GetWorld()->GetAuthGameMode());
+	PlayerInputComponent->BindAction("SkipCutscene", IE_Pressed, GameMode, &ARGX_LinearArenasGameMode::SkipCutscene);
 
 	AbilitySystemComponent->BindAbilityActivationToInputComponent(PlayerInputComponent, FGameplayAbilityInputBinds(FString("ConfirmTarget"), FString("CancelTarget"), FString("ERGX_AbilityInputID"), static_cast<int32>(ERGX_AbilityInputID::Confirm), static_cast<int32>(ERGX_AbilityInputID::Cancel)));
 }

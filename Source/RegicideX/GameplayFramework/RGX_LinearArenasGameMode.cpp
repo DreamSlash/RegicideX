@@ -7,10 +7,9 @@
 #include "Blueprint/WidgetLayoutLibrary.h"
 #include "Kismet/GameplayStatics.h"
 #include "LevelSequencePlayer.h"
-#include "MovieSceneSequencePlayer.h"
 
-#include "RegicideX/Actors/RGX_Arena.h"
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
+#include "RegicideX/Actors/RGX_Arena.h"
 #include "RegicideX/Data/RGX_EnemiesDataTable.h"
 
 #include "RegicideX/GameplayFramework/RGX_GameInstance.h"
@@ -103,6 +102,7 @@ void ARGX_LinearArenasGameMode::TriggerCredits()
 {
 	UWorld* world = GetWorld();
 	UWidgetLayoutLibrary::RemoveAllWidgets(world);
+	currentLevelSequencePlayer = nullptr;
 
 	UUserWidget* CreditsWidget = UUserWidget::CreateWidgetInstance(*world, CreditsWidgetClass, FName("CreditsWidget"));
 
@@ -121,18 +121,26 @@ void ARGX_LinearArenasGameMode::FinalArenaFinished()
 	player->SetHidden(true);
 	player_controller->DisableInput(player_controller);
 
-	// Reset music ...
+	// Reset music, logic in blueprint ... 
 	URGX_GameInstance* game_instance = Cast<URGX_GameInstance>(UGameplayStatics::GetGameInstance(world));
 	BP_OnPlayerWins();
 
 	ALevelSequenceActor* levelSequenceActor = nullptr;
 	FMovieSceneSequencePlaybackSettings settings;
-	ULevelSequencePlayer* levelSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(world, EndingSequence, settings, levelSequenceActor);
+	currentLevelSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(world, EndingSequence, settings, levelSequenceActor);
 
-	// Bind on end event ...
-	levelSequencePlayer->OnFinished.AddDynamic(this, &ARGX_LinearArenasGameMode::TriggerCredits);
+	currentLevelSequencePlayer->OnFinished.AddDynamic(this, &ARGX_LinearArenasGameMode::TriggerCredits);
+	currentLevelSequencePlayer->OnStop.AddDynamic(this, &ARGX_LinearArenasGameMode::TriggerCredits);
 
-	levelSequencePlayer->Play();
+	currentLevelSequencePlayer->Play();
 
 	UWidgetLayoutLibrary::RemoveAllWidgets(world);
+}
+
+void ARGX_LinearArenasGameMode::SkipCutscene()
+{
+	if (currentLevelSequencePlayer != nullptr && currentLevelSequencePlayer->IsPlaying())
+	{
+		currentLevelSequencePlayer->Stop();
+	}
 }

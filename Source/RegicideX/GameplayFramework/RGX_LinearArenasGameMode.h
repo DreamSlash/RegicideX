@@ -9,6 +9,7 @@
 #include "RGX_LinearArenasGameMode.generated.h"
 
 class ULevelSequence;
+class ULevelSequencePlayer;
 
 UCLASS()
 class REGICIDEX_API ARGX_LinearArenasGameMode : public AGameModeBase
@@ -71,6 +72,8 @@ public:
 
 	void FinalArenaFinished();
 
+	void SkipCutscene();
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	const UDataTable* DT_EnemyTypesInfo = nullptr;
 
@@ -87,9 +90,8 @@ public:
 	ULevelSequence* EndingSequence = nullptr;
 
 private:
-	bool bWinCondition = false;
-
-	ARGX_Arena* CurrentArena;
-
-	TArray<ARGX_Arena*> Arenas;
+    ULevelSequencePlayer* currentLevelSequencePlayer = nullptr;
+    ARGX_Arena* CurrentArena;
+    TArray<ARGX_Arena*> Arenas;
+    bool bWinCondition = false;
 };
