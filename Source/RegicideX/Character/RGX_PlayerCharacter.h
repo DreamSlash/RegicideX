@@ -3,10 +3,12 @@
 #include "CoreMinimal.h"
 #include "Components/MCV_AbilitySystemComponent.h"
 #include "GameplayTags.h"
+
 #include "RegicideX/Actors/RGX_CharacterBase.h"
 #include "RegicideX/Components/RGX_CombatAssistComponent.h"
 #include "RegicideX/Enums/RGX_InputEnums.h"
 #include "RegicideX/GAS/RGX_PayloadObjects.h"
+
 #include "RGX_PlayerCharacter.generated.h"
 
 class USpringArmComponent;
