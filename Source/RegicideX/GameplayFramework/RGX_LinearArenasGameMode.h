@@ -91,6 +91,7 @@ public:
 
 private:
     ULevelSequencePlayer* currentLevelSequencePlayer = nullptr;
+	UUserWidget* CreditsWidget = nullptr;
     ARGX_Arena* CurrentArena;
     TArray<ARGX_Arena*> Arenas;
     bool bWinCondition = false;

@@ -104,8 +104,7 @@ void ARGX_LinearArenasGameMode::TriggerCredits()
 	UWidgetLayoutLibrary::RemoveAllWidgets(world);
 	currentLevelSequencePlayer = nullptr;
 
-	UUserWidget* CreditsWidget = UUserWidget::CreateWidgetInstance(*world, CreditsWidgetClass, FName("CreditsWidget"));
-
+	CreditsWidget = UUserWidget::CreateWidgetInstance(*world, CreditsWidgetClass, FName("CreditsWidget"));
 	CreditsWidget->AddToViewport();
 }
 
@@ -142,5 +141,9 @@ void ARGX_LinearArenasGameMode::SkipCutscene()
 	if (currentLevelSequencePlayer != nullptr && currentLevelSequencePlayer->IsPlaying())
 	{
 		currentLevelSequencePlayer->Stop();
+	}
+	else if (CreditsWidget != nullptr && CreditsWidget->IsInViewport())
+	{
+		CreditsWidget->RemoveFromViewport();
 	}
 }
