@@ -2,10 +2,17 @@
 
 
 #include "RegicideX/GameplayFramework/RGX_LinearArenasGameMode.h"
+#include "Animation/WidgetAnimation.h"
+#include "Blueprint/UserWidget.h"
+#include "Blueprint/WidgetLayoutLibrary.h"
 #include "Kismet/GameplayStatics.h"
-#include "RegicideX/Actors/RGX_Arena.h"
+#include "LevelSequencePlayer.h"
+
 #include "RegicideX/Actors/Enemies/RGX_EnemyBase.h"
+#include "RegicideX/Actors/RGX_Arena.h"
 #include "RegicideX/Data/RGX_EnemiesDataTable.h"
+
+#include "RegicideX/GameplayFramework/RGX_GameInstance.h"
 
 void ARGX_LinearArenasGameMode::StartPlay()
 {
@@ -58,9 +65,10 @@ void ARGX_LinearArenasGameMode::OnArenaDeactivated(ARGX_Arena* DeactivatedArena)
 	CurrentArena = nullptr;
 	BP_OnArenaDeactivated(DeactivatedArena);
 
-	if(DeactivatedArena->GetIsFinalArena() == true)
+	if (DeactivatedArena->GetIsFinalArena() == true)
 	{
-		BP_OnPlayerWins();
+		FTimerHandle CreditsTimer;
+		GetWorldTimerManager().SetTimer(CreditsTimer, this, &ARGX_LinearArenasGameMode::FinalArenaFinished, 3.0f, false);
 	}
 }
 
@@ -88,4 +96,54 @@ void ARGX_LinearArenasGameMode::OnWaveSpawned(URGX_OngoingWave* SpawnedWave)
 void ARGX_LinearArenasGameMode::OnWaveFinished(URGX_OngoingWave* FinishedWave)
 {
 	BP_OnWaveFinished(FinishedWave);
+}
+
+void ARGX_LinearArenasGameMode::TriggerCredits()
+{
+	UWorld* world = GetWorld();
+	UWidgetLayoutLibrary::RemoveAllWidgets(world);
+	currentLevelSequencePlayer = nullptr;
+
+	CreditsWidget = UUserWidget::CreateWidgetInstance(*world, CreditsWidgetClass, FName("CreditsWidget"));
+	CreditsWidget->AddToViewport();
+}
+
+
+void ARGX_LinearArenasGameMode::FinalArenaFinished()
+{
+	UWorld* world = GetWorld();
+	AActor* player = UGameplayStatics::GetPlayerCharacter(world, 0);
+	check(player);
+	APlayerController* player_controller = UGameplayStatics::GetPlayerController(world, 0);
+	check(player_controller);
+
+	player->SetHidden(true);
+	player_controller->DisableInput(player_controller);
+
+	// Reset music, logic in blueprint ... 
+	URGX_GameInstance* game_instance = Cast<URGX_GameInstance>(UGameplayStatics::GetGameInstance(world));
+	BP_OnPlayerWins();
+
+	ALevelSequenceActor* levelSequenceActor = nullptr;
+	FMovieSceneSequencePlaybackSettings settings;
+	currentLevelSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(world, EndingSequence, settings, levelSequenceActor);
+
+	currentLevelSequencePlayer->OnFinished.AddDynamic(this, &ARGX_LinearArenasGameMode::TriggerCredits);
+	currentLevelSequencePlayer->OnStop.AddDynamic(this, &ARGX_LinearArenasGameMode::TriggerCredits);
+
+	currentLevelSequencePlayer->Play();
+
+	UWidgetLayoutLibrary::RemoveAllWidgets(world);
+}
+
+void ARGX_LinearArenasGameMode::SkipCutscene()
+{
+	if (currentLevelSequencePlayer != nullptr && currentLevelSequencePlayer->IsPlaying())
+	{
+		currentLevelSequencePlayer->Stop();
+	}
+	else if (CreditsWidget != nullptr && CreditsWidget->IsInViewport())
+	{
+		CreditsWidget->RemoveFromViewport();
+	}
 }
