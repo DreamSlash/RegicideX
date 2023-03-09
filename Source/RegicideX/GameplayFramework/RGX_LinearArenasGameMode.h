@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
 #include "Engine/DataTable.h"
+#include "FMODEvent.h"
 
 #include "RGX_LinearArenasGameMode.generated.h"
 
@@ -44,12 +45,6 @@ public:
 	UFUNCTION(BlueprintImplementableEvent)
 	void BP_OnPlayerWins();
 
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void BP_OnPlayerLoses();
-
-	UFUNCTION(BlueprintImplementableEvent, BlueprintCallable)
-	void BP_OnTriggerCredits();
-
 private:
 	UFUNCTION()
 	void OnArenaActivated(class ARGX_Arena* ActivatedArena);
@@ -66,33 +61,55 @@ private:
 	UFUNCTION()
 	void OnWaveFinished(URGX_OngoingWave* FinishedWave);
 
+	UFUNCTION(BlueprintCallable)
+	void PlayArenaMusic(UFMODEvent* InEvent);
+
+	UFUNCTION(BlueprintCallable)
+	void TriggerArenaWonMusic();
+
+	UFUNCTION(BlueprintCallable)
+	void UpdateArenaMusicIntensity(float InValue);
+
+	UFUNCTION(BlueprintCallable)
+	void StopArenaMusic();
+
 public:
 	UFUNCTION()
 	void TriggerCredits();
 
 	void FinalArenaFinished();
-
 	void SkipCutscene();
+	void HandlePlayerLoses();
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	const UDataTable* DT_EnemyTypesInfo = nullptr;
 
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UUserWidget> CreditsWidgetClass;
-
-	UPROPERTY(EditDefaultsOnly)
-	TSubclassOf<UUserWidget> PlayerWinsWidgetClass;
-
-	UPROPERTY(BlueprintReadWrite)
-	int32 Score;
-
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	ULevelSequence* EndingSequence = nullptr;
 
+	UPROPERTY(BlueprintReadWrite)
+	int32 Score = 0;
+
+	UPROPERTY(EditDefaultsOnly, Category = Widget)
+	TSubclassOf<UUserWidget> CreditsWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = Widget)
+	TSubclassOf<UUserWidget> PlayerWinsWidgetClass;
+
+	UPROPERTY(EditDefaultsOnly, Category = Widget)
+	TSubclassOf<UUserWidget> PlayerLosesWidgetClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	UFMODEvent* CreditsEvent = nullptr;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Audio)
+	UFMODEvent* PlayerDiesEvent = nullptr;
+
 private:
-    ULevelSequencePlayer* currentLevelSequencePlayer = nullptr;
-	UUserWidget* CreditsWidget = nullptr;
-    ARGX_Arena* CurrentArena;
-    TArray<ARGX_Arena*> Arenas;
     bool bWinCondition = false;
+
+    ULevelSequencePlayer*	CurrentLevelSequencePlayer	= nullptr;
+	UUserWidget*			CreditsWidget				= nullptr;
+    ARGX_Arena*				CurrentArena;
+    TArray<ARGX_Arena*>		Arenas;
 };

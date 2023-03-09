@@ -682,6 +682,16 @@ void ARGX_PlayerCharacter::RotatePlayerTowardsInput()
 	}
 }
 
+void ARGX_PlayerCharacter::HandleDeath()
+{
+	auto GameMode = GetWorld()->GetAuthGameMode();
+	ARGX_LinearArenasGameMode* LinearArenasGameMode = Cast<ARGX_LinearArenasGameMode>(GameMode);
+	if (LinearArenasGameMode)
+	{
+		LinearArenasGameMode->HandlePlayerLoses();
+	}
+}
+
 void ARGX_PlayerCharacter::HandleDamage(
 	float DamageAmount, 
 	const FHitResult& HitInfo, 

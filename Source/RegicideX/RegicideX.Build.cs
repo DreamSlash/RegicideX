@@ -21,6 +21,7 @@ public class RegicideX : ModuleRules
             "UMG"});
 
         PublicDependencyModuleNames.Add("GameplayAbilities");
+        PublicDependencyModuleNames.Add("FMODStudio");
         PublicDependencyModuleNames.Add("MCVGASFramework");
         PublicDependencyModuleNames.Add("Niagara");
         PublicDependencyModuleNames.Add("MoviePlayer");

@@ -5,6 +5,7 @@
 #include "Animation/WidgetAnimation.h"
 #include "Blueprint/UserWidget.h"
 #include "Blueprint/WidgetLayoutLibrary.h"
+#include "FMODBlueprintStatics.h"
 #include "Kismet/GameplayStatics.h"
 #include "LevelSequencePlayer.h"
 
@@ -98,11 +99,48 @@ void ARGX_LinearArenasGameMode::OnWaveFinished(URGX_OngoingWave* FinishedWave)
 	BP_OnWaveFinished(FinishedWave);
 }
 
+void ARGX_LinearArenasGameMode::PlayArenaMusic(UFMODEvent* InEvent)
+{
+	auto GameInstance = Cast<URGX_GameInstance>(GetGameInstance());
+
+	if (GameInstance)
+	{
+		GameInstance->PlayMusic(InEvent);
+		UFMODBlueprintStatics::EventInstanceSetParameter(*GameInstance->CurrentMusicEvent, FName("Intensity"), 0.0f);
+		UFMODBlueprintStatics::EventInstanceSetParameter(*GameInstance->CurrentMusicEvent, FName("ArenaWon"), static_cast<float>(ERGX_ArenaState::NOT_WON));
+	}
+}
+
+void ARGX_LinearArenasGameMode::TriggerArenaWonMusic()
+{
+	auto GameInstance = Cast<URGX_GameInstance>(GetGameInstance());
+
+	if (GameInstance)
+	{
+		UFMODBlueprintStatics::EventInstanceSetParameter(*GameInstance->CurrentMusicEvent, FName("ArenaWon"), static_cast<float>(ERGX_ArenaState::WON));
+	}
+}
+
+void ARGX_LinearArenasGameMode::UpdateArenaMusicIntensity(float InValue)
+{
+	auto GameInstance = Cast<URGX_GameInstance>(GetGameInstance());
+
+	if (GameInstance)
+	{
+		UFMODBlueprintStatics::EventInstanceSetParameter(*GameInstance->CurrentMusicEvent, FName("Intensity"), InValue);
+	}
+}
+
+void ARGX_LinearArenasGameMode::StopArenaMusic()
+{
+	Cast<URGX_GameInstance>(GetGameInstance())->ResetMusic();
+}
+
 void ARGX_LinearArenasGameMode::TriggerCredits()
 {
 	UWorld* world = GetWorld();
 	UWidgetLayoutLibrary::RemoveAllWidgets(world);
-	currentLevelSequencePlayer = nullptr;
+	CurrentLevelSequencePlayer = nullptr;
 
 	CreditsWidget = UUserWidget::CreateWidgetInstance(*world, CreditsWidgetClass, FName("CreditsWidget"));
 	CreditsWidget->AddToViewport();
@@ -121,29 +159,52 @@ void ARGX_LinearArenasGameMode::FinalArenaFinished()
 	player_controller->DisableInput(player_controller);
 
 	// Reset music, logic in blueprint ... 
-	URGX_GameInstance* game_instance = Cast<URGX_GameInstance>(UGameplayStatics::GetGameInstance(world));
-	BP_OnPlayerWins();
+	URGX_GameInstance* GameInstance = Cast<URGX_GameInstance>(UGameplayStatics::GetGameInstance(world));
+	if (GameInstance)
+	{
+		GameInstance->ResetMusic();
+		GameInstance->PlayMusic(CreditsEvent);
+	}
 
 	ALevelSequenceActor* levelSequenceActor = nullptr;
 	FMovieSceneSequencePlaybackSettings settings;
-	currentLevelSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(world, EndingSequence, settings, levelSequenceActor);
+	CurrentLevelSequencePlayer = ULevelSequencePlayer::CreateLevelSequencePlayer(world, EndingSequence, settings, levelSequenceActor);
 
-	currentLevelSequencePlayer->OnFinished.AddDynamic(this, &ARGX_LinearArenasGameMode::TriggerCredits);
-	currentLevelSequencePlayer->OnStop.AddDynamic(this, &ARGX_LinearArenasGameMode::TriggerCredits);
+	CurrentLevelSequencePlayer->OnFinished.AddDynamic(this, &ARGX_LinearArenasGameMode::TriggerCredits);
+	CurrentLevelSequencePlayer->OnStop.AddDynamic(this, &ARGX_LinearArenasGameMode::TriggerCredits);
 
-	currentLevelSequencePlayer->Play();
+	CurrentLevelSequencePlayer->Play();
 
 	UWidgetLayoutLibrary::RemoveAllWidgets(world);
 }
 
 void ARGX_LinearArenasGameMode::SkipCutscene()
 {
-	if (currentLevelSequencePlayer != nullptr && currentLevelSequencePlayer->IsPlaying())
+	if (CurrentLevelSequencePlayer != nullptr && CurrentLevelSequencePlayer->IsPlaying())
 	{
-		currentLevelSequencePlayer->Stop();
+		CurrentLevelSequencePlayer->Stop();
 	}
 	else if (CreditsWidget != nullptr && CreditsWidget->IsInViewport())
 	{
 		CreditsWidget->RemoveFromViewport();
+	}
+}
+
+void ARGX_LinearArenasGameMode::HandlePlayerLoses()
+{
+	auto world = GetWorld();
+	auto playerController = UGameplayStatics::GetPlayerController(world, 0);
+	auto GameInstance = Cast<URGX_GameInstance>(GetGameInstance());
+
+	UGameplayStatics::SetGamePaused(world, true);
+	UUserWidget::CreateWidgetInstance(*world, PlayerLosesWidgetClass, FName("GameOver"))->AddToViewport();
+	
+	playerController->SetShowMouseCursor(true);
+	playerController->SetInputMode(FInputModeUIOnly());
+
+	if (GameInstance)
+	{
+		GameInstance->ResetMusic();
+		GameInstance->PlayMusic(PlayerDiesEvent);
 	}
 }

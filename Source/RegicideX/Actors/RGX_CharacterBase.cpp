@@ -288,6 +288,7 @@ float ARGX_CharacterBase::HandleDamageMitigation(float DamageAmount, const FHitR
 void ARGX_CharacterBase::NotifyDeath()
 {
 	OnHandleDeath();
+	HandleDeath();
 }
 
 void ARGX_CharacterBase::HandleDeath()
