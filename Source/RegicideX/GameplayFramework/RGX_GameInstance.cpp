@@ -3,6 +3,8 @@
 
 #include "RegicideX/GameplayFramework/RGX_GameInstance.h"
 #include "Blueprint/UserWidget.h"
+#include "FMODBlueprintStatics.h"
+#include "FMODEvent.h"
 #include "MoviePlayer.h"
 #include "GameFramework/GameUserSettings.h"
 
@@ -34,7 +36,21 @@ void URGX_GameInstance::HideLoadingScreen()
 	}
 }
 
+void URGX_GameInstance::PlayMusic(UFMODEvent* MusicEvent)
+{
+	if (MusicEvent)
+	{
+		ResetMusic();
+
+		CurrentMusicEvent = MakeShared<FFMODEventInstance>(UFMODBlueprintStatics::PlayEvent2D(GetWorld(), MusicEvent, true));
+	}
+}
+
 void URGX_GameInstance::ResetMusic()
 {
-	
+	if (CurrentMusicEvent)
+	{
+		UFMODBlueprintStatics::EventInstanceSetPaused(*CurrentMusicEvent, true);
+		UFMODBlueprintStatics::EventInstanceStop(*CurrentMusicEvent, true);
+	}
 }
